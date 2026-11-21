@@ -44,7 +44,7 @@
   --ring:0 0 0 1px rgba(120,95,60,.07),0 1px 2px rgba(70,45,20,.05);   /* a group's quiet edge instead of a drop shadow */
   --kb:0px;
   --tabh:54px;
-  --tabw:min(62px, calc((100vw - 40px) / 5));
+  --tabw:min(78px, calc((100vw - 40px) / 3));   /* moka2: three tabs */
   color-scheme:light;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1341,7 +1341,7 @@ svg.sil{filter:brightness(0);opacity:.28}
 /* A small floating capsule of frosted glass: the page shows through it, blurred, with a lit top rim.
    The tapped icon fills at once; a red lacquer bead glides to it, stretching a little on the way. */
 #tabbar{position:fixed;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;margin:0 auto;display:none;
-  width:calc(var(--tabw) * 5 + 20px);height:var(--tabh);padding:0 9px;border-radius:999px;
+  width:calc(var(--tabw) * 3 + 20px);height:var(--tabh);padding:0 9px;border-radius:999px;
   background:linear-gradient(rgba(255,255,255,.34),rgba(255,255,255,0) 60%),rgba(250,245,236,.56);
   -webkit-backdrop-filter:blur(20px) saturate(1.8);backdrop-filter:blur(20px) saturate(1.8);
   border:1px solid rgba(255,255,255,.6);
@@ -11511,7 +11511,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.4';
+const APP_VERSION = '3.45.5';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
