@@ -1825,6 +1825,47 @@ button.st-d:active{transform:scale(.9);transition:none}
 .un-bg canvas.uw-tab{opacity:0}
 .un-bg canvas.uw-tab.on{opacity:1}
 /* v3.18: the course as one strip of units you swipe to the right through (ucPane), the sign with a pill under it */
+/* moka2: HSK 1 units as a plain list on 田字格 practice paper */
+.screen.ul{margin:0 -20px;min-height:100dvh;padding-bottom:calc(32px + env(safe-area-inset-bottom));background:#EEE3CF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88'%3E%3Cpath d='M.5 0V88M0 .5H88' stroke='%23B23A2C' stroke-opacity='.15' fill='none'/%3E%3Cpath d='M44 0V88M0 44H88' stroke='%23B23A2C' stroke-opacity='.1' stroke-dasharray='4 4' fill='none'/%3E%3C/svg%3E") -1px -1px/88px 88px}
+.ul .bar{margin:0;background:color-mix(in srgb,#EEE3CF 84%,transparent)}
+.ul-switch{display:flex;align-items:center;justify-content:center;gap:4px;font:600 14px var(--ui);color:var(--ink-2)}
+.ul-switch button{display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:50%;background:none;color:var(--ink-2)}
+.ul-switch button:first-child .i{transform:scaleX(-1)}
+.ul-switch button:disabled{opacity:.25}
+.ul-switch span{min-width:92px;text-align:center}
+.ul-head{padding:2px 20px 18px}
+.ul-head h1{margin:0;font:600 34px/1.1 var(--display);letter-spacing:-.01em;color:var(--ink)}
+.ul-head h1 span{margin-left:6px;font:900 28px var(--hanzi);color:var(--seal)}
+.ul-prog{display:flex;align-items:center;gap:12px;margin-top:12px;font:600 13px var(--ui);color:var(--ink-2)}
+.ul-bar{flex:1;height:8px;border-radius:4px;background:rgba(178,58,44,.12);overflow:hidden}
+.ul-bar i{display:block;height:100%;border-radius:4px;background:var(--seal);transition:width .5s}
+.ul-note{display:flex;align-items:center;gap:8px;margin:12px 0 0;font:500 14px/1.4 var(--ui);color:var(--ink-2)}
+.ul-note .i{width:18px;height:18px;flex:none}
+.ul-end{justify-content:center;margin:18px 16px 0}
+.ul-list{list-style:none;margin:0;padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.ul-row{position:relative}
+.ul-hit{display:flex;align-items:center;gap:14px;width:100%;padding:12px 14px 12px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(252,249,243,.94);text-align:left;color:var(--ink);font:inherit;box-shadow:0 1px 0 rgba(60,40,20,.05)}
+.ul-hit:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.ul-cell{position:relative;flex:none;width:62px;height:62px;border-radius:4px;background:#FFFDF8;color:rgba(178,58,44,.5)}
+.ul-cell .tzg-bg{position:absolute;inset:0;width:100%;height:100%}
+.ul-cell b{position:absolute;inset:0;display:grid;place-items:center;font:900 38px/1 var(--hanzi);color:var(--ink)}
+.ul-seal{position:absolute;right:-7px;bottom:-7px;display:grid;place-items:center;width:24px;height:24px;border-radius:4px;background:var(--seal);color:#FFF8F2;font:900 14px/1 var(--hanzi);font-style:normal;transform:rotate(-8deg);box-shadow:0 1px 2px rgba(60,10,5,.3)}
+.ul-txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.ul-txt small{font:600 12px var(--ui);color:var(--muted)}
+.ul-txt b{font:600 18px/1.2 var(--display);color:var(--ink)}
+.ul-words,.ul-sub{font:400 14px/1.35 var(--hanzi);color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ul-sub{font-family:var(--ui);font-size:13px}
+.ul-lock{flex:none;color:var(--muted)}.ul-lock .i{width:18px;height:18px}
+.ul-row.locked .ul-hit{background:rgba(252,249,243,.55);border-style:dashed;border-color:var(--line-2)}
+.ul-row.locked .ul-cell b{font-weight:400;color:rgba(178,58,44,.4)}
+.ul-row.locked .ul-txt b,.ul-row.locked .ul-words,.ul-row.locked .ul-sub{color:var(--muted)}
+.ul-row.cur .ul-hit{padding-bottom:70px;border:2px solid var(--seal);background:#FFFDF8;box-shadow:0 8px 20px -12px rgba(120,30,20,.45)}
+.ul-row.cur .ul-cell{box-shadow:0 0 0 1px rgba(178,58,44,.35)}
+.ul-go{position:absolute;left:88px;right:14px;bottom:12px;height:46px;font-size:17px}
+.ul-boss .ul-cell b{color:var(--seal)}
+.ul-boss.locked .ul-cell b{color:rgba(178,58,44,.4)}
+.ul-next{display:flex;align-items:center;justify-content:center;gap:6px;margin:18px 16px 0;width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){.ul-bar i{transition:none}}
 .uc{position:relative;height:100dvh;min-height:0}
 .uc>.bar{position:relative;z-index:3;height:112px;flex:none;pointer-events:none}
 .uc>.bar button{pointer-events:auto}
@@ -4255,7 +4296,51 @@ function ucHud(u) {
     : st.nd === n ? `<button class="btn btn-seal un-hud-solo" data-act="ut-go" data-u="${u}" aria-label="Take Hu Hu's challenge: ${n * UT_PER} words, ${UT_PASS}% right to win">Challenge</button>`
     : `<span class="un-hud-t"><small>Lesson ${st.nd + 1} of ${n}</small><b>${esc(L.title)}</b><i lang="zh">${esc(L.words.join(' '))}</i></span><button class="btn btn-seal un-start" data-act="${L.n === next && !due ? 'les-go' : 'les-node'}" data-n="${L.n}">Start</button>`;
 }
+/* ---------- moka2: HSK 1 units as a plain list ----------
+   A unit's lessons one under the other on beige 田字格 practice paper, instead of the street with its steamers.
+   Each lesson shows its lead character in a tianzige square like a copybook: printed pale red while still to come
+   (描红, for tracing), inked black with a red 完 seal once done. Only the lesson you are on has a Start button; Hu Hu's
+   challenge is the last row, and passing it opens the next unit. The other levels keep the street. */
+const UL_LEVELS = { 1: 1 };
+function UnitList(un) {
+  const U = UNIT(un), lv = U.lv, st = unitState(un), n = st.ls.length, next = lesNext(lv), due = utDue(lv), r = db.utests[un];
+  const us = lvUnits(lv), prev = UNIT(un - 1)?.lv === lv ? un - 1 : 0, nxt = UNIT(un + 1)?.lv === lv && unitOpen(un + 1) ? un + 1 : 0;
+  const rows = st.ls.map((L, i) => {
+    const done = lesDone(L.n), cur = st.open && !done && i === st.nd, ch = LES_LEAD[L.i];
+    return `<li class="ul-row${done ? ' done' : cur ? ' cur' : ' locked'}">
+      <button class="ul-hit" data-act="les-node" data-n="${L.n}" aria-label="Lesson ${i + 1}, ${esc(L.title)}${done ? ', done' : cur ? ', up next' : ', locked'}">
+        <span class="ul-cell" lang="zh" aria-hidden="true">${TZG}<b>${ch}</b>${done ? '<i class="ul-seal">完</i>' : ''}</span>
+        <span class="ul-txt"><small>Lesson ${i + 1}</small><b>${esc(L.title)}</b><span class="ul-words" lang="zh">${esc(L.words.join(' '))}</span></span>
+        ${done || cur ? '' : `<span class="ul-lock">${LOCK_I}</span>`}</button>
+      ${cur ? `<button class="btn btn-seal ul-go" data-act="${L.n === next && !due ? 'les-go' : 'les-node'}" data-n="${L.n}">Start</button>` : ''}</li>`;
+  }).join('');
+  const chal = st.open && st.nd === n && !st.won;
+  const boss = `<li class="ul-row ul-boss${st.won ? ' done' : chal ? ' cur' : ' locked'}">
+      <button class="ul-hit" data-act="ut-node" data-u="${un}" aria-label="Hu Hu's challenge, the unit test${st.won ? ', won' : chal ? ', ready' : ', locked'}">
+        <span class="ul-cell" lang="zh" aria-hidden="true">${TZG}<b>考</b>${st.won ? '<i class="ul-seal">胜</i>' : ''}</span>
+        <span class="ul-txt"><small>Unit test</small><b>Hu Hu’s challenge</b><span class="ul-sub">${st.won ? `Won · best ${r?.best ?? 0}%` : `${n * UT_PER} words · ${UT_PASS}% right to win`}</span></span>
+        ${st.won || chal ? '' : `<span class="ul-lock">${LOCK_I}</span>`}</button>
+      ${chal ? `<button class="btn btn-seal ul-go" data-act="ut-go" data-u="${un}">Challenge</button>` : ''}</li>`;
+  const after = st.won && nxt ? `<button class="btn btn-seal wide ul-next" data-act="unit-open" data-u="${nxt}">Unit ${unK(nxt)}: ${esc(UNIT(nxt)[0])}${I.chev}</button>`
+    : st.won && unitLast(un) ? `<p class="ul-note ul-end">You have finished every unit of ${HSK_NAME(lv)}.</p>` : '';
+  const pct = Math.round((st.won ? n + 1 : st.nd) / (n + 1) * 100);
+  return `<div class="screen fade-in c1 ul"><header class="bar"><button class="icon-btn" data-act="c1-back" aria-label="Back">${I.back}</button>
+      <div class="bar-title ul-switch"><button data-ul="${prev}" aria-label="Previous unit"${prev ? '' : ' disabled'}>${I.chev}</button><span>Unit ${U.k} of ${us.length}</span><button data-ul="${nxt}" aria-label="Next unit"${nxt ? '' : ' disabled'}>${I.chev}</button></div>
+      ${COMIC[un] ? `<button class="icon-btn" data-act="comic-replay" data-u="${un}" aria-label="Watch the comic again">${COMIC_I}</button>` : '<div style="width:42px"></div>'}</header>
+    <section class="ul-head"><h1>${esc(U[0])} <span lang="zh">${esc(U[1])}</span></h1>
+      ${st.open ? `<div class="ul-prog"><span class="ul-bar"><i style="width:${Math.max(pct, 3)}%"></i></span><span>${st.won ? 'Unit won' : `${st.nd} of ${n} lessons done`}</span></div>`
+        : `<p class="ul-note">${LOCK_I}Beat Hu Hu’s challenge in Unit ${U.k - 1} to open this unit.</p>`}</section>
+    <ol class="ul-list">${rows}${boss}</ol>${after}</div>`;
+}
+function mountUnitList(un) {
+  document.querySelectorAll('.ul-switch [data-ul]').forEach(b => b.onclick = () => { const u = +b.dataset.ul; if (u) { haptic(8); nav(unitUrl(u)); } });
+  const st = unitState(un); if (db.unitAt?.[un] !== st.at) { (db.unitAt ||= {})[un] = st.at; save(); }
+  const cur = $('.ul-row.cur'); if (cur && cur.getBoundingClientRect().bottom > innerHeight - 24) cur.scrollIntoView({ block: 'center' });
+  // Hu Hu was beaten: the ending plays here
+  comicLoad(unitLv(un)).then(() => { if (COMIC[un] && utPassed(un) && comicSeen(un).p1 && !comicSeen(un).p2) setTimeout(() => { if (S.view === 'course' && S.cUnit === un && !$('#ob')) comicPlay(un, 1); }, 760); });
+}
 function UnitView(un) {
+  if (UL_LEVELS[unitLv(un)] && UNIT(un)) return UnitList(un);   // moka2: HSK 1 is a plain list
   const us = ucList(unitLv(un)), u = us.includes(un) ? un : us.at(-1);
   return `<div class="screen fade-in c1 un uc${UC_VERT[unitLv(u)] ? ' uc-v' : ''}"><header class="bar"><button class="icon-btn" data-act="c1-back" aria-label="Back">${I.back}</button>
     <div class="bar-title un-sign"><span class="un-sign-board"><small>Unit ${unK(u)}</small><b>${esc(UNIT(u)[0])}</b></span>
@@ -4360,6 +4445,7 @@ function ucPaint(ahead) {
     else if (p.dataset.p && !near && (r < a - 3 * w || l > a + 4 * w) && !p.querySelector('.uw-anim')) { p.querySelectorAll('.un-bg canvas').forEach(c => { c.width = c.height = 0; c.classList.remove('on'); }); delete p.dataset.p; delete p._glow; } });
 }
 function mountUnit(un) {
+  if ($('.ul')) { mountUnitList(un); return; }   // moka2: the HSK 1 list
   const sc = $('.uc-scroll'); if (!sc) return;
   const us = ucList(unitLv(un)), go = us.includes(un) ? un : us.at(-1), me = ucMe(unitLv(un)), shi = $('#unShi'), eat = shi?.dataset.eat, st = unitState(me);
   ucFit(); ucU = 0; ucEat = null; ucPre = eat != null ? { u: me, i: +eat } : null;
@@ -11328,7 +11414,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45';
+const APP_VERSION = '3.45.1';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
