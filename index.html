@@ -2733,6 +2733,8 @@ const cardById = (d, id) => d.cards.find(c => c.id === id);
 const S = { view: 'home', deckId: null, study: null, write: null, smo: 0 };   // smo: which month the Streak calendar shows (0 = this month)
 function parse() {
   const p = location.hash.replace(/^#\/?/, '').split('/');
+  if (['map', 'build', 'learn', 'course', 'basics'].includes(p[0]) || p[0] === 'deck' && p[1] === 'today' && p[2] !== 'study') {   // moka2: no Map and no Lessons, only Decks and Read
+    history.replaceState(history.state, '', '#/'); return { view: 'home', deckId: null }; }
   if (p[0] === 'deck' && p[1] === 'bank') return p[2] === 'study' || p[2] === 'write' ? { view: p[2], deckId: 'bank' } : { view: 'bank', deckId: null };
   if (p[0] === 'deck' && p[1] === 'today') return p[2] === 'study' ? { view: 'study', deckId: 'today' } : { view: 'learn', deckId: null };
   if (p[0] === 'deck' && deckById(p[1])) return { view: p[2] || 'deck', deckId: p[1] };
@@ -2759,7 +2761,7 @@ function route() {
   S.hskLevel = r.lv || null; S.readId = r.readId || null; S.cPart = r.part || null; S.cBasics = !!r.basics; S.cUnit = r.unit || null; S.cLv = r.clv || 1;
   const d = curDeck();
   if ((S.view === 'study' || S.view === 'write') && (!d || !d.cards.length)) {
-    if (S.deckId === 'today') { history.replaceState(history.state, '', '#/learn'); S.view = 'learn'; S.deckId = null; }
+    if (S.deckId === 'today') { history.replaceState(history.state, '', '#/'); S.view = 'home'; S.deckId = null; }
     else S.view = S.deckId === 'bank' ? 'bank' : 'deck';
   }
   if (S.view === 'study') startStudy();
@@ -3058,7 +3060,7 @@ function render() {
 }
 
 /* ---------- bottom tab bar (hidden during flip and write sessions) ---------- */
-const TABS = [['decks', 'Decks', '#/'], ['learn', 'Lessons', '#/learn'], ['map', 'Map', '#/map'], ['read', 'Read', '#/read'], ['profile', 'Profile', '#/profile']];
+const TABS = [['decks', 'Decks', '#/'], ['read', 'Read', '#/read'], ['profile', 'Profile', '#/profile']];   // moka2: Map and Lessons are gone
 function renderTabs() {
   // picking words on an HSK level: its own bottom bar (Select all / Add) takes the tab bar's place, as in a select mode
   const cur = S.view === 'hsk' && S.hskLevel ? null : S.view === 'home' || S.view === 'deck' || S.view === 'bank' || S.view === 'hsk' ? 'decks' : S.view === 'course' ? S.cUnit ? null : 'learn' : S.view;   // a unit's campaign is its own full page, without the tab bar
@@ -6464,13 +6466,21 @@ function LearnView() {
 
 /* ---------- this month's calendar ----------
    Every day you finished a story gets a red tile with a character from that story (tap it to read the story again),
-   like a diary of your reading. The flame counts the days in a row you practised: flip cards, writing or a story. */
+   like a diary of your reading. The flame counts the days in a row you went through a deck (moka2: see practiceDays). */
 const ZH_MONTH = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
 const dayKey = t => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; };
-function practiceDays() {   // the days you practised cards, wrote, finished a lesson or finished a story
-  const days = new Set(db.readDone.map(s => dayKey(s.done)));
-  for (const [k, v] of Object.entries(db.days)) if (Object.keys(v?.decks || {}).length || v?.les?.length || v?.fb) days.add(k);
+/* moka2: a day counts for the streak when you went through a deck to its end (a flip round or a writing round, db.days[day].round).
+   Days before the change (db.roundFrom) keep the old rule, so the streak you had lives on. */
+function practiceDays() {
+  if (!db.roundFrom) { const t = new Date(); t.setHours(0, 0, 0, 0); db.roundFrom = t.getTime(); save(); }
+  const old = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m, d).getTime() < db.roundFrom; };
+  const days = new Set(db.readDone.map(s => dayKey(s.done)).filter(old));
+  for (const [k, v] of Object.entries(db.days)) if (v?.round || old(k) && (Object.keys(v?.decks || {}).length || v?.les?.length || v?.fb)) days.add(k);
   return days;
+}
+function noteRound(d) {   // you went through this deck to the end today: the day counts for the streak
+  const day = db.days[dayKey(Date.now())] ||= { decks: {} }; day.round = (day.round || 0) + 1; save();
+  LOG.add('deck-round', { deck: d?.name });
 }
 /* A freeze covers a day you missed so the streak lives on. You start with one, get one more for every 7 days in a row
    (keeping 2 at most), and they are used up by themselves the first time the app sees the gap. */
@@ -6516,7 +6526,7 @@ function MonthCal() {
       : ice.has(`${y}-${m}-${d}`) ? `<span class="cal-d ice${cls}" aria-label="${d} ${monthEn}: saved by a streak freeze"><i>${d}</i></span>`
       : `<span class="cal-d${cls}"><i>${d}</i></span>`);
   }
-  const note = n ? (today ? 'You practised today' : 'Practise today to keep it going') : 'Practise to start a streak';
+  const note = n ? (today ? 'You went through a deck today' : 'Go through a deck today to keep it going') : 'Go through a deck to start a streak';
   const fz = db.freeze.have;
   return `<div class="section-head cal-head"><h2>${monthEn} <span class="cal-zh">${ZH_MONTH[m]}</span></h2></div>
     <div class="cal">
@@ -6562,7 +6572,7 @@ function calDaySheet(d, y = new Date().getFullYear(), m = new Date().getMonth())
    Practised days are orange circles, days a freeze saved are blue, and days in a row join up into one band. */
 function StreakView() {
   const { n, today } = practiceStreak(), fz = db.freeze.have;
-  const note = n ? (today ? `Done for today. Come back tomorrow for day ${n + 1}` : 'Practise today to keep it going') : 'Flip cards, write or read a story to start one';
+  const note = n ? (today ? `Done for today. Come back tomorrow for day ${n + 1}` : 'Go through a deck today to keep it going') : 'Go through a deck to start one';
   const next = 7 - n % 7;
   const fzT = fz ? `You have <b>${fz} streak ${fz === 1 ? 'freeze' : 'freezes'}</b>` : 'You’re out of <b>streak freezes</b>';
   const fzS = fz >= 2 ? 'Each one saves your streak on a day you miss. You can hold 2.'
@@ -6837,7 +6847,7 @@ function pfWeek() {   // this week, Monday to Sunday: the words you proved each 
 function ProfileView() {
   const { n, today } = practiceStreak(), best = Math.max(n, bestStreak()), pv = provenCount(), own = TRAIL.filter((_, i) => monOwns(i + 1)).length;
   const { lv, left } = goalLevel(), total = S.H?.levels[lv]?.length || HSK_COUNT[lv], known = Math.max(0, total - left), f = total ? known / total : 0;
-  const since = pfSince(), t = playSub(), go = t === 'Learn' ? 'Learn new words' : `Continue: ${t}`;
+  const since = pfSince(), go = 'Go through a deck';
   const tile = (act, icon, big, label, sub, aria, ic = '') => `<button class="pf-stat" data-act="${act}" aria-label="${aria}"><span class="pf-st-ic${ic}">${icon}</span><b>${big}</b><span>${label}</span><small>${sub}</small></button>`;
   return `<div class="screen fade-in pf">
     <div class="section-head cal-head pg-head"><h2>Profile <span class="cal-zh">我的</span></h2>
@@ -6851,10 +6861,8 @@ function ProfileView() {
       <button class="btn btn-seal wide pf-go" data-act="pf-go">${go}</button>
     </section>
     <div class="pf-stats">
-      ${tile('streak', FLAME, n, 'Day streak', n && !today ? 'Practise today to keep it' : best ? `Best ${plural(best, 'day')}` : 'Practise to start one', `${n} day streak, open your calendar`, `${n ? ' on' : ''}${n && !today ? ' wait' : ''}`)}
+      ${tile('streak', FLAME, n, 'Day streak', n && !today ? 'Finish a deck today to keep it' : best ? `Best ${plural(best, 'day')}` : 'Finish a deck to start one', `${n} day streak, open your calendar`, `${n ? ' on' : ''}${n && !today ? ' wait' : ''}`)}
       ${tile('open-bank', '<span class="pf-zh">字</span>', pv, 'Words proven', db.bank.length ? `${plural(db.bank.length, 'word')} in your bank` : 'Learn words to prove them', `${pv} words proven, open your word bank`)}
-      ${tile('pf-map', '<span class="pf-zh">塔</span>', `${own}<em>/${TRAIL.length}</em>`, 'Monuments', own < TRAIL.length ? `${TRAIL.length - own} to go` : 'All yours', `${own} of ${TRAIL.length} monuments, open the map`)}
-      ${tile('pf-shop', coinSvg(), coinFmt(coinBal()), 'Coins', coinBal() ? 'Spend them in the shop' : 'Prove words to earn them', `${coinBal()} coins, open the shop`)}
     </div>
     <div class="section-head"><h2>This week <span class="cal-zh">本周</span></h2></div>
     ${pfWeek()}
@@ -8266,7 +8274,7 @@ function takePay() {   // what came in since the bag was last filled on screen: 
   const t = coinEarned(), n = Math.max(0, t - (db.coinShown ?? 0));
   if (db.coinShown !== t) { db.coinShown = t; save(); }
   if (n) LOG.add('coins-earned', { n, bal: coinBal() });
-  return n ? { n, bal: coinBal() } : null;
+  return null;   // moka2: no Map, so no coins to show
 }
 let coinN = 0;
 function coinShine(k) {   // the sparkle every coin carries, drawn on a 24-unit coin and scaled by k: a shine kept inside the coin, and a star on its rim
@@ -9767,7 +9775,7 @@ function gradeFlip(g) {
 }
 function finishFlip() {
   const st = S.study, ids = Object.keys(st.graded);
-  st.done = true;
+  st.done = true; noteRound(curDeck());
   LOG.add('flip-round', { remembered: ids.filter(id => st.graded[id] > 0).length, of: ids.length, new: st.fresh.length });
   render(); window.scrollTo(0, 0); $('#app').scrollTop = 0;
   try { navigator.vibrate?.([10, 70, 16]); } catch (_) {}
@@ -10575,7 +10583,7 @@ function gradeWrite(ok) {
   if (!ok && W.tries[id] < 3) W.order.push(id);                       // missed: it comes back after the round's new words
   LOG.add('write-grade', { hz: c.hanzi, counted: ok ? 'right' : 'wrong', mode: db.prefs.writeMode, checker: W.judge ? W.judge.ok : undefined, again: first ? undefined : true, hints: W.hints || undefined });
   W.i++;
-  if (W.i >= W.order.length) { W.done = true; LOG.add('write-round', { right: W.order.slice(0, W.main).filter(id => W.results[id]).length, of: W.main, fixed: W.order.slice(0, W.main).filter(id => !W.results[id] && W.last[id]).length }); }
+  if (W.i >= W.order.length) { W.done = true; noteRound(d); LOG.add('write-round', { right: W.order.slice(0, W.main).filter(id => W.results[id]).length, of: W.main, fixed: W.order.slice(0, W.main).filter(id => !W.results[id] && W.last[id]).length }); }
   resetCardState();
   const scr = $('#app > .screen'), dock = $('#wdock');
   if (W.done || S.view !== 'write' || !dock) return render();
@@ -11503,7 +11511,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.3';
+const APP_VERSION = '3.45.4';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
@@ -12351,7 +12359,7 @@ const A = {
   'st-say': t => sayZh(t.dataset.zh),
   'rw': t => readPop(t),
   'remind': () => remindSheet(),
-  'pf-go': () => { LOG.add('profile-go', { to: playSub() }); trailGo(0); },
+  'pf-go': () => { LOG.add('profile-go', { to: 'decks' }); nav('#/'); },
   'pf-map': () => nav('#/map'),
   'pf-shop': () => shopSheet(),
   'say': t => sayZh(t.dataset.h),
@@ -12373,11 +12381,11 @@ const A = {
   'learn-write': t => { S.write = null; nav(`#/deck/${t.dataset.id}/write`); },
   'study': () => nav(`#/deck/${S.deckId}/study`),
   'write': () => { S.write = null; nav(`#/deck/${S.deckId}/write`); },
-  'back-deck': () => goBack(S.deckId === 'today' ? '#/learn' : '#/deck/' + S.deckId),
+  'back-deck': () => goBack(S.deckId === 'today' ? '#/' : '#/deck/' + S.deckId),
   'today-start': () => { const P = todayPile(); if (!P.cards.length) return render(); S.today = { id: 'today', name: 'Today', accent: ACCENTS[0], cards: P.cards }; S.study = null;
     LOG.add('today-start', { review: P.due.length, new: P.fresh.length }); nav('#/deck/today/study'); },
   'sgrade': t => gradeFlip(+t.dataset.g),
-  'study-done': () => { const today = S.deckId === 'today'; S.study = null; S.today = null; goBack(today ? '#/learn' : '#/deck/' + S.deckId); },
+  'study-done': () => { const today = S.deckId === 'today'; S.study = null; S.today = null; goBack(today ? '#/' : '#/deck/' + S.deckId); },
   'study-again': () => {
     if (S.deckId === 'today') { const P = todayPile(); if (!P.cards.length) { toast('All done for today'); return A['study-done'](); } S.today = { id: 'today', name: 'Today', accent: ACCENTS[0], cards: P.cards }; }
     S.study = null; startStudy(); render(); },
@@ -12449,7 +12457,7 @@ document.addEventListener('click', e => {
   const targets = () => {
     if (S.view === 'deck' || S.view === 'bank') return { tab: 0, prev: { tab: 0, html: () => Home(), go: () => { S.instant = S.toTop = true; goBack('#/'); } } };
     if (S.view === 'map' && S.mapLv) return null;   // inside a monument: no swiping to the next tab
-    const order = ['home', 'learn', 'map', 'read', 'profile'], views = [Home, LearnView, MapView, ReadView, ProfileView], i = order.indexOf(S.view);
+    const order = ['home', 'read', 'profile'], views = [Home, ReadView, ProfileView], i = order.indexOf(S.view);
     if (i < 0) return null;
     const t = j => views[j] && { tab: j, html: views[j], go: () => { S.instant = true; nav(TABS[j][2]); } };
     return { tab: i, prev: t(i - 1), next: t(i + 1) };
