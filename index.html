@@ -1866,7 +1866,41 @@ button.st-d:active{transform:scale(.9);transition:none}
 .ul-boss .ul-cell b{color:var(--seal)}
 .ul-boss.locked .ul-cell b{color:rgba(178,58,44,.4)}
 .ul-next{display:flex;align-items:center;justify-content:center;gap:6px;margin:18px 16px 0;width:calc(100% - 32px)}
-@media (prefers-reduced-motion:reduce){.ul-bar i{transition:none}}
+/* moka2: a unit's story is the first row of its list, with a small printed picture where a lesson has its character */
+.ul-pic{position:relative;flex:none;width:62px;height:62px;padding:3px;border-radius:4px;background:#FFFDF8;box-shadow:0 0 0 1px rgba(178,58,44,.35)}
+.ul-pic svg{display:block;width:100%;height:100%;border-radius:2px}
+.ul-row.locked .ul-pic svg{filter:grayscale(1);opacity:.4}
+.ul-zh{font-family:var(--hanzi);font-size:14px}
+.ul-hit>svg.i{flex:none;width:18px;height:18px;color:var(--muted)}
+/* moka2: the level's page is the same paper: its units as rows. The tab bar floats over its end */
+.ul.ul-crs{padding-bottom:calc(124px + env(safe-area-inset-bottom))}
+/* moka2: the story reader. One picture a page in a printed frame on the practice paper, its line underneath */
+#ob.sr{overflow:hidden;background:#EEE3CF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88'%3E%3Cpath d='M.5 0V88M0 .5H88' stroke='%23B23A2C' stroke-opacity='.15' fill='none'/%3E%3Cpath d='M44 0V88M0 44H88' stroke='%23B23A2C' stroke-opacity='.1' stroke-dasharray='4 4' fill='none'/%3E%3C/svg%3E") -1px -1px/88px 88px}
+#ob.sr .ob-in{height:100%;min-height:0}
+.sr-bar{display:flex;align-items:center;gap:8px;flex:none;height:calc(56px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+.sr-x{flex:none;display:grid;place-items:center;width:42px;height:42px;margin-left:-10px;border-radius:50%;color:var(--ink-2)}
+.sr-dots{flex:1;display:flex;gap:5px;margin-right:4px}
+.sr-dots i{flex:1;height:6px;border-radius:3px;background:rgba(178,58,44,.16);transition:background .25s}
+.sr-dots i.on{background:var(--seal)}
+.sr-head{flex:none;padding:4px 0 12px;text-align:left}
+.sr-head small{display:block;font:600 12px var(--ui);color:var(--muted)}
+.sr-head b{display:block;margin-top:2px;font:600 24px/1.15 var(--display);letter-spacing:-.01em;color:var(--ink)}
+.sr-stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sr-frame{padding:7px;border:0;border-radius:6px;background:#FFFDF8;box-shadow:0 0 0 1px var(--line),0 12px 24px -16px rgba(60,40,20,.55)}
+.sr-frame svg{display:block;border-radius:2px;box-shadow:0 0 0 1.5px #2B211A}
+.sr-frame.in{animation:srIn .28s ease both}
+@keyframes srIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sr-lines{flex:none;display:flex;flex-direction:column;gap:6px;width:100%;padding:14px 0 0}
+.sr-lines:empty{display:none}
+.sr-say{display:flex;align-items:center;gap:12px;width:100%;padding:6px 12px;border:0;border-radius:12px;background:rgba(255,253,248,.9);text-align:left;color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.sr-say span{flex:1;min-width:0;display:flex;flex-direction:column;font:400 14px/1.35 var(--ui);color:var(--ink-2)}
+.sr-say span b{font:900 24px/1.3 var(--hanzi);color:var(--ink)}
+.sr-say span i{font-style:normal;font-weight:600;color:var(--seal)}
+.sr-say svg.i{flex:none;width:20px;height:20px;color:var(--seal)}
+.sr-say:focus-visible,.sr-x:focus-visible,.sr-frame:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.sr-foot{flex:none;padding:8px 0 calc(16px + env(safe-area-inset-bottom))}
+.sr-foot .btn{width:100%;height:54px;font-size:17px}
+@media (prefers-reduced-motion:reduce){.ul-bar i,.sr-dots i{transition:none}.sr-frame.in{animation:none}}
 .uc{position:relative;height:100dvh;min-height:0}
 .uc>.bar{position:relative;z-index:3;height:112px;flex:none;pointer-events:none}
 .uc>.bar button{pointer-events:auto}
@@ -3590,14 +3624,13 @@ function CourseView() {
   if (P === 'strokes') return StrokesView();
   if (S.cBasics) return BasicsView();
   if (S.cUnit) return UnitView(S.cUnit);
-  const lv = S.cLv || 1, L = S.H?.levels[lv] || [], k = knownWords(), n = L.filter(r => k.has(r.h)).length;
-  const all = lvLes(lv), done = all.filter(x => lesDone(x.n)).length;
-  return `<div class="screen fade-in c1">${c1Head('')}
-    <div class="c1-scene"><svg viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">${CRS[lv][1]()}</svg></div>
-    <section class="c1-top"><h1 class="c1-title">${HSK_NAME(lv)} <span class="c1-zh">${CRS_ZH[lv]}</span></h1>
-      ${L.length ? `<p class="muted">${L.length.toLocaleString('en')} words · ${n.toLocaleString('en')} you know.</p>` : ''}</section>
-    <div class="section-head"><h2>Units <span class="cal-zh">单元</span></h2><span class="muted les-count">${done} of ${all.length} lessons done</span></div>
-    <p class="muted les-intro">Each unit is a path of short lessons that ends at the shrine of Hu Hu, the challenger: beat his challenge to open the next unit. A lesson is a small deck of hanzi cards: meet each word, trace its characters, turn the cards, then write from memory. Finished words go into your word bank by themselves.</p>
+  const lv = S.cLv || 1;
+  const all = lvLes(lv), done = all.filter(x => lesDone(x.n)).length, left = all.length - done;
+  /* moka2: the level's page is the same practice paper as a unit's: its name, one bar for the whole level, its units.
+     The big picture (it is on the Lessons tab already) and the paragraph about how lessons work are gone */
+  return `<div class="screen fade-in c1 ul ul-crs"><header class="bar"><button class="icon-btn" data-act="c1-back" aria-label="Back">${I.back}</button><div class="bar-title"></div><div style="width:42px"></div></header>
+    <section class="ul-head"><h1>${HSK_NAME(lv)} <span lang="zh">${CRS_ZH[lv]}</span></h1>
+      <div class="ul-prog"><span class="ul-bar"><i style="width:${gBar(all.length ? done / all.length : 0)}%"></i></span><span>${left ? `${plural(left, 'lesson')} to go` : 'Every lesson done'}</span></div></section>
     ${UnitLevels()}
   </div>`;
 }
@@ -4128,50 +4161,89 @@ const COMIC_I = ic('<path d="M5 5.5h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-6.5L8 19.5
 /* play one part of a unit's comic, full screen: the first panel comes by itself, each tap anywhere brings the next,
    and after the last one the button appears (Start for part 1, Finish for the ending). then: what the button (or Skip)
    goes on to. o.demo: a second look, nothing is saved; o.label: the button's word */
+/* moka2: the comic is read as a small picture story on the same 田字格 practice paper as the lessons, not played as a
+   dark cutscene: one picture a page in a printed frame (its panel, unclipped, in its own box), its lines underneath
+   (hanzi, pinyin, meaning; a tap says the line), and one button that turns the page. The bar on top shows how many
+   pictures there are. o.parts: the parts to read as one booklet (default: just `part`); then: what the last page's
+   button goes on to; o.quit: what the close button goes on to (default: the same as then) */
+const comicPic = pan => `<svg viewBox="${pan.box.join(' ')}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">${pan.art()}</svg>`;
 function comicPlay(un, part, then, o = {}) {
-  const C = COMIC[un], pg = C.pages[part], n = pg.panels.length, ending = part === C.pages.length - 1;
-  if (!o.demo) { const c = (db.comic ||= {})[un] ||= {}; c['p' + (part + 1)] ||= Date.now(); save(); }
-  LOG.add('comic', { unit: un, part: part + 1, demo: !!o.demo });
-  const el = layer(`<div class="cm-bar"><b>${esc(C.title)}</b><button class="cm-skip" data-cm="skip">Skip</button></div>
-    <div class="cm-stage"><svg viewBox="0 0 360 600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">${pg.panels.map((_, i) => `<g class="cm-pan" style="--dx:${i % 2 ? 46 : -46}px">${comicPanel(pg, i)}</g>`).join('')}</svg></div>
-    <div class="cm-foot"><p class="cm-line" aria-live="polite"></p><p class="cm-hint">Tap anywhere</p><button class="btn btn-seal cm-go" data-cm="go" hidden>${o.label || (ending ? 'Finish' : 'Start')}</button></div>`, 'cm');
-  const pans = [...el.querySelectorAll('.cm-pan')], line = el.querySelector('.cm-line'), hint = el.querySelector('.cm-hint'), go = el.querySelector('.cm-go');
-  let i = 0, wait = 0;
-  const show = () => {
-    if (!el.isConnected || i >= n) return;
-    const say = pg.panels[i].say; pans[i].classList.add('on');
-    line.innerHTML = say ? say.map(([zh, py, en]) => `<span><b lang="zh">${zh}</b><i>${py}</i>${en}</span>`).join('') : '';
-    wait = Date.now() + 350;
-    if (++i < n) return;
-    hint.hidden = true; if (ending && !o.demo) try { fanfare(); } catch (_) {}
-    setTimeout(() => { go.hidden = false; }, stillMotion() ? 0 : 550);
+  const C = COMIC[un], parts = o.parts || [part], pans = parts.flatMap(p => C.pages[p].panels), n = pans.length, ending = parts.includes(C.pages.length - 1);
+  if (!o.demo) { const c = (db.comic ||= {})[un] ||= {}; parts.forEach(p => { c['p' + (p + 1)] ||= Date.now(); }); save(); }
+  LOG.add('comic', { unit: un, part: parts.at(-1) + 1, demo: !!o.demo });
+  const label = o.label || 'Done', quit = 'quit' in o ? o.quit : then;
+  const el = layer(`<div class="sr-bar"><button class="sr-x" data-sr="x" aria-label="Close the story">${I.close}</button><span class="sr-dots" aria-hidden="true">${pans.map(() => '<i></i>').join('')}</span></div>
+    <div class="sr-head"><small>Story · Unit ${unK(un)}</small><b>${esc(C.title)}</b></div>
+    <div class="sr-stage"><button class="sr-frame" data-sr="pic" aria-label="Next picture"></button><div class="sr-lines" aria-live="polite"></div></div>
+    <div class="sr-foot"><button class="btn btn-seal sr-go" data-sr="go">Next</button></div>`, 'sr');
+  const stage = el.querySelector('.sr-stage'), frame = el.querySelector('.sr-frame'), lines = el.querySelector('.sr-lines'), dots = [...el.querySelectorAll('.sr-dots i')], go = el.querySelector('.sr-go');
+  let i = -1, wait = 0;
+  const fit = () => {   // the picture as big as the space allows, in its own shape
+    const svg = frame.firstElementChild; if (!svg || i < 0) return;
+    const [, , w, h] = pans[i].box, R = stage.getBoundingClientRect(), k = Math.min((R.width - 16) / w, (R.height - lines.offsetHeight - 16) / h);
+    svg.style.width = Math.floor(w * k) + 'px'; svg.style.height = Math.floor(h * k) + 'px';
   };
-  el.onclick = e => { if (e.target.closest('[data-cm]')) closeLayer(then); else if (Date.now() > wait && i < n) { haptic(12); show(); } };
-  setTimeout(show, 280);
+  const show = () => {
+    if (!el.isConnected || i >= n - 1) return;
+    i++; frame.innerHTML = comicPic(pans[i]);
+    frame.classList.remove('in'); void frame.offsetWidth; frame.classList.add('in');
+    lines.innerHTML = (pans[i].say || []).map(([zh, py, en]) => `<button class="sr-say" data-say="${esc(zh)}" aria-label="Hear it: ${esc(py)}, ${esc(en)}"><span><b lang="zh">${zh}</b><i>${py}</i>${en}</span>${I.sound}</button>`).join('');
+    fit(); dots.forEach((d, k) => d.classList.toggle('on', k <= i));
+    go.textContent = i < n - 1 ? 'Next' : label; wait = Date.now() + 350;
+    if (i === n - 1 && ending && !o.demo) try { fanfare(); } catch (_) {}
+  };
+  const onSize = () => { if (el.isConnected) fit(); else removeEventListener('resize', onSize); };
+  addEventListener('resize', onSize);
+  el.onclick = e => {
+    const say = e.target.closest('[data-say]'), b = e.target.closest('[data-sr]')?.dataset.sr;
+    if (say) { sayZh(say.dataset.say); return; }
+    if (b === 'x') { closeLayer(quit); return; }
+    if (!b || Date.now() < wait) return;
+    if (i < n - 1) { haptic(12); show(); } else if (b === 'go') closeLayer(then);
+  };
+  show();
+}
+/* moka2: a unit's story, opened from its row in the list. It is the unit's first step: the first time, its last page
+   goes straight on to lesson 1. After that it is there to read again, with the ending once the unit test is passed */
+function unitStory(un) {
+  const lv = unitLv(un);
+  comicLoad(lv).then(() => {
+    const C = COMIC[un]; if (!C) return;
+    if (!unitOpen(un)) { toast(`Pass the Unit ${unK(un) - 1} test first`); return; }
+    const st = unitState(un), seen = comicSeen(un), L = st.ls[0];
+    const again = () => { if (S.view === 'course' && S.cUnit === un) { S.instant = true; render(); } };
+    if (!seen.p1 && !st.nd && !st.won) { const ok = L && L.n === lesNext(lv) && !utDue(lv);
+      comicPlay(un, 0, ok ? () => nav(lesUrl(L.n)) : again, { label: ok ? 'Start lesson 1' : 'Done', quit: again }); }
+    else comicPlay(un, 0, again, { parts: st.won ? C.pages.map((_, i) => i) : [0], demo: !!seen.p1 && (!st.won || !!seen.p2) });
+  });
 }
 
 const unitLessons = un => LESSONS.filter(L => L.un === un);
 const unitOpen = un => { const U = UNIT(un); return !!U && ((U.k === 1 ? U.lv <= openLevel() : utPassed(un - 1)) || unitLessons(un).some(L => lesDone(L.n))); };   // a level's first unit is open once the level is
 /* where a unit stands. at = the place on its path: 0 to n-1 the lesson you are on, n the boss, n+1 won */
 function unitState(un) { const ls = unitLessons(un), nd = ls.filter(L => lesDone(L.n)).length, won = utPassed(un); return { ls, nd, won, open: unitOpen(un), at: won ? ls.length + 1 : nd }; }
-function unitGo(un) {   // tap a unit: its comic first (the first time, and again each time you come back to a unit you have won), whose Start button opens the campaign
+function unitGo(un) {   // tap a unit: its page opens
   if (!UNIT(un)) return;
-  if (!unitOpen(un)) { toast(`Beat Hu Hu's challenge in Unit ${unK(un) - 1} first`); return; }
-  const go = () => nav(unitUrl(un));
-  comicLoad(unitLv(un)).then(() => { if (COMIC[un] && (!comicSeen(un).p1 || utPassed(un))) comicPlay(un, 0, go); else go(); });
+  if (!unitOpen(un)) { toast(`Pass the Unit ${unK(un) - 1} test first`); return; }
+  nav(unitUrl(un));   // moka2: straight to its lessons. The story is the first row there (unitStory), no longer a cutscene on the way in
 }
 /* the lessons page: every unit as a level. Its picture is a panel of its comic (or its name in hanzi), the dots are
    its lessons and the diamond its boss */
 function UnitLevels(lv = S.cLv || 1) {
-  const us = lvUnits(lv), cur = us.find(U => !utPassed(U.un))?.un || 0;   // the unit you are on (0: every boss beaten)
-  return `<div class="lv-list">${us.map(U => {
-    const [en, zh] = U, un = U.un, st = unitState(un), C = COMIC[un], on = un === cur && st.open;
-    return `<button class="lv${st.won ? ' won' : st.open ? '' : ' locked'}${on ? ' cur' : ''}" data-act="unit-open" data-u="${un}" aria-label="Unit ${U.k}, ${esc(en)}${st.won ? ', won' : st.open ? `, ${st.nd} of ${st.ls.length} lessons done` : ', locked'}">
-      <span class="lv-pic">${C ? comicThumb(C.pages[st.won && comicSeen(un).p2 ? 1 : 0]) : `<span class="lv-zh" lang="zh" style="font-size:${[0, 30, 26, 19][[...zh].length] || 16}px">${zh}</span>`}${st.won ? `<i class="lv-badge">${TROPHY_I}</i>` : st.open ? '' : `<i class="lv-badge">${LOCK_I}</i>`}</span>
-      <span class="lv-main"><small>Unit ${U.k}</small><b>${esc(en)}</b>
-        <span class="lv-pips" aria-hidden="true">${st.ls.map((_, i) => `<i${i < st.nd ? ' class="on"' : ''}></i>`).join('')}<i class="boss${st.won ? ' on' : ''}"></i></span></span>
-      ${on ? `<em>${st.nd ? 'Continue' : 'Play'}</em>` : I.chev}</button>`;
-  }).join('')}</div>`;
+  /* moka2: the units are rows on the practice paper, like the lessons inside them: the first character of the unit's
+     Chinese name in a tianzige square (pale red while locked, black ink with a red 完 seal once its test is passed),
+     and one red button, on the unit you are on */
+  const us = lvUnits(lv), cur = us.find(U => !utPassed(U.un))?.un || 0;   // the unit you are on (0: every test passed)
+  return `<ol class="ul-list">${us.map(U => {
+    const [en, zh] = U, un = U.un, st = unitState(un), n = st.ls.length, left = n - st.nd, on = un === cur && st.open;
+    const say = st.won ? plural(n, 'lesson') : !st.open ? plural(n, 'lesson') : left ? `${plural(left, 'lesson')} to go` : 'Only the test to go';
+    return `<li class="ul-row${st.won ? ' done' : on ? ' cur' : st.open ? '' : ' locked'}">
+      <button class="ul-hit" data-act="unit-open" data-u="${un}" aria-label="Unit ${U.k}, ${esc(en)}${st.won ? ', done' : st.open ? `, ${say}` : ', locked'}">
+        <span class="ul-cell" lang="zh" aria-hidden="true">${TZG}<b>${[...zh][0]}</b>${st.won ? '<i class="ul-seal">完</i>' : ''}</span>
+        <span class="ul-txt"><small>Unit ${U.k}</small><b>${esc(en)}</b><span class="ul-sub"><span class="ul-zh" lang="zh">${esc(zh)}</span> · ${say}</span></span>
+        ${on ? '' : st.open ? I.chev : `<span class="ul-lock">${LOCK_I}</span>`}</button>
+      ${on ? `<button class="btn btn-seal ul-go" data-act="unit-open" data-u="${un}">${st.nd ? 'Continue' : 'Start'}</button>` : ''}</li>`;
+  }).join('')}</ol>`;
 }
 /* the campaign map, 360 wide: the lessons snake down three to a row, the boss stands alone at the end */
 function unitNodes(n) {
@@ -4298,51 +4370,66 @@ function ucHud(u) {
     : st.nd === n ? `<button class="btn btn-seal un-hud-solo" data-act="ut-go" data-u="${u}" aria-label="Take Hu Hu's challenge: ${n * UT_PER} words, ${UT_PASS}% right to win">Challenge</button>`
     : `<span class="un-hud-t"><small>Lesson ${st.nd + 1} of ${n}</small><b>${esc(L.title)}</b><i lang="zh">${esc(L.words.join(' '))}</i></span><button class="btn btn-seal un-start" data-act="${L.n === next && !due ? 'les-go' : 'les-node'}" data-n="${L.n}">Start</button>`;
 }
-/* ---------- moka2: HSK 1 units as a plain list ----------
-   A unit's lessons one under the other on beige 田字格 practice paper, instead of the street with its steamers.
-   Each lesson shows its lead character in a tianzige square like a copybook: printed pale red while still to come
-   (描红, for tracing), inked black with a red 完 seal once done. Only the lesson you are on has a Start button; Hu Hu's
-   challenge is the last row, and passing it opens the next unit. The other levels keep the street. */
-const UL_LEVELS = { 1: 1 };
+/* ---------- moka2: units as a plain list ----------
+   A unit's steps one under the other on beige 田字格 practice paper, instead of the street with its steamers, for every
+   level. Each lesson shows its lead character in a tianzige square like a copybook: printed pale red while still to
+   come (描红, for tracing), inked black with a red 完 seal once done. Only the step you are on has a red button.
+   The unit's comic is its story, the first row: a short picture story told with the unit's own words (unitStory).
+   Reading it is the quick first step, so the bar moves at once; its ending comes when the unit test, the last row, is
+   passed, and passing the test opens the next unit. Hu Hu is a character of the story, no longer the name of the test. */
 function UnitList(un) {
   const U = UNIT(un), lv = U.lv, st = unitState(un), n = st.ls.length, next = lesNext(lv), due = utDue(lv), r = db.utests[un];
   const us = lvUnits(lv), prev = UNIT(un - 1)?.lv === lv ? un - 1 : 0, nxt = UNIT(un + 1)?.lv === lv && unitOpen(un + 1) ? un + 1 : 0;
+  const C = COMIC[un], seen = comicSeen(un), story = !!C && st.open && !seen.p1 && !st.nd && !st.won;   // the story is the step you are on
+  const lock = `<span class="ul-lock">${LOCK_I}</span>`;
+  const sPg = C && C.pages[st.won && seen.p2 ? C.pages.length - 1 : 0];
+  const sRow = !C ? '' : `<li class="ul-row ul-story${story ? ' cur' : !st.open ? ' locked' : seen.p1 ? ' done' : ''}">
+      <button class="ul-hit" data-act="unit-story" data-u="${un}" aria-label="Story, ${esc(C.title)}${story ? ', up next' : !st.open ? ', locked' : seen.p1 ? ', read' : ''}">
+        <span class="ul-pic" aria-hidden="true">${comicPic(sPg.panels[sPg.thumb ?? 2] || sPg.panels[0])}${seen.p1 && st.open ? '<i class="ul-seal" lang="zh">读</i>' : ''}</span>
+        <span class="ul-txt"><small>Story</small><b>${esc(C.title)}</b><span class="ul-sub">${!seen.p1 ? `${C.pages[0].panels.length} pictures with this unit’s words` : st.won && seen.p2 ? 'Read it again, with the ending' : 'Read it again'}</span></span>
+        ${story ? '' : !st.open ? lock : I.chev}</button>
+      ${story ? `<button class="btn btn-seal ul-go" data-act="unit-story" data-u="${un}">Read</button>` : ''}</li>`;
   const rows = st.ls.map((L, i) => {
-    const done = lesDone(L.n), cur = st.open && !done && i === st.nd, ch = LES_LEAD[L.i];
+    const done = lesDone(L.n), cur = st.open && !done && i === st.nd && !story, ch = LES_LEAD[L.i];
     return `<li class="ul-row${done ? ' done' : cur ? ' cur' : ' locked'}">
-      <button class="ul-hit" data-act="les-node" data-n="${L.n}" aria-label="Lesson ${i + 1}, ${esc(L.title)}${done ? ', done' : cur ? ', up next' : ', locked'}">
+      <button class="ul-hit" ${story && !i ? `data-act="unit-story" data-u="${un}"` : `data-act="les-node" data-n="${L.n}"`} aria-label="Lesson ${i + 1}, ${esc(L.title)}${done ? ', done' : cur ? ', up next' : ', locked'}">
         <span class="ul-cell" lang="zh" aria-hidden="true">${TZG}<b>${ch}</b>${done ? '<i class="ul-seal">完</i>' : ''}</span>
         <span class="ul-txt"><small>Lesson ${i + 1}</small><b>${esc(L.title)}</b><span class="ul-words" lang="zh">${esc(L.words.join(' '))}</span></span>
-        ${done || cur ? '' : `<span class="ul-lock">${LOCK_I}</span>`}</button>
+        ${done || cur ? '' : lock}</button>
       ${cur ? `<button class="btn btn-seal ul-go" data-act="${L.n === next && !due ? 'les-go' : 'les-node'}" data-n="${L.n}">Start</button>` : ''}</li>`;
   }).join('');
   const chal = st.open && st.nd === n && !st.won;
-  const boss = `<li class="ul-row ul-boss${st.won ? ' done' : chal ? ' cur' : ' locked'}">
-      <button class="ul-hit" data-act="ut-node" data-u="${un}" aria-label="Hu Hu's challenge, the unit test${st.won ? ', won' : chal ? ', ready' : ', locked'}">
-        <span class="ul-cell" lang="zh" aria-hidden="true">${TZG}<b>考</b>${st.won ? '<i class="ul-seal">胜</i>' : ''}</span>
-        <span class="ul-txt"><small>Unit test</small><b>Hu Hu’s challenge</b><span class="ul-sub">${st.won ? `Won · best ${r?.best ?? 0}%` : `${n * UT_PER} words · ${UT_PASS}% right to win`}</span></span>
-        ${st.won || chal ? '' : `<span class="ul-lock">${LOCK_I}</span>`}</button>
-      ${chal ? `<button class="btn btn-seal ul-go" data-act="ut-go" data-u="${un}">Challenge</button>` : ''}</li>`;
+  const test = `<li class="ul-row ul-boss${st.won ? ' done' : chal ? ' cur' : ' locked'}">
+      <button class="ul-hit" data-act="ut-node" data-u="${un}" aria-label="Unit test${st.won ? ', passed' : chal ? ', ready' : ', locked'}">
+        <span class="ul-cell" lang="zh" aria-hidden="true">${TZG}<b>考</b>${st.won ? '<i class="ul-seal">过</i>' : ''}</span>
+        <span class="ul-txt"><small>Last step</small><b>Unit test</b><span class="ul-sub">${st.won ? `Passed · best ${r?.best ?? 0}%` : `${n * UT_PER} words · ${UT_PASS}% right to pass`}</span></span>
+        ${st.won || chal ? '' : lock}</button>
+      ${chal ? `<button class="btn btn-seal ul-go" data-act="ut-go" data-u="${un}">Start the test</button>` : ''}</li>`;
   const after = st.won && nxt ? `<button class="btn btn-seal wide ul-next" data-act="unit-open" data-u="${nxt}">Unit ${unK(nxt)}: ${esc(UNIT(nxt)[0])}${I.chev}</button>`
     : st.won && unitLast(un) ? `<p class="ul-note ul-end">You have finished every unit of ${HSK_NAME(lv)}.</p>` : '';
-  const pct = Math.round((st.won ? n + 1 : st.nd) / (n + 1) * 100);
+  const all = n + 1 + (C ? 1 : 0), did = st.won ? all : st.nd + (C && (seen.p1 || st.nd) ? 1 : 0), left = n - st.nd;
   return `<div class="screen fade-in c1 ul"><header class="bar"><button class="icon-btn" data-act="c1-back" aria-label="Back">${I.back}</button>
       <div class="bar-title ul-switch"><button data-ul="${prev}" aria-label="Previous unit"${prev ? '' : ' disabled'}>${I.chev}</button><span>Unit ${U.k} of ${us.length}</span><button data-ul="${nxt}" aria-label="Next unit"${nxt ? '' : ' disabled'}>${I.chev}</button></div>
-      ${COMIC[un] ? `<button class="icon-btn" data-act="comic-replay" data-u="${un}" aria-label="Watch the comic again">${COMIC_I}</button>` : '<div style="width:42px"></div>'}</header>
+      <div style="width:42px"></div></header>
     <section class="ul-head"><h1>${esc(U[0])} <span lang="zh">${esc(U[1])}</span></h1>
-      ${st.open ? `<div class="ul-prog"><span class="ul-bar"><i style="width:${Math.max(pct, 3)}%"></i></span><span>${st.won ? 'Unit won' : `${st.nd} of ${n} lessons done`}</span></div>`
-        : `<p class="ul-note">${LOCK_I}Beat Hu Hu’s challenge in Unit ${U.k - 1} to open this unit.</p>`}</section>
-    <ol class="ul-list">${rows}${boss}</ol>${after}</div>`;
+      ${st.open ? `<div class="ul-prog"><span class="ul-bar"><i style="width:${gBar(did / all)}%"></i></span><span>${st.won ? 'Unit done' : left ? `${plural(left, 'lesson')} to go` : 'Only the test to go'}</span></div>`
+        : `<p class="ul-note">${LOCK_I}Pass the Unit ${U.k - 1} test to open this unit.</p>`}</section>
+    <ol class="ul-list">${sRow}${rows}${test}</ol>${after}</div>`;
 }
 function mountUnitList(un) {
   document.querySelectorAll('.ul-switch [data-ul]').forEach(b => b.onclick = () => { const u = +b.dataset.ul; if (u) { haptic(8); nav(unitUrl(u)); } });
   const st = unitState(un); if (db.unitAt?.[un] !== st.at) { (db.unitAt ||= {})[un] = st.at; save(); }
   const cur = $('.ul-row.cur'); if (cur && cur.getBoundingClientRect().bottom > innerHeight - 24) cur.scrollIntoView({ block: 'center' });
-  // Hu Hu was beaten: the ending plays here
-  comicLoad(unitLv(un)).then(() => { if (COMIC[un] && utPassed(un) && comicSeen(un).p1 && !comicSeen(un).p2) setTimeout(() => { if (S.view === 'course' && S.cUnit === un && !$('#ob')) comicPlay(un, 1); }, 760); });
+  const here = () => S.view === 'course' && S.cUnit === un && !$('#ob');
+  comicLoad(unitLv(un)).then(() => {
+    if (!COMIC[un]) return;
+    if (!$('.ul-story')) { if (here()) { S.instant = true; render(); } return; }   // a level whose stories had still to be fetched: the page again, now with its story row
+    // the test was passed: the story's ending opens here, and its row changes when it is closed
+    if (utPassed(un) && comicSeen(un).p1 && !comicSeen(un).p2) setTimeout(() => { if (here()) comicPlay(un, COMIC[un].pages.length - 1, () => { if (here()) { S.instant = true; render(); } }); }, 760);
+  });
 }
 function UnitView(un) {
-  if (UL_LEVELS[unitLv(un)] && UNIT(un)) return UnitList(un);   // moka2: HSK 1 is a plain list
+  if (UNIT(un)) return UnitList(un);   // moka2: every unit is a plain list
   const us = ucList(unitLv(un)), u = us.includes(un) ? un : us.at(-1);
   return `<div class="screen fade-in c1 un uc${UC_VERT[unitLv(u)] ? ' uc-v' : ''}"><header class="bar"><button class="icon-btn" data-act="c1-back" aria-label="Back">${I.back}</button>
     <div class="bar-title un-sign"><span class="un-sign-board"><small>Unit ${unK(u)}</small><b>${esc(UNIT(u)[0])}</b></span>
@@ -4484,7 +4571,7 @@ function mountUnit(un) {
 }
 function comicReplay(un, demo = { demo: 1 }) {   // another look: part 1, and the ending if you have won it
   const both = !!comicSeen(un).p2 || demo.all;
-  comicPlay(un, 0, both ? () => comicPlay(un, 1, null, { demo: 1, label: 'Close' }) : null, { demo: 1, label: both ? 'Next' : 'Close' });
+  comicPlay(un, 0, null, { demo: 1, parts: both ? COMIC[un].pages.map((_, i) => i) : [0] });
 }
 /* ---------- a unit's world: a little 3D town seen from above at an angle, a bamboo steamer for every lesson ----------
    The campaign stands in an isometric picture of the place its comic starts (Unit 1 the town gate on lantern night, 2
@@ -5716,11 +5803,11 @@ function startLesson(n) {
 function utSheet(un) {   // tap a unit test on the path
   if (!unitDone(un)) { toast(`Finish the lessons in Unit ${unK(un)} first`); return; }
   const r = db.utests[un], n = unitLessons(un).length * UT_PER, last = unitLast(un);
-  openSheet(`<div class="les-sh-top"><small>Unit ${unK(un)} · ${esc(UNIT(un)[0])}</small><h3>Hu Hu's challenge</h3></div>
+  openSheet(`<div class="les-sh-top"><small>Unit ${unK(un)} · ${esc(UNIT(un)[0])}</small><h3>Unit test</h3></div>
     <p class="ut-sh-what">${n} words from this unit, and two characters to write from memory. Each question comes once.</p>
     <div class="ut-sh-goal"><b>${UT_PASS}%</b><span>right ${last ? lvDoneSay(unitLv(un)) : `opens Unit ${unK(un) + 1} · ${esc(UNIT(un + 1)[0])}`}</span></div>
     ${r?.pass ? `<p class="muted les-sh-note">Passed with ${r.best}%. Take it again any time.</p>` : r ? `<p class="muted les-sh-note">Your best so far: ${r.best}%.</p>` : ''}
-    <button class="btn btn-seal wide" data-act="ut-go" data-u="${un}">${r?.pass ? 'Challenge him again' : 'Take the challenge'}</button>`);
+    <button class="btn btn-seal wide" data-act="ut-go" data-u="${un}">${r?.pass ? 'Take it again' : 'Start the test'}</button>`);
 }
 function utRoute(un) {   // opening #/course/<level>/test/un
   if (!UNIT(un) || !unitDone(un)) { history.replaceState(history.state, '', '#/course/' + unitLv(un)); S.view = 'course'; S.cLv = unitLv(un); S.cPart = null; S.cBasics = false; return; }
@@ -9274,7 +9361,7 @@ const TRAIL_ABOUT = ['Pink spheres on a spire, high over a river full of ships.'
   'White sand, palm trees and warm turquoise water on a tropical island.'];
 const earnHow = () => `<div class="shop-how"><b>How to earn coins</b><ul>
   <li><span>Prove a word</span><em>${coinSvg()}+${PAY.word}</em></li><li><span>Master a word</span><em>${coinSvg()}+${PAY.mast}</em></li>
-  <li><span>Finish a lesson or a story</span><em>${coinSvg()}+${PAY.les}</em></li><li><span>Beat a unit boss</span><em>${coinSvg()}+${PAY.unit}</em></li></ul>
+  <li><span>Finish a lesson or a story</span><em>${coinSvg()}+${PAY.les}</em></li><li><span>Pass a unit test</span><em>${coinSvg()}+${PAY.unit}</em></li></ul>
   <small>A word is proven when you get it right on two different days, and mastered when you still know it three weeks later.</small></div>`;
 function shopHtml(lv) {
   const sts = trailStates(), bal = coinBal(), own = trailOpened(sts);
@@ -11416,7 +11503,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.2';
+const APP_VERSION = '3.45.3';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
@@ -12232,6 +12319,7 @@ const A = {
   'les-go': t => { closeSheet(true); nav(lesUrl(+t.dataset.n)); },
   'unit-open': t => unitGo(+t.dataset.u),
   'comic-replay': t => comicReplay(+t.dataset.u),
+  'unit-story': t => unitStory(+t.dataset.u),
   'basics-open': () => nav('#/basics'),
   'crs-low': () => { S.lowOpen = !S.lowOpen; S.instant = true; render(); },
   'crs-locked': t => toast(`Finish ${HSK_NAME(t.dataset.lv - 1)} to unlock ${HSK_NAME(+t.dataset.lv)}`),
