@@ -60,6 +60,11 @@ s = sub(s, "'shicards.remindNote'", "'shicards2.remindNote'", 2)
 s = sub(s, "https://ilkegits.github.io/moka/#pair=", "https://ilkegits.github.io/moka2/#pair=")
 s = sub(s, "for (const k of await caches.keys()) { const c", "for (const k of await caches.keys()) { if (!k.startsWith('moka2-')) continue; const c")
 s = sub(s, "<title>ShiCards", "<title>moka2 · ShiCards")
+# a blue label at the top of every screen, so moka2 never passes for the real app
+s = sub(s, '#frame{position:relative;z-index:1}\n', '#frame{position:relative;z-index:1}\n'
+        '.m2-tag{position:fixed;top:calc(env(safe-area-inset-top) + 3px);left:50%;transform:translateX(-50%);z-index:9999;padding:2px 8px;border-radius:6px;'
+        'background:#1F4FA8;color:#fff;font:700 10px/1.35 system-ui,sans-serif;letter-spacing:.04em;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}\n')
+s = sub(s, '<body>\n', '<body>\n<div class="m2-tag" aria-hidden="true">moka2 · test copy</div>\n')
 s = sub(s, 'apple-mobile-web-app-title" content="ShiCards"', 'apple-mobile-web-app-title" content="moka2"')
 if s.count('localStorage') != 13 or re.search(r"indexedDB|sessionStorage", s):   # the real app's 10 uses plus the 3 in the first-open copy above
     sys.exit('Stopped: the real app saves data in a new place. Give moka2 its own name for it, then update this script.')

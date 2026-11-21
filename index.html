@@ -68,6 +68,7 @@ input{font:inherit;color:inherit}
 svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 #frame{position:relative;z-index:1}
+.m2-tag{position:fixed;top:calc(env(safe-area-inset-top) + 3px);left:50%;transform:translateX(-50%);z-index:9999;padding:2px 8px;border-radius:6px;background:#1F4FA8;color:#fff;font:700 10px/1.35 system-ui,sans-serif;letter-spacing:.04em;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 #app{max-width:480px;margin:0 auto;padding:0 20px;position:relative;overflow-x:clip;touch-action:pan-y}
 /* page swipe: the neighbouring page rides in beside the current one */
 .peek{position:absolute;left:20px;right:20px;overflow:hidden;pointer-events:none}
@@ -2554,6 +2555,7 @@ button.scene-tile:active svg{opacity:.92}
 </style>
 </head>
 <body>
+<div class="m2-tag" aria-hidden="true">moka2 · test copy</div>
 <!-- colours for the streak flame (see .flame in the styles); kept out of view but not display:none, which would break the gradients -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <linearGradient id="flOut" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2442B"/><stop offset=".55" stop-color="#FF6A1F"/><stop offset="1" stop-color="#FF8A1A"/></linearGradient>
@@ -11414,7 +11416,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.1';
+const APP_VERSION = '3.45.2';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
