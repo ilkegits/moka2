@@ -1,1 +1,1 @@
-{"version": "3.45.5", "notes": "The tab bar fits its three tabs: a shorter bar, centred, with Decks, Read and Profile evenly spaced, instead of a five-tab bar with empty space on the right"}
+{"version": "3.45.6", "notes": "Decks is the real ShiCards Decks page (3.53), with the sliding Hanzi of the day and Story time cards kept on top: the word bank is a rolling counter, Your decks with a red New deck button, Ready-made decks. New deck brings the keyboard up and goes straight on to adding cards, which stays open like Anki and fills in pinyin and meaning"}

@@ -449,16 +449,50 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .deck-plus{color:var(--seal)}
 .deck-plus::after{display:none}
 .deck-plus svg.i{width:22px;height:22px}
-/* Home: making a deck is the first thing under "Your decks", a blank stack waiting to be filled */
-.deck-new{display:flex;align-items:center;gap:14px;width:100%;padding:13px 12px 13px 16px;margin-bottom:10px;text-align:left;border-radius:14px;
-  background:var(--seal-soft);border:1.5px dashed color-mix(in srgb,var(--seal) 42%,transparent);transition:background .25s}
-.deck-new:active{background:color-mix(in srgb,var(--seal) 16%,transparent);transition:none}
-.deck-new:not(:has(+ .decks)){margin-bottom:22px}
-.deck-new .deck-face{color:var(--seal);border-color:color-mix(in srgb,var(--seal) 35%,transparent)}
-.deck-new .deck-face::after{display:none}
-.deck-new .deck-name{color:var(--seal)}
-.deck-new-go{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:var(--seal);border:1.5px solid color-mix(in srgb,var(--seal) 45%,transparent)}
-.deck-new-go svg.i{width:20px;height:20px;stroke-width:2.4}
+/* v3.53 Decks: the word bank as a counter whose digits roll up to today's number (wb-ctr, odo), then your decks and New deck */
+.wb-ctr{display:block;width:100%;padding:13px 14px 14px 18px;margin:-2px 0 26px;background:var(--card);border-radius:16px;box-shadow:var(--ring);text-align:left;transition:background .25s}
+.wb-ctr:active{background:var(--paper-deep);transition:none}
+.wb-ctr-top{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;color:var(--ink-2)}
+.wb-ctr-zh{font-family:var(--hanzi);font-weight:400;color:var(--jade);margin-left:5px}
+.wb-ctr-mid{display:flex;align-items:flex-end;gap:9px;margin:9px 0 7px}
+.odo{display:flex;gap:3px;font:600 34px/1 var(--display);font-variant-numeric:tabular-nums lining-nums;color:var(--ink)}
+.odo-d{display:block;height:1.24em;width:.8em;overflow:hidden;border-radius:7px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line),inset 0 -9px 10px -9px rgba(70,45,20,.16)}
+.odo-s{display:flex;flex-direction:column;transform:translateY(calc(var(--d) * -1.24em));transition:transform .95s cubic-bezier(.2,.75,.25,1)}
+.odo-s i{display:grid;place-items:center;height:1.24em;font-style:normal}
+.odo-sep{align-self:flex-end;padding:0 1px .12em}
+.wb-ctr-w{font-size:15px;color:var(--ink-2);padding-bottom:6px}
+.wb-ctr-new{margin-left:auto;align-self:center;padding:4px 9px;border-radius:8px;background:var(--jade-soft);color:var(--jade);font-size:13px;font-weight:600;white-space:nowrap}
+.wb-ctr-pv{display:block;font-size:13px;color:var(--muted)}
+.dk-new{margin:-8px 0 30px}
+.dk-none{margin:0 2px 14px;font-size:14.5px;color:var(--muted)}
+/* the New deck pop-up: the name with a little deck beside it in the colour you pick */
+.dk-name{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.dk-name .deck-stack{width:40px;height:48px}
+.dk-name .deck-face{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);font-size:21px;transition:color .2s,border-color .2s}
+.dk-name .deck-face::after{background:var(--accent)}
+.dk-sw{justify-content:space-between;margin:0 6px 20px}
+/* v3.53 adding cards (like Anki's Add screen): the count of cards in the deck, what you just added, Done */
+.ac-head{position:relative}
+.ac-head h3{margin-bottom:14px;padding:0 64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-n{position:absolute;right:0;top:1px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ac-n.bump{animation:acBump .5s cubic-bezier(.3,1.6,.5,1);color:var(--jade);font-weight:600}
+@keyframes acBump{35%{transform:scale(1.22)}}
+.ac-compose{margin-bottom:8px}
+.ac-compose.empty{display:none}   /* the word shows once you have picked a character */
+.ac-cands{min-height:50px;padding-top:6px}
+.ac-cands:empty{min-height:0;padding:0}
+.ac-reads{margin:4px 0 0}
+.field.ac-fz{margin-bottom:12px}
+.field.ac-en{margin-bottom:10px}
+.ac-sug{display:flex;align-items:baseline;gap:7px;padding:7px 11px;border-radius:9px;background:var(--fill);color:var(--ink);text-align:left}
+.ac-sug .hz{font-family:var(--hanzi);font-size:19px}
+.ac-sug .wp{font-size:12.5px;color:var(--seal)}
+.ac-done{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;min-height:42px}
+.ac-last{min-width:0;font-size:13.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-last b{font:400 16px/1 var(--hanzi);color:var(--ink)}
+/* a deck with fewer than 10 cards: a thin bar in its colour toward 10 */
+.deck-bar{display:block;width:100%;max-width:150px;height:5px;margin-top:6px;border-radius:3px;background:var(--fill);overflow:hidden}
+.deck-bar i{display:block;height:100%;border-radius:3px;background:var(--accent)}
 .sh-n{font-size:14px;color:var(--muted)}
 .deck-meta{flex:1;min-width:0}
 .deck-name{font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3036,7 +3070,7 @@ function logSheet() {
 /* ---------- render ---------- */
 function render() {
   const app = $('#app'); const d = curDeck();
-  if (S.view === 'home') { app.innerHTML = Home(); mountHotd();
+  if (S.view === 'home') { app.innerHTML = Home(); mountHotd(); mountOdo();
     if (!S.H) loadHsk().then(() => { const sh = $('#hskShelf'); if (sh) sh.outerHTML = HskShelf();
       const hd = $('#hotd[data-wait]'); if (hd) { hd.outerHTML = HotdCard(); mountHotd(); } }, () => {}); }
   else if (S.view === 'deck') { app.innerHTML = DeckView(d); }
@@ -7407,20 +7441,38 @@ function Home() {
     <div class="section-head cal-head pg-head"><h2>Decks <span class="cal-zh">卡片</span></h2>
       <span class="pg-tr">${StreakBtn()}${MenuBtn()}</span></div>
     ${HotdStack()}
+    ${BankCounter()}
     <div class="section-head"><h2>Your decks</h2>${db.decks.length ? `<span class="sh-n">${plural(db.decks.length, 'deck')}</span>` : ''}</div>
-    <button class="deck-new" data-act="new-deck">
-      <div class="deck-stack"><span></span><span></span><div class="deck-face">新</div></div>
-      <div class="deck-meta"><div class="deck-name">${db.decks.length ? 'New deck' : 'Make your first deck'}</div><div class="deck-count">Cards with your own words</div></div>
-      <span class="deck-new-go">${I.plus}</span></button>
-    ${db.decks.length ? `<div class="decks">${db.decks.map(DeckTile).join('')}</div>` : ''}
-    <div class="section-head cal-head"><h2>Word bank <span class="cal-zh">词库</span></h2></div>
-    ${BankTile()}
-    ${(t => t ? `<div class="section-head"><h2>Pick up where you left off</h2></div>
-    <div class="decks">${t}</div>` : '')(LastTile())}
+    ${db.decks.length ? `<div class="decks">${db.decks.map(DeckTile).join('')}</div>` : '<p class="dk-none">Make a deck for the words you want to learn.</p>'}
+    <button class="btn btn-seal wide dk-new" data-act="new-deck">${I.plus}New deck</button>
     <div class="section-head"><h2>Ready-made decks</h2><button class="link-btn" data-act="open-hsk">See all</button></div>
     ${HskShelf()}
     <p class="shelf-note">HSK levels 1 to 9. Tick the words you already know and they go into your word bank.</p>
   </div>`;
+}
+/* v3.53: the word bank on Decks as a counter. Its digits roll up from the number you saw last time (db.bankSeen) to
+   the number now, and it says how many words came in today, or else this week. Tap it for the word bank page. */
+function BankCounter() {
+  const n = db.bank.length, pv = provenCount(), t0 = new Date().setHours(0, 0, 0, 0);
+  const today = db.bank.filter(w => w.added >= t0).length, week = today ? 0 : db.bank.filter(w => w.added >= t0 - 6 * 864e5).length;
+  const digits = [...n.toLocaleString('en')].map(ch => /\d/.test(ch)
+    ? `<span class="odo-d"><span class="odo-s" style="--d:${ch}">${[...'01234567890123456789'].map(x => `<i>${x}</i>`).join('')}</span></span>` : `<span class="odo-sep">${ch}</span>`).join('');
+  return `<button class="wb-ctr" data-act="open-bank" aria-label="Word bank: ${plural(n, 'word')}, ${pv} proven">
+    <span class="wb-ctr-top"><span>Word bank<span class="wb-ctr-zh">词库</span></span><span class="chev">${I.chev}</span></span>
+    <span class="wb-ctr-mid"><span class="odo" id="odo" data-n="${n}" aria-hidden="true">${digits}</span><span class="wb-ctr-w">${n === 1 ? 'word' : 'words'}</span>
+      ${today || week ? `<span class="wb-ctr-new">+${today || week} ${today ? 'today' : 'this week'}</span>` : ''}</span>
+    <span class="wb-ctr-pv">${pv ? `${pv.toLocaleString('en')} proven` : 'Words you prove in practice show here'}</span></button>`;
+}
+function mountOdo() {
+  const el = $('#odo'); if (!el) return;
+  const n = +el.dataset.n, from = db.bankSeen ?? n;
+  if (db.bankSeen !== n) { db.bankSeen = n; save(); }
+  if (from === n || stillMotion()) return;
+  const strips = [...el.querySelectorAll('.odo-s')], k = strips.length, to = String(n), fd = String(Math.max(0, from)).padStart(k, '0').slice(-k);
+  strips.forEach((st, i) => { st.style.transition = 'none'; st.style.setProperty('--d', fd[i]); });
+  el.offsetHeight;
+  strips.forEach((st, i) => { st.style.transition = ''; st.style.transitionDelay = `${300 + (k - 1 - i) * 90}ms`;   // every digit rolls forward, like a real counter: 9 to 8 goes on round through 0
+    st.style.setProperty('--d', n > from && +to[i] < +fd[i] ? +to[i] + 10 : +to[i]); });
 }
 /* ---------- Hanzi of the day ----------
    One single character a day from the HSK lists at your level, one you don't know yet. It hides under gold foil on
@@ -9609,11 +9661,13 @@ function LastTile() {
     <span class="chev">${I.chev}</span></button>`;
   return deck && db.decks.length > 3 ? DeckTile(deck) : '';   // every deck is already listed above; repeat one only in a long list
 }
+const DECK_FULL = 10;   // v3.52: a deck with fewer cards than this shows how many to add, with a bar toward it
 function DeckTile(d) {
-  const first = hanChars(d.cards[0]?.hanzi)[0] || '字';
+  const first = hanChars(d.cards[0]?.hanzi)[0] || '字', n = d.cards.length, k = d.cards.filter(isKnown).length;
+  const count = n < DECK_FULL ? n ? `${plural(n, 'card')} · add ${DECK_FULL - n} more` : `No cards yet · add ${DECK_FULL} words` : `${plural(n, 'card')}${k ? ` · ${k} known` : ''}`;
   return `<button class="deck" data-act="open-deck" data-id="${d.id}" style="--accent:${d.accent}">
     <div class="deck-stack"><span></span><span></span><div class="deck-face">${esc(first)}</div></div>
-    <div class="deck-meta"><div class="deck-name">${esc(d.name)}</div><div class="deck-count">${plural(d.cards.length, 'card')}${(k => k ? ` · ${k} known` : '')(d.cards.filter(isKnown).length)}</div></div>
+    <div class="deck-meta"><div class="deck-name">${esc(d.name)}</div><div class="deck-count">${count}</div>${n < DECK_FULL ? `<span class="deck-bar"><i style="width:${gBar(n / DECK_FULL)}%"></i></span>` : ''}</div>
     <span class="chev">${I.chev}</span></button>`;
 }
 function dots(c) {
@@ -10702,20 +10756,29 @@ function confirmSheet(title, body, yesLabel, onYes) {
 let toastT;
 function toast(msg) { LOG.add('toast', msg); const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
 
-function deckSheet(d) {
+function deckSheet(d) {   /* v3.53: the keyboard comes up at once (focus inside the tap, which iPhones need) and the colours sit right under the name */
   let accent = d?.accent || ACCENTS[db.decks.length % ACCENTS.length];
   openSheet(`<h3>${d ? 'Edit deck' : 'New deck'}</h3>
-    <label class="field"><span class="lbl">Name</span><input class="input" id="dname" placeholder="e.g. HSK 1 · Food · Travel" value="${esc(d?.name || '')}" maxlength="40" autocomplete="off"></label>
-    <div class="field"><span class="lbl">Colour</span><div class="swatches">${ACCENTS.map(c => `<button class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="colour"></button>`).join('')}</div></div>
-    <button class="btn btn-primary wide" id="dsave" style="margin-top:8px">${d ? 'Save' : 'Create deck'}</button>
+    <div class="dk-name"><div class="deck-stack" id="dprev" style="--accent:${accent}" aria-hidden="true"><span></span><span></span><div class="deck-face">${d ? esc(hanChars(d.cards[0]?.hanzi)[0] || '字') : '新'}</div></div>
+      <input class="input" id="dname" placeholder="Deck name, e.g. Food" value="${esc(d?.name || '')}" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Deck name"></div>
+    <div class="swatches dk-sw">${ACCENTS.map(c => `<button class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="colour"></button>`).join('')}</div>
+    <button class="btn btn-primary wide" id="dsave">${d ? 'Save' : 'Create deck'}</button>
     ${d ? `<button class="btn btn-danger wide" id="ddel" style="margin-top:6px">${I.trash}Delete deck</button>` : ''}`,
     sh => {
-      const inp = sh.querySelector('#dname'); setTimeout(() => inp.focus(), 250);
-      sh.querySelectorAll('.sw').forEach(b => b.onclick = () => { accent = b.dataset.c; sh.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); });
+      const inp = sh.querySelector('#dname'), prev = sh.querySelector('#dprev');
+      inp.focus({ preventScroll: true });
+      sh.querySelectorAll('.sw').forEach(b => {
+        b.addEventListener('pointerdown', e => e.preventDefault());   // picking a colour keeps the keyboard up
+        b.onclick = () => { accent = b.dataset.c; prev.style.setProperty('--accent', accent); sh.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
+      });
+      sh.querySelector('#dsave').addEventListener('pointerdown', e => e.preventDefault());
       const go = () => {
         const name = inp.value.trim(); if (!name) { inp.focus(); return; }
         if (d) { d.name = name; d.accent = accent; save(); closeSheet(); render(); }
-        else { const nd = { id: uid(), name, accent, created: Date.now(), cards: [] }; db.decks.push(nd); save(); closeSheet(); nav('#/deck/' + nd.id); }
+        else {   // like Anki and Quizlet: a new deck goes straight on to adding its first card, keyboard still up
+          const nd = { id: uid(), name, accent, created: Date.now(), cards: [] }; db.decks.push(nd); save(); LOG.add('deck-new', { name, from: 'decks' });
+          nav('#/deck/' + nd.id); cardSheet(null);
+        }
       };
       sh.querySelector('#dsave').onclick = go;
       inp.onkeydown = e => { if (e.key === 'Enter') go(); };
@@ -10726,31 +10789,56 @@ function deckSheet(d) {
     });
 }
 
+/* v3.53: adding cards works like Anki's Add screen with Pleco's look-up. The pop-up stays open: each Add saves the card,
+   clears the fields and puts the cursor back for the next one, with the keyboard still up; the deck's count ticks up and
+   the cards you just added show at the bottom; Done closes it. Type pinyin (or hanzi) for the front and pick characters:
+   the pinyin and the meaning fill in from the dictionary, with its other meanings and readings to tap. Or type the
+   English first and pick the Chinese from the dictionary's suggestions (like Quizlet's suggested definitions). */
 function cardSheet(cardId) {
   const d = curDeck(), c = cardId ? cardById(d, cardId) : null;
-  const E = { hanzi: c?.hanzi || '', toneDirty: !!c && c.pinyin !== autoPinyin(c.hanzi), seq: 0 };
-  openSheet(`<h3>${c ? 'Edit card' : 'New card'}</h3>
-    <label class="field"><span class="lbl">English · back</span><input class="input" id="fen" placeholder="e.g. library" value="${esc(c?.en || '')}" autocomplete="off"></label>
-    <div class="field"><span class="lbl"><span>Chinese · front</span><span id="hzcount"></span></span>
-      <div class="compose"><div class="compose-hz" id="fhz"></div><button class="icon-btn" id="bksp" aria-label="Delete last character">${I.bksp}</button></div>
-      <input class="input" id="fpy" placeholder="Type pinyin — e.g. tushuguan" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">
-      <div class="cands" id="cands"><span class="msg">Characters appear here as you type.</span></div></div>
-    <label class="field"><span class="lbl"><span>Pinyin on card</span><span style="text-transform:none;letter-spacing:0">auto · editable</span></span>
-      <input class="input" id="ftone" placeholder="filled in for you" value="${esc(c?.pinyin || '')}" autocomplete="off" autocapitalize="none" spellcheck="false"></label>
-    <div class="row-btns" style="margin-top:6px">
-      ${c ? `<button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>`
-          : `<button class="btn btn-ghost" id="cnext">Save + next</button>`}
-      <button class="btn btn-primary" id="csave">${c ? 'Save' : 'Save card'}</button></div>`,
+  const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [] };
+  openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : `Add to ${esc(d.name)}`}</h3>${c ? '' : `<span class="ac-n" id="acN">${plural(d.cards.length, 'card')}</span>`}</div>
+    <div class="field ac-fz"><span class="lbl"><span>Chinese · front</span><span id="hzcount"></span></span>
+      <div class="compose qa-compose ac-compose"><div class="qa-word"><div class="compose-hz" id="fhz"></div><div class="compose-py" id="fpyout"></div></div>
+        <button class="icon-btn" id="bksp" aria-label="Delete last character">${I.bksp}</button></div>
+      <input class="input" id="fpy" placeholder="Type pinyin, e.g. tushuguan" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Type pinyin">
+      <div class="cands ac-cands" id="cands"></div>
+      <div class="means ac-reads" id="reads"></div></div>
+    <label class="field ac-en"><span class="lbl">English · back</span><input class="input" id="fen" placeholder="What it means" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}"></label>
+    <div class="means" id="means"></div>
+    <div class="row-btns">${c ? `<button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>` : ''}
+      <button class="btn btn-primary" id="csave">${c ? 'Save' : 'Add card'}</button></div>
+    ${c ? '' : '<div class="ac-done"><span class="ac-last" id="acLast"></span><button class="link-btn" id="acClose">Done</button></div>'}`,
     sh => {
-      const fen = sh.querySelector('#fen'), fhz = sh.querySelector('#fhz'), fpy = sh.querySelector('#fpy'), ftone = sh.querySelector('#ftone'), cands = sh.querySelector('#cands');
-      const paintHz = () => {
-        fhz.textContent = E.hanzi || 'Pick characters below…'; fhz.classList.toggle('ph', !E.hanzi);
-        const k = hanChars(E.hanzi).length; sh.querySelector('#hzcount').textContent = k ? plural(k, 'char') : '';
-        if (!E.toneDirty) ftone.value = autoPinyin(E.hanzi);
+      const $q = q => sh.querySelector(q);
+      const fen = $q('#fen'), fhz = $q('#fhz'), fpy = $q('#fpy'), pyOut = $q('#fpyout'), cands = $q('#cands'), reads = $q('#reads'), means = $q('#means'), btn = $q('#csave');
+      const rows = () => (E.D && E.hanzi && E.D.byHz.get(E.hanzi)) || [];
+      const curPy = () => E.pyDirty ? E.py : (rows()[E.reading]?.p || S.H?.byHz.get(E.hanzi)?.p || autoPinyin(E.hanzi));
+      const paintBtn = () => { btn.disabled = !hanChars(E.hanzi).length || !fen.value.trim(); };
+      const paintMeans = () => {
+        if (E.hanzi) {   // the word's meanings from the dictionary: the first fills English unless you typed your own
+          const r = rows()[E.reading], ms = r ? [...new Set(meanings(r).map(plainMeaning))] : [], h = S.H?.byHz.get(E.hanzi);
+          if (h && !ms.length) ms.push(meanOf(h));
+          if (!E.enDirty && ms[0]) { fen.value = ms[0]; E.autoEn = true; }
+          means.innerHTML = ms.length > 1 ? ms.slice(0, 8).map(m => `<button class="mean" data-m="${esc(m)}">${esc(m)}</button>`).join('') : '';
+          return;
+        }
+        if (!E.enDirty && E.autoEn) { fen.value = ''; E.autoEn = false; }
+        const q = fen.value.trim(), hits = E.D && q.length >= 2 ? searchEnglish(E.D, q).slice(0, 6) : [];   // no Chinese yet: the English looked up the other way
+        means.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(r.p)}</span></button>`).join('');
       };
+      const paintHz = () => {
+        fhz.textContent = E.hanzi; $q('.ac-compose').classList.toggle('empty', !E.hanzi);
+        const k = hanChars(E.hanzi).length; $q('#hzcount').textContent = k ? plural(k, 'character') : '';
+        pyOut.textContent = E.hanzi ? curPy() : '';
+        const R = rows();
+        reads.innerHTML = R.length > 1 ? R.map((r, i) => `<button class="mean ${i === E.reading && !E.pyDirty ? 'on' : ''}" data-r="${i}">${esc(r.p)}</button>`).join('') : '';
+        paintMeans(); paintBtn();
+      };
+      const setHz = hz => { E.hanzi = hz; E.pyDirty = false; E.reading = 0; paintHz(); };
       const paintCands = list => {
-        if (!fpy.value) { cands.innerHTML = `<span class="msg">${E.hanzi ? 'Keep typing to add more, or save.' : 'Characters appear here as you type.'}</span>`; return; }
-        cands.innerHTML = list.length ? list.map((x, i) => `<button class="cand" data-i="${i}">${esc(x.h)}</button>`).join('') : `<span class="msg">No match yet…</span>`;
+        if (!fpy.value) { cands.innerHTML = ''; cands._list = []; return; }
+        cands.innerHTML = list.length ? list.map((x, i) => `<button class="cand" data-i="${i}">${esc(x.h)}</button>`).join('') : '<span class="msg">No match yet…</span>';
         cands.scrollLeft = 0; cands._list = list;
       };
       let t;
@@ -10760,51 +10848,65 @@ function cardSheet(cardId) {
         const seq = ++E.seq;
         t = setTimeout(async () => {
           try { const list = await fetchCands(py); if (seq === E.seq) paintCands(list); }
-          catch (e) { if (e.name !== 'AbortError' && seq === E.seq) { cands.innerHTML = `<span class="msg">Offline — can’t look up characters right now.</span>`; LOG.add('pinyin-offline', py); } }
+          catch (e) { if (e.name !== 'AbortError' && seq === E.seq) { cands.innerHTML = '<span class="msg">Offline: can’t look up characters right now.</span>'; LOG.add('pinyin-offline', py); } }
         }, 110);
       };
       const pick = i => {
         const x = cands._list?.[i]; if (!x) return;
         LOG.add('pinyin-pick', { typed: normPy(fpy.value), picked: x.h, choice: i + 1 });
-        E.hanzi += x.h; paintHz();
-        fpy.value = normPy(fpy.value).slice(x.len); lookup(); fpy.focus();
+        fpy.value = normPy(fpy.value).slice(x.len); setHz(E.hanzi + x.h); lookup(); fpy.focus();
       };
-      cands.addEventListener('pointerdown', e => { if (e.target.closest('.cand')) e.preventDefault(); }); // keep keyboard open
+      const keep = el => el.addEventListener('pointerdown', e => { if (e.target.closest('button')) e.preventDefault(); });   // tapping these keeps the keyboard up
+      [cands, reads, means, $q('#bksp'), btn].forEach(keep);
       cands.addEventListener('click', e => { const b = e.target.closest('.cand'); if (b) pick(+b.dataset.i); });
+      reads.onclick = e => { const b = e.target.closest('[data-r]'); if (!b) return; E.reading = +b.dataset.r; E.pyDirty = false; if (E.autoEn) E.enDirty = false; paintHz(); };
+      means.onclick = e => {
+        const b = e.target.closest('button'); if (!b) return;
+        if (b.dataset.m) { fen.value = b.dataset.m; E.enDirty = true; E.autoEn = false; paintBtn(); return; }
+        if (b.dataset.h) { LOG.add('card-en-pick', { typed: fen.value.trim(), picked: b.dataset.h }); fpy.value = ''; setHz(b.dataset.h);
+          E.reading = Math.max(0, rows().findIndex(r => r.p === b.dataset.p)); paintHz(); paintCands([]); }
+      };
       fpy.addEventListener('input', () => {
         const han = hanChars(fpy.value).join('');
-        if (han) { E.hanzi += han; fpy.value = fpy.value.replace(/\p{Script=Han}/gu, ''); paintHz(); }
+        if (han) { fpy.value = fpy.value.replace(/\p{Script=Han}/gu, ''); setHz(E.hanzi + han); }
         lookup();
       });
       fpy.addEventListener('keydown', e => {
         if ((e.key === 'Enter' || e.key === ' ') && fpy.value && cands._list?.length) { e.preventDefault(); pick(0); }
-        else if (e.key === 'Backspace' && !fpy.value && E.hanzi) { e.preventDefault(); E.hanzi = [...E.hanzi].slice(0, -1).join(''); paintHz(); }
+        else if (e.key === 'Enter' && !fpy.value && E.hanzi) { e.preventDefault(); fen.focus(); fen.select(); }
+        else if (e.key === 'Backspace' && !fpy.value && E.hanzi) { e.preventDefault(); setHz([...E.hanzi].slice(0, -1).join('')); }
       });
-      sh.querySelector('#bksp').onclick = () => { E.hanzi = [...E.hanzi].slice(0, -1).join(''); paintHz(); };
-      ftone.addEventListener('input', () => { E.toneDirty = ftone.value.trim() !== '' && ftone.value !== autoPinyin(E.hanzi); });
-      fen.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); fpy.focus(); } };
+      $q('#bksp').onclick = () => { if (E.hanzi) setHz([...E.hanzi].slice(0, -1).join('')); };
+      fen.addEventListener('input', () => { E.enDirty = !!fen.value.trim(); E.autoEn = false; if (!E.hanzi) paintMeans(); paintBtn(); });
+      fen.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); btn.click(); } };
       const commit = () => {
         const en = fen.value.trim(), hz = E.hanzi.trim();
-        if (!en) { fen.focus(); toast('Add the English word'); return false; }
-        if (!hanChars(hz).length) { fpy.focus(); toast('Pick at least one character'); return false; }
-        const pinyin = ftone.value.trim() || autoPinyin(hz);
-        LOG.add(c ? 'card-edit' : 'card-add', { en, hz, pinyin, pinyin_typed_by_hand: E.toneDirty || undefined });
+        if (!hanChars(hz).length) { fpy.focus(); toast('Type the Chinese first'); return false; }
+        if (!en) { fen.focus(); toast('Add what it means'); return false; }
+        if (d.cards.some(x => x !== c && x.hanzi === hz)) { toast(`${hz} is already in this deck`); return false; }
+        const pinyin = curPy();
+        LOG.add(c ? 'card-edit' : 'card-add', { en, hz, pinyin });
         if (c) Object.assign(c, { en, hanzi: hz, pinyin });
         else d.cards.push({ id: uid(), en, hanzi: hz, pinyin, created: Date.now(), hist: [] });
         save(); return true;
       };
-      sh.querySelector('#csave').onclick = () => { if (commit()) { closeSheet(); render(); toast(c ? 'Saved' : `Added ${E.hanzi}`); } };
-      const nx = sh.querySelector('#cnext');
-      if (nx) nx.onclick = () => {
-        if (!commit()) return; toast(`Added ${E.hanzi}`); render();
-        E.hanzi = ''; E.toneDirty = false; fen.value = ''; fpy.value = ''; ftone.value = ''; paintHz(); paintCands([]); fen.focus();
+      if (c) btn.onclick = () => { if (commit()) { closeSheet(); render(); toast('Saved'); } };
+      else btn.onclick = () => {   // Anki's Add: save, clear, cursor back on the front, keyboard still up
+        if (!commit()) return;
+        E.added.unshift(E.hanzi); render();
+        E.enDirty = E.autoEn = false; fen.value = ''; fpy.value = ''; setHz(''); paintCands([]);
+        const n = $q('#acN'); n.textContent = plural(d.cards.length, 'card'); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump');
+        $q('#acLast').innerHTML = `Added <b>${E.added.slice(0, 5).map(esc).join(' · ')}</b>`;
+        fpy.focus({ preventScroll: true });
       };
-      const del = sh.querySelector('#cdel');
+      $q('#acClose')?.addEventListener('click', () => { closeSheet(); if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${d.name}`); });
+      const del = $q('#cdel');
       if (del) del.onclick = () => confirmSheet('Delete card?', `${esc(c.hanzi)} · ${esc(c.en)} will be removed from this deck.`, 'Delete', () => {
         d.cards = d.cards.filter(x => x !== c); save(); render(); toast('Card deleted');
       });
-      paintHz();
-      if (!c) setTimeout(() => fen.focus(), 250);
+      paintHz(); paintCands([]);
+      if (!c) fpy.focus({ preventScroll: true });   // inside the tap, so the phone's keyboard comes up at once
+      loadDict().then(D => { E.D = D; if (sh.isConnected) paintHz(); }, () => {});
     });
 }
 
@@ -11511,7 +11613,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.5';
+const APP_VERSION = '3.45.6';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
