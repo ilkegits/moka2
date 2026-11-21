@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shi Shi scenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F4EEE3;--card:#FCF9F3;--ink:#1E1A15;--ink-2:#4A433A;--muted:#978C7C;--line:#E3D8C6;--seal:#B23A2C}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:1120px;margin:0 auto;padding:28px 16px 60px}
+  h1{font-family:"Baloo 2",system-ui;font-size:30px;margin:0 0 4px}
+  .intro{color:var(--ink-2);margin:0 0 26px;max-width:640px}
+  h2{font-size:21px;margin:30px 0 4px;display:flex;align-items:baseline;gap:8px}
+  h2 .zh{font-family:"Noto Serif SC",serif;color:var(--seal);font-size:20px}
+  .sub{color:var(--muted);margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:10px;box-shadow:0 6px 20px -14px rgba(60,40,20,.35)}
+  figure svg{display:block;width:100%;height:auto;border-radius:15px}
+  figcaption{padding:10px 6px 4px}
+  figcaption b{font-size:16px}
+  figcaption span{display:block;color:var(--muted);font-size:13.5px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Shi Shi scenes</h1>
+  <p class="intro">Ten picture ideas to fill the empty space on the word bank and decks tiles. Plain cartoon look, the same colours as the app logo. Pick one from each row (or mix ideas).</p>
+
+  <h2>My word bank <span class="zh">生词本</span></h2>
+  <p class="sub">For the word bank tile, in place of the plain "Choose levels and practise" button.</p>
+  <div class="grid" id="bank"></div>
+
+  <h2>My decks <span class="zh">卡片</span></h2>
+  <p class="sub">For the decks tiles.</p>
+  <div class="grid" id="decks"></div>
+</main>
+
+<script>
+/* ---------- cartoon palette (same colours as the app logo, icons/logo.svg) ---------- */
+const C = { red:'#E5483F', gold:'#FFD15C', gold2:'#F4C14E', ln:'#3B1A12', ln2:'#5A3520', paper:'#FFFFFF',
+  maneLn:'#A86A0C', faceLn:'#7E1D19', eye:'#2A0E0C',
+  mouth:'#7E1D19', nose:'#FF8A7E', tongue:'#FF8A96', blush:'#FF9AA6', mirror:'#D8F2FF',
+  wood:'#C98E55', teal:'#4FC0AE', plum:'#B98BE0', inkwash:'#3A3530' };
+const HZ = `font-family="'Noto Serif SC',serif" font-weight="900" text-anchor="middle" dominant-baseline="central"`;
+
+/* place something drawn in the lion's own 200x200 space at scene x,y with size s and tilt r */
+const T = (x, y, s, r = 0) => `translate(${x} ${y}) rotate(${r}) scale(${s}) translate(-100 -100)`;
+
+/* ---------- Shi Shi's head (original design) with swappable eyes, brows and mouth ---------- */
+function head({ eyes = 'open', look = [0, 0], mouth = 'grin', brow = '', blush = .54, feet = false } = {}) {
+  let s = '';
+  if (feet) s += `<ellipse cx="82" cy="178" rx="11" ry="13" fill="${C.red}" stroke="${C.faceLn}" stroke-width="5"/>
+    <ellipse cx="118" cy="178" rx="11" ry="13" fill="${C.red}" stroke="${C.faceLn}" stroke-width="5"/>
+    <ellipse cx="82" cy="188" rx="13" ry="5" fill="${C.paper}" stroke="${C.ln}" stroke-width="3"/>
+    <ellipse cx="118" cy="188" rx="13" ry="5" fill="${C.paper}" stroke="${C.faceLn}" stroke-width="3"/>`;
+  const pts = Array.from({ length: 14 }, (_, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / 14; return [100 + 56 * Math.cos(a), 100 + 56 * Math.sin(a)]; });
+  s += pts.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="17" fill="${C.gold}" stroke="${C.maneLn}" stroke-width="8"/>`).join('');
+  s += pts.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="17" fill="${C.gold}"/>`).join('');
+  s += `<circle cx="100" cy="100" r="50" fill="${C.red}" stroke="${C.faceLn}" stroke-width="5"/>
+    <path d="M60 116Q56 130 66 138M140 116Q144 130 134 138" fill="none" stroke="${C.gold}" stroke-width="4" stroke-linecap="round"/>
+    <path d="M91 56Q100 22 109 56Z" fill="${C.gold2}" stroke="${C.maneLn}" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="100" cy="64" r="7" fill="${C.mirror}" stroke="${C.maneLn}" stroke-width="3.5"/>`;
+  const browL = brow === 'up' || brow === 'both' ? -7 : 0, browR = brow === 'upR' || brow === 'both' ? -7 : 0;
+  s += `<g transform="translate(0 ${browL})"><path d="M62 80Q76 66 90 78" fill="none" stroke="${C.faceLn}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M62 80Q76 66 90 78" fill="none" stroke="${C.paper}" stroke-width="6" stroke-linecap="round"/></g>
+    <g transform="translate(0 ${browR})"><path d="M138 80Q124 66 110 78" fill="none" stroke="${C.faceLn}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M138 80Q124 66 110 78" fill="none" stroke="${C.paper}" stroke-width="6" stroke-linecap="round"/></g>`;
+  s += `<ellipse cx="59.9" cy="105.5" rx="9.2" ry="5.5" fill="${C.blush}" opacity="${blush + .18}"/><ellipse cx="140.1" cy="105.5" rx="9.2" ry="5.5" fill="${C.blush}" opacity="${blush + .18}"/>`;
+  for (const ex of [76, 124]) {
+    const [dx, dy] = look;
+    if (eyes === 'open' || eyes === 'wide') {
+      const k = eyes === 'wide' ? 1.18 : 1;
+      s += `<ellipse cx="${ex + dx}" cy="${94 + dy}" rx="${7.5 * k}" ry="${9 * k}" fill="${C.eye}"/>
+        <circle cx="${ex + dx - 2.4 * k}" cy="${94 + dy - 3.4 * k}" r="${3.1 * k}" fill="#fff"/><circle cx="${ex + dx + 2.5}" cy="${94 + dy + 3}" r="1.4" fill="#fff"/>`;
+    } else if (eyes === 'happy') {
+      s += `<path d="M${ex - 9} 97Q${ex} 84 ${ex + 9} 97" fill="none" stroke="${C.eye}" stroke-width="5" stroke-linecap="round"/>`;
+    } else if (eyes === 'closed') {
+      s += `<path d="M${ex - 9} 91Q${ex} 101 ${ex + 9} 91" fill="none" stroke="${C.eye}" stroke-width="5" stroke-linecap="round"/>`;
+    }
+  }
+  if (mouth === 'grin') s += `<path d="M82 118Q100 144 118 118Q100 124 82 118Z" fill="${C.mouth}" stroke="${C.faceLn}" stroke-width="3" stroke-linejoin="round"/><ellipse cx="100" cy="128" rx="7" ry="4.5" fill="${C.tongue}"/>`;
+  if (mouth === 'smile') s += `<path d="M86 120Q100 133 114 120" fill="none" stroke="${C.ln}" stroke-width="4" stroke-linecap="round"/>`;
+  if (mouth === 'o') s += `<ellipse cx="100" cy="126" rx="6" ry="7.5" fill="${C.mouth}" stroke="${C.ln}" stroke-width="3"/>`;
+  if (mouth === 'tongue') s += `<path d="M86 120Q100 132 114 120" fill="none" stroke="${C.ln}" stroke-width="4" stroke-linecap="round"/>
+    <path d="M104 125Q106 137 113 135Q117 131 113 122" fill="${C.tongue}" stroke="${C.ln}" stroke-width="3" stroke-linejoin="round"/>`;
+  s += `<circle cx="100" cy="110" r="9" fill="${C.nose}" stroke="${C.faceLn}" stroke-width="3"/><circle cx="97" cy="107" r="2.6" fill="${C.paper}" opacity=".8"/>`;
+  return s;
+}
+
+/* a front paw: red mitt with a gold fluffy cuff; rot 0 means fingers point up */
+const paw = (x, y, rot = 0, s = .72) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})">
+  <ellipse cx="0" cy="11" rx="15" ry="8" fill="${C.gold}" stroke="${C.maneLn}" stroke-width="3.5"/>
+  <ellipse cx="0" cy="-2" rx="13" ry="12.5" fill="${C.red}" stroke="${C.faceLn}" stroke-width="4"/>
+  <path d="M-5 -13v5M0 -14.5v5M5 -13v5" stroke="${C.faceLn}" stroke-width="2.6" stroke-linecap="round"/></g>`;
+/* a short furry arm, drawn behind the head so it seems to come out from under the mane */
+const arm = (x1, y1, x2, y2, w = 13) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${C.faceLn}" stroke-width="${w + 6}" stroke-linecap="round"/>
+  <path d="M${x1} ${y1}L${x2} ${y2}" stroke="${C.red}" stroke-width="${w}" stroke-linecap="round"/>`;
+
+/* small helpers for the props */
+const hz = (x, y, ch, size, rot = 0, fill = C.ln, op = 1) => `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" opacity="${op}" transform="rotate(${rot} ${x} ${y})" ${HZ}>${ch}</text>`;
+const star = (x, y, r = 8, fill = C.gold2) => `<path d="M${x} ${y - r}Q${x + r * .18} ${y - r * .18} ${x + r} ${y}Q${x + r * .18} ${y + r * .18} ${x} ${y + r}Q${x - r * .18} ${y + r * .18} ${x - r} ${y}Q${x - r * .18} ${y - r * .18} ${x} ${y - r}Z" fill="${fill}"/>`;
+const heart = (x, y, s = 1, rot = 0, fill = C.red) => `<path transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" d="M0 6C-10 -2 -10 -12 -3 -12C0 -12 0 -9 0 -8C0 -9 0 -12 3 -12C10 -12 10 -2 0 6Z" fill="${fill}" stroke="${C.ln}" stroke-width="2.4" stroke-linejoin="round"/>`;
+function card(x, y, w, h, rot, ch, { back = false, sub = '', fill = C.paper, top = false } = {}) {
+  let s = `<g transform="translate(${x} ${y}) rotate(${rot})">`;
+  if (back) {
+    s += `<rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${w * .13}" fill="${C.red}" stroke="${C.ln}" stroke-width="3"/>
+      <rect x="${-w / 2 + 4.5}" y="${-h / 2 + 4.5}" width="${w - 9}" height="${h - 9}" rx="${w * .08}" fill="none" stroke="${C.gold}" stroke-width="2"/>
+      <circle r="${w * .17}" fill="${C.gold}" stroke="${C.ln2}" stroke-width="2"/>`;
+  } else {
+    s += `<rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${w * .13}" fill="${fill}" stroke="${C.ln2}" stroke-width="3"/>
+      <rect x="${-w / 2 + 4.5}" y="${-h / 2 + 4.5}" width="${w - 9}" height="${h - 9}" rx="${w * .08}" fill="none" stroke="${C.red}" stroke-width="1.3" opacity=".45"/>`;
+    if (ch) s += top ? hz(-w * .2, -h * .27, ch, w * .38, 0, C.ln) : hz(0, sub ? -h * .08 : 0, ch, w * .56, 0, C.ln);
+    if (sub) s += `<text x="0" y="${h * .3}" font-size="${w * .2}" fill="${C.red}" font-family="'Cormorant Garamond',serif" font-weight="600" font-style="italic" text-anchor="middle" dominant-baseline="central">${sub}</text>`;
+  }
+  return s + '</g>';
+}
+/* a deck box seen from the front: coloured case with card edges along the top */
+function deck(x, y, w, h, rot, fill, ch = '') {
+  return `<g transform="translate(${x} ${y}) rotate(${rot})">
+    <rect x="${-w / 2 + 3}" y="${-h / 2 - 5}" width="${w - 6}" height="8" rx="2" fill="${C.paper}" stroke="${C.ln2}" stroke-width="2.5"/>
+    <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="4" fill="${fill}" stroke="${C.ln}" stroke-width="3"/>
+    <path d="M${-w / 2 + 6} ${-h / 2 + 5}H${w / 2 - 6}" stroke="${C.paper}" stroke-width="1.6" opacity=".55"/>
+    ${ch ? hz(0, 1.5, ch, h * .62, 0, fill === C.gold || fill === C.paper ? C.red : C.paper) : ''}</g>`;
+}
+const bg = (fill, blob, bx, by, br) => `<rect width="360" height="200" fill="${fill}"/><circle cx="${bx}" cy="${by}" r="${br}" fill="${blob}"/>`;
+const floor = (y, fill = '#00000010') => `<ellipse cx="180" cy="${y}" rx="210" ry="22" fill="${fill}"/>`;
+const dash = d => `<path d="${d}" fill="none" stroke="${C.ln2}" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1 7" opacity=".55"/>`;
+
+/* ---------- the scenes (each 360 x 200) ---------- */
+const BANK = [
+  { name: 'Thinking it over', note: 'Paw on chin, looking up at a thought bubble while characters float around him.', draw: () => `
+    ${bg('#FFEDE3', '#FFD9C7', 120, 128, 92)}
+    ${hz(42, 46, '好', 26, -14, C.ln, .45)}${hz(54, 166, '爱', 22, 10, C.red, .55)}${hz(222, 158, '学', 34, 10, C.red, .9)}${hz(318, 150, '你', 26, -8, C.ln, .65)}${hz(340, 108, '书', 18, 14, C.ln, .45)}
+    <g transform="${T(122, 104, .76, -8)}">${head({ eyes: 'open', look: [3, -4], mouth: 'o', brow: 'upR', feet: true })}</g>
+    ${paw(145, 150, -24)}
+    <circle cx="200" cy="88" r="5" fill="${C.paper}" stroke="${C.ln2}" stroke-width="2.5"/><circle cx="218" cy="70" r="8" fill="${C.paper}" stroke="${C.ln2}" stroke-width="2.8"/>
+    ${[[258, 52, 24], [284, 38, 25], [310, 54, 21], [284, 70, 24], [258, 70, 16]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${C.paper}" stroke="${C.ln2}" stroke-width="5"/>`).join('')}
+    ${[[258, 52, 24], [284, 38, 25], [310, 54, 21], [284, 70, 24], [258, 70, 16]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${C.paper}"/>`).join('')}
+    ${hz(284, 55, '字', 34, 0, C.red)}
+    ${star(192, 34, 8)}${star(338, 182, 7)}${star(28, 108, 6)}` },
+
+  { name: 'Saving words', note: 'A word "bank": he drops a new character tile into a jar that is filling up.', draw: () => `
+    ${bg('#FFF3D6', '#FFE3A3', 268, 120, 84)}${floor(196)}
+    ${arm(150, 108, 194, 64)}
+    <g transform="${T(118, 116, .76, 8)}">${head({ eyes: 'happy', mouth: 'grin', feet: true })}</g>
+    <rect x="236" y="52" width="70" height="16" rx="5" fill="${C.gold2}" stroke="${C.ln}" stroke-width="3.5"/>
+    <rect x="218" y="64" width="106" height="124" rx="24" fill="${C.mirror}" fill-opacity=".7" stroke="${C.ln}" stroke-width="4"/>
+    ${[[240, 168, '你', -8], [264, 170, '好', 6], [289, 168, '大', -4], [307, 166, '人', 10], [250, 146, '天', 12], [275, 147, '水', -10], [300, 144, '火', 4], [262, 124, '学', -6], [288, 123, '中', 8]]
+      .map(([x, y, ch, r]) => `<g transform="rotate(${r} ${x} ${y})"><rect x="${x - 11}" y="${y - 11}" width="22" height="22" rx="4" fill="${C.paper}" stroke="${C.ln2}" stroke-width="2.4"/>${hz(x, y + 1, ch, 14, 0, C.ln)}</g>`).join('')}
+    <path d="M228 84Q226 120 230 150" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".65"/>
+    <g transform="rotate(14 224 36)"><rect x="210" y="22" width="28" height="28" rx="5" fill="${C.paper}" stroke="${C.ln}" stroke-width="3"/>${hz(224, 37, '字', 19, 0, C.red)}</g>
+    ${paw(200, 58, 40)}
+    ${dash('M254 30Q262 38 266 50')}
+    ${star(330, 36, 9)}${star(208, 100, 6)}${star(40, 40, 7)}` },
+
+  { name: 'Catching words', note: 'Characters flutter past like butterflies and he swoops with a net.', draw: () => `
+    ${bg('#E2F4F8', '#C4E8F1', 110, 130, 90)}
+    ${arm(150, 108, 188, 74)}
+    <g transform="${T(112, 116, .76, -6)}">${head({ eyes: 'open', look: [4, -4], mouth: 'grin', feet: true })}</g>
+    <path d="M190 72L262 40" stroke="${C.ln}" stroke-width="9" stroke-linecap="round"/><path d="M190 72L262 40" stroke="${C.wood}" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M266 58Q276 104 312 88Q330 74 316 40" fill="${C.paper}" fill-opacity=".55" stroke="${C.ln2}" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M276 48Q284 90 300 92M292 44Q298 80 314 78M270 70Q296 76 322 62" fill="none" stroke="${C.ln2}" stroke-width="1.4" opacity=".55"/>
+    ${hz(296, 66, '字', 22, 12, C.red, .9)}
+    <ellipse cx="291" cy="40" rx="28" ry="13" transform="rotate(-20 291 40)" fill="none" stroke="${C.ln}" stroke-width="4.5"/>
+    ${paw(190, 70, 30)}
+    ${hz(232, 120, '飞', 28, -14, C.ln, .85)}${dash('M196 140Q214 132 220 124')}
+    ${hz(318, 132, '学', 24, 12, C.red, .8)}${dash('M346 160Q336 150 328 142')}
+    ${hz(250, 172, '好', 20, 8, C.ln, .6)}${hz(338, 182, '中', 18, -10, C.ln, .45)}${hz(48, 38, '文', 22, -12, C.ln, .45)}
+    ${star(204, 26, 7)}${star(30, 110, 6)}` },
+
+  { name: 'Reading', note: 'Peeking over an open book while the characters lift off the page.', draw: () => `
+    ${bg('#FCE8EE', '#F8CEDB', 180, 120, 96)}
+    ${arm(150, 120, 126, 160)}${arm(210, 120, 234, 160)}
+    <g transform="${T(180, 100, .76)}">${head({ eyes: 'wide', look: [0, -4], mouth: 'grin' })}</g>
+    <path d="M180 142Q146 128 112 136L112 186Q146 178 180 192Q214 178 248 186L248 136Q214 128 180 142Z" fill="${C.red}" stroke="${C.ln}" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M180 138Q150 126 120 132L120 180Q150 172 180 186Z" fill="${C.paper}" stroke="${C.ln2}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M180 138Q210 126 240 132L240 180Q210 172 180 186Z" fill="${C.paper}" stroke="${C.ln2}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M130 146Q150 142 170 148M130 157Q150 153 170 159M130 168Q150 164 162 168M190 148Q210 142 230 146M190 159Q210 153 230 157M198 170Q214 164 230 168" stroke="${C.ln2}" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+    ${paw(120, 160, -38)}${paw(240, 160, 38)}
+    ${dash('M150 132Q110 110 96 84')}${dash('M210 132Q250 110 266 84')}
+    ${hz(98, 104, '月', 18, -10, C.ln, .45)}${hz(72, 70, '山', 24, -16, C.ln, .65)}${hz(52, 34, '书', 30, -8, C.red, .9)}
+    ${hz(262, 104, '日', 18, 10, C.ln, .45)}${hz(290, 70, '水', 24, 14, C.ln, .65)}${hz(312, 34, '读', 30, 8, C.red, .9)}
+    ${star(180, 20, 8)}${star(30, 160, 6)}${star(334, 158, 6)}` },
+
+  { name: 'Writing', note: 'Brush in paw, tongue out, painting a big character on a scroll.', draw: () => `
+    ${bg('#F1F0E0', '#E4E3BE', 280, 150, 80)}
+    <g transform="rotate(-3 266 156)">
+      <rect x="186" y="124" width="160" height="62" fill="${C.paper}" stroke="${C.ln2}" stroke-width="3"/>
+      <rect x="178" y="118" width="12" height="74" rx="5" fill="${C.wood}" stroke="${C.ln}" stroke-width="3"/>
+      <rect x="342" y="118" width="12" height="74" rx="5" fill="${C.wood}" stroke="${C.ln}" stroke-width="3"/>
+      ${hz(270, 156, '永', 50, 0, C.ln)}
+    </g>
+    ${arm(146, 104, 190, 96)}
+    <g transform="${T(108, 104, .74, 10)}">${head({ eyes: 'open', look: [5, 4], mouth: 'tongue', feet: true })}</g>
+    <path d="M196 70L232 132" stroke="${C.ln}" stroke-width="10" stroke-linecap="round"/><path d="M196 70L232 132" stroke="${C.wood}" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M226 122L240 146L230 128Z" fill="${C.ln}" stroke="${C.ln}" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M228 120L234 130" stroke="${C.gold2}" stroke-width="9"/>
+    ${paw(204, 92, 30)}
+    <ellipse cx="44" cy="182" rx="20" ry="8" fill="${C.inkwash}" stroke="${C.ln}" stroke-width="3"/><ellipse cx="44" cy="179" rx="12" ry="3.5" fill="${C.ln}"/>
+    ${hz(330, 40, '写', 28, 10, C.red, .85)}${hz(282, 74, '心', 20, -8, C.ln, .5)}${hz(244, 30, '字', 18, -12, C.ln, .45)}
+    <circle cx="252" cy="160" r="3" fill="${C.ln}" opacity=".7"/><circle cx="246" cy="172" r="2" fill="${C.ln}" opacity=".5"/>
+    ${star(30, 40, 7)}${star(176, 26, 6)}` },
+];
+
+const fan = (px, py, R, angles, chars) => angles.map((a, i) => {
+  const r = a * Math.PI / 180;
+  return card(px + R * Math.sin(r), py - R * Math.cos(r), 46, 62, a, chars[i], { top: true });
+}).join('');
+const arc = (cx, cy, R, from, to, n) => Array.from({ length: n }, (_, i) => {
+  const t = (from + (to - from) * i / (n - 1)) * Math.PI / 180;
+  return card(cx + R * Math.cos(t), cy + R * Math.sin(t), 28, 38, (from + (to - from) * i / (n - 1)) + 90, ['人', '口', '大', '小', '山', '日', '月', '木'][i], { back: i % 2 === 1 });
+}).join('');
+
+const DECKS = [
+  { name: 'A hand of cards', note: 'Holding a fan of word cards like a card game, very pleased with himself.', draw: () => `
+    ${bg('#FFF0D6', '#FFDDA0', 180, 110, 98)}
+    <g transform="${T(180, 88, .76)}">${head({ eyes: 'happy', mouth: 'grin', brow: 'upR' })}</g>
+    ${fan(180, 222, 86, [-40, -20, 0, 20, 40], ['你', '好', '学', '中', '文'])}
+    ${paw(160, 182, -12)}${paw(202, 182, 12)}
+    ${card(52, 64, 30, 40, -22, '', { back: true })}${card(312, 74, 30, 40, 20, '', { back: true })}
+    ${star(86, 128, 8)}${star(282, 26, 7)}${star(330, 150, 6)}${star(36, 168, 6)}` },
+
+  { name: 'Shuffling', note: 'Cards arc through the air between his paws in a big shuffle.', draw: () => `
+    ${bg('#E5F5E3', '#C8EAC4', 180, 140, 90)}
+    ${arm(150, 124, 98, 104)}${arm(210, 124, 262, 104)}
+    <g transform="${T(180, 124, .72)}">${head({ eyes: 'open', look: [0, -5], mouth: 'o', brow: 'both', feet: true })}</g>
+    ${dash('M92 92Q180 -20 268 92')}
+    ${arc(180, 128, 100, 200, 340, 8)}
+    ${paw(96, 102, -40)}${paw(264, 102, 40)}
+    ${star(34, 40, 7)}${star(326, 38, 7)}${star(40, 170, 6)}${star(322, 172, 6)}` },
+
+  { name: 'Flip it', note: 'He flips a card: character on the front, sound and meaning on the back.', draw: () => `
+    ${bg('#EAF0FF', '#CCDAFF', 260, 110, 90)}
+    ${arm(146, 118, 178, 132)}
+    <g transform="${T(100, 110, .76, -4)}">${head({ eyes: 'wide', look: [5, -2], mouth: 'o', brow: 'both', feet: true })}</g>
+    ${card(214, 104, 72, 98, -10, '猫', { sub: 'māo' })}
+    ${paw(184, 134, 24)}
+    <g transform="translate(306 112) rotate(9)"><rect x="-34" y="-47" width="68" height="94" rx="9" fill="${C.paper}" stroke="${C.ln2}" stroke-width="3"/>
+      <path d="M-14 -16L-12 -32L-3 -22M14 -16L12 -32L3 -22" fill="${C.paper}" stroke="${C.ln2}" stroke-width="2.6" stroke-linejoin="round"/>
+      <circle cx="0" cy="-8" r="16" fill="${C.paper}" stroke="${C.ln2}" stroke-width="2.6"/><circle cx="-6" cy="-10" r="2" fill="${C.ln}"/><circle cx="6" cy="-10" r="2" fill="${C.ln}"/>
+      <path d="M-3 -3Q0 0 3 -3M-24 -6H-12M-24 -1H-12M24 -6H12M24 -1H12" stroke="${C.ln2}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      <text x="0" y="28" font-size="22" fill="${C.ln}" font-family="'Cormorant Garamond',serif" font-weight="600" font-style="italic" text-anchor="middle" dominant-baseline="central">cat</text></g>
+    <path d="M222 38Q262 6 300 44" fill="none" stroke="${C.red}" stroke-width="4" stroke-linecap="round"/><path d="M290 42L301 46L302 34" fill="none" stroke="${C.red}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    ${star(342, 30, 7)}${star(30, 36, 7)}${star(338, 186, 6)}` },
+
+  { name: 'Balancing act', note: 'A wobbly tower of decks on his head, tongue out, trying not to drop it.', draw: () => `
+    ${bg('#F3ECFF', '#DDD0FA', 180, 150, 92)}
+    ${arm(150, 140, 114, 116)}${arm(210, 140, 246, 116)}
+    <g transform="${T(180, 152, .66, 5)}">${head({ eyes: 'open', look: [1, -6], mouth: 'tongue', brow: 'both' })}</g>
+    ${deck(186, 96, 70, 16, 3, C.red, '中')}${deck(182, 78, 64, 16, -5, C.gold, '汉')}${deck(190, 60, 66, 16, 6, C.teal, '字')}${deck(180, 42, 60, 16, -7, C.plum, '我')}${deck(191, 24, 56, 16, 10, C.red, '你')}
+    ${paw(112, 114, -48)}${paw(248, 114, 48)}
+    <path d="M136 34Q126 50 136 66M240 26Q252 42 242 58" fill="none" stroke="${C.ln2}" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+    <path d="M232 110Q236 101 240 110A4 4 0 0 1 232 110Z" fill="${C.mirror}" stroke="${C.ln2}" stroke-width="2"/>
+    ${card(306, 70, 28, 38, 32, '人')}${dash('M268 40Q290 46 300 54')}
+    ${star(46, 40, 7)}${star(320, 160, 6)}${star(50, 160, 6)}` },
+
+  { name: 'My favourite deck', note: 'Eyes closed, hugging a deck, little hearts, his collection piled around him.', draw: () => `
+    ${bg('#FFE8EC', '#FFCCD6', 180, 118, 94)}${floor(200)}
+    ${deck(52, 182, 64, 18, -3, C.teal, '水')}${deck(56, 163, 58, 18, 4, C.gold, '火')}${deck(50, 144, 54, 18, -6, C.red, '山')}
+    ${deck(306, 182, 66, 18, 3, C.plum, '木')}${deck(302, 163, 60, 18, -4, C.red, '日')}${card(334, 140, 28, 38, 18, '月')}
+    <g transform="${T(180, 98, .76)}">${head({ eyes: 'closed', mouth: 'smile', blush: .85 })}</g>
+    <g transform="translate(180 160) rotate(-4)">
+      <rect x="-36" y="-34" width="72" height="10" rx="3" fill="${C.paper}" stroke="${C.ln2}" stroke-width="2.6"/>
+      <rect x="-40" y="-26" width="80" height="54" rx="7" fill="${C.red}" stroke="${C.ln}" stroke-width="3.5"/>
+      <rect x="-34" y="-20" width="68" height="42" rx="4" fill="none" stroke="${C.gold}" stroke-width="2"/>
+      ${hz(0, 1, '狮', 28, 0, C.gold)}</g>
+    ${paw(142, 156, 52)}${paw(218, 156, -52)}
+    ${heart(112, 40, 1.1, -14)}${heart(258, 30, 1.3, 12)}${heart(282, 72, .8, 18, C.blush)}${heart(84, 82, .7, -20, C.blush)}
+    ${star(180, 16, 7)}${star(130, 190, 5)}` },
+];
+
+function render(list, el) {
+  el.innerHTML = list.map(sc => {
+    return `<figure><svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${sc.name}">
+      ${sc.draw()}</svg>
+      <figcaption><b>${sc.name}</b><span>${sc.note}</span></figcaption></figure>`;
+  }).join('');
+}
+render(BANK, document.getElementById('bank'));
+render(DECKS, document.getElementById('decks'));
+</script>
+</body>
+</html>

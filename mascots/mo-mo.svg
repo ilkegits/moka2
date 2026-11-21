@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="512" height="512"><defs><filter id="blend45" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="9" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .05 -0.21 0 0 0 0.13" result="ga"/>
+      <feComposite in="ga" in2="d" operator="in" result="gi"/>
+      <feMerge><feMergeNode in="d"/><feMergeNode in="gi"/></feMerge>
+    </filter></defs><g filter="url(#blend45)"><ellipse class="gs" cx="100" cy="192" rx="46" ry="6" fill="#8A6A3A" opacity=".16"/>
+    <ellipse cx="84" cy="182" rx="11" ry="7" fill="#22232e" stroke="#1a1918" stroke-width="4" data-solid=""/>
+    <ellipse cx="116" cy="182" rx="11" ry="7" fill="#22232e" stroke="#1a1918" stroke-width="4" data-solid=""/>
+    <path d="M100 32C112 64 150 90 150 128C150 160 127 182 100 182C73 182 50 160 50 128C50 90 88 64 100 32Z" fill="#22232e" stroke="#1a1918" stroke-width="5" stroke-linejoin="round" data-solid=""/>
+    <path d="M100 34C96 22 104 13 113 17" fill="none" stroke="#1a1918" stroke-width="9" stroke-linecap="round"/>
+    <path d="M100 34C96 22 104 13 113 17" fill="none" stroke="#1a1918" stroke-width="4" stroke-linecap="round" data-solid=""/>
+    <ellipse cx="68" cy="116" rx="6" ry="15" transform="rotate(22 68 116)" fill="#fbfaf6" opacity=".28"/>
+    <circle cx="80" cy="90" r="3.5" fill="#fbfaf6" opacity=".35"/>
+    <ellipse cx="64" cy="138" rx="8" ry="4.8" fill="#e97a7f" opacity="0.54"/><ellipse cx="136" cy="138" rx="8" ry="4.8" fill="#e97a7f" opacity="0.54"/><ellipse cx="78" cy="128" rx="7" ry="8.4" fill="#fff" class="eyew"/><circle cx="78.6" cy="129.6" r="4" fill="#1a1918" class="eye"/><circle cx="77.2" cy="127.8" r="1.5" fill="#fff" class="hl"/><ellipse cx="122" cy="128" rx="7" ry="8.4" fill="#fff" class="eyew"/><circle cx="122.6" cy="129.6" r="4" fill="#1a1918" class="eye"/><circle cx="121.2" cy="127.8" r="1.5" fill="#fff" class="hl"/><path d="M94 140Q97 145 100 140.5Q103 145 106 140" fill="none" stroke="#ebecf0" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="mouth"/>
+    <circle cx="38" cy="160" r="6" fill="#22232e" data-solid=""/><circle cx="28" cy="146" r="3" fill="#22232e" data-solid=""/><circle cx="164" cy="160" r="5" fill="#22232e" data-solid=""/><circle cx="172" cy="176" r="2.6" fill="#22232e" data-solid=""/>
+    <g transform="rotate(-8 152 58)"><rect x="136" y="42" width="32" height="32" rx="5" fill="#d64e45"/><rect x="139.5" y="45.5" width="25" height="25" rx="3" fill="none" stroke="#f8ddd5" stroke-width="1.6" opacity=".8"/>
+    <text x="152" y="65" text-anchor="middle" font-family="Noto Serif SC, serif" font-weight="600" font-size="19" fill="#fbf5ee">墨</text></g></g></svg>

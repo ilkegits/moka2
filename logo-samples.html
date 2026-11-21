@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cute jade logos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EFE6D6;--ink:#2B2620;--muted:#7A6F60;--card:#FFFCF6;--cream:#FBF2E1;--cream-2:#F3E2C6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:1120px;margin:0 auto;padding:28px 16px 64px}
+h1{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:34px;line-height:1;margin:0}
+.lede{margin:8px 0 0;color:var(--muted);font-size:15px;max-width:54ch;line-height:1.5}
+.zh{font-family:"Noto Serif SC",serif}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;margin-top:26px}
+.s{background:var(--card);border-radius:24px;overflow:hidden;box-shadow:0 1px 2px rgba(80,55,20,.08),0 14px 30px -20px rgba(80,55,20,.45)}
+.stage{aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 38%,var(--cream),var(--cream-2) 85%)}
+.stage>svg{width:72%;height:auto;overflow:visible}
+.meta{display:flex;gap:14px;align-items:center;padding:14px 16px 16px}
+.mini{flex:none;width:56px;height:56px;border-radius:15px;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 38%,var(--cream),var(--cream-2) 85%);box-shadow:inset 0 0 0 1px rgba(120,90,40,.12)}
+.mini svg{width:80%;height:auto;overflow:visible}
+.meta h2{margin:0;font-size:15.5px;font-weight:600}
+.meta p{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:var(--muted)}
+.tag{display:inline-block;margin-left:6px;font-size:11px;font-weight:600;letter-spacing:.04em;color:#B23A2C;vertical-align:2px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Cute jade logos</h1>
+  <p class="lede">Cartoon versions of the <span class="zh">平安扣</span> jade donut, on cream. From simple to extra cute. The small square next to each name is how it looks as a home-screen icon.</p>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+const C = { jade: '#5CC898', jadeDark: '#2FA273', jadeLight: '#B6F0D2', line: '#1F5A41',
+            red: '#E5483F', redDark: '#B4302A', redLine: '#7E1D19', blush: '#FF9AA6', eye: '#1D3328' };
+let uid = 0;
+const P = (cx, cy, rad, deg) => [cx + rad * Math.cos(deg * Math.PI / 180), cy + rad * Math.sin(deg * Math.PI / 180)];
+const arc = (cx, cy, rad, a0, a1) => { const [x0, y0] = P(cx, cy, rad, a0), [x1, y1] = P(cx, cy, rad, a1); return `M${x0} ${y0}A${rad} ${rad} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}`; };
+const star = (x, y, s, fill) => `<path d="M${x} ${y - s}Q${x + s * .18} ${y - s * .18} ${x + s} ${y}Q${x + s * .18} ${y + s * .18} ${x} ${y + s}Q${x - s * .18} ${y + s * .18} ${x - s} ${y}Q${x - s * .18} ${y - s * .18} ${x} ${y - s}Z" fill="${fill}"/>`;
+
+/* Cartoon jade donut. face: none | dots | happy */
+function donut({ cx = 100, cy = 100, R = 76, r = 30, outline = true, face = 'none', shadow = true } = {}) {
+  const id = 'd' + (uid++), band = R - r, mid = (R + r) / 2, lw = outline ? Math.max(4, R * .065) : 0;
+  const fy = cy + mid - band * .04, ex = band * .44, er = band * .14;
+  const eyes = face === 'dots'
+    ? [-1, 1].map(k => `<ellipse cx="${cx + k * ex}" cy="${fy - 1}" rx="${er}" ry="${er * 1.18}" fill="${C.eye}"/><circle cx="${cx + k * ex - er * .35}" cy="${fy - 1 - er * .45}" r="${er * .42}" fill="#fff"/>`).join('')
+    : face === 'happy'
+    ? [-1, 1].map(k => `<path d="M${cx + k * ex - er * 1.1} ${fy + er * .3}Q${cx + k * ex} ${fy - er * 1.5} ${cx + k * ex + er * 1.1} ${fy + er * .3}" fill="none" stroke="${C.eye}" stroke-width="${er * .62}" stroke-linecap="round"/>`).join('') : '';
+  const mouth = face === 'none' ? '' : `<path d="M${cx - er * .9} ${fy + er * 1.3}Q${cx - er * .45} ${fy + er * 2.2} ${cx} ${fy + er * 1.4}Q${cx + er * .45} ${fy + er * 2.2} ${cx + er * .9} ${fy + er * 1.3}" fill="none" stroke="${C.eye}" stroke-width="${er * .5}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const blush = face === 'none' ? '' : [-1, 1].map(k => `<ellipse cx="${cx + k * ex * 1.72}" cy="${fy + er * 1.05}" rx="${er * 1.1}" ry="${er * .62}" fill="${C.blush}" opacity=".75"/>`).join('');
+  return `<defs><mask id="${id}"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#fff"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="#000"/></mask></defs>
+    ${shadow ? `<ellipse cx="${cx}" cy="${cy + R + lw * .5 + 4}" rx="${R * .7}" ry="${R * .09}" fill="#8A6A3A" opacity=".18"/>` : ''}
+    <g mask="url(#${id})">
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="${C.jade}"/>
+      <circle cx="${cx + band * .1}" cy="${cy + band * .13}" r="${R + band * .06}" fill="none" stroke="${C.jadeDark}" stroke-width="${band * .42}"/>
+      <circle cx="${cx - band * .08}" cy="${cy - band * .1}" r="${r}" fill="none" stroke="${C.jadeDark}" stroke-width="${band * .3}" opacity=".85"/>
+      <path d="${arc(cx, cy, mid + band * .06, 200, 252)}" fill="none" stroke="${C.jadeLight}" stroke-width="${band * .22}" stroke-linecap="round"/>
+      <circle cx="${P(cx, cy, mid + band * .06, 270)[0]}" cy="${P(cx, cy, mid + band * .06, 270)[1]}" r="${band * .1}" fill="${C.jadeLight}"/>
+      <path d="${arc(cx, cy, mid + band * .06, 212, 236)}" fill="none" stroke="#fff" stroke-width="${band * .1}" stroke-linecap="round"/>
+    </g>
+    ${outline ? `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.line}" stroke-width="${lw}"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${C.line}" stroke-width="${lw}"/>` : ''}
+    ${blush}${eyes}${mouth}`;
+}
+
+/* Chunky red cord looped through the hole, with a round knot */
+function cord({ cx = 100, cy = 132, R = 68, r = 27, outline = true, tassel = false } = {}) {
+  const top = cy - r + 4, w = outline ? 11 : 9;
+  const strand = d => `${outline ? `<path d="${d}" fill="none" stroke="${C.redLine}" stroke-width="${w + 4}" stroke-linecap="round"/>` : ''}
+    <path d="${d}" fill="none" stroke="${C.red}" stroke-width="${w}" stroke-linecap="round"/>
+    <path d="${d}" fill="none" stroke="#FF8A7E" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1 7" opacity=".9"/>`;
+  return {
+    back: strand(`M92 ${top}Q100 ${top + 14} 108 ${top}`),
+    front: `${strand(`M100 -4L100 30`)}${strand(`M100 34C93 48 91 62 92 ${top}`)}${strand(`M100 34C107 48 109 62 108 ${top}`)}
+      ${tassel ? '' : ''}
+      <circle cx="100" cy="32" r="11" fill="${C.red}" ${outline ? `stroke="${C.redLine}" stroke-width="4"` : ''}/>
+      <circle cx="96.5" cy="28.5" r="3.4" fill="#fff" opacity=".7"/>`,
+  };
+}
+
+/* Little red bow on top of the ring */
+function bow(x, y, s = 1) {
+  const L = `M0 0C-8-15-30-19-31-3-32 13-11 12 0 0Z`, T = `M-4 4L-15 27-6 24-1 31 2 6Z`;
+  const shape = (d, flip) => `<path d="${d}" transform="${flip ? 'scale(-1 1)' : ''}" fill="${C.red}" stroke="${C.redLine}" stroke-width="3.5" stroke-linejoin="round"/>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${shape(T)}${shape(T, 1)}${shape(L)}${shape(L, 1)}
+    <path d="M-22-4C-19-9-12-8-8-5" fill="none" stroke="#FF9488" stroke-width="3" stroke-linecap="round"/>
+    <path d="M22-4C19-9 12-8 8-5" fill="none" stroke="#FF9488" stroke-width="3" stroke-linecap="round"/>
+    <circle r="7.5" fill="${C.red}" stroke="${C.redLine}" stroke-width="3.5"/><circle cx="-2.2" cy="-2.4" r="2.2" fill="#fff" opacity=".7"/></g>`;
+}
+
+const svg = (vb, body) => `<svg viewBox="${vb}">${body}</svg>`;
+const SAMPLES = [
+  { name: 'Soft jade', note: 'The first logo, made cartoony: chunky ring, soft mint jade, a friendly outline and a shine.',
+    art: m => svg('0 0 200 200', donut({ shadow: !m })) },
+  { name: 'Soft jade on a cord', note: 'The second logo, made cartoony: a chunky red cord and a round knot.',
+    art: m => { const c = cord(); return svg('0 0 200 220', c.back + donut({ cy: 132, R: 68, r: 27, shadow: !m }) + c.front); } },
+  { name: 'Smiley jade', tag: 'cute', note: 'The donut gets a face: shiny eyes, a tiny smile and pink cheeks.',
+    art: m => svg('0 0 200 200', donut({ face: 'dots', shadow: !m }) + (m ? '' : star(166, 42, 11, '#F2B84B') + star(36, 150, 7, '#F2B84B'))) },
+  { name: 'Smiley on a cord', tag: 'cute', note: 'Face plus the red cord. Both of your favourites in one.',
+    art: m => { const c = cord(); return svg('0 0 200 220', c.back + donut({ cy: 132, R: 68, r: 27, face: 'dots', shadow: !m }) + c.front + (m ? '' : star(166, 80, 10, '#F2B84B'))); } },
+  { name: 'Happy jade with a bow', tag: 'extra cute', note: 'Closed happy eyes and a little red bow instead of the cord. The cutest one.',
+    art: m => svg('0 0 200 210', donut({ cy: 112, face: 'happy', shadow: !m }) + bow(100, 36, 1.05) + (m ? '' : star(170, 88, 10, '#F2B84B') + star(30, 70, 7, '#F2B84B') + star(176, 160, 6, '#F2B84B'))) },
+  { name: 'Softer, no outline', tag: 'extra cute', note: 'Same happy jade on a cord, without outlines. Rounder and gentler, like a plush toy.',
+    art: m => { const c = cord({ outline: false }); return svg('0 0 200 220', c.back + donut({ cy: 132, R: 68, r: 27, outline: false, face: 'happy', shadow: !m }) + c.front); } },
+];
+
+document.getElementById('grid').innerHTML = SAMPLES.map(s => `<article class="s">
+  <div class="stage">${s.art(false)}</div>
+  <div class="meta"><div class="mini">${s.art(true)}</div><div><h2>${s.name}${s.tag ? `<span class="tag">${s.tag.toUpperCase()}</span>` : ''}</h2><p>${s.note}</p></div></div>
+</article>`).join('');
+</script>
+</body>
+</html>

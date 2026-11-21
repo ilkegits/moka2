@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shi Shi looks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@600&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EFE6D6;--ink:#2B2620;--muted:#7A6F60;--card:#FFFCF6;--seal:#B23A2C;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .33 0 0 0 0 .2 .2 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:1180px;margin:0 auto;padding:28px 16px 64px}
+h1{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:34px;line-height:1;margin:0}
+.lede{margin:8px 0 0;color:var(--muted);font-size:15px;max-width:60ch;line-height:1.5}
+nav{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;padding:12px 0;margin-top:14px;background:var(--bg)}
+nav a{display:flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:var(--card);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;box-shadow:inset 0 0 0 1px rgba(120,90,40,.16)}
+nav a span{font-family:"Noto Serif SC",serif;color:var(--seal);font-size:13px}
+nav a:hover{box-shadow:inset 0 0 0 2px var(--seal)}
+nav a:focus-visible{outline:3px solid var(--seal);outline-offset:2px}
+section{margin-top:34px;scroll-margin-top:70px}
+.sh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.sh h2{margin:0;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:28px;line-height:1}
+.sh .zh{font-family:"Noto Serif SC",serif;font-weight:600;font-size:20px;color:var(--seal)}
+.sh p{flex-basis:100%;margin:4px 0 0;color:var(--muted);font-size:14.5px;line-height:1.45;max-width:64ch}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+.t{background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(80,55,20,.08),0 12px 26px -20px rgba(80,55,20,.45)}
+.stage{position:relative;aspect-ratio:1/1;display:grid;place-items:center}
+.stage>svg{width:80%;height:auto;overflow:visible}
+.stage>canvas{width:74%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
+.lab{display:flex;align-items:baseline;gap:6px;padding:10px 14px 12px}
+.lab b{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:17px;line-height:1}
+.lab span{font-family:"Noto Serif SC",serif;font-weight:600;font-size:13.5px;color:var(--seal)}
+.vname{position:absolute;top:10px;left:12px;writing-mode:vertical-rl;letter-spacing:.06em;line-height:1}
+
+/* Per-style stages */
+.st-cartoon .stage{background:radial-gradient(circle at 50% 38%,#FBF2E1,#F3E2C6 85%)}
+.st-paper .stage{background:var(--noise),#F3E7CF}
+.st-ink .stage{background:var(--noise),radial-gradient(circle at 50% 45%,#F6F1E6,#ECE4D3 90%)}
+.st-ink .vname{font-family:"Ma Shan Zheng",serif;font-size:25px;color:#1E1C1A}
+.st-ink .seal,.st-blend .seal{position:absolute;right:12px;bottom:12px;width:20px;height:20px;border-radius:3px;background:#B8352B;color:#FBEFE6;display:grid;place-items:center;font-family:"Noto Serif SC",serif;font-weight:600;font-size:12.5px;transform:rotate(-4deg);opacity:.92}
+.st-blend .stage{background:var(--noise),radial-gradient(circle at 50% 42%,#FBF5E8,#EFE4CE 90%)}
+.st-blend .vname{font-family:"Ma Shan Zheng",serif;font-size:25px;color:#2A2420}
+.pick{font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:#fff;background:var(--seal);padding:3px 8px;border-radius:6px;align-self:center}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+@media (max-width:860px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.pgrid{grid-template-columns:1fr}}
+.meta{display:flex;gap:12px;align-items:flex-start;padding:12px 14px 14px}
+.mini{flex:none;width:48px;height:48px;border-radius:13px;display:grid;place-items:center;overflow:hidden;background:#F3E9D6;box-shadow:inset 0 0 0 1px rgba(120,90,40,.14)}
+.mini svg{width:88%;height:auto}
+.tag{display:block;font-size:12px;font-weight:600;color:var(--seal);margin-bottom:2px}
+.meta h3{margin:0;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:18px;line-height:1.1}
+.meta p{margin:4px 0 0;font-size:13.5px;line-height:1.42}
+.st-sticker .stage{background:radial-gradient(circle at 50% 40%,#E3F0F6,#C9DFEA 90%)}
+.st-toy .stage{background:radial-gradient(circle at 50% 38%,#FFF4EC,#F6DCCB 90%)}
+.st-pop .stage{background:radial-gradient(circle,rgba(255,255,255,.32) 1.7px,transparent 2.2px) 0 0/13px 13px,#25BFD3}
+.st-sharp .stage{background:#FBFAF7}
+.st-premium .stage{background:radial-gradient(circle at 50% 40%,#3B141A,#140608 82%);box-shadow:inset 0 0 0 12px #140608,inset 0 0 0 13px rgba(231,181,60,.6)}
+.st-porcelain .stage{background:radial-gradient(circle at 50% 40%,#F1F4F9,#DCE3EE 90%)}
+.st-pixel .stage{background:repeating-conic-gradient(#CFE6DA 0 25%,#C3DDD0 0 50%) 0 0/22px 22px}
+.st-neon .stage{background:radial-gradient(circle at 50% 42%,#2A1838,#120B18 80%)}
+.st-neon .vname{font-family:"Noto Serif SC",serif;font-weight:600;font-size:19px;color:#FFE3F0;text-shadow:0 0 4px #FF4FA3,0 0 12px #FF4FA3,0 0 22px #FF2E8A}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="paperLift" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="2.2" stdDeviation="1.4" flood-color="#6E1410" flood-opacity=".38"/>
+    </filter>
+    <filter id="inkRough" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation=".35"/>
+    </filter>
+    <filter id="neonGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5.5" result="b2"/>
+      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+<main>
+  <h1>Shi Shi looks <span style="font-family:'Noto Serif SC',serif;color:var(--seal);font-size:26px">狮狮</span></h1>
+  <p class="lede">The original Shi Shi, same drawing, in ten looks: more cartoon, more poppy, sharper, more premium and more ink. The small square shows each one at app-icon size.</p>
+  <div id="sections"></div>
+</main>
+<script>
+const C = { eye: '#1D3328', blush: '#FF9AA6', gold: '#F4C14E', goldLine: '#9A6A10', red: '#E5483F', redLine: '#7E1D19',
+            jade: '#5CC898', jadeLight: '#9BE3BF', jadeLine: '#1F5A41' };
+let uid = 0;
+
+/* Shared face: shiny dot eyes, tiny mouth, pink cheeks */
+function face({ x = 100, y = 100, gap = 22, s = 1, eye = C.eye, mouth = 'w', blush = true, inv = false, lineCol } = {}) {
+  const mc = lineCol || eye;
+  const eyes = [-1, 1].map(k => {
+    const ex = x + k * gap;
+    return inv
+      ? `<ellipse cx="${ex}" cy="${y}" rx="${7 * s}" ry="${8.4 * s}" fill="#fff" class="eyew"/><circle cx="${ex + .6 * s}" cy="${y + 1.6 * s}" r="${4 * s}" fill="${eye}" class="eye"/><circle cx="${ex - .8 * s}" cy="${y - .2 * s}" r="${1.5 * s}" fill="#fff" class="hl"/>`
+      : `<ellipse cx="${ex}" cy="${y}" rx="${6.5 * s}" ry="${7.8 * s}" fill="${eye}" class="eye"/><circle cx="${ex - 2.1 * s}" cy="${y - 3 * s}" r="${2.7 * s}" fill="#fff" class="hl"/><circle cx="${ex + 2.2 * s}" cy="${y + 2.6 * s}" r="${1.2 * s}" fill="#fff" class="hl"/>`;
+  }).join('');
+  const my = y + 12 * s;
+  const m = mouth === 'w'
+    ? `<path d="M${x - 6 * s} ${my}Q${x - 3 * s} ${my + 5 * s} ${x} ${my + .5 * s}Q${x + 3 * s} ${my + 5 * s} ${x + 6 * s} ${my}" fill="none" stroke="${mc}" stroke-width="${2.8 * s}" stroke-linecap="round" stroke-linejoin="round" class="mouth"/>`
+    : mouth === 'smile'
+    ? `<path d="M${x - 6 * s} ${my}Q${x} ${my + 7 * s} ${x + 6 * s} ${my}" fill="none" stroke="${mc}" stroke-width="${2.8 * s}" stroke-linecap="round" class="mouth"/>` : '';
+  const b = blush ? [-1, 1].map(k => `<ellipse cx="${x + k * (gap + 14 * s)}" cy="${y + 10 * s}" rx="${8 * s}" ry="${4.8 * s}" fill="${C.blush}" opacity=".72"/>`).join('') : '';
+  return b + eyes + m;
+}
+const shadow = (m, rx = 50, cy = 192) => m ? '' : `<ellipse class="gs" cx="100" cy="${cy}" rx="${rx}" ry="6" fill="#8A6A3A" opacity=".16"/>`;
+const tube = (d, line, fill, w = 14) => `<path d="${d}" fill="none" stroke="${line}" stroke-width="${w + 9}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${fill}" stroke-width="${w}" stroke-linecap="round"/>`;
+const sparkle = (x, y, s, fill = C.gold) => `<path d="M${x} ${y - s}Q${x + s * .18} ${y - s * .18} ${x + s} ${y}Q${x + s * .18} ${y + s * .18} ${x} ${y + s}Q${x - s * .18} ${y + s * .18} ${x - s} ${y}Q${x - s * .18} ${y - s * .18} ${x} ${y - s}Z" fill="${fill}"/>`;
+const svg = body => `<svg viewBox="0 0 200 200">${body}</svg>`;
+
+/* 1. Baby jade dragon holding a pearl */
+function dragon(m) {
+  const L = C.jadeLine, J = C.jade;
+  return svg(`${shadow(m, 52)}
+    ${tube('M124 166C152 174 174 160 170 134C168 122 160 118 155 124', L, J, 13)}
+    <path d="M156 130C146 124 147 110 156 102C156 110 161 113 166 109C171 117 167 128 156 130Z" fill="${C.red}" stroke="${C.redLine}" stroke-width="4" stroke-linejoin="round"/>
+    <ellipse cx="80" cy="182" rx="13" ry="9" fill="${J}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="120" cy="182" rx="13" ry="9" fill="${J}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="100" cy="150" rx="38" ry="32" fill="${J}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="100" cy="158" rx="22" ry="19" fill="#FFF1C9"/>
+    ${tube('M78 50C74 36 66 28 60 15M69 31C63 31 57 29 52 24', L, C.gold, 7)}
+    ${tube('M122 50C126 36 134 28 140 15M131 31C137 31 143 29 148 24', L, C.gold, 7)}
+    <path d="M88 44C85 30 93 22 100 15C100 23 106 25 111 21C115 30 113 39 109 44Z" fill="${C.red}" stroke="${C.redLine}" stroke-width="4" stroke-linejoin="round"/>
+    <ellipse cx="100" cy="86" rx="56" ry="48" fill="${J}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="72" cy="58" rx="12" ry="6" transform="rotate(-28 72 58)" fill="#B6F0D2" opacity=".8"/>
+    <path d="M72 106C54 112 38 106 32 94C28 86 36 80 41 87" fill="none" stroke="${C.red}" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M128 106C146 112 162 106 168 94C172 86 164 80 159 87" fill="none" stroke="${C.red}" stroke-width="4.5" stroke-linecap="round"/>
+    <ellipse cx="100" cy="106" rx="30" ry="19" fill="#8FDDB6" stroke="${L}" stroke-width="4"/>
+    <ellipse cx="92" cy="101" rx="2.6" ry="3.4" fill="${L}"/><ellipse cx="108" cy="101" rx="2.6" ry="3.4" fill="${L}"/>
+    <path d="M92 112Q100 119 108 112" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>
+    ${face({ x: 100, y: 78, gap: 25, mouth: 'none', blush: false })}
+    <ellipse cx="58" cy="92" rx="8" ry="4.8" fill="${C.blush}" opacity=".75"/><ellipse cx="142" cy="92" rx="8" ry="4.8" fill="${C.blush}" opacity=".75"/>
+    <circle cx="100" cy="152" r="12" fill="#FFE7A8" stroke="${C.goldLine}" stroke-width="4"/>
+    <circle cx="96" cy="148" r="3.6" fill="#fff"/>
+    <ellipse cx="85" cy="150" rx="9" ry="7" transform="rotate(-20 85 150)" fill="${J}" stroke="${L}" stroke-width="4.5"/>
+    <ellipse cx="115" cy="150" rx="9" ry="7" transform="rotate(20 115 150)" fill="${J}" stroke="${L}" stroke-width="4.5"/>
+    ${m ? '' : sparkle(30, 40, 8) + sparkle(172, 58, 6)}`);
+}
+
+/* 2. Tiger cub with 王 on its forehead */
+function tiger(m) {
+  const L = '#8A4410', O = '#F7A03C', S = '#6B3410', W = '#FFF6E8';
+  const wedge = (x, y, dir) => `<path d="M${x} ${y - 4}L${x + dir * 15} ${y}L${x} ${y + 4}Z" fill="${S}" stroke="${S}" stroke-width="2" stroke-linejoin="round"/>`;
+  return svg(`${shadow(m, 52)}
+    ${tube('M126 168C158 172 172 150 164 128', L, O, 12)}
+    <circle cx="164" cy="128" r="8" fill="${S}" data-solid/>
+    <ellipse cx="80" cy="182" rx="13" ry="9" fill="${O}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="120" cy="182" rx="13" ry="9" fill="${O}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="100" cy="152" rx="36" ry="30" fill="${O}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="100" cy="158" rx="20" ry="18" fill="${W}"/>
+    ${wedge(66, 148, 1)}${wedge(134, 148, -1)}
+    <circle cx="56" cy="50" r="18" fill="${O}" stroke="${L}" stroke-width="5"/><circle cx="57" cy="52" r="9" fill="${C.blush}"/>
+    <circle cx="144" cy="50" r="18" fill="${O}" stroke="${L}" stroke-width="5"/><circle cx="143" cy="52" r="9" fill="${C.blush}"/>
+    <ellipse cx="100" cy="90" rx="62" ry="50" fill="${O}" stroke="${L}" stroke-width="5"/>
+    <path d="M87 52H113M89 61H111M85 70H115M100 52V70" stroke="${S}" stroke-width="5" stroke-linecap="round"/>
+    ${wedge(41, 80, 1)}${wedge(41, 96, 1)}${wedge(159, 80, -1)}${wedge(159, 96, -1)}
+    <circle cx="89" cy="108" r="14" fill="${W}"/><circle cx="111" cy="108" r="14" fill="${W}"/>
+    <path d="M93 98Q100 94 107 98Q104 105 100 106Q96 105 93 98Z" fill="#F27A8A" stroke="${L}" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M100 106V109M92 110Q96 116 100 109Q104 116 108 110" fill="none" stroke="${L}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="84" cy="106" r="1.7" fill="${L}"/><circle cx="83" cy="112" r="1.7" fill="${L}"/><circle cx="116" cy="106" r="1.7" fill="${L}"/><circle cx="117" cy="112" r="1.7" fill="${L}"/>
+    ${face({ x: 100, y: 84, gap: 27, mouth: 'none', blush: false, eye: '#2A1A0E' })}
+    <ellipse cx="62" cy="100" rx="8" ry="4.8" fill="${C.blush}" opacity=".8"/><ellipse cx="138" cy="100" rx="8" ry="4.8" fill="${C.blush}" opacity=".8"/>
+    <ellipse cx="80" cy="146" rx="9" ry="7" fill="${O}" stroke="${L}" stroke-width="4.5"/>
+    <ellipse cx="120" cy="146" rx="9" ry="7" fill="${O}" stroke="${L}" stroke-width="4.5"/>`);
+}
+
+/* 3. Jade rabbit of the moon, hugging the YuCards jade donut */
+function rabbit(m) {
+  const L = '#2F7A5A', B = '#F4FBF7', id = 'moon' + (uid++);
+  return svg(`${shadow(m, 48)}
+    ${m ? '' : `<defs><mask id="${id}"><rect width="200" height="200" fill="#fff"/><circle cx="166" cy="34" r="20" fill="#000"/></mask></defs>
+    <circle cx="154" cy="44" r="22" fill="${C.gold}" mask="url(#${id})"/>`}
+    <ellipse cx="82" cy="44" rx="14" ry="34" transform="rotate(-12 82 44)" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="82" cy="47" rx="6.5" ry="23" transform="rotate(-12 82 47)" fill="${C.jadeLight}"/>
+    <ellipse cx="122" cy="48" rx="14" ry="32" transform="rotate(24 122 48)" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="121" cy="51" rx="6.5" ry="21" transform="rotate(24 121 51)" fill="${C.jadeLight}"/>
+    <circle cx="136" cy="168" r="11" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="82" cy="182" rx="14" ry="8" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="118" cy="182" rx="14" ry="8" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="100" cy="156" rx="36" ry="28" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="100" cy="100" rx="50" ry="42" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="100" cy="109" rx="3.6" ry="2.6" fill="#F27A8A"/>
+    ${face({ x: 100, y: 99, gap: 21, mouth: 'w', eye: C.eye })}
+    <circle cx="100" cy="153" r="15" fill="${C.jade}" stroke="${C.jadeLine}" stroke-width="3.5"/>
+    <circle cx="100" cy="153" r="5.5" fill="${B}" stroke="${C.jadeLine}" stroke-width="3"/>
+    <path d="M90 146A11 11 0 0 1 98 142" fill="none" stroke="#DFFBEC" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="100" cy="136" r="4" fill="${C.red}" stroke="${C.redLine}" stroke-width="2"/>
+    <ellipse cx="84" cy="150" rx="9" ry="7" transform="rotate(-20 84 150)" fill="${B}" stroke="${L}" stroke-width="4.5"/>
+    <ellipse cx="116" cy="150" rx="9" ry="7" transform="rotate(20 116 150)" fill="${B}" stroke="${L}" stroke-width="4.5"/>
+    ${m ? '' : sparkle(36, 64, 7) + sparkle(176, 92, 5)}`);
+}
+
+/* 4. Panda holding a calligraphy brush */
+function panda(m) {
+  const K = '#2B2B33', W = '#FFFFFF';
+  return svg(`${shadow(m, 50)}
+    <ellipse cx="80" cy="182" rx="14" ry="10" fill="${K}" data-solid/><ellipse cx="120" cy="182" rx="14" ry="10" fill="${K}" data-solid/>
+    <ellipse cx="100" cy="152" rx="38" ry="30" fill="${W}" stroke="${K}" stroke-width="5"/>
+    <circle cx="60" cy="52" r="17" fill="${K}" data-solid/><circle cx="140" cy="52" r="17" fill="${K}" data-solid/>
+    <ellipse cx="100" cy="92" rx="58" ry="48" fill="${W}" stroke="${K}" stroke-width="5"/>
+    <ellipse cx="76" cy="92" rx="14" ry="17" transform="rotate(28 76 92)" fill="${K}"/>
+    <ellipse cx="124" cy="92" rx="14" ry="17" transform="rotate(-28 124 92)" fill="${K}"/>
+    ${face({ x: 100, y: 90, gap: 23, inv: true, eye: K, mouth: 'none', blush: false })}
+    <path d="M94 106Q100 103 106 106Q104 111 100 112Q96 111 94 106Z" fill="${K}"/>
+    <path d="M100 112V114M94 115Q97 120 100 114Q103 120 106 115" fill="none" stroke="${K}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="60" cy="112" rx="8" ry="4.8" fill="${C.blush}" opacity=".8"/><ellipse cx="140" cy="112" rx="8" ry="4.8" fill="${C.blush}" opacity=".8"/>
+    <g transform="translate(150 120) rotate(37)">
+      <rect x="-5" y="0" width="10" height="64" rx="4" fill="#E0B066" stroke="#7A4E18" stroke-width="3.5"/>
+      <path d="M-5 26H5M-5 46H5" stroke="#7A4E18" stroke-width="2.5"/>
+      <path d="M-6.5 0C-8 -10 -3 -19 0 -26C3 -19 8 -10 6.5 0Z" fill="${K}" data-solid/>
+      <rect x="-7" y="-3" width="14" height="6" rx="2" fill="${C.red}" stroke="${C.redLine}" stroke-width="2"/>
+    </g>
+    <ellipse cx="78" cy="150" rx="12" ry="10" transform="rotate(-20 78 150)" fill="${K}" data-solid/>
+    <ellipse cx="124" cy="154" rx="12" ry="10" transform="rotate(20 124 154)" fill="${K}" data-solid/>
+    ${m ? '' : `<circle cx="52" cy="176" r="3" fill="${K}" opacity=".7" data-solid/><circle cx="44" cy="168" r="1.8" fill="${K}" opacity=".7" data-solid/>`}`);
+}
+
+/* 5. Chubby lucky koi */
+function koi(m) {
+  const L = '#8E2A1B', W = '#FFF8F2', R = '#F0563A', F = '#FFB39E', id = 'koi' + (uid++);
+  return svg(`${shadow(m, 46)}
+    <path d="M138 100C156 80 178 70 186 78C179 94 177 104 183 124C176 134 154 128 138 116Z" fill="${R}" stroke="${L}" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M152 96L176 84M154 108L178 106M152 118L174 126" stroke="#FF8A70" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M70 70C80 40 118 38 130 68Z" fill="${F}" stroke="${L}" stroke-width="4.5" stroke-linejoin="round"/>
+    <ellipse cx="66" cy="152" rx="15" ry="9" transform="rotate(30 66 152)" fill="${F}" stroke="${L}" stroke-width="4.5"/>
+    <ellipse cx="122" cy="154" rx="15" ry="9" transform="rotate(-30 122 154)" fill="${F}" stroke="${L}" stroke-width="4.5"/>
+    <defs><clipPath id="${id}"><ellipse cx="96" cy="108" rx="54" ry="48"/></clipPath></defs>
+    <ellipse cx="96" cy="108" rx="54" ry="48" fill="${W}"/>
+    <g clip-path="url(#${id})">
+      <ellipse cx="104" cy="64" rx="38" ry="22" fill="${R}"/>
+      <circle cx="148" cy="128" r="24" fill="${R}"/>
+      <path d="M118 146a7 7 0 0 1 12 0M126 134a7 7 0 0 1 12 0M110 132a7 7 0 0 1 12 0" fill="none" stroke="#F3D3C6" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <ellipse cx="96" cy="108" rx="54" ry="48" fill="none" stroke="${L}" stroke-width="5"/>
+    <path d="M58 82A40 40 0 0 1 76 66" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+    ${face({ x: 88, y: 104, gap: 22, mouth: 'none', eye: '#2A140E' })}
+    <path d="M82 118Q88 126 94 118" fill="#E86A5E" stroke="${L}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M80 119C74 121 70 118 70 113M96 119C102 121 106 118 106 113" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>
+    ${m ? '' : `<circle cx="38" cy="58" r="7" fill="none" stroke="#8CC4DA" stroke-width="3"/><circle cx="26" cy="36" r="4.5" fill="none" stroke="#8CC4DA" stroke-width="2.6"/><circle cx="44" cy="22" r="3" fill="none" stroke="#8CC4DA" stroke-width="2.2"/>`}`);
+}
+
+/* 6. Lion-dance cub */
+function lion(m) {
+  const L = C.redLine, R = C.red, G = '#FFD15C', GL = '#A86A0C';
+  const n = 14, ring = (r, extra) => Array.from({ length: n }, (_, i) => {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2, x = 100 + 56 * Math.cos(a), y = 100 + 56 * Math.sin(a);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" ${extra}/>`;
+  }).join('');
+  return svg(`${shadow(m, 50)}
+    <ellipse cx="82" cy="178" rx="11" ry="13" fill="${R}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="118" cy="178" rx="11" ry="13" fill="${R}" stroke="${L}" stroke-width="5"/>
+    <ellipse cx="82" cy="188" rx="13" ry="5" fill="#fff" stroke="${L}" stroke-width="3"/>
+    <ellipse cx="118" cy="188" rx="13" ry="5" fill="#fff" stroke="${L}" stroke-width="3"/>
+    ${ring(17, `fill="${G}" stroke="${GL}" stroke-width="8"`)}${ring(17, `fill="${G}" data-ns`)}
+    <circle cx="100" cy="100" r="50" fill="${R}" stroke="${L}" stroke-width="5"/>
+    <path d="M60 116Q56 130 66 138M140 116Q144 130 134 138" fill="none" stroke="${G}" stroke-width="4" stroke-linecap="round"/>
+    <path d="M91 56Q100 22 109 56Z" fill="${C.gold}" stroke="${GL}" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="100" cy="64" r="7" fill="#D8F2FF" stroke="${GL}" stroke-width="3.5"/>
+    <path d="M62 80Q76 66 90 78" fill="none" stroke="${L}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M62 80Q76 66 90 78" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+    <path d="M138 80Q124 66 110 78" fill="none" stroke="${L}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M138 80Q124 66 110 78" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+    ${face({ x: 100, y: 94, gap: 24, s: 1.15, mouth: 'none', eye: '#2A0E0C' })}
+    <path d="M82 118Q100 144 118 118Q100 124 82 118Z" fill="${L}" stroke="${L}" stroke-width="3" stroke-linejoin="round"/>
+    <ellipse cx="100" cy="128" rx="7" ry="4.5" fill="#FF8A96"/>
+    <circle cx="100" cy="110" r="9" fill="#FF8A7E" stroke="${L}" stroke-width="3"/>
+    <circle cx="97" cy="107" r="2.6" fill="#fff" opacity=".8"/>
+    ${m ? '' : sparkle(28, 30, 8) + sparkle(176, 40, 6)}`);
+}
+
+/* 7. Steamed bun peeking out of a bamboo steamer */
+function bao(m) {
+  const L = '#B08A5A', B = '#FFF6E6', T = '#E8BC72', TL = '#8A5A1E';
+  return svg(`${shadow(m, 60, 188)}
+    ${m ? '' : `<path d="M54 70C46 60 62 54 54 42M146 70C154 60 138 54 146 42M100 38C94 30 106 24 100 14" fill="none" stroke="#CDBDA6" stroke-width="4" stroke-linecap="round"/>`}
+    <ellipse cx="100" cy="130" rx="60" ry="14" fill="#C8954A" stroke="${TL}" stroke-width="5"/>
+    <ellipse cx="100" cy="116" rx="52" ry="40" fill="${B}" stroke="${L}" stroke-width="5"/>
+    <path d="M83 92Q90 82 97 79M90 94Q95 84 99 79M110 94Q105 84 101 79M117 92Q110 82 103 79" fill="none" stroke="#D8BB92" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="100" cy="80" r="5" fill="${C.red}"/>
+    <ellipse cx="76" cy="92" rx="10" ry="5" transform="rotate(-25 76 92)" fill="#fff"/>
+    ${face({ x: 100, y: 110, gap: 20, mouth: 'smile', eye: '#3A2A18' })}
+    <path d="M40 130V170Q100 190 160 170V130Q100 146 40 130Z" fill="${T}" stroke="${TL}" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M42 150Q100 166 158 150M42 162Q100 178 158 162" fill="none" stroke="${TL}" stroke-width="2.5" opacity=".55"/>
+    <path d="M60 140V174M80 143V180M100 145V182M120 143V180M140 140V174" stroke="${TL}" stroke-width="2" opacity=".3"/>
+    <path d="M40 130Q100 146 160 130" fill="none" stroke="${TL}" stroke-width="5" stroke-linecap="round"/>`);
+}
+
+/* 8. Ink drop with a red name seal */
+function ink(m) {
+  const K = '#2D3250', KL = '#12152A';
+  return svg(`${shadow(m, 46)}
+    <ellipse cx="84" cy="182" rx="11" ry="7" fill="${K}" stroke="${KL}" stroke-width="4" data-solid/>
+    <ellipse cx="116" cy="182" rx="11" ry="7" fill="${K}" stroke="${KL}" stroke-width="4" data-solid/>
+    <path d="M100 32C112 64 150 90 150 128C150 160 127 182 100 182C73 182 50 160 50 128C50 90 88 64 100 32Z" fill="${K}" stroke="${KL}" stroke-width="5" stroke-linejoin="round" data-solid/>
+    <path d="M100 34C96 22 104 13 113 17" fill="none" stroke="${KL}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M100 34C96 22 104 13 113 17" fill="none" stroke="${K}" stroke-width="4" stroke-linecap="round" data-solid/>
+    <ellipse cx="68" cy="116" rx="6" ry="15" transform="rotate(22 68 116)" fill="#fff" opacity=".28"/>
+    <circle cx="80" cy="90" r="3.5" fill="#fff" opacity=".35"/>
+    ${face({ x: 100, y: 128, gap: 22, inv: true, eye: KL, mouth: 'w', lineCol: '#E9ECF8' })}
+    ${m ? '' : `<circle cx="38" cy="160" r="6" fill="${K}" data-solid/><circle cx="28" cy="146" r="3" fill="${K}" data-solid/><circle cx="164" cy="160" r="5" fill="${K}" data-solid/><circle cx="172" cy="176" r="2.6" fill="${K}" data-solid/>
+    <g transform="rotate(-8 152 58)"><rect x="136" y="42" width="32" height="32" rx="5" fill="${C.red}"/><rect x="139.5" y="45.5" width="25" height="25" rx="3" fill="none" stroke="#FFD9D2" stroke-width="1.6" opacity=".8"/>
+    <text x="152" y="65" text-anchor="middle" font-family="Noto Serif SC, serif" font-weight="600" font-size="19" fill="#FFF8F2">墨</text></g>`}`);
+}
+
+const MASCOTS = [
+  { name: 'Long Long', zh: '龙龙', what: 'Baby jade dragon', art: dragon,
+    note: 'Jade green like the logo, gold antlers and curly red whiskers. Hugs a pearl, the way dragons do in old paintings.' },
+  { name: 'Hu Hu', zh: '虎虎', what: 'Tiger cub', art: tiger,
+    note: 'Chinese tigers have 王 (king) on their forehead. Kids spot it instantly, and it is a real character to learn.' },
+  { name: 'Yu Tu', zh: '玉兔', what: 'Jade rabbit of the moon', art: rabbit,
+    note: 'Yu means jade, same Yu as YuCards. A famous moon legend, and it hugs your jade logo.' },
+  { name: 'Gun Gun', zh: '滚滚', what: 'Panda with a brush', art: panda,
+    note: '"Gun gun" (rolly-polly) is what people in China call pandas. Holds a writing brush for practice time.' },
+  { name: 'Li Li', zh: '鲤鲤', what: 'Lucky koi', art: koi,
+    note: 'In the story, a koi that jumps the Dragon Gate becomes a dragon. A neat match for levelling up.' },
+  { name: 'Shi Shi', zh: '狮狮', what: 'Lion-dance cub', art: lion,
+    note: 'Fluffy gold mane, horn and forehead mirror from New Year lion dances. Loud, happy, great for "you did it!"' },
+  { name: 'Bao Bao', zh: '包包', what: 'Steamed bun', art: bao,
+    note: 'A happy bun peeking out of a bamboo steamer. Food mascots are easy to love and easy to draw.' },
+  { name: 'Mo Mo', zh: '墨墨', what: 'Ink drop', art: ink,
+    note: 'A little drop of calligraphy ink with its own red name stamp. Made for a handwriting app.' },
+];
+
+
+/* ---------- Colour helpers ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+const isHex = c => typeof c === 'string' && /^#[0-9a-f]{3,6}$/i.test(c);
+const rgb = h => { h = h.slice(1); if (h.length === 3) h = [...h].map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const hex = a => '#' + a.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
+const mix = (a, b, t) => { const A = rgb(a), B = rgb(b); return hex(A.map((v, i) => v + (B[i] - v) * t)); };
+const lum = h => { const [r, g, b] = rgb(h).map(v => v / 255); return .2126 * r + .7152 * g + .0722 * b; };
+const hsl = h => {
+  const [r, g, b] = rgb(h).map(v => v / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  let s = 0, hh = 0;
+  if (d) { s = d / (1 - Math.abs(2 * l - 1)); hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; hh *= 60; if (hh < 0) hh += 360; }
+  return [hh, s, l];
+};
+const isBlush = c => isHex(c) && c.toUpperCase() === C.blush;
+
+/* ---------- DOM helpers ---------- */
+const build = str => { const t = document.createElement('template'); t.innerHTML = str.trim(); return t.content.firstElementChild; };
+function each(el, fn) {
+  [...el.querySelectorAll('*')].forEach(n => {
+    if (['g', 'defs', 'svg'].includes(n.tagName) || n.closest('defs')) return;
+    const f = n.getAttribute('fill'), s = n.getAttribute('stroke');
+    fn(n, { f, s, hasF: !!f && f !== 'none', hasS: !!s && s !== 'none', cl: n.classList });
+  });
+}
+function wrap(el, attrs) {
+  const g = document.createElementNS(NS, 'g');
+  [...el.childNodes].filter(n => n.tagName !== 'defs').forEach(n => g.appendChild(n));
+  for (const k in attrs) g.setAttribute(k, attrs[k]);
+  el.appendChild(g);
+  return g;
+}
+const sw = (n, k) => n.setAttribute('stroke-width', parseFloat(n.getAttribute('stroke-width') || 1) * k);
+
+/* ---------- Style 2: paper-cut ---------- */
+function paperCut(fn) {
+  const el = build(fn(false)), P = '#F3E7CF', R = '#D22B2B';
+  const dark = c => hsl(c)[2] < .36;
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs')) return n.remove();
+    if (n.tagName === 'text') return n.setAttribute('fill', P);
+    if (cl.contains('eye') || cl.contains('mouth')) { if (hasF) n.setAttribute('fill', P); if (hasS) n.setAttribute('stroke', P); return; }
+    if (cl.contains('hl') || cl.contains('eyew')) return n.setAttribute('fill', R);
+    if (isBlush(f)) { n.setAttribute('fill', P); n.setAttribute('opacity', '1'); n.setAttribute('rx', n.getAttribute('rx') * .45); n.setAttribute('ry', n.getAttribute('ry') * .55); return; }
+    const solid = n.hasAttribute('data-solid');
+    if (hasF && isHex(f)) n.setAttribute('fill', dark(f) && !solid ? P : R);
+    if (hasS && isHex(s)) n.setAttribute('stroke', hasF ? P : (dark(s) && !solid ? P : R));
+  });
+  wrap(el, { filter: 'url(#paperLift)' });
+  el.setAttribute('viewBox', '-18 -18 236 236');
+  const dots = Array.from({ length: 48 }, (_, i) => { const a = i / 48 * Math.PI * 2; return `<circle cx="${(100 + 109 * Math.cos(a)).toFixed(1)}" cy="${(100 + 109 * Math.sin(a)).toFixed(1)}" r="2.4"/>`; }).join('');
+  el.insertAdjacentHTML('afterbegin', `<g fill="${R}" opacity=".9" filter="url(#paperLift)"><circle cx="100" cy="100" r="114" fill="none" stroke="${R}" stroke-width="2.6"/>${dots}<circle cx="100" cy="100" r="104" fill="none" stroke="${R}" stroke-width="1.2"/></g>`);
+  return el;
+}
+
+/* ---------- Style 3: ink wash ---------- */
+function inkWash(fn) {
+  const el = build(fn(false)), PAPER = '#F4EFE4', INK = '#1A1918', CIN = '#B8352B';
+  const cinnabar = c => { const [h, s, l] = hsl(c); return (h <= 14 || h >= 345) && s > .45 && l > .3 && l < .74; };
+  /* fills: pale wash with a faint tint of the original colour; lines: dark ink */
+  const wash = c => cinnabar(c) ? mix(PAPER, CIN, .82) : mix(mix(PAPER, INK, Math.pow(1 - lum(c), 1.35) * .78), c, .3);
+  const line = c => cinnabar(c) ? CIN : mix(PAPER, INK, Math.min(1, .62 + (1 - lum(c)) * .5));
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs')) { n.setAttribute('fill', INK); n.setAttribute('opacity', '.08'); return; }
+    if (isBlush(f)) { n.setAttribute('fill', CIN); n.setAttribute('opacity', '.28'); return; }
+    if (cl.contains('eye')) { n.setAttribute('fill', INK); return; }
+    if (hasF && isHex(f)) n.setAttribute('fill', n.hasAttribute('data-solid') || lum(f) < .12 ? line(f) : wash(f));
+    if (hasS && isHex(s)) n.setAttribute('stroke', hasF ? line(s) : (lum(s) < .5 || cinnabar(s) ? line(s) : wash(s)));
+  });
+  wrap(el, { filter: 'url(#inkRough)' });
+  return el;
+}
+
+/* ---------- Style 4: blue-and-white porcelain ---------- */
+function porcelain(fn) {
+  const el = build(fn(false)), DEEP = '#16337E', MID = '#5F82CC', WHITE = '#F8FAFD';
+  const map = c => { const t = lum(c); return t < .5 ? mix(DEEP, MID, t / .5) : mix(MID, WHITE, Math.min(1, (t - .5) / .42)); };
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs')) return n.remove();
+    if (hasF && isHex(f)) n.setAttribute('fill', map(f));
+    if (hasS && isHex(s)) n.setAttribute('stroke', map(s));
+  });
+  wrap(el, { transform: 'translate(100 103) scale(.8) translate(-100 -100)' });
+  el.setAttribute('viewBox', '-18 -18 236 236');
+  el.insertAdjacentHTML('afterbegin', `
+    <ellipse cx="100" cy="214" rx="96" ry="7" fill="#3A4A6A" opacity=".14"/>
+    <circle cx="100" cy="100" r="116" fill="${WHITE}" stroke="${DEEP}" stroke-width="2.6"/>
+    <circle cx="100" cy="100" r="110.5" fill="none" stroke="${DEEP}" stroke-width="5" stroke-dasharray="1.6 5.4" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="104" fill="none" stroke="${DEEP}" stroke-width="1.4"/>
+    <circle cx="100" cy="100" r="99" fill="#EEF3FB"/>`);
+  el.insertAdjacentHTML('beforeend', `<path d="M24 66A82 82 0 0 1 72 20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".75"/>`);
+  return el;
+}
+
+/* ---------- Style 5: pixel sprite ---------- */
+function pixel(fn) {
+  const el = build(fn(false));
+  el.querySelectorAll('.gs,.hl').forEach(n => n.remove());
+  /* small sprites need bolder faces: bigger solid eyes, thicker mouths */
+  el.querySelectorAll('.eye').forEach(n => ['r', 'rx', 'ry'].forEach(k => n.hasAttribute(k) && n.setAttribute(k, n.getAttribute(k) * 1.2)));
+  el.querySelectorAll('.mouth').forEach(n => sw(n, 1.5));
+  el.setAttribute('width', 200); el.setAttribute('height', 200);
+  const N = 44, cv = document.createElement('canvas');
+  cv.width = cv.height = N;
+  const img = new Image();
+  img.onload = () => {
+    const t = document.createElement('canvas'); t.width = t.height = N;
+    const x = t.getContext('2d'); x.drawImage(img, 0, 0, N, N);
+    const src = x.getImageData(0, 0, N, N), a = src.data, on = new Uint8Array(N * N);
+    for (let i = 0; i < N * N; i++) {
+      if (a[i * 4 + 3] > 110) { on[i] = 1; for (let c = 0; c < 3; c++) a[i * 4 + c] = Math.round(a[i * 4 + c] / 34) * 34; a[i * 4 + 3] = 255; }
+      else a[i * 4 + 3] = 0;
+    }
+    const out = new ImageData(new Uint8ClampedArray(a), N, N), o = out.data;
+    for (let y = 0; y < N; y++) for (let xx = 0; xx < N; xx++) {
+      const i = y * N + xx; if (on[i]) continue;
+      const nb = (xx > 0 && on[i - 1]) || (xx < N - 1 && on[i + 1]) || (y > 0 && on[i - N]) || (y < N - 1 && on[i + N]);
+      if (nb) { o[i * 4] = 18; o[i * 4 + 1] = 12; o[i * 4 + 2] = 30; o[i * 4 + 3] = 255; }
+    }
+    cv.getContext('2d').putImageData(out, 0, 0);
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(el));
+  return cv;
+}
+
+/* ---------- Style 6: neon sign ---------- */
+function neonSign(fn) {
+  const el = build(fn(false)), BG = '#1B1226', WHITE = '#F6F0FF';
+  const neon = c => { const [h, s, l] = hsl(c); return s < .2 || l < .1 ? WHITE : `hsl(${Math.round(h)} 100% ${h > 40 && h < 75 ? 58 : 64}%)`; };
+  const sib = (n, dir) => { const m = dir < 0 ? n.previousElementSibling : n.nextElementSibling; return m && m.tagName === 'path' && n.tagName === 'path' && m.getAttribute('d') === n.getAttribute('d') ? m : null; };
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs') || cl.contains('hl')) return n.remove();
+    if (n.tagName === 'text') { n.setAttribute('fill', neon(f)); return; }
+    if (cl.contains('eyew')) { n.setAttribute('fill', BG); n.setAttribute('stroke', WHITE); n.setAttribute('stroke-width', 2); return; }
+    if (cl.contains('eye')) { n.setAttribute('fill', WHITE); return; }
+    if (isBlush(f)) { n.setAttribute('fill', '#FF4FA3'); n.setAttribute('opacity', '.5'); return; }
+    const op = parseFloat(n.getAttribute('opacity') || 1);
+    if (hasF && !hasS && op < 1) return n.remove();
+    if (hasF && isHex(f)) {
+      n.setAttribute('fill', BG);
+      const small = (+n.getAttribute('r') || +n.getAttribute('rx') || 99) < 4.5;
+      if (small && !hasS) { n.setAttribute('fill', neon(f)); return; }
+      if (hasS) { n.setAttribute('stroke', neon(f)); sw(n, .7); }
+      else if (!n.hasAttribute('data-ns')) { n.setAttribute('stroke', neon(f)); n.setAttribute('stroke-width', 2.6); }
+      return;
+    }
+    if (hasS && isHex(s)) {
+      const inner = sib(n, 1), outer = sib(n, -1);
+      if (outer && parseFloat(outer.getAttribute('stroke-width')) > parseFloat(n.getAttribute('stroke-width'))) { n.setAttribute('stroke', BG); return; }
+      if (inner) { n.setAttribute('stroke', neon(inner.getAttribute('stroke'))); return; }
+      n.setAttribute('stroke', neon(s)); sw(n, .8);
+    }
+  });
+  wrap(el, { filter: 'url(#neonGlow)' });
+  return el;
+}
+
+/* ---------- Cartoon-to-ink blends ---------- */
+const PAPER = '#F4EFE4', INK = '#1A1918', CIN = '#B8352B';
+const isCinnabar = c => { const [h, s, l] = hsl(c); return (h <= 14 || h >= 345) && s > .45 && l > .3 && l < .74; };
+const inkWashOf = c => isCinnabar(c) ? mix(PAPER, CIN, .82) : mix(mix(PAPER, INK, Math.pow(1 - lum(c), 1.35) * .78), c, .3);
+const inkLineOf = c => isCinnabar(c) ? CIN : mix(PAPER, INK, Math.min(1, .62 + (1 - lum(c)) * .5));
+/* fill: how far colours move toward ink wash; line: how inky the outlines get; rough: brush wobble; grain: paper texture */
+function blendMaker({ fill: t, line: lt, rough, grain }) {
+  const id = 'blend' + Math.round(t * 100);
+  document.querySelector('svg[aria-hidden] defs').insertAdjacentHTML('beforeend', `
+    <filter id="${id}" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="${rough}" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="9" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .05 -${(.6 * grain).toFixed(2)} 0 0 0 ${(.38 * grain).toFixed(2)}" result="ga"/>
+      <feComposite in="ga" in2="d" operator="in" result="gi"/>
+      <feMerge><feMergeNode in="d"/><feMergeNode in="gi"/></feMerge>
+    </filter>`);
+  return fn => {
+    const el = build(fn(false));
+    each(el, (n, { f, s, hasF, hasS, cl }) => {
+      if (cl.contains('gs') || cl.contains('hl') || cl.contains('eyew')) return;
+      if (isBlush(f)) { n.setAttribute('fill', mix(C.blush, CIN, t * .7)); n.setAttribute('opacity', (.72 - .4 * t).toFixed(2)); return; }
+      if (cl.contains('eye')) { n.setAttribute('fill', mix(f, INK, lt)); return; }
+      if (hasF && isHex(f)) {
+        const solid = n.hasAttribute('data-solid') || lum(f) < .12;
+        n.setAttribute('fill', mix(f, solid ? inkLineOf(f) : inkWashOf(f), solid ? Math.max(t, lt * .6) : t));
+      }
+      if (hasS && isHex(s)) {
+        const isLine = hasF || lum(s) < .5 || isCinnabar(s);
+        n.setAttribute('stroke', mix(s, isLine ? inkLineOf(s) : inkWashOf(s), isLine ? lt : t));
+      }
+    });
+    wrap(el, { filter: `url(#${id})` });
+    return el;
+  };
+}
+
+const halfway = blendMaker({ fill: .45, line: 1, rough: 4, grain: .35 });
+const inkColour = blendMaker({ fill: .78, line: 1, rough: 4, grain: .5 });
+const hslHex = (h, s, l) => { const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l), f = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)); return hex([f(0), f(8), f(4)].map(v => v * 255)); };
+const DEFS = document.querySelector('svg[aria-hidden] defs');
+DEFS.insertAdjacentHTML('beforeend', `
+  <filter id="stickerFx" x="-15%" y="-15%" width="130%" height="135%">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="7" result="d"/>
+    <feFlood flood-color="#fff"/><feComposite in2="d" operator="in" result="w"/>
+    <feGaussianBlur in="d" stdDeviation="3" result="sb"/><feOffset in="sb" dy="4" result="so"/>
+    <feFlood flood-color="#28465A" flood-opacity=".3"/><feComposite in2="so" operator="in" result="s"/>
+    <feMerge><feMergeNode in="s"/><feMergeNode in="w"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="popFx" x="-10%" y="-10%" width="130%" height="130%">
+    <feOffset in="SourceAlpha" dx="6" dy="6" result="o"/>
+    <feFlood flood-color="#1C2A6B"/><feComposite in2="o" operator="in" result="s"/>
+    <feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="premiumFx" x="-15%" y="-15%" width="130%" height="135%">
+    <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity=".6"/>
+  </filter>
+  <filter id="toyFx" x="-15%" y="-15%" width="130%" height="135%">
+    <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#7A4028" flood-opacity=".28"/>
+  </filter>
+  <linearGradient id="goldFoil" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFF3C4"/><stop offset=".35" stop-color="#F2C54B"/><stop offset=".6" stop-color="#C58A1C"/><stop offset=".85" stop-color="#F7DC86"/><stop offset="1" stop-color="#B57D14"/>
+  </linearGradient>
+  <radialGradient id="lacquer" cx=".38" cy=".3" r=".8">
+    <stop offset="0" stop-color="#F0444A"/><stop offset=".55" stop-color="#C3172A"/><stop offset="1" stop-color="#7E0B18"/>
+  </radialGradient>`);
+
+/* More cartoon: white die-cut sticker edge */
+function sticker(fn) {
+  const el = build(fn(false));
+  el.querySelectorAll('.gs').forEach(n => n.remove());
+  wrap(el, { filter: 'url(#stickerFx)' });
+  return el;
+}
+
+/* More cartoon: soft shaded toy, no outlines */
+const toyGrad = c => {
+  const id = 'tg' + c.slice(1).toLowerCase();
+  if (!document.getElementById(id)) DEFS.insertAdjacentHTML('beforeend', `<radialGradient id="${id}" cx=".38" cy=".32" r=".78"><stop offset="0" stop-color="${mix(c, '#ffffff', .45)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${mix(c, '#000000', .25)}"/></radialGradient>`);
+  return `url(#${id})`;
+};
+function toy(fn) {
+  const el = build(fn(false));
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs')) { n.setAttribute('opacity', '.22'); return; }
+    if (isBlush(f) || cl.contains('hl') || cl.contains('eye') || cl.contains('eyew')) return;
+    if (hasF && isHex(f)) { n.setAttribute('fill', toyGrad(f)); if (hasS) n.setAttribute('stroke', 'none'); }
+  });
+  wrap(el, { filter: 'url(#toyFx)' });
+  return el;
+}
+
+/* More poppy: turned-up colours, black lines, hard offset shadow */
+function pop(fn) {
+  const el = build(fn(false)), LINE = '#15101C';
+  const vivid = c => { const [h, s, l] = hsl(c); if (s < .12) return l > .85 ? '#FFFFFF' : c; return hslHex(h, Math.min(1, s * 1.3 + .1), Math.min(.62, Math.max(.45, l))); };
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs')) return n.remove();
+    if (isBlush(f)) { n.setAttribute('fill', '#FF5FA8'); n.setAttribute('opacity', '.85'); return; }
+    if (cl.contains('eye')) { n.setAttribute('fill', LINE); return; }
+    if (cl.contains('hl') || cl.contains('eyew')) return;
+    if (hasF && isHex(f)) { const [, sat, l] = hsl(f); n.setAttribute('fill', l < .32 && sat > .2 ? LINE : vivid(f)); }
+    if (hasS && isHex(s)) {
+      if (hasF || hsl(s)[2] < .4) { n.setAttribute('stroke', LINE); if (hasF) sw(n, 1.15); }
+      else n.setAttribute('stroke', vivid(s));
+    }
+  });
+  wrap(el, { filter: 'url(#popFx)' });
+  return el;
+}
+
+/* Sharper: same colours, fine even lines, no texture */
+function sharp(fn) {
+  const el = build(fn(false));
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs') || (f === C.gold && !hasS)) return n.remove();
+    if (hasF && hasS && isHex(s)) { n.setAttribute('stroke', mix(s, '#1A1010', .55)); sw(n, .5); }
+  });
+  return el;
+}
+
+/* More ink: grey washes, red only as a pale tint */
+function fullInk(fn) {
+  const el = build(fn(false));
+  const washG = c => mix(PAPER, INK, Math.pow(1 - lum(c), 1.3) * .62);
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs')) { n.setAttribute('fill', INK); n.setAttribute('opacity', '.07'); return; }
+    if (isBlush(f)) { n.setAttribute('fill', CIN); n.setAttribute('opacity', '.22'); return; }
+    if (cl.contains('eye')) { n.setAttribute('fill', INK); return; }
+    if (hasF && isHex(f)) n.setAttribute('fill', isCinnabar(f) ? mix(PAPER, CIN, .38) : lum(f) < .12 ? INK : washG(f));
+    if (hasS && isHex(s)) n.setAttribute('stroke', hasF || lum(s) < .5 ? mix(PAPER, INK, .92) : washG(s));
+  });
+  wrap(el, { filter: 'url(#inkRough)' });
+  return el;
+}
+
+/* More premium: lacquer red and gold foil */
+function premium(fn) {
+  const el = build(fn(false));
+  const role = c => { const [h, s, l] = hsl(c); if (s > .4 && (h < 16 || h > 340) && l > .35 && l < .7) return 'red'; if (s > .4 && h >= 30 && h <= 60 && l > .45) return 'gold'; if (l > .9) return 'white'; return 'other'; };
+  each(el, (n, { f, s, hasF, hasS, cl }) => {
+    if (cl.contains('gs')) { n.setAttribute('fill', '#000'); n.setAttribute('opacity', '.4'); return; }
+    if (isBlush(f)) { n.setAttribute('opacity', '.45'); return; }
+    if (cl.contains('hl') || cl.contains('eyew') || cl.contains('eye')) return;
+    if (hasF && isHex(f)) { const r = role(f); n.setAttribute('fill', r === 'red' ? 'url(#lacquer)' : r === 'gold' ? 'url(#goldFoil)' : r === 'white' ? '#FFF6E6' : f); }
+    if (hasS && isHex(s)) {
+      if (hasF) { n.setAttribute('stroke', role(f) === 'gold' ? '#6E4506' : '#2A0709'); sw(n, .6); }
+      else if (role(s) === 'gold') n.setAttribute('stroke', 'url(#goldFoil)');
+    }
+  });
+  wrap(el, { filter: 'url(#premiumFx)' });
+  return el;
+}
+
+const LOOKS = [
+  { name: 'Halfway', tag: 'Your pick', note: 'The style you chose: soft colours, brush outlines and paper grain.', cls: 'st-blend', make: halfway, ink: true },
+  { name: 'Cartoon', tag: 'More cartoon', note: 'The original drawing: bright, clean and round.', cls: 'st-cartoon', make: fn => build(fn(false)) },
+  { name: 'Sticker', tag: 'More cartoon', note: 'Cartoon with a thick white die-cut edge, like a sticker on a laptop.', cls: 'st-sticker', make: sticker },
+  { name: 'Soft 3D toy', tag: 'More cartoon', note: 'No outlines and soft shading on every part, like a plush or vinyl toy.', cls: 'st-toy', make: toy },
+  { name: 'Pop', tag: 'More poppy', note: 'Turned-up colours, black outlines and a hard shadow on bright turquoise.', cls: 'st-pop', make: pop },
+  { name: 'Sharp and clean', tag: 'Sharper', note: 'Fine dark lines, flat colour, no shadow or sparkles. Crisp and minimal at any size.', cls: 'st-sharp', make: sharp },
+  { name: 'Lacquer and gold', tag: 'More premium', note: 'Glossy lacquer red and gold foil on black, like a New Year gift box.', cls: 'st-premium', make: premium },
+  { name: 'Ink with colour', tag: 'More ink', note: 'Further toward ink: paler colour washes and more paper grain.', cls: 'st-blend', make: inkColour, ink: true },
+  { name: 'Full ink', tag: 'More ink', note: 'A real ink painting: grey washes and bold brush lines, with the red only as a pale tint.', cls: 'st-ink', make: fullInk, ink: true },
+  { name: 'Paper-cut', tag: 'Something else', note: 'Cut from red paper, for festive moments like Chinese New Year.', cls: 'st-paper', make: paperCut },
+];
+
+const host = document.getElementById('sections');
+const grid = document.createElement('div');
+grid.className = 'pgrid';
+LOOKS.forEach(look => {
+  const t = document.createElement('article');
+  t.className = 't ' + look.cls;
+  t.innerHTML = `<div class="stage" role="img" aria-label="Shi Shi, ${look.name} look"></div><div class="meta"><div class="mini"></div><div><span class="tag">${look.tag}</span><h3>${look.name}</h3><p>${look.note}</p></div></div>`;
+  const stage = t.querySelector('.stage');
+  stage.appendChild(look.make(lion));
+  if (look.ink) stage.insertAdjacentHTML('beforeend', '<span class="vname">狮狮</span><span class="seal">玉</span>');
+  t.querySelector('.mini').appendChild(look.make(lion));
+  grid.appendChild(t);
+});
+host.appendChild(grid);
+</script>
+</body>
+</html>

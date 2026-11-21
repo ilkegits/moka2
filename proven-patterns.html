@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proven app patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4EEE3; --card:#FCF9F3; --ink:#1E1A15; --ink-2:#4A433A; --muted:#8A7F70; --line:#E3D8C6;
+  --seal:#B23A2C; --seal-soft:rgba(178,58,44,.09); --jade:#3F7A5F; --jade-soft:rgba(63,122,95,.12); --gold:#B5893A; --gold-soft:rgba(181,137,58,.14);
+  --hanzi:"Noto Serif SC","Songti SC",serif; --ui:"Satoshi",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.page{max-width:1080px;margin:0 auto;padding:48px 20px 80px}
+header{max-width:700px;margin-bottom:34px}
+h1{font-size:clamp(32px,6vw,52px);font-weight:900;letter-spacing:-.03em;line-height:1.02;margin:0 0 14px}
+h1 span{color:var(--seal)}
+header p{margin:0 0 10px;color:var(--ink-2);font-size:17px}
+.key{display:flex;flex-wrap:wrap;gap:10px 18px;margin:22px 0 0;font-size:14px;color:var(--ink-2)}
+.key span{display:inline-flex;align-items:center;gap:8px}
+.st{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-family:var(--hanzi);font-weight:600;font-size:18px;color:#fff;transform:rotate(-4deg)}
+.st.m{background:var(--seal)} .st.r{background:var(--gold)} .st.c{background:#9C9282}
+.key .st{width:26px;height:26px;font-size:14px;border-radius:7px}
+h2{display:flex;align-items:baseline;gap:10px;font-size:26px;font-weight:900;letter-spacing:-.02em;margin:46px 0 14px}
+h2 em{font-style:normal;font-family:var(--hanzi);font-weight:600;color:var(--seal);font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.p{display:flex;flex-direction:column;gap:8px;padding:18px 18px 16px;border-radius:18px;background:var(--card);box-shadow:0 0 0 1px rgba(120,95,60,.08),0 2px 0 rgba(120,95,60,.08)}
+.p-top{display:flex;align-items:flex-start;gap:12px}
+.p h3{flex:1;margin:2px 0 0;font-size:18px;font-weight:900;letter-spacing:-.01em;line-height:1.25}
+.p .look{margin:0;font-size:14.5px;color:var(--ink-2)}
+.p .ev{margin:0;font-size:14.5px}
+.p .ev b{font-weight:900}
+.p .src{margin:0;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.p .src a{color:var(--muted)}
+.p .src a:hover{color:var(--seal)}
+.tag{align-self:flex-start;margin-top:4px;padding:4px 10px;border-radius:8px;font-size:12.5px;font-weight:700}
+.tag.in{background:var(--jade-soft);color:var(--jade)}
+.tag.pre{background:var(--gold-soft);color:#8A6420}
+.tag.no{background:rgba(120,95,60,.1);color:var(--ink-2)}
+.note{max-width:700px;margin:40px 0 0;padding:18px 20px;border-radius:16px;background:var(--seal-soft);font-size:15px;color:var(--ink-2)}
+.note b{color:var(--ink)}
+a{color:var(--seal)}
+a:focus-visible{outline:2px solid var(--seal);outline-offset:2px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <h1>Proven app patterns, <span>built into ShiCards</span></h1>
+  <p>Layouts and habits that top learning apps use, each with the evidence behind it and a free source you can open. Collected on 18 November 2026 from Duolingo's own blog, RevenueCat, Adapty, Superwall, Calm, Nielsen Norman Group and published studies. No paid libraries were used.</p>
+  <p>Almost every number comes from a big app or a company that sells app tools. Treat them as a direction, not a promise for a small app.</p>
+  <div class="key">
+    <span><i class="st m">实</i>Measured: an A/B test or field result</span>
+    <span><i class="st r">研</i>Research study</span>
+    <span><i class="st c">常</i>Common practice, no published number</span>
+  </div>
+</header>
+
+<h2>Onboarding <em>入门</em></h2>
+<div class="grid">
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>A real lesson before anything else</h3></div>
+    <p class="look">No account, no sign-up wall. Onboarding only finds your level. There is still no sign-up wall: after the check you go straight into the app, and your first round is your first lesson.</p>
+    <p class="ev">Duolingo moved sign-up behind the first lesson: <b>about +20% daily users</b>.</p>
+    <p class="src"><a href="https://review.firstround.com/the-tenets-of-a-b-testing-from-duolingos-master-growth-hacker">First Round Review</a></p>
+    <span class="tag no">Lesson kept out of onboarding on purpose; no sign-up wall</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>You pick the daily goal, nothing pre-picked</h3></div>
+    <p class="look">Four goals in minutes (5, 10, 15, 20). Each shows how soon you finish your level at that pace. The button stays off until you choose and says “Commit to my goal”.</p>
+    <p class="ev">At Duolingo, making people choose and the word “Commit” instead of “Continue” were both wins. Pre-selecting the harder goal lost.</p>
+    <p class="src"><a href="https://github.com/ChatPRD/lennys-podcast-transcripts/blob/main/episodes/jackson-shuttleworth/transcript.md">Lenny's Podcast, Duolingo streak lead</a></p>
+    <span class="tag in">In the app: onboarding, Streak page</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Why you're learning, your level, then a placement check</h3></div>
+    <p class="look">Pick as many reasons as you like, then Beginner, Intermediate, Advanced or Pro. Up to four rounds of 12 characters move up or down until they find your HSK level, which sets where Hanzi of the day and new words start.</p>
+    <p class="ev">Duolingo uses this order and offers a placement test so learners skip what they know. Only ask what changes the app, and say why.</p>
+    <p class="src"><a href="https://goodux.appcues.com/blog/duolingo-user-onboarding">Appcues GoodUX</a> · <a href="https://www.nngroup.com/articles/mobile-app-onboarding/">NN/g</a></p>
+    <span class="tag in">In the app: onboarding pages 2 to 5</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>A progress bar that starts fast</h3></div>
+    <p class="look">The bar jumps on the first steps and slows near the end.</p>
+    <p class="ev">A study of 32 experiments: steady bars didn't help; <b>fast-then-slow bars cut drop-off</b>, slow starts made it worse.</p>
+    <p class="src"><a href="https://openaccess.city.ac.uk/id/eprint/14427/">City, University of London</a></p>
+    <span class="tag in">In the app: top of every onboarding page</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>A head start</h3></div>
+    <p class="look">The characters you tap in the check go straight into your word bank as known, so you never start from zero.</p>
+    <p class="ev">Loyalty cards with 2 free stamps were finished <b>34% vs 19%</b> of the time.</p>
+    <p class="src"><a href="https://doi.org/10.1086/500480">Nunes &amp; Drèze, 2006</a></p>
+    <span class="tag in">In the app: character check</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>Ask for the reminder after the first win</h3></div>
+    <p class="look">Right after you choose your daily goal: pick a time and tap “Remind me”, or “Not now”. On phones without reminders, it offers Add to home screen instead.</p>
+    <p class="ev">Calm: people who set a reminder stayed <b>about 3×</b> as often; asking after the first session got 40% to set one.</p>
+    <p class="src"><a href="https://amplitude.com/blog/calm-increased-retention-amplitude">Amplitude on Calm</a> · <a href="https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/">WebKit: web push on iPhone</a></p>
+    <span class="tag in">In the app: last onboarding page</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>Hints on the spot, not a slide tour</h3></div>
+    <p class="look">“Tap every one you know” sits on the character check itself. No swipe-through welcome slides.</p>
+    <p class="ev">NN/g's test: tutorial slides didn't help, and made tasks <b>feel harder</b>.</p>
+    <p class="src"><a href="https://www.nngroup.com/articles/mobile-tutorials/">NN/g, mobile tutorials</a></p>
+    <span class="tag in">In the app: character check</span></article>
+</div>
+
+<h2>Streak and habit <em>习惯</em></h2>
+<div class="grid">
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>Daily goal kept apart from the streak</h3></div>
+    <p class="look">One round keeps the streak. The goal is extra: a green ring around the flame fills as you practise.</p>
+    <p class="ev">Duolingo split the two: <b>+3.3% day-14 retention</b>, +40% more people on 7-day streaks.</p>
+    <p class="src"><a href="https://blog.duolingo.com/improving-the-streak">Duolingo blog</a></p>
+    <span class="tag in">In the app: flame on Decks, Streak page, end of round</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>“Streak saved” page</h3></div>
+    <p class="look">After a freeze covers a missed day, a full page shows the ice-blue flame, the week, and freezes left.</p>
+    <p class="ev">Free freezes were “one of the biggest wins”; two beat one, three taught people to skip.</p>
+    <p class="src"><a href="https://github.com/ChatPRD/lennys-podcast-transcripts/blob/main/episodes/jackson-shuttleworth/transcript.md">Lenny's Podcast</a> · <a href="https://blog.duolingo.com/how-streaks-keep-duolingo-learners-committed-to-their-language-goals">Duolingo blog</a></p>
+    <span class="tag in">In the app: replaces the old small message</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>Win a lost streak back, free</h3></div>
+    <p class="look">“Practise 3 days in a row this week and it comes back.” Three bars fill as you go.</p>
+    <p class="ev">Duolingo's free Earn Back was a “major retention win”. Seven studies: a broken streak hurts less when it can be repaired.</p>
+    <p class="src"><a href="https://www.colorado.edu/business/faculty-research/2023/04/19/or-track-how-broken-streaks-affect-consumer-decisions">Silverman &amp; Barasch, 2023</a></p>
+    <span class="tag in">In the app: welcome back page, Streak page</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Welcome back, gently</h3></div>
+    <p class="look">After 3+ days away: Shi Shi cheering, “Life happens”, and a 5-card warm-up instead of the full pile.</p>
+    <p class="ev">Returning users are about 20% less likely to stick; the first 3–4 days after a lapse are the best time to win them back.</p>
+    <p class="src"><a href="https://blog.duolingo.com/back-from-the-brink-what-duolingo-learned-about-its-resurrected-users">Duolingo blog</a></p>
+    <span class="tag in">In the app: shows once on your first visit back</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Milestone celebrations</h3></div>
+    <p class="look">A full page at 3, 7, 14, 30, 50, 100, 150, 200, 365 days, with a Share button.</p>
+    <p class="ev">Retention jumps most from day 1 to 3 and flattens after day 7, so the early milestones matter most.</p>
+    <p class="src"><a href="https://duolingo.deconstructoroffun.com/mechanics/streaks">Deconstructor of Fun</a></p>
+    <span class="tag in">In the app: shows once per milestone</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>Badges for real skills</h3></div>
+    <p class="look">Nine gold seals on Profile, each with its own progress bar: words, streaks, writing, stories, HSK 1.</p>
+    <p class="ev">Duolingo's badges: <b>+2.4% daily users</b>. A badge for just signing up did nothing.</p>
+    <p class="src"><a href="https://review.firstround.com/the-tenets-of-a-b-testing-from-duolingos-master-growth-hacker">First Round Review</a></p>
+    <span class="tag in">In the app: Profile</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>A dot on the app icon</h3></div>
+    <p class="look">The installed app's icon shows a dot until today's practice is done.</p>
+    <p class="ev">Duolingo's red dot: <b>+6% daily users</b>, then +1.6% more.</p>
+    <p class="src"><a href="https://review.firstround.com/the-tenets-of-a-b-testing-from-duolingos-master-growth-hacker">First Round Review</a> · <a href="https://webkit.org/blog/14112/badging-for-home-screen-web-apps/">WebKit: icon badges</a></p>
+    <span class="tag in">In the app: installed app only</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Empty states that point somewhere</h3></div>
+    <p class="look">With nothing to review, Learn says “All caught up” with a Read button instead of nothing.</p>
+    <p class="ev">NN/g: say why it's empty and give a direct way forward.</p>
+    <p class="src"><a href="https://www.nngroup.com/articles/empty-state-interface-design/">NN/g, empty states</a></p>
+    <span class="tag in">In the app: Learn</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>End of round with tomorrow's preview</h3></div>
+    <p class="look">Cheer, what you remembered, your streak, today's goal, and “Tomorrow: 3 cards”.</p>
+    <p class="ev">The Hooked model's last step: set up the next visit.</p>
+    <p class="src"><a href="https://amplitude.com/blog/the-hook-model">Amplitude</a></p>
+    <span class="tag in">Already in the app; goal line added</span></article>
+</div>
+
+<h2>Reading <em>阅读</em></h2>
+<div class="grid">
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>A story says how much of it you can read</h3></div>
+    <p class="look">The cover shows “You know 12 of 17 words” with a bar, and new stories pick their new words near your own HSK level.</p>
+    <p class="ev">Knowing 95% of a text's words is the least for adequate reading; 98% is best. Later studies argue about the exact number, so it is a guide, not a rule.</p>
+    <p class="src"><a href="https://nflrc.hawaii.edu/rfl/item-detail/206">Laufer &amp; Ravenhorst-Kalovski, 2010</a></p>
+    <span class="tag in">In the app: Read, the story cover</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>A shelf that fills, with the count in sight</h3></div>
+    <p class="look">Every finished story is a book on a shelf of 20. “4 of 20” sits beside it, and the story you are on is named. A full shelf goes on: a story read again turns its book gold.</p>
+    <p class="ev">People speed up as a reward gets closer: café customers bought coffee 20% faster as they neared the free one.</p>
+    <p class="src"><a href="https://business.columbia.edu/sites/default/files-efs/pubfiles/1200/goalgradient.pdf">Kivetz, Urminsky &amp; Zheng, 2006</a></p>
+    <span class="tag in">In the app: Read, Your shelf</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>The streak moves on right after the story</h3></div>
+    <p class="look">The first story of the day ends on a page with the new book, “day 5” and the week's ticks. The cover says a story keeps the streak.</p>
+    <p class="ev">Duolingo's new animation after extending a streak: new learners <b>1.7% more likely</b> to still be there a week later.</p>
+    <p class="src"><a href="https://blog.duolingo.com/how-duolingo-streak-builds-habit">Duolingo blog</a></p>
+    <span class="tag in">In the app: Read, after “I finished this story”</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>The same words, again and again</h3></div>
+    <p class="look">Stories are written with words from your word bank, and every book on the shelf can be read again.</p>
+    <p class="ev">After one easy book, readers kept about 1 new word in 25 three months on, and none they had met fewer than 8 times. Words need many meetings.</p>
+    <p class="src"><a href="https://nflrc.hawaii.edu/rfl/item-detail/78">Waring &amp; Takaki, 2003</a></p>
+    <span class="tag in">In the app: Read, every story</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>A quick check before the story is done</h3></div>
+    <p class="look">“I finished this story” first asks what each new word of the story means, with three answers each. A wrong answer shows the right one and you carry on.</p>
+    <p class="ev">Students who took one test on a text recalled <b>56%</b> of it a week later; those who read it again, 42%. Minutes after reading, re-reading was still ahead: the gain shows up later. Their test was retelling a text, not picking a word's meaning.</p>
+    <p class="src"><a href="https://profiles.wustl.edu/en/publications/test-enhanced-learning-taking-memory-tests-improves-long-term-ret/">Roediger &amp; Karpicke, 2006</a></p>
+    <span class="tag in">In the app: Read, after “I finished this story”</span></article>
+</div>
+
+<h2>Map <em>地图</em></h2>
+<div class="grid">
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>The goal stands on the map</h3></div>
+    <p class="look">The monument you are saving for is a ghost on its spot, with Shi Shi over it and a gold ring on the ground that closes as coins come in. The map opens by gliding down to it.</p>
+    <p class="ev">Goal-gradient effect: people speed up as a reward gets nearer, and visible progress makes them come back sooner. Coffee-card holders bought faster with each stamp.</p>
+    <p class="src"><a href="https://doi.org/10.1509/jmkr.43.1.39">Kivetz, Urminsky &amp; Zheng, 2006</a></p>
+    <span class="tag in">In the app: Map</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>Show the smaller number</h3></div>
+    <p class="look">The saving bar reads “220 / 400” before halfway and “180 to go” after it.</p>
+    <p class="ev">Small-area hypothesis: effort rises when attention is on whichever is smaller, what is done or what is left.</p>
+    <p class="src"><a href="https://doi.org/10.1086/663827">Koo &amp; Fishbach, 2012</a></p>
+    <span class="tag in">In the app: Map, Shop, monument pages</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>You pick your own goal</h3></div>
+    <p class="look">Every monument has a price tag on its real spot. Tap one and “Save for it” moves Shi Shi there; tags turn gold when you can pay.</p>
+    <p class="ev">Self-determination theory: a goal people choose themselves holds motivation better than one handed to them.</p>
+    <p class="src"><a href="https://doi.org/10.1037/0003-066X.55.1.68">Ryan &amp; Deci, 2000</a></p>
+    <span class="tag in">In the app: Map</span></article>
+  <article class="p"><div class="p-top"><i class="st r">研</i><h3>Today's coins, every visit</h3></div>
+    <p class="look">A small gold tag on the saving bar: “+60 today”.</p>
+    <p class="ev">The progress principle: of everything that lifts motivation on a given day, seeing even a small step forward does the most.</p>
+    <p class="src"><a href="https://hbr.org/2011/05/the-power-of-small-wins">Amabile &amp; Kramer, HBR 2011</a></p>
+    <span class="tag in">In the app: Map</span></article>
+</div>
+
+<h2>Paywall <em>付费</em></h2>
+<div class="grid">
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>“How your free trial works” timeline</h3></div>
+    <p class="look">Today: everything unlocks. Day 5: we remind you. Day 7: you pay, cancel any time before.</p>
+    <p class="ev">Blinkist: <b>+23% conversion, −55% complaints</b>. Adapty: +12–36% revenue per user in winning tests. One test won trial starts but lost on retention.</p>
+    <p class="src"><a href="https://www.revenuecat.com/blog/growth/how-top-apps-approach-paywalls/">RevenueCat</a> · <a href="https://adapty.io/blog/paywall-optimization-tests/">Adapty</a> · <a href="https://jeffreybunn.substack.com/p/free-trial-timeline-vs-long-form-pricing-page">Clearful test</a></p>
+    <span class="tag pre">Preview only: Developer › Show paywall layout</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>Yearly first, priced per month</h3></div>
+    <p class="look">Two plans. Yearly is picked first with “SAVE 50%” and $2.50/month; Monthly below at full price.</p>
+    <p class="ev">Yearly-first layouts: <b>+25–40% revenue per user</b>. Picking yearly first didn't lower sales.</p>
+    <p class="src"><a href="https://adapty.io/blog/paywall-optimization-tests/">Adapty</a></p>
+    <span class="tag pre">Preview only</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>Headline about your own goal</h3></div>
+    <p class="look">Picked “Travel” in onboarding? The headline says “Read menus and signs on your trip”.</p>
+    <p class="ev">ASL Bloom: <b>+15% trial starts</b> after building around the user's goal.</p>
+    <p class="src"><a href="https://www.revenuecat.com/blog/growth/asl-bloom-applica-case-study/">RevenueCat case study</a></p>
+    <span class="tag pre">Preview only</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Close and “Not now” in plain sight</h3></div>
+    <p class="look">An X in the corner from the first second, and a “Not now” link under the button. The price sits right under the trial wording.</p>
+    <p class="ev">Hidden or delayed close buttons and trial text louder than the price get apps rejected.</p>
+    <p class="src"><a href="https://adapty.io/blog/paywall-experiments-playbook/">Adapty</a> · <a href="https://developer.apple.com/forums/thread/127616">Apple forums</a></p>
+    <span class="tag pre">Preview only</span></article>
+</div>
+
+<h2>Left out on purpose <em>不用</em></h2>
+<div class="grid">
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>“Building your plan” loading page</h3></div>
+    <p class="look">A fake progress screen before the app opens.</p>
+    <p class="ev">Mixed: one education app <b>gained 22%</b> by removing it.</p>
+    <p class="src"><a href="https://adapty.io/blog/how-to-fix-your-onboarding-flow/">Adapty</a></p>
+    <span class="tag no">Not used</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Social proof and ratings</h3></div>
+    <p class="look">“Loved by 1 million learners” and star ratings.</p>
+    <p class="ev">Only measured mixed in with other changes. ShiCards has no real numbers yet, and fake ones are a dark pattern.</p>
+    <p class="src"><a href="https://adapty.io/blog/how-to-fix-your-onboarding-flow/">Adapty</a></p>
+    <span class="tag no">Not used until real reviews exist</span></article>
+  <article class="p"><div class="p-top"><i class="st m">实</i><h3>Leagues and leaderboards</h3></div>
+    <p class="look">Weekly leagues against other learners.</p>
+    <p class="ev">Strong at Duolingo (+17% learning time) but needs accounts and a server. Fake opponents would be a dark pattern.</p>
+    <p class="src"><a href="https://blog.duolingo.com/time-spent-learning-well">Duolingo blog</a></p>
+    <span class="tag no">Not possible without accounts</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Countdown timers, guilt-trip copy, hidden close</h3></div>
+    <p class="look">“Offer ends in 09:59”, “No, I don't want to learn”.</p>
+    <p class="ev">The EU's proposed Digital Fairness Act targets fake urgency; streak breaks hurt more when people are blamed.</p>
+    <p class="src"><a href="https://www.deceptive.design/">deceptive.design</a> · <a href="https://www.euronews.com/2026/11/11/eu-targets-subscription-traps-addictive-design-and-hidden-fees-with-new-digital-rules">Euronews</a></p>
+    <span class="tag no">Never</span></article>
+  <article class="p"><div class="p-top"><i class="st c">常</i><h3>Home-screen widgets and store rating prompts</h3></div>
+    <p class="look">Duolingo's widget users retain far better.</p>
+    <p class="ev">A web app can't make phone widgets or ask for a store rating. The icon dot and Add to home screen stand in.</p>
+    <p class="src"><a href="https://blog.duolingo.com/widget-feature">Duolingo blog</a></p>
+    <span class="tag no">Not possible for a web app</span></article>
+</div>
+
+<p class="note"><b>Still to try with the reminder server:</b> send the reminder about 23½ hours after your last practice, rotate several messages so none repeats within five days, and stop after a week of silence. Duolingo's version gave +2% new-user retention (<a href="https://research.duolingo.com/papers/yancey.kdd20.pdf">Duolingo research paper</a>).</p>
+</div>
+</body>
+</html>

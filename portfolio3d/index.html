@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monument portfolio</title>
+<style>
+  :root{--bg:#F3EEE6;--ink:#231C16;--muted:#7A6E62;--card:#FFFFFF;--line:#E3DACB;--seal:#B23A2C}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Segoe UI",system-ui,sans-serif}
+  header{padding:28px 20px 6px;max-width:1280px;margin:0 auto}
+  h1{margin:0;font-size:30px;letter-spacing:-.01em}
+  h1 span{color:var(--seal);font-weight:600;margin-left:8px}
+  header p{margin:6px 0 0;color:var(--muted)}
+  #status{color:var(--seal);font-weight:600}
+  nav{position:sticky;top:0;z-index:5;background:rgba(243,238,230,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav div{max-width:1280px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto}
+  nav a{flex:none;padding:7px 12px;border-radius:8px;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;background:#fff;border:1px solid var(--line)}
+  section{max-width:1280px;margin:0 auto;padding:26px 20px 8px}
+  section h2{margin:0;font-size:22px}
+  section h2 span{color:var(--seal);margin-left:8px;font-weight:600}
+  section>p{margin:4px 0 14px;color:var(--muted);max-width:720px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--line);cursor:pointer;transition:transform .15s}
+  .card:hover{transform:translateY(-2px)}
+  .card img,.card .ph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#E9E2D6}
+  .card .t{display:flex;justify-content:space-between;align-items:baseline;padding:9px 12px 11px;gap:8px}
+  .card b{font-size:14.5px}
+  .card small{color:var(--muted);white-space:nowrap}
+  #view{position:fixed;inset:0;background:rgba(20,16,12,.86);display:none;z-index:10;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+  #view.on{display:flex}
+  #view canvas{max-width:100%;max-height:82vh;border-radius:12px;touch-action:none}
+  #view .bar{color:#F3EEE6;display:flex;gap:16px;align-items:center;margin-top:10px}
+  #view button{font:600 14px inherit;padding:8px 14px;border-radius:8px;border:0;background:#F3EEE6;color:#231C16;cursor:pointer}
+</style></head>
+<body>
+<header><h1>Monument portfolio<span>名胜</span></h1>
+<p>Eight monuments for the ShiCards Map, each in six looks. Tap any picture to spin it around. <span id="status">Rendering…</span></p></header>
+<nav><div id="nav"></div></nav>
+<main id="main"></main>
+<div id="view"><canvas id="live"></canvas><div class="bar"><span id="vt"></span><button id="close">Close</button></div></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { MONUMENTS, diorama } from './models.js';
+import { STYLES, dress } from './styles.js';
+
+const q = new URLSearchParams(location.search);
+const only = q.get('style'), W = +(q.get('w') || 960), H = Math.round(W * .75);
+const styles = only ? STYLES.filter(s => only.split(',').includes(s.id)) : STYLES;
+const mons = q.get('mon') ? MONUMENTS.filter(m => q.get('mon').split(',').includes(m.id)) : MONUMENTS;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
+const pmrem = new THREE.PMREMGenerator(renderer), envTex = pmrem.fromScene(new RoomEnvironment(), .04).texture;
+
+function build(M, S) {
+  const scene = new THREE.Scene(); scene.background = S.bg();
+  if (S.env) scene.environment = envTex;
+  S.lights().forEach(l => scene.add(l));
+  const model = dress(diorama(M, S.detail), S); scene.add(model);
+  // frame the whole diorama: find the distance at which every corner of its box fits the picture
+  const b = new THREE.Box3().setFromObject(model), cam = new THREE.PerspectiveCamera(26, W / H, .5, 400);
+  const tgt = b.getCenter(new THREE.Vector3()), az = THREE.MathUtils.degToRad(32), el = THREE.MathUtils.degToRad(22);
+  const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+  const right = new THREE.Vector3().crossVectors(dir.clone().negate(), new THREE.Vector3(0, 1, 0)).normalize(), up = new THREE.Vector3().crossVectors(right, dir.clone().negate());
+  const tV = Math.tan(THREE.MathUtils.degToRad(13)) * .93, tH = tV * W / H;
+  model.updateMatrixWorld(true); const pts = [], v = new THREE.Vector3();   // real points of the model, not its box
+  model.traverse(o => { if (!o.isMesh || o.isInstancedMesh) return; const p = o.geometry.attributes.position, st = Math.max(1, Math.floor(p.count / 400));
+    for (let i = 0; i < p.count; i += st) pts.push(v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld).clone()); });
+  const fit = () => { let d = 0; for (const p of pts) { v.copy(p).sub(tgt); d = Math.max(d, v.dot(dir) + Math.abs(v.dot(right)) / tH, v.dot(dir) + Math.abs(v.dot(up)) / tV); } return d; };
+  let dist = fit();
+  for (let pass = 0; pass < 2; pass++) {   // centre the model in the picture, then fit again
+    cam.position.copy(tgt).addScaledVector(dir, dist); cam.lookAt(tgt); cam.updateMatrixWorld();
+    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; for (const p of pts) { v.copy(p).project(cam); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); }
+    tgt.addScaledVector(right, (x0 + x1) / 2 * tH / .93 * dist).addScaledVector(up, (y0 + y1) / 2 * tV / .93 * dist); dist = fit();
+  }
+  cam.position.copy(tgt).addScaledVector(dir, dist); cam.lookAt(tgt);
+  if (S.fog) scene.fog = new THREE.Fog(S.fog[0], dist * S.fog[1], dist * S.fog[2]);
+  return { scene, cam, tgt, dist };
+}
+function composer(S, scene, cam, dist, w, h) {
+  const c = new EffectComposer(renderer); c.setPixelRatio(1); c.setSize(w, h);
+  c.addPass(new RenderPass(scene, cam));
+  if (S.ao) { const ao = new GTAOPass(scene, cam, w, h); ao.updateGtaoMaterial({ radius: .6, distanceExponent: 1, thickness: 1, scale: 1.2 }); ao.blendIntensity = .9; c.addPass(ao); }
+  if (S.tilt) c.addPass(new BokehPass(scene, cam, { focus: dist, aperture: .0016, maxblur: .006 }));
+  if (S.bloom) c.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), ...S.bloom));
+  c.addPass(new OutputPass()); return c;
+}
+
+const main = document.getElementById('main'), nav = document.getElementById('nav'), status = document.getElementById('status');
+for (const S of styles) {
+  nav.insertAdjacentHTML('beforeend', `<a href="#${S.id}">${S.name}</a>`);
+  main.insertAdjacentHTML('beforeend', `<section id="${S.id}"><h2>${S.name}<span>${S.zh}</span></h2><p>${S.blurb}</p><div class="grid">${mons.map(M =>
+    `<div class="card" data-s="${S.id}" data-m="${M.id}"><div class="ph" id="i-${S.id}-${M.id}"></div><div class="t"><b>${M.name}</b><small>${M.city} ${M.czh}</small></div></div>`).join('')}</div></section>`);
+}
+let n = 0; const total = styles.length * mons.length;
+for (const S of styles) for (const M of mons) {
+  renderer.toneMappingExposure = S.exposure || 1;
+  const { scene, cam, dist } = build(M, S), c = composer(S, scene, cam, dist, W, H);
+  c.render();
+  const img = new Image(); img.src = renderer.domElement.toDataURL('image/jpeg', .9); img.alt = `${M.name} in ${S.name}`;
+  document.getElementById(`i-${S.id}-${M.id}`).replaceWith(img);
+  c.dispose?.(); scene.traverse(o => o.geometry?.dispose());
+  status.textContent = `Rendering ${++n} of ${total}…`;
+  await new Promise(r => requestAnimationFrame(r));
+}
+status.textContent = ''; document.body.dataset.done = '1';
+
+// tap a picture: spin it around
+const view = document.getElementById('view'), live = document.getElementById('live'); let stop = null;
+main.addEventListener('click', e => {
+  const card = e.target.closest('.card'); if (!card) return;
+  const S = STYLES.find(s => s.id === card.dataset.s), M = MONUMENTS.find(m => m.id === card.dataset.m);
+  const lr = new THREE.WebGLRenderer({ canvas: live, antialias: true }), w = Math.min(1100, innerWidth - 32), h = Math.round(w * .75);
+  lr.setPixelRatio(Math.min(2, devicePixelRatio)); lr.setSize(w, h); lr.shadowMap.enabled = true; lr.shadowMap.type = THREE.PCFSoftShadowMap; lr.toneMapping = THREE.ACESFilmicToneMapping; lr.toneMappingExposure = S.exposure || 1;
+  const { scene, cam, tgt } = build(M, S); cam.aspect = w / h; cam.updateProjectionMatrix();
+  if (S.env) scene.environment = new THREE.PMREMGenerator(lr).fromScene(new RoomEnvironment(), .04).texture;
+  const ctl = new OrbitControls(cam, live); ctl.target.copy(tgt); ctl.enableDamping = true; ctl.autoRotate = true; ctl.autoRotateSpeed = .8; ctl.maxPolarAngle = 1.45;
+  let raf = 0; const loop = () => { ctl.update(); lr.render(scene, cam); raf = requestAnimationFrame(loop); }; loop();
+  document.getElementById('vt').textContent = `${M.name} · ${S.name}`; view.classList.add('on');
+  stop = () => { cancelAnimationFrame(raf); ctl.dispose(); lr.dispose(); view.classList.remove('on'); };
+});
+document.getElementById('close').onclick = () => stop?.();
+view.addEventListener('click', e => { if (e.target === view) stop?.(); });
+</script></body></html>

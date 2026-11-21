@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="512" height="512"><defs><filter id="blend45" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="9" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .05 -0.21 0 0 0 0.13" result="ga"/>
+      <feComposite in="ga" in2="d" operator="in" result="gi"/>
+      <feMerge><feMergeNode in="d"/><feMergeNode in="gi"/></feMerge>
+    </filter></defs><g filter="url(#blend45)"><ellipse class="gs" cx="100" cy="192" rx="50" ry="6" fill="#8A6A3A" opacity=".16"/>
+    <ellipse cx="80" cy="182" rx="14" ry="10" fill="#212023" data-solid=""/><ellipse cx="120" cy="182" rx="14" ry="10" fill="#212023" data-solid=""/>
+    <ellipse cx="100" cy="152" rx="38" ry="30" fill="#fbfaf6" stroke="#1a1918" stroke-width="5"/>
+    <circle cx="60" cy="52" r="17" fill="#212023" data-solid=""/><circle cx="140" cy="52" r="17" fill="#212023" data-solid=""/>
+    <ellipse cx="100" cy="92" rx="58" ry="48" fill="#fbfaf6" stroke="#1a1918" stroke-width="5"/>
+    <ellipse cx="76" cy="92" rx="14" ry="17" transform="rotate(28 76 92)" fill="#414044"/>
+    <ellipse cx="124" cy="92" rx="14" ry="17" transform="rotate(-28 124 92)" fill="#414044"/>
+    <ellipse cx="77" cy="90" rx="7" ry="8.4" fill="#fff" class="eyew"/><circle cx="77.6" cy="91.6" r="4" fill="#1a1918" class="eye"/><circle cx="76.2" cy="89.8" r="1.5" fill="#fff" class="hl"/><ellipse cx="123" cy="90" rx="7" ry="8.4" fill="#fff" class="eyew"/><circle cx="123.6" cy="91.6" r="4" fill="#1a1918" class="eye"/><circle cx="122.2" cy="89.8" r="1.5" fill="#fff" class="hl"/>
+    <path d="M94 106Q100 103 106 106Q104 111 100 112Q96 111 94 106Z" fill="#414044"/>
+    <path d="M100 112V114M94 115Q97 120 100 114Q103 120 106 115" fill="none" stroke="#1a1918" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="60" cy="112" rx="8" ry="4.8" fill="#e97a7f" opacity="0.54"/><ellipse cx="140" cy="112" rx="8" ry="4.8" fill="#e97a7f" opacity="0.54"/>
+    <g transform="translate(150 120) rotate(37)">
+      <rect x="-5" y="0" width="10" height="64" rx="4" fill="#dcba84" stroke="#242221" stroke-width="3.5"/>
+      <path d="M-5 26H5M-5 46H5" stroke="#242221" stroke-width="2.5"/>
+      <path d="M-6.5 0C-8 -10 -3 -19 0 -26C3 -19 8 -10 6.5 0Z" fill="#212023" data-solid=""/>
+      <rect x="-7" y="-3" width="14" height="6" rx="2" fill="#d64e45" stroke="#1a1918" stroke-width="2"/>
+    </g>
+    <ellipse cx="78" cy="150" rx="12" ry="10" transform="rotate(-20 78 150)" fill="#212023" data-solid=""/>
+    <ellipse cx="124" cy="154" rx="12" ry="10" transform="rotate(20 124 154)" fill="#212023" data-solid=""/>
+    <circle cx="52" cy="176" r="3" fill="#212023" opacity=".7" data-solid=""/><circle cx="44" cy="168" r="1.8" fill="#212023" opacity=".7" data-solid=""/></g></svg>

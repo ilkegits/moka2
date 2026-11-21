@@ -1,0 +1,36 @@
+# ShiCards daily reminder. Copy to .github/workflows/remind.yml in ilkegits/shicards-log,
+# with remind.mjs at .github/remind.mjs and the secrets VAPID_PUBLIC and VAPID_PRIVATE set on that repo.
+# Runs at five past each hour from 15:00 to 21:00 UTC (17:00 to 22:00 in Central Europe, summer or winter),
+# about 7 short runs a day.
+name: Daily reminder
+on:
+  schedule:
+    - cron: '5 15-21 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: remind
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save --no-audit --no-fund web-push@3.6.7
+      - run: node .github/remind.mjs
+        env:
+          VAPID_PUBLIC: ${{ secrets.VAPID_PUBLIC }}
+          VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
+      - name: Remember who was reminded today
+        run: |
+          if [ -n "$(git status --porcelain remind-sent.json)" ]; then
+            git config user.name "shicards-reminder"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add remind-sent.json
+            git commit -m "reminders sent"
+            git pull --rebase
+            git push
+          fi

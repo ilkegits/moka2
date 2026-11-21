@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Bake monument pictures</title></head>
+<body style="margin:0;background:#222;color:#eee;font:13px system-ui">
+<!-- Bakes the golden-hour pictures the app uses: for one monument (?mon=pearl), the scene at every build step (0 = ground
+     broken, 1-8 = pieces) and a small cut-out of the monument alone for the map. The monument goes up from the ground:
+     each step cuts it at a height that falls between its parts where it can, with bamboo scaffolding at the cut.
+     Results land in <pre id="out"> as JSON, read with Edge's --dump-dom. -->
+<pre id="out"></pre>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { MONUMENTS, diorama } from './models.js';
+import { STYLES, dress } from './styles.js';
+
+const q = new URLSearchParams(location.search), M = MONUMENTS.find(m => m.id === (q.get('mon') || 'pearl')), S = STYLES.find(s => s.id === (q.get('style') || 'golden'));
+const W = +(q.get('w') || 800), H = Math.round(W * 252 / 360), IC = +(q.get('ic') || 256), only = q.get('k');
+const out = { id: M.id, scenes: {}, icons: {}, levels: [] };
+const D2R = THREE.MathUtils.degToRad, v = new THREE.Vector3();
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.localClippingEnabled = true;
+renderer.toneMappingExposure = S.exposure || 1;
+const icr = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+icr.setPixelRatio(1); icr.setSize(IC, IC); icr.setClearColor(0, 0); icr.shadowMap.enabled = true; icr.shadowMap.type = THREE.PCFSoftShadowMap;
+icr.toneMapping = THREE.ACESFilmicToneMapping; icr.outputColorSpace = THREE.SRGBColorSpace; icr.localClippingEnabled = true; icr.toneMappingExposure = S.exposure || 1;
+
+const meshesOf = g => { const a = []; g.updateMatrixWorld(true); g.traverse(o => { if (o.isMesh) a.push(o); }); return a; };
+const boxOf = o => new THREE.Box3().setFromObject(o);
+
+/* the cut heights: near k/8 of the height, moved to the top of a part where that slices through fewer things */
+function cutLevels(mon) {
+  const ms = meshesOf(mon).map(o => ({ o, b: boxOf(o) })), y0 = 0, y1 = Math.max(...ms.map(m => m.b.max.y)), Ht = y1 - y0;
+  const cand = [...new Set(ms.map(m => +(m.b.max.y + .01).toFixed(3)))];
+  const cost = h => ms.reduce((a, m) => a + (m.b.min.y < h - .005 && m.b.max.y > h + .005 ? (m.b.max.x - m.b.min.x) * (m.b.max.z - m.b.min.z) : 0), 0);
+  const L = []; let prev = y0;
+  for (let k = 1; k < 8; k++) {
+    const t = y0 + Ht * k / 8, win = Ht / 14;
+    let best = t, bc = cost(t) + 1e-6;
+    for (const h of cand) if (Math.abs(h - t) <= win && h > prev + Ht * .04) { const c = cost(h) + Math.abs(h - t) * .02; if (c < bc) { bc = c; best = h; } }
+    L.push(best); prev = best;
+  }
+  return L.concat([y1 + 1]);
+}
+
+/* bamboo scaffolding around what is being built at height h; with h = 0, two stakes and a tape: ground broken */
+function scaffold(mon, h, full) {
+  const g = new THREE.Group(), band = full * .14, inb = meshesOf(mon).map(boxOf).filter(b => b.min.y < h && b.max.y > h - band);
+  const fb = inb.length ? inb.reduce((a, b) => a.union(b), new THREE.Box3()) : boxOf(mon);
+  const pad = .25, x0 = fb.min.x - pad, x1 = fb.max.x + pad, z0 = fb.min.z - pad, z1 = fb.max.z + pad;
+  const mat = new THREE.MeshStandardMaterial({ color: '#B98A4E', roughness: .8 }), tape = new THREE.MeshStandardMaterial({ color: '#D63A2A', roughness: .6 });
+  const pole = (a, b, r = .045, m = mat) => { const d = new THREE.Vector3().subVectors(b, a), c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, d.length(), 6), m);
+    c.position.copy(a).addScaledVector(d, .5); c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize()); c.castShadow = c.receiveShadow = true; g.add(c); };
+  if (h <= 0) {   // ground broken
+    const bb = boxOf(mon), cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2, rx = Math.min(3, (bb.max.x - bb.min.x) / 2), rz = Math.min(3, (bb.max.z - bb.min.z) / 2);
+    const P = [[cx - rx, cz - rz], [cx + rx, cz - rz], [cx + rx, cz + rz], [cx - rx, cz + rz]].map(([x, z]) => new THREE.Vector3(x, 0, z));
+    P.forEach(p => pole(p, p.clone().setY(.75), .06));
+    P.forEach((p, i) => pole(p.clone().setY(.6), P[(i + 1) % 4].clone().setY(.6), .025, tape));
+    return g;
+  }
+  const lo = Math.max(0, h - band * 2.2), hi = h + .45, step = 1.3;
+  const along = (a, b) => { const n = Math.max(1, Math.round(Math.abs(b - a) / step)); return Array.from({ length: n + 1 }, (_, i) => a + (b - a) * i / n); };
+  const posts = [];
+  along(x0, x1).forEach(x => posts.push([x, z0], [x, z1])); along(z0, z1).slice(1, -1).forEach(z => posts.push([x0, z], [x1, z]));
+  posts.forEach(([x, z]) => pole(new THREE.Vector3(x, lo, z), new THREE.Vector3(x, hi, z)));
+  [lo + (hi - lo) * .35, h - .05, hi - .05].forEach(y => {
+    const c = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(([x, z]) => new THREE.Vector3(x, y, z));
+    c.forEach((p, i) => pole(p, c[(i + 1) % 4], .035));
+  });
+  return g;
+}
+
+function fitCam(pts, aspect, tgt, az = 32, el = 22, fov = 26, margin = .93) {
+  const cam = new THREE.PerspectiveCamera(fov, aspect, .5, 400), dir = new THREE.Vector3(Math.sin(D2R(az)) * Math.cos(D2R(el)), Math.sin(D2R(el)), Math.cos(D2R(az)) * Math.cos(D2R(el)));
+  const right = new THREE.Vector3().crossVectors(dir.clone().negate(), new THREE.Vector3(0, 1, 0)).normalize(), up = new THREE.Vector3().crossVectors(right, dir.clone().negate());
+  const tV = Math.tan(D2R(fov / 2)) * margin, tH = tV * aspect;
+  const fit = () => { let d = 0; for (const p of pts) { v.copy(p).sub(tgt); d = Math.max(d, v.dot(dir) + Math.abs(v.dot(right)) / tH, v.dot(dir) + Math.abs(v.dot(up)) / tV); } return d; };
+  let dist = fit();
+  for (let pass = 0; pass < 2; pass++) {
+    cam.position.copy(tgt).addScaledVector(dir, dist); cam.lookAt(tgt); cam.updateMatrixWorld();
+    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; for (const p of pts) { v.copy(p).project(cam); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); }
+    tgt.addScaledVector(right, (x0 + x1) / 2 * tH / margin * dist).addScaledVector(up, (y0 + y1) / 2 * tV / margin * dist); dist = fit();
+  }
+  cam.position.copy(tgt).addScaledVector(dir, dist); cam.lookAt(tgt); cam.updateMatrixWorld();
+  return { cam, dist };
+}
+const samplePts = (g, n = 400) => { const pts = []; meshesOf(g).forEach(o => { if (o.isInstancedMesh) return; const p = o.geometry.attributes.position, st = Math.max(1, Math.floor(p.count / n));
+  for (let i = 0; i < p.count; i += st) pts.push(v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld).clone()); }); return pts; };
+
+function makeScene(withStage) {
+  const scene = new THREE.Scene(); if (withStage) scene.background = S.bg();
+  S.lights().forEach(l => scene.add(l));
+  const g = dress(diorama(M, 1, !withStage), S); if (!withStage) g.remove(...g.children.filter(c => !c.userData.monument));
+  scene.add(g); return { scene, g, mon: g.children.find(c => c.userData.monument) };
+}
+function cut(mon, h) {   // show the monument up to height h
+  const plane = new THREE.Plane(new THREE.Vector3(0, -1, 0), h);
+  meshesOf(mon).forEach(o => { const b = boxOf(o); o.visible = b.min.y < h;
+    if (o.visible && b.max.y > h) { o.material = o.material.clone(); o.material.clippingPlanes = [plane]; o.material.clipShadows = true; o.material.side = THREE.DoubleSide; } });
+  return plane;
+}
+
+/* ?turn=13&deg=30&ic=400: a turntable for the map instead, the cut-out seen as the camera swings round it from 0 to deg
+   degrees in turn steps (the whole scene turns, lights too, so the sun stays where it is on the monument). One camera
+   frames every step, so the base and the top stay in the same place in every frame */
+if (q.get('turn')) {
+  const N = +q.get('turn'), DEG = +(q.get('deg') || 30), angs = Array.from({ length: N }, (_, i) => D2R(DEG * i / (N - 1)));
+  const T = makeScene(false), fullT = boxOf(T.mon).max.y, pts0 = samplePts(T.mon), pts = [];
+  for (const a of angs) for (const p of pts0) pts.push(p.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), a));
+  const { cam } = fitCam(pts, 1, new THREE.Box3().setFromPoints(pts).getCenter(new THREE.Vector3()), 32, 22, 26, .96);
+  cam.updateMatrixWorld(); const b = new THREE.Vector3(0, 0, 0).project(cam), t = new THREE.Vector3(0, fullT, 0).project(cam);
+  const res = { id: M.id, anchor: { x: +((b.x + 1) / 2).toFixed(4), y: +((1 - b.y) / 2).toFixed(4), top: +((1 - t.y) / 2).toFixed(4) }, frames: [] };
+  for (const a of angs) { T.scene.rotation.y = a; T.scene.updateMatrixWorld(true); icr.render(T.scene, cam); res.frames.push(icr.domElement.toDataURL('image/png')); await new Promise(r => setTimeout(r, 0)); }
+  document.getElementById('out').textContent = JSON.stringify(res); document.body.dataset.done = '1';
+  throw 'turntable done';
+}
+// the levels and both cameras come from the finished monument, so every step lines up with the next
+const ref = makeScene(true), levels = cutLevels(ref.mon), full = boxOf(ref.mon).max.y;
+out.levels = levels.map(x => +x.toFixed(3));
+const tgtS = new THREE.Box3().setFromObject(ref.g).getCenter(new THREE.Vector3());
+const { cam: camS, dist } = fitCam(samplePts(ref.g), W / H, tgtS);
+const refI = makeScene(false), monPts = samplePts(refI.mon);
+const { cam: camI } = fitCam(monPts, 1, boxOf(refI.mon).getCenter(new THREE.Vector3()), 32, 22, 26, .96);
+camI.updateMatrixWorld(); const base = new THREE.Vector3(0, 0, 0).project(camI), top = new THREE.Vector3(0, boxOf(refI.mon).max.y, 0).project(camI);
+out.anchor = { x: +((base.x + 1) / 2).toFixed(4), y: +((1 - base.y) / 2).toFixed(4), top: +((1 - top.y) / 2).toFixed(4) };   // where the base and the top fall in the cut-out, 0-1
+
+for (let k = 0; k <= 8; k++) {
+  if (only != null && +only !== k) continue;
+  const h = k === 0 ? 0 : levels[k - 1];
+  { // the scene
+    const { scene, mon } = makeScene(true); if (S.fog) scene.fog = new THREE.Fog(S.fog[0], dist * S.fog[1], dist * S.fog[2]);
+    const plane = k === 0 ? (mon.visible = false, null) : cut(mon, h);
+    if (k < 8) scene.add(scaffold(ref.mon, h, full));
+    const c = new EffectComposer(renderer); c.setPixelRatio(1); c.setSize(W, H); c.addPass(new RenderPass(scene, camS));
+    if (S.ao && !M.noAo) { const ao = new GTAOPass(scene, camS, W, H); ao.updateGtaoMaterial({ radius: .6, distanceExponent: 1, thickness: 1, scale: 1.2 }); ao.blendIntensity = .9;
+      if (plane && k < 8) { ao.normalMaterial.clippingPlanes = [new THREE.Plane(new THREE.Vector3(0, -1, 0), h + .5)]; ao.normalMaterial.side = THREE.DoubleSide; }   // the shading pass would otherwise see the parts not built yet
+      c.addPass(ao); }
+    if (S.bloom) c.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), ...S.bloom));
+    c.addPass(new OutputPass()); c.render();
+    out.scenes[k] = renderer.domElement.toDataURL('image/png'); c.dispose?.();
+  }
+  { // the cut-out for the map
+    const { scene, mon } = makeScene(false);
+    if (k === 0) mon.visible = false; else cut(mon, h);
+    if (k < 8) scene.add(scaffold(ref.mon, h, full));
+    icr.render(scene, camI); out.icons[k] = icr.domElement.toDataURL('image/png');
+  }
+  await new Promise(r => setTimeout(r, 0));
+}
+document.getElementById('out').textContent = JSON.stringify(out);
+document.body.dataset.done = '1';
+</script></body></html>

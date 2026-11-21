@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="512" height="512"><defs><clipPath id="koi11"><ellipse cx="96" cy="108" rx="54" ry="48"/></clipPath><filter id="blend45" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="9" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .05 -0.21 0 0 0 0.13" result="ga"/>
+      <feComposite in="ga" in2="d" operator="in" result="gi"/>
+      <feMerge><feMergeNode in="d"/><feMergeNode in="gi"/></feMerge>
+    </filter></defs><g filter="url(#blend45)"><ellipse class="gs" cx="100" cy="192" rx="46" ry="6" fill="#8A6A3A" opacity=".16"/>
+    <path d="M138 100C156 80 178 70 186 78C179 94 177 104 183 124C176 134 154 128 138 116Z" fill="#dc5642" stroke="#b8352b" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M152 96L176 84M154 108L178 106M152 118L174 126" stroke="#b8352b" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M70 70C80 40 118 38 130 68Z" fill="#f4bead" stroke="#b8352b" stroke-width="4.5" stroke-linejoin="round"/>
+    <ellipse cx="66" cy="152" rx="15" ry="9" transform="rotate(30 66 152)" fill="#f4bead" stroke="#b8352b" stroke-width="4.5"/>
+    <ellipse cx="122" cy="154" rx="15" ry="9" transform="rotate(-30 122 154)" fill="#f4bead" stroke="#b8352b" stroke-width="4.5"/>
+    
+    <ellipse cx="96" cy="108" rx="54" ry="48" fill="#fbf5ee"/>
+    <g clip-path="url(#koi11)">
+      <ellipse cx="104" cy="64" rx="38" ry="22" fill="#dc5642"/>
+      <circle cx="148" cy="128" r="24" fill="#dc5642"/>
+      <path d="M118 146a7 7 0 0 1 12 0M126 134a7 7 0 0 1 12 0M110 132a7 7 0 0 1 12 0" fill="none" stroke="#efd8cc" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <ellipse cx="96" cy="108" rx="54" ry="48" fill="none" stroke="#b8352b" stroke-width="5"/>
+    <path d="M58 82A40 40 0 0 1 76 66" fill="none" stroke="#fbfaf6" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+    <ellipse cx="52" cy="114" rx="8" ry="4.8" fill="#e97a7f" opacity="0.54"/><ellipse cx="124" cy="114" rx="8" ry="4.8" fill="#e97a7f" opacity="0.54"/><ellipse cx="66" cy="104" rx="6.5" ry="7.8" fill="#1a1918" class="eye"/><circle cx="63.9" cy="101" r="2.7" fill="#fff" class="hl"/><circle cx="68.2" cy="106.6" r="1.2" fill="#fff" class="hl"/><ellipse cx="110" cy="104" rx="6.5" ry="7.8" fill="#1a1918" class="eye"/><circle cx="107.9" cy="101" r="2.7" fill="#fff" class="hl"/><circle cx="112.2" cy="106.6" r="1.2" fill="#fff" class="hl"/>
+    <path d="M82 118Q88 126 94 118" fill="#d76156" stroke="#b8352b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M80 119C74 121 70 118 70 113M96 119C102 121 106 118 106 113" fill="none" stroke="#b8352b" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="38" cy="58" r="7" fill="none" stroke="#a4c9d5" stroke-width="3"/><circle cx="26" cy="36" r="4.5" fill="none" stroke="#a4c9d5" stroke-width="2.6"/><circle cx="44" cy="22" r="3" fill="none" stroke="#a4c9d5" stroke-width="2.2"/></g></svg>
