@@ -1,0 +1,609 @@
+# HSK 7-9 lesson plan: 60 units, built from lessons/tmp7 scratch files by assemble.py
+
+## The body | 身躯 | A guard at the city gate asks where Shi Shi hurts after his long walk, and he cannot name a single part of himself
+Face and throat: 嘴唇 脸颊 须 秃 喉咙 咽喉 咽 气管 腔
+Arms and legs: 四肢 肢体 手脚 手腕 手掌 拳头 指甲 膝盖 关节 筋 屁股
+Chest and organs: 胸膛 脊梁 器官 肾 脾 动脉 脉搏 鲜血 激素 分泌 新陈代谢
+Spit and sneezes: 口水 唾液 痰 鼻涕 尿 粪便 打喷嚏 呛 喘 喘息 憋
+Chew, lick, doze: 啃 嚼 咀嚼 舔 叼 咧嘴 呻吟 酣睡 打盹儿
+The whole body: 身子 身躯 浑身 肌肤 裸 裸露 生理 体质 姿态 个头儿
+Strong and nimble: 壮 健壮 硬朗 单薄 敏捷 灵敏 灵巧 利索 松弛
+Tired and stiff: 疲惫 疲倦 劳累 僵 僵硬 虚弱 衰弱 麻痹 瘫 瘫痪
+Blind, deaf, lame: 瞎 失明 聋 哑 口吃 瘸 伤残 畸形 拐杖
+
+## Looking and posture | 眼神 | A pickpocket is eyeing Shi Shi's bag in the noisy gate crowd, but he cannot describe what he saw or heard
+Stare and study: 盯 瞪 注视 凝视 直视 审视 打量 瞅 偷窥
+Eyes and senses: 亲眼 目睹 观望 察看 视线 视野 眼神 眼色 嗅觉 触觉
+Blank looks, blinks: 神情 神态 神气 愣 发呆 发愣 出神 眨眼 眯
+Signs and traces: 身影 轮廓 醒目 显眼 抢眼 隐形 隐约 气息 踪迹 足迹
+Loud and clear: 响亮 洪亮 清脆 悦耳 刺耳 喧闹 嘈杂 喧哗 哗然 动静
+Stand, sit, lie: 站立 屹立 耸立 耸 就座 趴 卧 倚 垂 翘 俯首
+Shake and tremble: 抖 颤抖 发抖 哆嗦 晃 摇晃 摇摆 摆动 晃荡 震 震动
+Roll, float, turn: 振动 跳动 滚动 飘扬 漂浮 盘旋 静止 动弹 扭头 掉头
+Written on the face: 目不转睛 目瞪口呆 面红耳赤 眉开眼笑 容光焕发 愁眉苦脸 垂头丧气 无精打采 东张西望 左顾右盼
+
+## On the move | 步伐 | Shi Shi must cross the winding streets of the capital to reach the inn, and keeps going round in circles
+Step and stride: 踏 跨 蹬 步伐 步入 徒步 止步 越过 跨越 穿越
+Jump and climb: 蹦 跳跃 腾 攀 攀登 飞翔 坠 下坠 撞击
+Run and chase: 奔 奔驰 奔赴 赶赴 追逐 追赶 窜 溜 掉队
+Wandering about: 溜达 转悠 遛 徘徊 来回 漫游 流浪 迷失 滞留
+Setting out: 启程 起程 动身 赴 路途 带路 向导 探险 归来 重返
+Seek, flee, migrate: 寻 寻觅 搜寻 出走 逃亡 脱身 藏身 投奔 迁 迁移 迁徙
+On the road idioms: 东奔西走 风餐露宿 不辞而别 争先恐后 大街小巷 挨家挨户 川流不息 络绎不绝 千军万马
+
+## Busy hands | 亲手 | A porter at the gate drops his load and asks Shi Shi to carry, pull and tie it, but Shi Shi mixes up every order
+Hold and carry: 持 扛 拎 挎 驮 捎 揣 搀 挽 拄
+Reach and touch: 伸手 亲手 出手 触摸 抚摸 捏 掐 抠 勾 搂 揽
+Rub and smear: 磨 抹 涂 糊 搓 揉 蹭 挠 挤压
+Pull and twist: 扯 拽 拔 揪 扳 撬 掰 拧 绷 拨
+Throw and strike: 甩 撇 抡 扬 投射 砸 捶 磕 戳 捅
+Cut and tear: 撕 剥 扒 削 截 劈 斩 切割 分割 分成 粉碎
+Tie and wrap: 绑 捆 拴 缠 缠绕 裹 勒 绞 叠 折叠
+
+## Handling things | 放置 | Yu Tu is tidying her cluttered little shop by the city wall and Shi Shi keeps putting everything in the wrong place
+Put and hang: 置 放置 搁 挪 卸 托 悬 悬挂 张贴
+Cover and uncover: 蒙 遮 遮盖 遮挡 捂 敞开 揭 掀 掀起 豁
+Pour, soak, mix: 灌 注 浸泡 沾 冲洗 过滤 掺 搅 夹杂
+Dig and fish out: 挖掘 发掘 刨 淘 捞 打捞 埋藏 探 捕捉
+Get rid of: 清除 除去 去除 剔除 丢弃 遗失 销毁 焚烧 点火
+Pick and swap: 拣 选用 替换 借用 退回 返还 索取 仿 效仿
+Mend and fix: 修补 打磨 凑 疏通 填补 填充 密封 锁定 镶
+
+## Illness and cures | 就医 | Bao Bao faints in the street and Shi Shi has to explain what is wrong at the city clinic
+Serious illness: 癌 癌症 肿瘤 恶性 良性 艾滋病 糖尿病 高血压 精神病 抑郁症 痴呆
+Symptoms: 病症 发热 呕吐 腹泻 胀 疙瘩 上火 紊乱 衰竭 气色
+Sudden or lasting: 急性 慢性 发作 复发 后遗症 副作用 瘾 戒 瘟疫
+Wounds: 创伤 伤势 伤痕 疤 骨折 流血 包扎 绷带 敷 愈合 缝合
+Out cold: 昏 昏迷 休克 窒息 麻醉 催眠 苏醒 救治 输血 输液
+Seeing a doctor: 就医 就诊 求医 诊所 医务 临床 会诊 确诊 化验 阳性 阴性
+Medicine: 剂 丸 胶囊 处方 药方 秘方 药材 抗生素 安眠药 疫苗 注射
+Treatment: 疗法 疗效 治愈 根治 切除 移植 矫正 针灸 穴位
+Care and rest: 护理 看护 床位 隔离 防疫 口罩 休养 疗养 保养 养生
+
+## Clothes and looks | 服饰 | Shi Shi's dusty travelling clothes get him laughed at in the silk street, and he cannot tell the tailor what he wants
+Clothes: 衣裳 服饰 穿着 时装 礼服 制服 旗袍 靴子 兜 手帕
+Cloth and thread: 丝 丝绸 纱 皮革 纺织 织 编织 绣 刺绣
+The tailor's shop: 裁 裁缝 缝 定做 熨 纽扣 首饰 点缀 美化
+Hair and grooming: 发型 辫子 梳 梳子 剃 美容 装扮 皱 皱纹
+Good looks: 长相 外貌 容貌 容颜 面貌 仪表 俊 英俊 俊俏 标致
+Style and figure: 优雅 时髦 新潮 亮丽 艳丽 苗条 修长 丰满 丑陋
+Colour and glow: 朱红 翠绿 碧绿 通红 红润 红扑扑 苍白 惨白 光泽
+
+## Food and cooking | 烹饪 | Gun Gun wants to enter the street-food contest at the south market, and Shi Shi cannot read a single recipe
+Ways to cook: 煎 炖 蒸 熬 煲 涮 烘 拌 搅拌
+The cook's art: 烹饪 烹调 火候 榨 酿造 发酵 冷冻 保鲜 沏
+Vegetables: 萝卜 南瓜 蘑菇 红薯 葱 姜 蒜 豆子 素食
+Nuts and fruit: 核桃 芝麻 瓜子 莲子 枣 柿子 椰子 蜂蜜 淀粉
+Seasoning: 调料 香料 味精 香油 蘸 麻辣 火辣辣 腥 焦
+Flavour: 滋味 风味 鲜美 醇厚 酥 油腻 热腾腾 馋 富含
+Meals: 伙食 膳食 便饭 就餐 酒楼 料理 丰盛 佳肴 忌口
+Ham, tins, treats: 熏 卤味 火腿 虾 罐头 易拉罐 乳制品 口香糖 冰棍儿
+
+## Home and building | 住处 | The only room left at the inn is half built, and Shi Shi must tell the carpenter what is still missing
+A place to stay: 住处 住户 别墅 客房 寝室 食宿 定居 落户 搬迁
+Around the house: 架子 抽屉 缸 摆设 水龙头 马桶 地板 地毯 窗帘 漆 油漆
+Mats and bedding: 垫 垫子 席 毯子 蚊帐 帘子 凳子 帐篷 睡袋
+Light and heat: 蜡 蜡烛 灯泡 炉子 微波炉 取暖 供暖 冷气 透气
+Clean and tidy: 整洁 洁净 扫除 沐浴 肥皂 烘干 家政 家用 自理
+Building work: 施工 动工 兴建 扩建 搭建 营造 筑 铺路 封顶 落成 竣工
+Plans and property: 图纸 蓝图 造价 房地产 开发商 地段 拆迁 都会 繁华
+Walls and pillars: 城墙 围墙 栏杆 柱子 支柱 桩 瓦 拱 烟囱 门槛 阶梯
+Around town: 巷 临街 过道 天桥 礼堂 堂 坛 亭子 喷泉 绿地
+
+## Tools and materials | 零件 | In the craftsmen's lane a cart wheel has broken, and Shi Shi cannot ask for the right tool to mend it
+Workshop tools: 锤 钉 钉子 螺丝 斧子 凿 铲 钩 夹子 梯子 杠杆
+Poles and baskets: 杆 筒 筐 筛 框 罩 绳子 把手 包袱 容器 火炬
+Parts and gear: 装置 零件 部件 配件 器材 器械 秤 天平 温度计 望远镜 玩意儿
+Metal, gems, rubber: 铁 钢铁 锈 玉 钻石 水晶 宝石 宝藏 晶莹 橡胶 纤维
+Light and fire: 光芒 光辉 光彩 光环 荧光 耀眼 闪烁 照耀 火焰 火花 灼热
+Shape and surface: 扁 凹 凸 棱角 光滑 锋利 黏 稠 质地 人造 复合
+Holes and cracks: 孔 口子 窟窿 缺口 裂缝 裂痕 斑点 阴影 阴暗
+Scraps and foam: 渣 粉末 颗粒 泡沫 气泡 海绵 膜 废物 废品 污秽 实物
+
+## Family and love | 家族 | A lost little cub in the lantern street is crying for her family, and Shi Shi cannot work out who her relatives are
+Relatives: 爹 娘 祖父 祖母 伯父 伯伯 伯母 岳父 岳母 嫂子 女婿
+Husband, wife, kin: 配偶 两口子 老伴儿 寡妇 继父 继母 闺女 双胞胎 孪生 孤儿
+Bloodline: 家族 祖宗 子孙 后裔 子弟 世代 血缘 血脉 姓氏 籍贯 祖籍
+Raising children: 抚养 养活 哺育 收养 领养 监护 遗弃 亲生 摇篮
+Love at home: 宠 宠爱 疼爱 娇惯 孝顺 孝敬 赡养 团聚 探亲
+Weddings and origins: 成家 嫁妆 喜糖 喜酒 婚纱 蜜月 美满 出身 家境
+Sweethearts: 情人 情侣 伴侣 异性 单身 独身 缘分 表白 吻 怀抱
+Head over heels: 迷恋 痴迷 痴心 深情 真情 甜蜜 亲热 暧昧 风流 性感
+
+## Life and death | 生死 | An old storyteller under the drum tower tells his whole life story, and Shi Shi cannot follow the births, troubles and funerals
+Birth: 胎 胎儿 胚胎 孕妇 孕育 生育 哺乳 新生 诞辰 先天 天生
+Fate and luck: 注定 巧合 无缘 福气 倒霉 厄运 归宿 下场 出路
+Tight spots: 困境 处境 境地 境遇 难关 难处 低谷 没辙 周折 波折 变故
+A hard life: 苦难 磨难 受苦 受罪 吃亏 沧桑 阅历 生平 惯
+Old age: 晚年 高龄 年迈 生死 性命 生前 遗嘱 人间 梦幻
+Funerals: 逝世 葬 葬礼 埋葬 悼念 追悼 缅怀 祭奠 扫墓
+Graves: 墓 坟 坟墓 墓地 墓碑 公墓 棺材 遗体 遗物
+Ups and downs idioms: 悲欢离合 喜怒哀乐 天伦之乐 天长地久 苦尽甘来 峰回路转 顺其自然 随心所欲 身不由己 走投无路 无家可归
+
+## People and society | 阶层 | At the crowded bridge market Shi Shi meets beggars, gentlemen and marchers all at once, and cannot tell who is who
+Names for people: 家伙 丫头 少女 老人家 诸位 同胞 老乡 乡亲 常人 老大 巨人
+Fools and novices: 傻瓜 笨蛋 疯子 胆小鬼 小人 无赖 乞丐 新手 外行
+Experts and elders: 行家 内行 能人 精英 栋梁 泰斗 元老 前辈 绅士 君子
+Rich and poor: 阶级 阶层 底层 弱势 贫穷 小康 乞讨 剥削 压榨
+Charity: 慈善 捐献 募捐 救济 抚恤 义工 造福 社团 团员 共同体
+Protest: 抗议 游行 示威 集会 骚乱 动荡 歧视 种族 半边天
+Public and private: 公立 私立 民办 公用 民用 风气 风尚 盛行 热潮
+Idioms about people: 所作所为 一举一动 一言一行 土生土长 饱经沧桑 见多识广 足智多谋 心灵手巧 一技之长 鹤立鸡群
+
+## Land and water | 山川 | Long Long wants to show Shi Shi the river that feeds the palace moat, but the map is all mountains, bays and currents
+Mountains: 山脉 山岭 山川 山谷 峡谷 雪山 火山 悬崖 丘陵 盆地 平原
+Rock and earth: 岩石 泥土 泥潭 沼泽 坑 洞穴 戈壁 板块 地势 陡 陡峭
+Coast and islands: 大陆 内地 半岛 岛屿 海湾 海峡 海滨 海滩 沙滩 礁石 沿岸
+Rivers and lakes: 溪 湖泊 池塘 瀑布 温泉 上游 下游 支流 流域 河畔 水域
+Water supply: 水源 淡水 地下水 堤 坝 堤坝 蕴藏 枯竭 净化 清澈 混浊
+Flowing water: 涌 流淌 流水 淌 泻 渗 溢 溅 荡漾 旋涡
+Waves and floods: 潮 波浪 波涛 波澜 风浪 汹涌 汪洋 泛滥 海啸 涝
+Sun and scenery: 夕阳 旭日 曙光 明媚 凉爽 笼罩 弥漫 秀丽 秀美 连绵 屏障
+
+## Plants and farms | 田野 | Outside the east gate a farmer begs for help before the storm breaks, and Shi Shi cannot tell crops from weeds
+Trees: 松树 柏树 柳树 杨树 槐树 树梢 树荫 竹竿 挺拔 丛 丛林
+Flowers: 花卉 花瓣 百合 牡丹 荷花 桂花 盛开 绽放 芬芳
+Sprouts and growth: 苗 芽 茎 萌芽 萌发 扎根 生机 茂盛 茂密
+Fields and crops: 田野 耕地 开垦 荒 作物 禾苗 稻草 麻 棉花 盛产
+Growing things: 栽 栽培 采 灌溉 水利 温室 杂交 肥料 化肥
+Livestock: 牲畜 家禽 饲养 喂养 养殖 畜牧 饲料 粪 宰
+Country life: 乡下 农场 庄园 牧场 牧民 渔民 草坪 荆棘 海藻
+Weather: 气象 风暴 冰雹 霜 瑞雪 乌云 风沙 呼啸 刺骨
+The natural world: 自然界 天地 大气 气压 热带 温带 赤道 纬度 经度
+
+## Beasts and dangers | 野兽 | A leopard has slipped out of the imperial menagerie, and Shi Shi must warn the whole street before something gets wrecked
+Birds and nests: 鹰 鹅 鸽子 天鹅 燕子 仙鹤 大雁 鸟巢 窝 卵 孵化
+Beasts and bugs: 野兽 豹 鹿 猩猩 鳄鱼 龟 恐龙 骏马 苍蝇 蚊子 害虫
+Hunters and wildlife: 猎人 打猎 笼子 驯 爪子 壳 贝壳 凶猛 珍稀 休眠 两栖
+Traps and warnings: 陷阱 陷 圈套 诱饵 隐患 警钟 当心 提防 防范
+Wreck and ruin: 毁 毁坏 毁灭 摧毁 烧毁 倒塌 废墟 灭亡 灭绝 残
+Disaster strikes: 失控 泄漏 肇事 空难 浩劫 祸害 遭殃 惨重 危及
+Deadly peril: 危急 应急 致命 惊险 艰险 受害 遇险 遇难 丧生
+Rescue: 营救 搜救 呼救 逃生 避难 疏散 幸存 幸免 防汛 防护
+Close call idioms: 千钧一发 化险为夷 摇摇欲坠 雪上加霜 措手不及 突如其来 暴风骤雨 惊心动魄 触目惊心 骇人听闻
+
+## Transport and machines | 航运 | A grain barge is stuck in the canal and the carts are jammed at the bridge, so Shi Shi has to direct the traffic
+Cars: 轿车 卡车 私家车 驾 方向盘 轮胎 引擎 喇叭 后备箱 牌照 尾气
+On the road: 路段 隧道 立交桥 岔 枢纽 堵塞 疏导 绕行 通车
+Trouble on the way: 违章 追尾 熄火 颠簸 停放 搭乘 直达 卧铺 缆车
+Boats and harbours: 船舶 帆 帆船 渔船 游船 桨 舱 港 港湾 运河
+Sailing and flying: 航行 航海 航运 海运 停泊 搁浅 客机 直升机 机舱 导航
+Freight and post: 货运 客运 客流 物流 集装箱 邮政 邮编 沿线 提速
+Machines: 机动 手动 驱动 开动 马力 功率 闸 阀门 失灵 调试
+Signals and wires: 无线 天线 电线 绝缘 光缆 电信 电讯 来电 遥控 改装 组装
+
+## Science and tech | 宇宙 | At the imperial observatory the astronomer's instruments have stopped working, and Shi Shi cannot read the manuals
+Outer space: 宇宙 卫星 火箭 飞船 航天 航天员 外星人 陨石 星座 轨迹
+Physics: 辐射 放射 核 激光 高压 真空 惯性 阻力 浮力 反射 折射
+In the test tube: 分解 溶解 蒸发 沸腾 凝固 结晶 沉淀 浓缩 腐蚀 钙
+Shapes: 曲线 直线 平行 平面 立体 三维 三角 椭圆 图形
+Numbers and formulas: 公式 整数 未知数 百分比 随机 测算 解析 直径 立方
+Lab work: 样本 标本 验 解剖 克隆 变异 隐性 误差 偏差
+Frontiers: 前沿 尖端 学说 奥秘 微观 时空 探测 观测 测定
+Computers: 芯片 服务器 数据库 硬盘 内存 显示器 液晶 光盘 备份 兼容 大数据
+Online: 主页 帖子 网民 黑客 防火墙 杀毒 虚拟 激活 数码
+
+## Jobs and careers | 任职 | The palace workshops are hiring, and Shi Shi cannot understand the notice or even which job he is applying for
+Hiring: 雇 雇佣 聘 聘用 聘任 招募 人选 人手 雇主 雇员
+Taking a post: 任 任命 任职 上任 就任 就职 出任 充当 上岗 在职 现任
+Titles and ranks: 首席 头衔 资深 资历 骨干 干事 理事 上司 下属 下级 前任
+Moving up: 提拔 晋升 接手 接替 接班 接班人 交接 兼 兼任 专职 专人
+Losing a job: 辞 辞退 辞呈 解雇 开除 免职 裁员 跳槽 罢工 怠工 缺席
+Making a living: 谋生 饭碗 生涯 报酬 年薪 劳务 夜班 一线 工会
+Duties and trades: 使命 重任 敬业 胜任 公事 事务所 办事处 保姆 管家 木匠 农民工
+On the job idioms: 兢兢业业 一丝不苟 有条不紊 面面俱到 顾全大局 轻而易举 力不从心 无能为力 一筹莫展 无济于事
+All you have idioms: 全力以赴 竭尽全力 全心全意 一心一意 千方百计 想方设法 力所能及 夜以继日 争分夺秒 精疲力竭
+
+## Shops and business | 开张 | Yu Tu opens a lantern stall at the great market, and Shi Shi nearly signs away the whole shop in a bad deal
+The company: 董事会 董事 董事长 创始人 巨头 代理人 合伙 合资 并购 私营
+Contracts: 合约 契约 签约 签署 订立 违约 承包 招标 洽谈 加盟
+Shops and stalls: 摊 柜台 专柜 网点 连锁 招牌 老字号 商贩 商贾 零售 批发
+Selling: 销 贩卖 兜售 倾销 拍卖 预售 订购 换取 租赁 光顾 招揽
+Price and quality: 廉价 平价 价位 划算 讨价还价 精品 次品 劣质 原装 正版 样品
+Boom and bust: 开张 开办 剪彩 停业 红火 兴旺 兴隆 旺季 淡季 盈利 亏本
+Deals and good name: 信誉 口碑 驰名 公关 赞助 业绩 双赢 清单 大宗 暴利
+Good value idioms: 物美价廉 供不应求 应有尽有 一应俱全 精打细算 节衣缩食 一举两得 得不偿失 一无所有 倾家荡产
+
+## Money and banking | 钱财 | At the imperial bank Shi Shi tries to change his coins and is handed a stack of forms about debts, taxes and shares
+Cash and accounts: 钞票 硬币 支票 外币 外汇 兑换 兑现 折合 存折 活期 挂失
+Getting rich: 富翁 富豪 富足 阔绰 发财 致富 值钱 身价 钱财 财力 手头
+Debt: 债 债务 债券 欠条 借条 拖欠 偿还 赎 押 抵押 担保
+Tax: 税收 税务 纳税 纳税人 关税 征收 缴 缴纳 交纳 减免 扣除
+Shares: 股 股份 股东 股民 分红 投机 行情 利率 信贷 本钱
+Up and down: 升值 贬值 增值 上调 下调 下跌 透支 赤字 差额 周转 冻结
+Budgets: 预算 财政 财经 经费 开支 开销 收支 结算 算账 报销 收据
+Raising funds: 筹 筹集 筹措 集资 出资 资助 补助 拨款 增收 积蓄 攒
+Sums of money: 数额 总额 巨额 高额 款项 定金 小费 公款 公费 自费 无偿
+
+## Industry and trade | 供求 | The coal carts have stopped coming and the city's kilns are going cold, so Shi Shi must find out what went wrong
+Fuel and power: 煤炭 炭 煤气 燃气 燃油 柴油 核能 核电站 电网 能耗
+Mining: 矿 矿藏 采矿 开采 勘探 提炼 炼 铸造 窑
+The factory: 车间 开工 出厂 成品 特制 仿制 重型 轻型 报废 增产 产值
+Supply: 供 供求 物资 储备 贮藏 紧缺 耗 耗费 瓶颈
+The market: 市场经济 宏观 调控 垄断 国有 私有 开发区 指数 指标 效益 受益
+Trade and slumps: 外贸 经贸 外资 内需 顺差 拉动 紧缩 萧条 不景气 低迷
+Boom time idioms: 日新月异 与日俱增 与时俱进 层出不穷 源源不断 势不可当 欣欣向荣 水涨船高 优胜劣汰
+
+## School and study | 求学 | Shi Shi signs up for the imperial examination and discovers he must get through a mountain of textbooks first
+Teaching: 训 管教 灌输 启蒙 启迪 熏陶 陶冶 指点 指教 赐教 演示
+Studying: 学业 求学 攻读 进修 钻研 探求 温习 背诵 观摩 取经 旷课
+Teachers and pupils: 师长 师资 师范 弟子 学子 院士 知识分子 文盲 家教 备课 办学
+Degrees and courses: 文凭 学士 授予 测验 答辩 夜校 工科 人文 国学 概论
+Sums and handbooks: 算数 运算 合计 累计 算盘 教科书 手册 指南 须知
+Characters: 繁体字 简体字 错别字 字体 字迹 工整 潦草 标点 括号 墨 墨水
+Notes and reference: 辞典 百科全书 注释 参见 引用 摘要 大纲 提纲 纲要 纪要 备忘录
+Making the grade: 成才 出息 出头 过关 争气 争光 立功 功 功劳 建树 硕果
+Study hard idioms: 不耻下问 孤陋寡闻 博大精深 循序渐进 勤工俭学 聚精会神 废寝忘食 持之以恒 锲而不舍 精益求精
+
+## Books and writing | 名著 | In the examination hall Shi Shi must write an essay with a beginning, a middle and an end before the incense burns out
+Kinds of books: 传记 回忆录 名著 专著 传奇 寓言 武侠 纪实 经 文人
+Story and plot: 主人公 原型 素材 悬念 高潮 结局 序幕 尾声 虚构 构思 寓意
+Parts of a text: 序 序言 段落 片段 篇幅 插图 格式 大意 写照
+Drafting: 起草 撰写 更正 抄袭 雷同 译 朗诵 信件 印章
+Short or wordy: 简洁 简短 简要 精练 详尽 冗长 粗略 笼统 省略
+Wording and tone: 文 流畅 通顺 贴切 通俗 抒情 堆砌 字眼 口音
+Sayings and names: 俗话 俗语 名言 座右铭 对联 标语 绰号 外号 简称
+Fine writing idioms: 画龙点睛 画蛇添足 绘声绘色 有声有色 抑扬顿挫 引经据典 引人入胜 扣人心弦 耐人寻味 别具匠心
+
+## News and rumours | 传媒 | A rumour in the morning paper says a lion was seen climbing the palace wall, and Shi Shi must get the story put right
+The press: 报 刊物 传媒 媒介 主编 专栏 栏目 封面 头条 改版 投稿
+Broadcasts: 电台 卫视 收音机 转播 实况 收视率 影像 磁带 预告 海报 传单
+Breaking news: 资讯 时事 独家 第一手 灵通 获悉 揭晓 问世 刊登 转载 告示
+Leaks: 曝光 揭露 披露 泄露 走漏 内幕 匿名 发言人 舆论
+Rumour and scandal: 传言 传闻 谣言 八卦 丑闻 绯闻 散布 炒作 轰动 反响
+Public statements: 声明 声称 宣称 宣告 通告 通报 宣读 宣扬 重申 表态 澄清
+Fame idioms: 家喻户晓 举世瞩目 远近闻名 大名鼎鼎 默默无闻 耳熟能详 深入人心 引人注目 沸沸扬扬 惊天动地
+
+## Music, stage and art | 歌舞 | The city theatre's star has lost his voice an hour before the show, and Shi Shi is pushed onto the stage
+Music: 乐队 专辑 唱片 旋律 乐谱 谱 合唱 伴奏 交响乐 音响 弦
+Instruments, dance: 吉他 小提琴 笛子 舞 歌舞 芭蕾 秧歌 歌剧 杂技 木偶 小品
+On stage: 幕 幕后 前台 后台 开场 上演 亮相 扮 道具 剧目 跑龙套
+Film: 片子 大片 卡通 银幕 上映 放映 票房 配音 对白 剧情 编剧
+Acting: 演技 演绎 再现 编排 逼真 滑稽 搞笑 小丑 动感
+Fans and prizes: 粉丝 人气 排行榜 评委 颁奖 奖项 荣获 原创 灵感
+Painting, carving: 油画 壁画 年画 肖像 画册 线条 花纹 雕 雕刻 雕塑 陶瓷
+Treasures on show: 珍藏 藏品 陈列 鉴赏 瑰宝 宝库 镶嵌 衬托 烘托 韵味
+
+## Sport and festivals | 庆典 | The Lantern Festival games begin at the drum tower, and Hu Hu has entered Shi Shi in every single contest
+Contests: 赛 联赛 预赛 竞技 角逐 上场 入场 出局 犯规 放水 兴奋剂
+Win or lose: 夺冠 夺魁 取胜 胜出 胜负 失利 名次 奖杯 赢家 黑马 冲刺
+Sports: 赛车 赛跑 接力 摔跤 举重 拳 太极 潜水 冲浪 跳伞 投掷
+Team and stadium: 阵容 队形 啦啦队 助威 看台 更衣室 起跑线 体能 健美 全能 重量级
+Festivals: 庆典 盛会 嘉年华 庙会 佳节 喜庆 庆贺 联欢 欢聚 入场券
+Fireworks and fun: 烟花 烟火 爆竹 鞭炮 燃放 狂欢 留念 乐园 滑梯 吉祥物
+Games: 耍 玩耍 捉迷藏 风筝 谜语 魔术 对弈 麻将 扑克 王牌
+Bets and leisure: 赌 赌博 筹码 抽签 消遣 沙龙 桑拿 避暑 野餐 郊游
+Good times idioms: 吃喝玩乐 张灯结彩 熙熙攘攘 成群结队 欢声笑语 哄堂大笑 不亦乐乎 津津有味 喜闻乐见
+
+## Army and war | 军事 | The palace guard is holding its grand drill on the parade ground outside the walls, and Shi Shi has wandered into the middle of it
+The forces: 军事 国防 陆军 海军 空军 武装 武力 主力 后备 官兵 干戈
+Soldiers: 战士 军官 司令 参谋 战友 烈士 先锋 俘虏 勋章 退役 牺牲
+Guns and bombs: 手枪 子弹 弓 炮 炸弹 炸药 导弹 核武器 发射 瞄准 靶子
+Battlefields: 战场 战役 作战 前线 阵地 堡垒 哨 坦克 军舰 潜艇 雷达
+Attack: 进攻 攻 袭击 突击 入侵 侵略 轰 轰炸 登陆 出动 攻克
+Conquer: 占领 征服 包围 封锁 歼灭 重创 屠杀 掠夺 俘获 收复 威慑
+Defence: 防守 防御 防卫 保卫 捍卫 自卫 戒备 掩护 隐蔽 埋伏
+Retreat and supply: 撤离 撤退 退却 投降 驻 驻扎 部署 补给 后勤 士气
+Plans and secrets: 战略 战术 情报 间谍 机密 泄密 代号 口令 演习 演练 操练
+
+## Crime and police | 破案 | The emperor's jade seal has vanished from the engraver's shop, and the city constable has made Shi Shi his assistant
+Criminals: 罪犯 凶手 杀手 歹徒 强盗 海盗 贼 流氓 团伙 同伙
+Theft and robbery: 盗 盗窃 窃取 抢劫 抢夺 劫 劫持 侵占 霸占 强占 防盗
+Violent crime: 犯罪 杀害 谋害 绑架 挟持 人质 恐吓 尸体 失踪 受害人
+Fakes and fraud: 诈骗 欺诈 敲诈 讹诈 伪造 造假 假冒 冒充 盗版 山寨
+Bribes and drugs: 贿赂 受贿 收买 勾结 包庇 陷害 把柄 走私 毒品 吸毒
+On the case: 治安 巡逻 监控 监视 追踪 侦探 嫌疑 涉嫌 举报 揭发
+Search and arrest: 逮 逮捕 拘留 扣押 扣留 通缉 搜查 查明 查获 破案 藏匿
+Foul play idioms: 罪魁祸首 弄虚作假 不正之风 可乘之机 不翼而飞 不了了之 水落石出 改邪归正 万无一失
+
+## Law and the courts | 诉讼 | Shi Shi is hauled before the city magistrate for a crime he did not commit and has to defend himself
+Going to court: 法庭 案件 官司 诉讼 起诉 上诉 控告 原告 被告 当事人
+Evidence: 审 审理 辩护 证人 做证 见证 物证 凭证 确凿
+The verdict: 审判 受理 判 判决 判处 裁决 裁定 仲裁 驳回
+Punishment: 监狱 囚犯 枪毙 没收 吊销 取缔 处分 查处 索赔 剥夺
+Laws and rules: 宪法 刑法 刑事 司法 法制 条例 条款 规章 章程 草案
+In force: 颁布 施行 生效 失效 作废 废除 现行 依法 执法 检察 公证
+Rights: 权益 人权 人身 特权 享有 行使 授权 正当 非法 法人
+Wronged: 触犯 侵权 诽谤 诬陷 污蔑 冤 冤枉 无辜 伸张
+
+## Government | 行政 | An official at the ministry gate will not let Shi Shi in without the right permit, stamp and committee vote
+The state: 共和国 国务院 政权 体制 行政 机关 委员会 委员 首府 基层
+Leaders, officials: 领袖 元首 首脑 书记 干部 官僚 公仆 公职 公务 同志
+Elections: 选举 竞选 候选人 提名 选民 推选 连任 任期 下台 罢免 席位
+Parties and isms: 党 政党 派别 主义 社会主义 资本主义 纲领 宣言 方针 专制
+Votes and policy: 表决 决议 否决 议程 举措 出台 试点 试行 贯彻 落实 公示
+Power and people: 统治 管辖 监察 视察 权威 拥护 国民 民意 呼声
+Clean or corrupt: 腐败 贪污 廉洁 廉正 整顿 整治 杜绝 富强 昌盛
+Permits: 申报 申领 申办 审批 审核 审定 认证 执照 出具 颁发
+
+## Running things | 掌管 | The city governor's steward falls ill on the eve of a banquet, and Shi Shi is left in charge of a hundred servants
+Setting up: 设 设定 组建 构建 重组 整合 编制 拟定 筹办 统筹
+Taking the lead: 引领 领军 领队 带队 带头 牵头 做主 拍板 把关
+Run and control: 运作 运转 掌管 主宰 支配 驾驭 操纵 操控 调度 调剂 配置
+Giving orders: 指令 下令 派遣 打发 使唤 召集 动员 征 征集 动用 占用
+By force: 强制 强行 强加 迫使 逼迫 施加 施压 压制 束缚 牵制 遏制
+Allow or forbid: 准许 容许 不准 不容 制止 限定 免除 解除 破例 破除 擅自
+Checking up: 审查 监管 督促 看管 核实 核对 复查 验收 梳理
+Obey and hand over: 听从 遵循 照办 请示 上报 递交 移交 交付 纳入 吸纳
+Sorting it out: 处置 安置 摆平 兼顾 修正 精简 搁置 解散 撤 废 酌情
+
+## Nations and empire | 帝国 | Foreign envoys arrive at the city guest house with gifts and treaties, and Shi Shi must tell them the history of the palace they will visit
+Land and borders: 国土 领土 主权 边境 边界 边疆 境内 境外 过境
+Friends and rivals: 联盟 同盟 盟友 阵营 中立 冷战 和平共处 软实力 局势 风云
+Treaties: 条约 协定 公约 双边 多边 单边 单方面 制裁 争端 驱逐
+Envoys and visits: 使者 领事 领事馆 会谈 会晤 峰会 接见 拜会 出访 一行
+Around the world: 环球 跨国 外援 外籍 华人 华裔 华侨 国徽 旗帜
+Emperors and nobles: 帝国 王国 皇上 皇后 皇室 贵族 功臣 官吏 状元 奴隶 封建
+Palace and relics: 皇宫 宫殿 宫廷 殿堂 碑 纪念碑 里程碑 古董 出土 瞻仰
+Handing it down: 历代 传人 祖传 失传 秉承 弘扬 积淀 划时代 长征
+
+## Belief and custom | 信仰 | At the temple fair a fortune-teller reads bad omens for Shi Shi, and he does not know which taboo he has broken
+Ghosts and spirits: 鬼 魔鬼 妖怪 怪物 神仙 仙女 天使 阎王 凤凰
+Heaven and soul: 灵 灵魂 天堂 地狱 末日 复活 化身 玄 玄机
+Faith: 宗教 宗 信仰 虔诚 迷信 祈祷 保佑 洗礼 神圣
+Temples and rites: 寺 庙 寺庙 和尚 僧人 佛 菩萨 祭 祭祀 供奉
+Omens and taboos: 预言 预兆 兆头 占卜 风水 吉利 禁忌 忌 忌讳
+Ethics and manners: 伦理 中庸 圣贤 教条 教养 俗 惯例 礼仪 礼节
+Old tale idioms: 守株待兔 刻舟求剑 亡羊补牢 愚公移山 开天辟地 前无古人 史无前例 古今中外 约定俗成 风土人情 发扬光大
+
+## Joy and contentment | 喜悦 | Shi Shi finally steps through the great red gate of the palace, and he cannot find the words for how wonderful it feels
+Delight: 喜悦 欣喜 欢快 快活 喜洋洋 美滋滋 爽 酣畅 舒畅 过瘾
+Cheers and spirit: 欢呼 喝彩 嬉笑 惊叹 振奋 振作 焕发 洋溢 满怀 正能量
+At ease: 安心 自在 悠闲 安逸 顺心 如意 知足 解脱 定心丸 欣慰
+Hope and thanks: 盼 期盼 寄托 感恩 庆幸 荣幸 光荣 乐意 情愿 甘心
+Tastes and passions: 喜好 嗜好 热衷 着迷 陶醉 沉浸 兴致 情调 尽情 享
+Deep feelings: 深切 感触 情怀 共鸣 交集 流露 领略 爱惜 珍视 温馨
+Pure delight idioms: 兴高采烈 喜出望外 得意扬扬 怡然自得 无忧无虑 心安理得 知足常乐 心想事成 如愿以偿 称心如意
+Can't let go idioms: 爱不释手 依依不舍 恋恋不舍 念念不忘 记忆犹新 似曾相识 情不自禁 不由自主 迫不及待 热泪盈眶
+
+## Fear and worry | 忧虑 | The palace gates slam shut at dusk with Shi Shi locked inside, and strange noises echo down the long red corridors
+Fright: 恐怖 吓人 吓唬 恐慌 畏惧 畏缩 胆怯 生怕 受惊 惊动
+Flustered and eager: 慌 慌乱 慌张 慌忙 心慌 惊慌 忙乱 急于 巴不得
+Shock and puzzle: 震惊 震撼 惊奇 诧异 纳闷儿 困惑 迷惑 茫然 触动
+Worry: 操心 顾虑 忧虑 疑虑 忧愁 犯愁 心事 心病 伤脑筋 苦恼
+On your mind: 牵挂 挂念 惦记 焦急 焦躁 烦躁 烦闷 闷 禁不住
+Anger and frenzy: 气愤 发火 发怒 恼火 发泄 宣泄 激起 唤起 疯 狂 狂热
+On edge idioms: 提心吊胆 惊慌失措 心急如焚 大惊小怪 后顾之忧 犹豫不决 无可奈何 哭笑不得 恼羞成怒 过意不去 无动于衷
+
+## Sorrow and shame | 悲哀 | Shi Shi trips in the great courtyard in front of the whole court and wants the ground to swallow him
+Grief: 悲哀 悲痛 悲惨 惨 惨痛 凄凉 可悲 痛心 伤感 怜惜
+Tears and sighs: 哭泣 呜咽 叹气 苦笑 心酸 辛酸 感慨 惋惜 悔恨 自责
+Feeling low: 沮丧 失落 忧郁 抑郁 压抑 消沉 气馁 泄气 死心 自卑
+Lonely and numb: 孤单 孤零零 怀旧 留恋 空虚 无力 没劲 麻木 拘束
+Losing face: 丢人 丢脸 出丑 耻辱 羞耻 羞愧 惭愧 难堪 难为情 狼狈 窘迫
+Grudges: 怨 怨恨 怨气 仇 仇恨 仇人 恨不得 忍心 折磨
+Fed up: 厌恶 厌倦 厌烦 反感 介意 扫兴 别扭 嫉妒 眼红
+
+## A good heart | 善意 | In the palace kitchens a cook is blamed for a broken dish, and Shi Shi must speak up for her honest, kind nature
+Sincere: 真心 诚意 诚恳 诚挚 真挚 恳切 衷心 由衷 坦诚
+Upright: 正直 耿直 正经 端正 正气 坦然 坦白 坦率 良心
+Role models: 模范 典范 楷模 表率 无私 纯洁 美德 崇高 人道
+Kind: 善 善意 好心 好意 仁慈 慈祥 和蔼 和气 友善 体贴 心肠
+Generous: 厚道 宽厚 敦厚 慷慨 爽快 宽容 包容 豁达 开明 开朗
+Patient and modest: 容忍 忍耐 耐 克制 心胸 胸怀 谦逊 低调 分寸 懂事
+Loyal and dutiful: 忠诚 忠实 忠心 忠贞 忠于 顺从 恭敬 殷勤 本分 乖 乖巧
+Fine people idioms: 光明磊落 大公无私 实事求是 见义勇为 以身作则 彬彬有礼 从容不迫 小心翼翼 无微不至 朝气蓬勃
+
+## Strong character | 毅力 | The captain of the palace guard is choosing a new recruit, and Shi Shi must show he is calm, brave and steady
+Calm and steady: 镇定 镇静 沉着 沉稳 稳重 从容 安详 平和 庄重 郑重 慎重
+Brave and bold: 英勇 奋勇 壮烈 果断 魄力 气魄 豪迈 骨气 志气
+Willpower: 意志 毅力 坚韧 韧性 执着 要强 自立 自主 严谨
+Hardworking, thrifty: 辛勤 勤快 刻苦 勤俭 节俭 务实 朴实 质朴 纯朴
+Grace and style: 高贵 尊贵 高雅 文雅 潇洒 风度 风采 风范 风趣 体面
+Reputation: 名誉 名声 声誉 声望 威信 威望 显赫 尊严 自尊
+Moral character: 人格 人品 品德 品行 修养 素养 得体 言行 举止
+Your nature: 人性 本性 天性 性情 本色 内向 外向 亲和力 为人 作风
+Never give up idioms: 勇往直前 前赴后继 一鼓作气 再接再厉 自力更生 自强不息 脱颖而出 有的放矢 大有可为 任重道远 鹏程万里
+
+## Pride and cruelty | 傲慢 | Hu Hu struts into the palace courtyard boasting that he is the emperor's favourite, and Shi Shi needs the words to describe him
+Arrogant: 傲 傲慢 高傲 自负 自满 炫耀 夸耀 标榜 张扬 高调 逞强
+Greed and vanity: 贪 贪婪 自私 吝啬 奢侈 挥霍 糟蹋 滥用 名利 虚荣 庸俗
+Stubborn and rash: 固执 顽固 倔 倔强 任性 暴躁 急躁 浮躁 鲁莽 放肆 粗鲁
+Cruel: 残酷 残忍 冷酷 凶残 凶狠 凶恶 凶 野蛮 粗暴
+Wicked: 恶 邪 邪恶 恶意 丑恶 可恶 可耻 贱 猖狂 霸道 堕落
+Cold and petty: 冷漠 冷淡 漠然 无情 挑剔 苛刻 狭隘 多心 世故
+Arrogance idioms: 自以为是 目中无人 盛气凌人 肆无忌惮 夸夸其谈 急功近利 急于求成 损人利己 一毛不拔 袖手旁观
+
+## Lies and laziness | 谎言 | Someone has been sleeping on duty and blaming Bao Bao, and Shi Shi must work out who in the palace is lying
+Lies: 谎言 谎话 说谎 撒谎 编造 虚假 虚伪 假装 伪装
+Tricks: 欺负 忽悠 误导 受骗 玩弄 引诱 诱惑 搞鬼 钻空子
+Scheming: 阴谋 算计 背叛 出卖 狡猾 奸诈 作弊 无耻 卑鄙 败坏
+Hide and dodge: 隐瞒 瞒 掩饰 掩盖 回避 逃避 退缩 推卸 耍赖
+Foolish and weak: 蠢 愚蠢 愚昧 无知 幼稚 糊涂 盲目 笨拙 无能 软弱
+Lazy and spoiled: 懒得 懒惰 偷懒 颓废 沉迷 上瘾 酗酒 娇气 顽皮 胡闹
+Faults and slips: 过错 过失 差错 疏忽 草率 敷衍 走过场 放纵 纵容
+Sloppy ways idioms: 粗心大意 丢三落四 大大咧咧 朝三暮四 胡思乱想 异想天开 无所事事 无所作为 半途而废 一事无成
+
+## Quarrels and fights | 争执 | Hu Hu picks a fight with Shi Shi in the middle of the imperial garden, and the gardeners rush over to watch
+Blows: 揍 殴打 踹 耳光 搏斗 冲撞 践踏 摧残 虐待
+Fighting back: 反抗 反击 抗拒 抗争 抵制 抵挡 抵御 抵触 抗衡 叛逆 屈服
+Feuds and revenge: 报复 报仇 恩怨 得罪 计较 过不去 作对 敌视 矛头
+Face-offs: 斗 争执 摩擦 风波 交锋 对峙 较量 较劲 比试 叫板 平息
+Mockery: 侮辱 取笑 调侃 挖苦 嘲弄 讥笑 耻笑 泼冷水 冒犯
+Stirring trouble: 惹 挑衅 挑拨 煽动 鼓动 捣乱 闹事 起哄 扰乱
+Crush and topple: 压迫 迫害 侵犯 侵害 违背 打倒 推翻 颠覆 压倒 瓜分
+Getting in the way: 阻挠 阻拦 刁难 碍事 碰钉子 排斥 卷入 纠缠 骚扰
+
+## Friends and helpers | 情谊 | Yu Tu is hurt carrying water in the palace garden, and Shi Shi must gather friends to help her finish the job
+Help and rescue: 支援 援助 拯救 挽救 解救 解围 扶持 接济 帮手 后盾 分担
+Looking after: 护 守护 呵护 照料 伺候 侍候 关照 着想 保重 珍重 指引
+Comfort and forgive: 安抚 慰问 慰劳 体谅 谅解 宽恕 饶 饶恕 放过 迁就
+Working together: 搭档 联手 携手 协作 协同 默契 磨合 融洽 和睦
+Friendship: 伴 相伴 知己 友人 交情 情谊 要好 亲近 人缘儿 圈子 社交
+Meeting people: 相遇 相识 结识 逢 会面 相约 联络 私下 私事
+Take in or cast out: 接纳 收留 抛弃 孤立 辜负 冷落 怠慢 亏待 断绝 隔阂 拖累
+Close or not idioms: 形影不离 朝夕相处 深情厚谊 同舟共济 齐心协力 众志成城 素不相识 萍水相逢 敬而远之 格格不入
+
+## Guests and manners | 款待 | Shi Shi is invited to tea with a court lady and does not know how to bow, greet her or say thank you properly
+Visits: 来访 探望 拜见 串门 作客 送行 送别 告辞 打搅
+Hosting: 邀 特邀 应邀 请柬 请帖 贵宾 来宾 东道主 款待 盛情
+Showing respect: 敬 致敬 敬意 敬礼 鞠躬 问候 捧场 追随 簇拥
+Polite phrases: 敬请 久仰 劳驾 过奖 不敢当 冒昧 见外 此致 贺电 贺信
+Gifts and thanks: 献 赐 礼品 心意 回馈 报答 恩人 恩情 歉意 对得起
+Stepping in: 介入 干涉 干预 插手 过问 理睬 出面 露面 调解
+Favours and flattery: 讨好 巴结 迎合 拉拢 周旋 应酬 人情 沾光 托付
+
+## Effort and skill | 拼搏 | The master of the palace workshops sets Shi Shi a test piece, and he has to prove he has the skill and the staying power
+Talent: 本事 能耐 才干 天赋 天分 潜能 专长 强项 拿手 埋没
+Skill: 一手 两手 绝技 手艺 功力 功底 基本功 过硬 得力 施展 自如
+Tricks and fixes: 窍门 诀窍 要领 招数 门路 路子 突破口 摸索 走弯路 补救 挽回
+Striving: 拼命 拼搏 挣扎 奋力 极力 竭力 力求 力争 不惜 不懈 豁出去
+Drive: 一心 致力于 着力 谋求 干劲 劲头 起劲 斗志 踊跃 励志 鞭策
+Shouldering it: 负 担 担当 担负 肩负 担子 挨 经受 吃苦 吃力 费劲
+Hard slog: 操劳 奔波 忙活 折腾 苦心 心血 加紧 罢休 省事
+Getting it done: 着手 下手 入手 设法 预备 对付 应付 攻关 得手 到位
+Breaking new ground: 创 首创 开拓 开辟 奠定 立足 造就 投身 坚守 发扬 事迹
+
+## Thinking it through | 思索 | The palace librarian hands Shi Shi a riddle scroll that must be solved before the library doors will open
+Thoughts and ideas: 心思 念头 思绪 脑海 浮现 心眼儿 点子 计策 构想
+Thinking it over: 琢磨 思索 沉思 深思 斟酌 推敲 揣摩 权衡 考量 盘算
+Working it out: 推理 推断 推论 推算 估算 计 假定 猜想 揣测 对照 参照
+It dawns on you: 发觉 察觉 觉悟 觉醒 醒悟 领悟 领会 会意 理会
+Wise and sharp: 理智 明智 英明 高明 精明 机智 机灵 敏锐 智商 远见 透彻
+Riddles, mix-ups: 谜 谜团 谜底 破解 秘诀 不解 混淆 分辨 辨别 辨认 鉴别
+Hunches: 直觉 预感 预见 意料 感性 知觉 幻觉 幻影 错觉 误区
+Insight idioms: 恍然大悟 灵机一动 胸有成竹 举一反三 思前想后 不假思索 半信半疑 一无所知 不得而知 来龙去脉
+
+## Aims and opinions | 见解 | Long Long and Gun Gun cannot agree on what the mysterious scroll means, and Shi Shi has to weigh up both views
+Intentions: 意图 意向 意愿 用意 本意 初衷 有意 无意 刻意 存心 成心
+Plans and ambitions: 企图 野心 抱负 志愿 指望 奢望 妄想 空想 拟 筹划 酝酿
+Memory and outlook: 回想 回味 遗忘 牢记 铭记 记性 心得 见闻 眼界 见识 展望
+Paying attention: 留意 留心 留神 警惕 着眼 顾及 正视 反省 不经意 下意识
+Beliefs and doubts: 坚信 确信 当真 执意 动摇 迟疑 同感 观感 价值观 情结
+Passing judgement: 评审 评判 评定 判定 断定 定论 界定 点评 归纳 归结
+Views and bias: 言论 见解 视角 是非 公道 不平 偏见 偏向 歪曲 纵观 侧重
+Absurd or fishy: 可笑 荒唐 荒谬 荒诞 无理 不像话 离谱儿 活该 可疑 疑点 马后炮
+
+## Praise and debate | 辩论 | In the Hall of Debate two ministers argue over a new bridge, and Shi Shi is asked to judge who made the better case
+Praise: 赞美 赞扬 赞叹 赞许 歌颂 表彰 奖赏 叫好 锦旗 亮点
+Admiration: 敬佩 钦佩 敬重 敬爱 爱戴 崇敬 崇尚 媲美 服气
+Blame: 谴责 批判 抨击 责怪 责备 埋怨 怨言 牢骚 检讨
+Scorn: 鄙视 轻视 蔑视 轻蔑 小看 低估 贬低 嫌弃 不屑 讽刺 抹杀
+Making a case: 辩 辩论 辩解 反驳 论证 论述 阐述 列举 求证 印证 着重
+Talks: 协商 商讨 磋商 交涉 座谈 议 议题 对策 僵局
+Give and take: 妥协 让步 退让 和解 化解 共识 分歧 异议 不服
+Many voices idioms: 七嘴八舌 交头接耳 异口同声 不约而同 各抒己见 见仁见智 针锋相对 不以为然 无可厚非 赞不绝口
+Plain logic idioms: 理所当然 天经地义 顺理成章 不言而喻 可想而知 自相矛盾 似是而非 岂有此理 一概而论
+
+## The art of speaking | 口才 | Shi Shi must make a speech before the ministers in the audience hall, and Hu Hu keeps interrupting him
+Shout and butt in: 吼 嚷 呐喊 呼唤 哼 呵 感叹 插嘴 打岔
+Chatter and boasts: 唠叨 絮叨 啰唆 废话 闲话 胡说 吹牛 夸大 号称 自称
+Ask and beg: 恳求 乞求 哀求 拜托 讨 说情 追问 质问 反问 试探
+Urge and advise: 劝说 劝告 劝阻 告诫 嘱咐 叮嘱 吩咐 催促 敦促 勉励 哄
+Tell and pass on: 告 告知 转达 交代 陈述 表述 揭示 诉说 倾诉 诉苦 告状
+Propose and promise: 提议 倡议 倡导 呼吁 响应 回应 附和 许 诺言 发誓 宣誓
+Speeches: 演说 致辞 开场白 口才 言辞 话语 口气 心声 畅谈 寒暄
+Tact and excuses: 含糊 含蓄 委婉 示意 保密 好说 谢绝 推辞 借口 恭维 吹捧
+How we talk idioms: 滔滔不绝 脱口而出 出口成章 头头是道 实话实说 斩钉截铁 理直气壮 指手画脚 一言不发 一声不吭 无话可说
+
+## Grand and strange | 壮观 | Shi Shi enters the throne hall for the first time, and Bao Bao, too nervous to look, begs him to describe everything
+Grand: 盛大 隆重 辉煌 灿烂 华丽 豪华 壮观 壮丽 宏伟 雄伟 庄严
+Air and style: 气势 气派 威风 声势 架势 风貌 风情 缤纷 花样
+Calm and quiet: 宁静 寂静 清静 安宁 安定 安稳 太平 祥和 平稳
+Strange: 古怪 怪异 奇特 奇妙 离奇 稀奇 新奇 反常 微妙
+Strong and fierce: 猛 猛烈 强劲 强势 强硬 尖锐 严峻 火热 旺 旺盛 蓬勃
+Fine and fresh: 精 精细 精妙 细腻 别致 美妙 甜美 清新 鲜活 诱人
+Soft and rich: 嫩 润 滋润 湿润 柔和 清凉 暖烘烘 浓郁 浓重 饱满 沉甸甸
+Vague and deep: 虚 虚幻 无形 朦胧 茫茫 深沉 深奥 漫 宽泛
+Unbelievable idioms: 不可思议 莫名其妙 难以置信 意想不到 出人意料 前所未有 显而易见 一目了然 耳目一新 形形色色 五花八门
+
+## Sound or shoddy | 妥善 | The emperor's inspector hands Shi Shi a list and asks which palace repairs are sound and which are shoddy
+Steady and solid: 稳 稳固 稳健 稳妥 牢固 坚实 扎实 严密 周密 精密
+Fit for the job: 妥 妥善 妥当 得当 确切 像样 凑合 管用 现成
+Rough and shabby: 粗糙 简陋 简易 破旧 陈旧 残缺 拙劣 生硬 笨重 空洞
+Tough going: 艰巨 繁重 棘手 紧迫 急迫 要紧 曲折 迟缓 缓 沉闷
+Pure and plain: 素 纯粹 正宗 古朴 中性 保守 寻常 平淡 良
+Handy and rare: 可贵 名贵 耐用 万能 完好 完备 新式 冷门 生疏
+Clear and smooth: 顺畅 通畅 直观 分明 明朗 宽松 紧凑 均衡 如一
+Just right idioms: 名副其实 当之无愧 恰到好处 恰如其分 难能可贵 得天独厚 原汁原味 美中不足 乱七八糟 一塌糊涂 杂乱无章
+
+## Amounts and degrees | 分量 | The imperial granary must be counted before winter, and Shi Shi cannot say how much is plenty and how much is too little
+Top of the class: 顶级 顶尖 头号 巅峰 极限 无敌 无比 非凡 卓越 出众 优越
+Extreme: 极度 万分 要命 不堪 够呛 过头 绝 急剧 悬殊 空前 长足
+Slight and tiny: 略 丝毫 轻微 微弱 细微 微型 袖珍 渺小 零星 稀少 稀罕
+Plenty: 丰厚 丰硕 充 充沛 雄厚 可观 海量 无穷 高昂 威力
+Full or short: 饱和 爆满 过剩 稠密 稀 缺失 欠缺 贫乏 劣势 低下 逊色
+Shares and totals: 份额 分量 半数 过半 总和 若干 余 余地 额外 适量 同等
+Measures: 枚 盏 幢 缕 磅 亩 公顷 立方米 人次 口径
+Counting off: 码 编号 倒数 丁 丙 双重 首批 一连串 一揽子
+Big and small idioms: 重中之重 举足轻重 必不可少 微不足道 无关紧要 寥寥无几 比比皆是 一干二净 根深蒂固 错综复杂
+
+## Time | 昼夜 | The great water clock of the palace has stopped, and Shi Shi must tell the court exactly when everything happened
+The past: 往事 往日 往常 昔日 早年 过往 回首 追溯 久违 多年来 长期以来
+Now and soon: 眼下 当日 当晚 次日 来年 改日 稍后 届时 前夕 关头 迄今
+Day and night: 黎明 黄昏 一早 昼夜 通宵 彻夜 连夜 成天 作息 钟
+Brief or forever: 短暂 暂 刹那 转眼 一晃 仓促 永恒 永久 终生 长效
+Late or on time: 延 延误 延缓 耽搁 滞后 逾期 超前 适时 同步 间断 守候
+Spans of time: 时段 晚期 同期 年限 日程 倒计时 历时 耗时 时隔 推移
+Years and seasons: 农历 正月 腊月 节气 时节 平日 历届 连年 后续
+Over and over idioms: 日复一日 有朝一日 没完没了 断断续续 接二连三 三番五次 经久不息 翻来覆去 当务之急 刻不容缓
+
+## Place and space | 所在 | Shi Shi is lost in the maze of palace courtyards and must describe exactly where he is so that Yu Tu can find him
+Wide and narrow: 宽敞 宽广 宽阔 开阔 辽阔 平坦 狭窄 狭小 空荡荡
+Remote and open: 偏僻 偏远 边远 僻静 荒凉 露天 实地 高空 上空
+Edges and zones: 界 界限 界线 边缘 尽头 交界 地带 禁区 局部
+Sides: 一面 侧面 背面 反面 一旁 横向 双向 定向 全方位 纵横 纵深
+Where it is: 所在 位子 坐落 下落 去向 去处 着落 流向 指向 会场
+Close by: 临 临近 逼近 濒临 靠拢 迎面 沿途 中途 随身 介于
+Crossed and tilted: 交叉 重叠 重合 并列 并行 错位 颠倒 倾斜 偏 逆
+Filling the space: 遍布 贯穿 环绕 容纳 布局 行列 间隙 空隙 空白
+All around idioms: 四面八方 随处可见 司空见惯 难得一见 风和日丽 飞禽走兽 扑面而来 鸦雀无声 一动不动
+
+## Change | 演变 | The palace is being repainted for the new year and nothing is where it was yesterday, so Shi Shi must report what has changed
+Spread and expand: 扩 扩张 扩散 扩充 拓展 拓宽 蔓延 渗透 波及
+Gather and grow: 膨胀 壮大 增添 累积 积 堆积 凝聚 汇聚 汇集 汇合
+On the rise: 高涨 攀升 飙升 回升 翻番 递增 飞跃 崛起 振兴 复兴 复苏
+Shrink and decline: 缩 收缩 缩水 萎缩 衰退 退步 没落 回落 流失
+Crack and split: 裂 破裂 断裂 分裂 分化 脱离 解体 瓦解 破碎
+Collapse and decay: 崩溃 垮 塌 破灭 腐烂 腐朽 老化 磨损 脱落 残留 遗留
+Stronger or weaker: 恶化 激化 深化 僵化 淡化 冷却 熄灭 削弱 衰减
+Transform: 转化 转型 转折 转折点 演变 变迁 变革 革新 改良 变形 扭曲
+All change idioms: 千变万化 变幻莫测 一成不变 面目全非 翻天覆地 愈演愈烈 此起彼伏 时好时坏 取而代之 潜移默化
+
+## How things unfold | 进程 | A string of small accidents upsets the emperor's birthday rehearsal, and Shi Shi must trace how one thing led to another
+Course of events: 进程 历程 势头 动向 成型 显现 重现 迭起 迸发
+Start and stop: 起步 降临 续 停顿 停滞 中止 终止 终结 了结 完毕
+Alter and restore: 更改 变更 变换 改动 刷新 交替 轮换 流转 扭转 复原 回归
+Ups and downs: 波动 起伏 反弹 伸缩 缓和 收敛 消 融 泄
+Causes and sources: 缘故 根源 源头 源泉 渊源 来历 发源地 出发点 导火索 症结 契机
+Effects: 致 致使 促成 诱发 衍生 奏效 见效 效力 抵消 制约
+Signs and marks: 标 标记 标签 标示 记号 迹象 苗头 凸显 预示
+Standards: 准则 基准 尺度 规格 底线 宗旨 常理 情理 条理 次序 常态
+Levels: 级别 档次 水准 品位 境界 地步 上限 达标 超标 垫底 次要
+
+## Parts and wholes | 格局 | The chief architect unrolls the plan of the whole palace, and Shi Shi must explain how every part fits the rest
+The heart of it: 真理 精华 精髓 要害 特质 属性 共性 固有 底蕴 底子 根基
+The big picture: 大局 全局 主体 实体 一体 框架 格局 范畴 分支 脉络 概况
+Belonging: 所属 归属 附属 附 附加 附带 名义 职能 载体 承载 依托
+Links: 牵涉 牵扯 挂钩 衔接 接轨 贯通 相通 纽带 呼应 涵盖 脱节
+Match and contrast: 吻合 匹配 合乎 顺应 互补 调和 酷似 反差 落差
+Cases: 个案 特例 先例 选项 事宜 事态 产物 缩影 隐情 生命线
+Two sides: 得失 利害 弊端 弊病 辩证 广义 内在 潜在 导向
+Same or not idioms: 息息相关 相辅相成 因人而异 大同小异 截然不同 不相上下 与众不同 独一无二 相提并论
+
+## When and how likely | 迟早 | The emperor's steward keeps changing when the audience will be, and Shi Shi must catch every little "soon", "luckily" and "at most"
+By luck: 幸好 幸亏 好在 有幸 碰巧 恰巧 凑巧 偏偏 竟 果真
+Bound to: 必定 必将 势必 务必 非得 未免 不免 免不了 不由得
+Maybe, at most: 多半 不定 不见得 没准儿 起码 顶多 大不了 好歹 有望 不得已
+Sooner or later: 迟早 终究 到头来 早日 尽早 及早 趁早 预先 迟迟 尚 尚未
+All at once: 随即 当即 火速 猛然 骤然 一举 一头 徐徐 毅然 索性
+Again and again: 再度 屡 屡次 频频 时而 时时 动不动 一连 相继 依次 逐年
+As usual: 照样 照常 照例 向来 历来 一度 从头 暂且 姑且
+
+## How it was done | 分外 | Hu Hu swears he polished the throne openly and all by himself, and Shi Shi must pin down exactly how it was done
+How much: 颇 稍稍 略微 尤为 分外 越发 日趋 着实 万万
+All or only: 统统 通通 一概 一齐 无不 唯独 任意 只管 大体
+Openly or secretly: 暗中 暗地里 私自 公然 当众 大肆 赫然 如实 无故
+On your own: 独 自行 自发 亲身 切身 专程 胡乱 一味 不慎
+Seizing the chance: 顺手 顺路 顺势 趁机 伺机 就地 就近 牢牢 竞相
+Why bother: 何必 何苦 难怪 怪不得 可不是 不妨 休想 无须 无从 免得
+Nothing more than: 而已 罢了 无非 并非 不算 即可 说不上 少不了 无条件
+
+## Formal linking words | 况且 | In the heart of the palace the emperor hands Shi Shi a decree in grand old-fashioned language, and he must read it aloud without a slip
+Classical one-word: 非 若 即 唯 且 皆 亦 乃 故
+Formal little words: 兹 矣 曰 勿 愈 继 依 应 予以 不予
+If and even if: 倘若 假使 纵然 固然 虽说 别看 宁愿 宁可 与否 但愿 莫非
+Moreover, let alone: 况且 何况 别说 乃至 以至于 以致 继而 反之 反倒 连同 除外
+According to: 基于 鉴于 依照 遵照 本着 据悉 按说 旨在 一经 直至 至此
+So to speak: 所谓 可谓 堪称 不愧 好比 好似 譬如 不亚于 趋于 有待
+Linking idioms: 总而言之 归根到底 诸如此类 无论如何 或多或少 自始至终 随时随地 自然而然 不知不觉 一如既往
