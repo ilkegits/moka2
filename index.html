@@ -2425,7 +2425,7 @@ button.scene-tile:active svg{opacity:.92}
 .note-input:focus{box-shadow:0 0 0 2px var(--seal)}
 
 /* ---------- full-screen moments: onboarding, streak saved, milestones, welcome back, paywall ---------- */
-#ob{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;
+#ob{position:fixed;inset:0;z-index:60;background:var(--obbg,var(--paper));display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;
   padding:env(safe-area-inset-top) 0 0;animation:obIn .32s cubic-bezier(.2,.8,.3,1) both}
 #ob.out{animation:obOut .2s ease both}
 @keyframes obIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -2453,7 +2453,7 @@ button.scene-tile:active svg{opacity:.92}
 .ob-opt small{display:block;font-size:13.5px;color:var(--muted);margin-top:1px}
 .ob-opt .ob-txt{flex:1;min-width:0}
 .ob-opt .ob-num{flex:none;font-family:var(--display);font-weight:600;font-size:30px;line-height:1;color:var(--ink-2);font-variant-numeric:lining-nums tabular-nums}
-.ob-dock{position:sticky;bottom:0;margin-top:auto;padding:16px 0 calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--paper) 26%);display:flex;flex-direction:column;gap:6px}
+.ob-dock{position:sticky;bottom:0;margin-top:auto;padding:16px 0 calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--obbg,var(--paper)) 26%);display:flex;flex-direction:column;gap:6px}
 .ob-dock .btn{width:100%;height:54px;font-size:17px}
 .ob-dock .btn:disabled{opacity:1;background:var(--fill);color:var(--muted)}
 .ob-link{height:44px;font-weight:600;font-size:15px;color:var(--ink-2)}
@@ -2548,6 +2548,166 @@ button.scene-tile:active svg{opacity:.92}
 .mo-pips i{width:26px;height:8px;border-radius:5px;background:var(--fill)}
 .mo-pips i.on{background:#E8742C}
 .ob-hours{justify-content:center;margin:6px 0 0}
+/* ---------- onboarding v2 (moka2 3.45.7): animated pages, a colour wash per chapter ---------- */
+#ob.obs-plan{--obbg:#FBE4DA} #ob.obs-how1,#ob.obs-how2,#ob.obs-how3,#ob.obs-how4{--obbg:#E4EFE5} #ob.obs-chart{--obbg:#FCF0D2} #ob.obs-habit{--obbg:#E3EDF2}
+#ob.obs-pay{background:linear-gradient(170deg,#FF5C69,#E0283A 55%,#B8202F);color:#fff}
+#ob.obs-pay .ob-dock{background:none}
+#ob .ob2-in{opacity:0;transform:translateY(12px);animation:ob2Up .5s cubic-bezier(.2,.8,.3,1) forwards;animation-delay:calc(var(--i,0) * 70ms + 60ms)}
+@keyframes ob2Up{to{opacity:1;transform:none}}
+#ob .ob2-pop{opacity:0;transform:scale(.4);animation:ob2Pop .55s cubic-bezier(.3,1.6,.5,1) forwards;animation-delay:var(--d,0s)}
+@keyframes ob2Pop{to{opacity:1;transform:scale(1)}}
+.ob2-shi .shi-face{width:100%;height:100%;display:block}
+.ob2-q{margin:10px 0 6px;font:700 27px/1.15 var(--display);letter-spacing:-.015em}
+.ob2-sub{margin:0 0 18px;color:var(--ink-2);font-size:15.5px}
+.ob2-c{text-align:center}
+.ob2-bub{position:relative;padding:14px 18px;border-radius:20px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);font-weight:700;font-size:20px;line-height:1.3;letter-spacing:-.01em;min-height:56px}
+.ob2-bub::after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-9px;border:9px solid transparent;border-bottom:0;border-top-color:var(--card)}
+.ob2-bub .w{opacity:0;transition:opacity .18s}
+.ob2-bub .w.on{opacity:1}
+@keyframes ob2Bob{50%{transform:translateY(-6px) rotate(-2deg)}}
+/* start: a character draws itself on 田字格 paper */
+.ob2-start{flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px 0 0}
+.ob2-hero{position:relative;width:min(230px,58vw);aspect-ratio:1;margin:0 auto}
+.ob2-tzg{position:absolute;inset:0;border-radius:18px;background:#FFFDF8;box-shadow:0 0 0 3px var(--seal),0 18px 30px -18px rgba(120,40,20,.5);overflow:hidden}
+.ob2-tzg.jade{box-shadow:0 0 0 3px var(--jade),0 18px 30px -18px rgba(20,80,50,.5)}
+.ob2-tzg svg.g{position:absolute;inset:0;width:100%;height:100%}
+.ob2-hw{position:absolute;inset:0}
+.ob2-fb{position:absolute;inset:0;display:grid;place-items:center;font:600 150px/1 var(--hanzi);color:var(--ink)}
+.ob2-hero .ob2-shi{position:absolute;right:-30px;bottom:-28px;width:42%;aspect-ratio:1;filter:drop-shadow(0 8px 10px rgba(80,30,10,.25))}
+.ob2-wm{margin:44px 0 10px;text-align:center;font:800 22px/1 'Baloo 2',var(--ui);color:var(--seal)}
+.ob2-h1{margin:0 0 10px;text-align:center;font:700 32px/1.1 var(--display);letter-spacing:-.02em}
+.ob2-lead{margin:0 8px;text-align:center;color:var(--ink-2);font-size:16px}
+/* hello */
+.ob2-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+.ob2-stage > .ob2-bub{max-width:300px}
+.ob2-hello{width:150px;height:150px}
+.ob2-hello .shi-face{animation:ob2Bob 2.8s ease-in-out 1.2s infinite}
+/* your plan: each answer stamps onto your deck */
+.ob2-plan{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:4px}
+.ob2-plan .ob2-shi{width:96px;height:96px}
+.ob2-plan .ob2-bub{font-size:19px;min-width:240px}
+.ob2-deck{position:relative;width:228px;height:250px;margin-top:10px}
+.ob2-deck .c{position:absolute;inset:0;border-radius:20px;background:var(--card);box-shadow:var(--ring),0 2px 0 rgba(120,95,60,.15)}
+.ob2-deck .c:nth-child(1){transform:translate(10px,14px) rotate(5deg);background:#F2E9DA}
+.ob2-deck .c:nth-child(2){transform:translate(-8px,8px) rotate(-4deg);background:#F7F0E4}
+.ob2-deck .front{display:flex;flex-direction:column;align-items:center;padding-top:22px;gap:12px;box-shadow:var(--ring),0 18px 30px -18px rgba(120,40,20,.45)}
+.ob2-deck .front .zh{font:600 54px/1 var(--hanzi);color:var(--ink);opacity:.9}
+.ob2-deck.jolt .front{animation:ob2Jolt .28s ease}
+@keyframes ob2Jolt{30%{transform:translateY(4px) scale(.985)}}
+.ob2-stamps{display:flex;flex-direction:column;align-items:center;gap:8px}
+.ob2-stamp{display:inline-block;padding:7px 14px 8px;border-radius:9px;background:var(--seal);color:#fff;font:600 16.5px/1 var(--display);box-shadow:inset 0 0 0 2px var(--seal),inset 0 0 0 3.5px rgba(255,255,255,.75);opacity:0}
+.ob2-stamp.j{background:var(--jade);box-shadow:inset 0 0 0 2px var(--jade),inset 0 0 0 3.5px rgba(255,255,255,.75)}
+.ob2-stamp.g{background:#C98A14;box-shadow:inset 0 0 0 2px #C98A14,inset 0 0 0 3.5px rgba(255,255,255,.75)}
+.ob2-stamp.on{animation:ob2Stamp .42s cubic-bezier(.5,0,.6,1.4) forwards}
+@keyframes ob2Stamp{0%{opacity:0;transform:scale(2.1) rotate(var(--r,0deg))}60%{opacity:1;transform:scale(.92) rotate(var(--r,0deg))}100%{opacity:1;transform:scale(1) rotate(var(--r,0deg))}}
+/* how it works */
+.obs-how1 .ob2-q,.obs-how2 .ob2-q,.obs-how3 .ob2-q,.obs-how4 .ob2-q,.obs-chart .ob2-q,.obs-habit .ob2-q{text-align:center}
+.ob2-wall{display:flex;flex-direction:column;gap:10px;margin:10px -20px 0;overflow:hidden}
+.ob2-wall .row{display:flex;gap:10px;width:max-content;animation:ob2SlideL 1.5s cubic-bezier(.2,.7,.3,1) both}
+.ob2-wall .row:nth-child(2){animation-name:ob2SlideR;margin-left:-30px}
+@keyframes ob2SlideL{from{transform:translateX(-90px)}}
+@keyframes ob2SlideR{from{transform:translateX(90px)}}
+.ob2-tile{width:92px;height:92px;flex:none;border-radius:18px;background:#fff;display:grid;place-items:center;font:600 24px/1 var(--hanzi);box-shadow:var(--ring);transition:opacity .5s,box-shadow .4s,transform .4s}
+.ob2-tile.one{font-size:32px}
+.ob2-wall.pick .ob2-tile{opacity:.28}
+.ob2-wall.pick .ob2-tile.hit{opacity:1;box-shadow:0 0 0 3px var(--jade),0 10px 18px -10px rgba(20,80,50,.5);transform:translateY(-3px)}
+.ob2-late{opacity:0;transition:opacity .5s}
+.ob2-late.on{opacity:1}
+.ob2-tl{position:relative;margin:28px 10px 0;height:84px}
+.ob2-tl .ln{position:absolute;left:12px;right:12px;top:50px;height:4px;border-radius:2px;background:#E7A79D}
+.ob2-tl .st{position:absolute;top:41px;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #E2685A;transition:box-shadow .3s,background .3s}
+.ob2-tl .st.on{box-shadow:0 0 0 4px var(--jade);background:#DDF0E4}
+.ob2-tl .st span{position:absolute;top:30px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.ob2-tl .st em{position:absolute;top:47px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-style:normal;font-weight:700;color:var(--jade);opacity:0;transition:opacity .3s}
+.ob2-tl .st.on em{opacity:1}
+.ob2-tl svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ob2-tl svg path{fill:none;stroke:var(--jade);stroke-width:3;stroke-dasharray:6 6;stroke-linecap:round}
+.ob2-fc{margin:44px auto 0;width:min(240px,70vw)}
+.ob2-fc .c{border-radius:20px;background:#fff;box-shadow:var(--ring),0 4px 0 #E8DFD0,0 8px 0 #DCD1BF;padding:16px 16px 22px;text-align:center}
+.ob2-fc .en{color:var(--muted);font-weight:600;font-size:16px;padding-bottom:12px;border-bottom:1.5px solid var(--line)}
+.ob2-fc .zh{font:600 54px/1.2 var(--hanzi);margin-top:12px}
+.ob2-fc .py{color:var(--seal);font-weight:600;font-size:15px}
+.ob2-wr{position:relative;width:min(220px,60vw);aspect-ratio:1;margin:18px auto 0}
+/* exam date */
+.ob2-wheel{position:relative;display:grid;grid-template-columns:1.4fr 1fr 1.2fr;height:200px;border-radius:20px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);overflow:hidden}
+.ob2-wheel::before{content:"";position:absolute;left:10px;right:10px;top:80px;height:40px;border-radius:11px;background:var(--fill);pointer-events:none}
+.ob2-wheel::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(var(--card),transparent 35%,transparent 65%,var(--card))}
+.ob2-col{height:200px;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;padding:80px 0;overscroll-behavior:contain}
+.ob2-col::-webkit-scrollbar{display:none}
+.ob2-col div{height:40px;display:grid;place-items:center;scroll-snap-align:center;font:600 21px/1 var(--display);font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.ob2-cd{display:flex;align-items:center;gap:14px;margin-top:18px;padding:14px 16px;border-radius:18px;background:#FFF4DC;box-shadow:0 0 0 2px #F3D9A0}
+.ob2-cd .num{flex:none;min-width:64px;height:58px;padding:0 8px;border-radius:14px;background:var(--seal);color:#fff;display:grid;place-items:center;font:700 28px/1 var(--display);font-variant-numeric:tabular-nums}
+.ob2-cd .num.tick{animation:ob2Tick .25s ease}
+@keyframes ob2Tick{40%{transform:scale(1.12)}}
+.ob2-cd b{display:block;font-size:16.5px}
+.ob2-cd small{display:block;color:var(--ink-2);font-size:13.5px}
+.gopt-when.after small,.gopt-when.after b,.ob-opt[aria-pressed="true"] .gopt-when.after small{color:var(--seal)}
+/* your plan chart */
+.ob2-chart{margin-top:14px;padding:18px 14px 12px;border-radius:22px;background:#fff;box-shadow:var(--ring),var(--shadow-sm)}
+.ob2-bars{position:relative;display:flex;align-items:flex-end;gap:7px;height:190px;padding-top:26px}
+.ob2-goal{position:absolute;left:0;right:0;top:26px;border-top:2px dashed #D9B45A}
+.ob2-key i.d{width:14px;height:0;border-radius:0;background:none;border-top:2px dashed #D9B45A}
+.ob2-bar{position:relative;flex:1;height:100%;display:flex;align-items:flex-end}
+.ob2-bar i{display:block;width:100%;border-radius:8px 8px 4px 4px;background:linear-gradient(#FF5C69,var(--seal));transform-origin:bottom;transform:scaleY(0);transition:transform .5s cubic-bezier(.3,1.25,.5,1)}
+.ob2-bar.rev i{background:linear-gradient(#5FA27F,var(--jade))}
+.ob2-bar.on i{transform:scaleY(1)}
+.ob2-bar .val{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--h) + 6px);font:700 13px/1 var(--display);background:var(--ink);color:#fff;padding:4px 6px;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .3s;z-index:1}
+.ob2-bar .val.on{opacity:1}
+.ob2-flag{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);opacity:0;transition:opacity .4s}
+.ob2-flag.on{opacity:1}
+.ob2-flag b{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--seal);color:#fff;font:600 17px/1 var(--hanzi)}
+.ob2-wk{display:flex;gap:7px;margin-top:8px}
+.ob2-wk span{flex:1;text-align:center;font-size:11.5px;color:var(--muted);font-weight:600}
+.ob2-key{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;margin-top:10px;font-size:12.5px;color:var(--ink-2);font-weight:600}
+.ob2-key span{display:inline-flex;align-items:center;gap:6px}
+.ob2-key i{width:11px;height:11px;border-radius:3px;background:var(--seal)}
+.ob2-key i.j{background:var(--jade)}
+.ob2-key b{color:var(--seal);font-family:var(--hanzi)}
+/* reminder: a practice prompt first */
+.ob2-perm{margin:20px 6px 0;padding:18px 18px 14px;border-radius:20px;background:#fff;box-shadow:0 20px 40px -20px rgba(20,50,70,.4)}
+.ob2-perm b{display:block;font-size:17px;line-height:1.3}
+.ob2-perm p{margin:6px 0 14px;color:var(--ink-2);font-size:14px}
+.ob2-perm .pb{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ob2-perm .pb span{height:42px;border-radius:12px;display:grid;place-items:center;font-weight:700;background:var(--fill);color:var(--muted)}
+.ob2-perm .pb span.al{background:#1F6FEB;color:#fff;box-shadow:0 0 0 4px rgba(31,111,235,.18);animation:ob2Glow 1.6s ease-in-out infinite}
+@keyframes ob2Glow{50%{box-shadow:0 0 0 8px rgba(31,111,235,.12)}}
+.ob2-arrow{display:block;width:34px;height:44px;margin:12px 22% 0 auto;color:#1F6FEB}
+.ob2-arrow path{animation:ob2Poke 1.1s ease-in-out infinite}
+@keyframes ob2Poke{50%{transform:translateY(-8px)}}
+.ob2-hours{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.ob2-hours button{height:36px;padding:0 13px;border-radius:11px;background:rgba(255,255,255,.7);font-weight:700;font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ob2-hours button[aria-pressed="true"]{background:var(--ink);color:#fff}
+/* paywall preview at the end */
+.ob2-ptop{display:flex;justify-content:space-between;align-items:center;height:56px;flex:none}
+.obs-pay .icon-btn{color:#fff}
+.ob2-ptag{font-size:12px;font-weight:700;background:rgba(255,255,255,.2);padding:5px 9px;border-radius:8px}
+.obs-pay .ob2-shi{width:84px;height:84px;margin:0 auto;filter:drop-shadow(0 8px 12px rgba(90,0,10,.35))}
+.ob2-ph{margin:10px 0 6px;text-align:center;font:700 29px/1.1 var(--display);letter-spacing:-.02em}
+.ob2-ps{margin:0;text-align:center;opacity:.92;font-size:15.5px}
+.ob2-plans{margin-top:16px;padding:8px;border-radius:22px;background:#fff;color:var(--ink);display:flex;flex-direction:column;gap:6px}
+.ob2-tier{position:relative;display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:15px;text-align:left;transition:background .2s}
+.ob2-tier[aria-pressed="true"]{background:#FFE9EA}
+.ob2-tier .rd{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px #CDBFA8;transition:box-shadow .2s}
+.ob2-tier[aria-pressed="true"] .rd{box-shadow:inset 0 0 0 7px #E0283A}
+.ob2-tier .pt{flex:1}
+.ob2-tier .pt b{display:block;font-size:17px}
+.ob2-tier .pt small{display:block;color:var(--ink-2);font-size:13px}
+.ob2-tier .pr{text-align:right;font:700 19px/1 var(--display)}
+.ob2-tier .pr small{display:block;font:500 12px/1.4 var(--ui);color:var(--muted)}
+.ob2-tier .save{position:absolute;top:-8px;right:10px;font-size:11px;font-weight:800;background:#E0283A;color:#fff;padding:3px 7px;border-radius:6px}
+.ob2-trial{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;font-weight:600;font-size:14.5px}
+.ob2-trial[hidden]{display:none}
+.ob2-sw{flex:none;width:48px;height:28px;border-radius:14px;background:rgba(255,255,255,.35);position:relative;transition:background .2s}
+.ob2-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.ob2-sw[aria-pressed="true"]{background:#2BB673}
+.ob2-sw[aria-pressed="true"]::after{transform:translateX(20px)}
+.btn-white{background:#fff;color:#C8202F;--edge:rgba(120,20,20,.18);--drop:rgba(80,0,0,.5);box-shadow:inset 0 -4px 0 var(--edge),inset 0 2px 0 rgba(255,255,255,.22),0 12px 22px -12px var(--drop);padding-bottom:4px}
+.obs-pay .ob2-fine{margin:2px 0 0;text-align:center;font-size:13px;opacity:.9}
+.obs-pay .ob-link{color:#fff;opacity:.85}
+@media (prefers-reduced-motion:reduce){
+  #ob .ob2-in,#ob .ob2-pop,.ob2-stamp.on,.ob2-wall .row{animation:none!important;opacity:1;transform:none}
+  .ob2-hello .shi-face,.ob2-arrow path,.ob2-perm .pb span.al{animation:none}
+}
 .ob-art{width:min(190px,50vw);margin:20px auto 0}
 .ob-art .shi-face{width:100%;height:auto;display:block}
 .ob-phone{position:relative;width:150px;height:150px;margin:24px auto 0;border-radius:34px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);display:grid;place-items:center}
@@ -11613,7 +11773,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.6';
+const APP_VERSION = '3.45.7';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
@@ -11901,12 +12061,12 @@ function GoalRow(act = 'goal') {
 function goalPace(lv, left) {
   return GOALS.map(([m]) => { const per = Math.max(2, Math.round(m * .4)); return { m, per, weeks: Math.max(1, Math.round(left / per / 7)) }; });
 }
-function GoalOpts(cur, lv, left) {
+function GoalOpts(cur, lv, left, exW = 0) {
   const P = goalPace(lv, left), fast = Math.max(...P.map(p => p.per));
   return GOALS.map(([m, t], i) => `<button class="ob-opt ob-gopt" data-v="${m}" data-g="${m}" aria-pressed="${m === cur}">
       <span class="gopt-min"><b>${m}</b><small>min</small></span>
       <span class="ob-txt"><b>${t}</b><span class="gopt-bar" aria-hidden="true"><i style="width:${Math.round(P[i].per / fast * 100)}%"></i></span></span>
-      <span class="gopt-when"><small>${HSK_NAME(lv)} done in</small><b>~${plural(P[i].weeks, 'week')}</b></span></button>`).join('');
+      <span class="gopt-when${exW && P[i].weeks > exW ? ' after' : ''}"><small>${exW && P[i].weeks > exW ? 'After your exam' : `${HSK_NAME(lv)} done in`}</small><b>~${plural(P[i].weeks, 'week')}</b></span></button>`).join('');
 }
 function goalLevel() {   // the level you're working on now and how many of its words you don't know yet
   const lv = Math.min(7, db.prefs.level || 1), L = S.H?.levels[lv], k = knownWords();
@@ -11933,8 +12093,11 @@ function goalSheet() {
 const OB_WHY = [['travel', '旅', 'Travel'], ['family', '家', 'Family and heritage'], ['work', '工', 'Work or school'],
   ['exam', '考', 'The HSK exam'], ['culture', '文', 'Films, books and culture'], ['fun', '趣', 'Just for fun']];
 const OB_LEVEL = [[1, '初', 'Beginner'], [2, '中', 'Intermediate'], [4, '高', 'Advanced'], [5, '专', 'Pro']];   // value: the HSK level the character check starts at
-const OB_STEPS = ['hi', 'why', 'level', 'check', 'words', 'read', 'placed', 'goal', 'habit'];
-const OB_PROG = { why: .14, level: .26, check: .4, words: .54, read: .66, placed: .78, goal: .9, habit: 1 };   // jumps early, then slows (progress bars that start fast keep more people going)
+/* v2 (moka2 3.45.7): every question is used later. What you learn for picks the exam date page and the plan's flag;
+   the level check fills the plan; how it works uses words at your level; the chart shows your own pace; a paywall preview ends it */
+const OB_FOR = [['exam', '考', 'The HSK exam', 'Words from the exam lists, planned up to your exam day'], ['read', '读', 'Reading Chinese day to day', 'Signs, menus, messages and short stories']];
+const OB_STEPS = ['hi', 'hello', 'why', 'level', 'check', 'words', 'read', 'plan', 'how1', 'how2', 'how3', 'how4', 'date', 'goal', 'chart', 'habit', 'pay'];
+const OB_PROG = { why: .1, level: .17, check: .25, words: .33, read: .4, plan: .46, how1: .52, how2: .57, how3: .62, how4: .67, date: .74, goal: .81, chart: .88, habit: .95 };   // jumps early, then slows (progress bars that start fast keep more people going)
 const OB_ROUND = 12, OB_ROUNDS = 4, OB_CARDS = 4;
 /* the short reading test: hand-written passages per HSK level (two each, one picked at random), each with one question */
 const OB_READ = {
@@ -11964,8 +12127,8 @@ const OB_READ = {
         q: 'What does 因材施教 mean here?', a: ['Teaching each student in the way that suits them', 'Using one method for everyone', 'Students teaching each other', 'Studying old books first'] }],
 };
 const canRemind = () => 'PushManager' in window && 'Notification' in window && SYNC.on && !(db.prefs.remind?.on);
-function obStart(replay) {
-  S.ob = { i: 0, hist: [], why: [], level: null, goal: null, replay: !!replay };
+function obStart(replay, demo) {   // demo: shown once on moka2 to try the new pages; it changes nothing
+  S.ob = { i: 0, hist: [], why: [], level: null, goal: null, replay: !!replay || !!demo, demo: !!demo, for: null, exam: null, how: null, plan: 'year', trial: true, hour: 19, prog: 0 };
   loadHsk().catch(() => {});
   LOG.add('onboarding', { step: 'hi', replay: !!replay });
   obShow();
@@ -12015,10 +12178,10 @@ function obLowWords(lv) {   // every word of the levels below yours, each once
   for (let l = 1; l < lv; l++) for (const r of S.H?.levels[l] || []) if (!seen.has(r.h)) { seen.add(r.h); out.push(r); }
   return out;
 }
-function obTop(back = true) {
-  const p = OB_PROG[OB_STEPS[S.ob.i]] || 0;
+function obTop(back = true) {   // the bar starts where the last page left it and fills to this page's share
+  const p = OB_PROG[OB_STEPS[S.ob.i]] || 0, from = S.ob.prog || 0;
   return `<div class="ob-top"><button class="icon-btn" data-ob="back" aria-label="Back"${back ? '' : ' hidden'}>${I.back}</button>
-    <div class="ob-prog" role="progressbar" aria-valuenow="${Math.round(p * 100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.round(p * 100)}%"></i></div><span style="width:42px"></span></div>`;
+    <div class="ob-prog" role="progressbar" aria-valuenow="${Math.round(p * 100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.round(from * 100)}%" data-to="${Math.round(p * 100)}"></i></div><span style="width:42px"></span></div>`;
 }
 const obSay = (mood, txt, small = '') => `<div class="ob-say"><span class="ob-shi">${shiFace(mood)}</span><p class="ob-bub">${txt}${small ? `<small>${small}</small>` : ''}</p></div>`;
 const obOpt = (val, glyph, title, sub, on) => `<button class="ob-opt" data-v="${val}" aria-pressed="${!!on}">${glyph}<span class="ob-txt"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</span></button>`;
@@ -12064,12 +12227,76 @@ function obCheckHTML() {
 function obShow() {
   const O = S.ob, step = OB_STEPS[O.i];
   let html = '';
-  if (step === 'hi') html = (O.replay ? `<div class="ob-top"><button class="icon-btn" data-ob="quit" aria-label="Close">${I.back}</button></div>` : '') + `<div class="ob-hi"><div class="ob-big">${shiFace('cheer')}</div><div class="ob-name">ShiCards</div>
-      <h1>Learn to read and write Chinese characters</h1><p>A few minutes a day with Shi Shi. Getting started takes about two minutes.</p></div>
-    <div class="ob-dock"><button class="btn btn-seal" data-ob="next">Get started</button><button class="ob-link" data-ob="skip">I’ve used ShiCards before</button></div>`;
-  else if (step === 'why') html = obTop() + obSay('happy', 'Why are you learning Chinese?', 'Pick as many as you like.')
-    + `<div class="ob-opts" data-pick="why">${OB_WHY.map(([v, g, t]) => obOpt(v, `<span class="ob-glyph">${g}</span>`, t, '', O.why.includes(v))).join('')}</div>
-    <div class="ob-dock"><button class="btn btn-primary" data-ob="next"${O.why.length ? '' : ' disabled'}>Continue</button></div>`;
+  const inn = i => `class="ob2-in" style="--i:${i}"`;
+  if (step === 'hi') html = (O.replay ? `<div class="ob-top"><button class="icon-btn" data-ob="quit" aria-label="Close">${I.close}</button></div>` : '') + `<div class="ob2-start">
+      <div class="ob2-hero"><div class="ob2-tzg">${obGrid('rgba(178,58,44,.55)')}<div class="ob2-hw"></div></div><div class="ob2-shi ob2-pop" style="--d:1.9s">${shiFace('cheer')}</div></div>
+      <div class="ob2-wm ob2-in" style="--i:9">ShiCards</div><h1 class="ob2-h1 ob2-in" style="--i:10">Read Chinese in a few minutes a day</h1>
+      <p class="ob2-lead ob2-in" style="--i:11">Shi Shi brings each character back just before you forget it.</p></div>
+    <div class="ob-dock ob2-in" style="--i:13"><button class="btn btn-seal" data-ob="next">Get started</button>${O.replay ? '' : '<button class="ob-link" data-ob="skip">I’ve used ShiCards before</button>'}</div>`;
+  else if (step === 'hello') html = `<div class="ob-top"><button class="icon-btn" data-ob="back" aria-label="Back">${I.back}</button></div>
+    <div class="ob2-stage"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-hello ob2-pop">${shiFace('happy')}</div></div>
+    <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
+  else if (step === 'why') html = obTop() + `<h2 class="ob2-q ob2-in">What are you learning for?</h2><p class="ob2-sub ob2-in" style="--i:1">This picks your words and your plan.</p>
+    <div class="ob-opts" data-pick="for">${OB_FOR.map(([v, g, t, s], i) => `<span ${inn(2 + i)}>${obOpt(v, `<span class="ob-glyph">${g}</span>`, t, s, O.for === v)}</span>`).join('')}</div>
+    <div class="ob-dock ob2-in" style="--i:5"><button class="btn btn-primary" data-ob="next"${O.for ? '' : ' disabled'}>Next</button></div>`;
+  else if (step === 'plan') {
+    const lv = obLv(), chars = O.chk?.est?.chars || 0;
+    html = obTop() + `<div class="ob2-plan"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-pop" style="--d:.1s">${shiFace('wow')}</div>
+      <div class="ob2-deck" id="ob2Deck"><div class="c"></div><div class="c"></div><div class="c front"><span class="zh">学</span><div class="ob2-stamps">
+        <span class="ob2-stamp" style="--r:-4deg">${O.for === 'exam' ? 'HSK exam' : 'Everyday reading'}</span><span class="ob2-stamp j" style="--r:3deg">Start at ${HSK_NAME(lv)}</span>
+        <span class="ob2-stamp g" style="--r:-2deg">${chars ? `~${chars.toLocaleString('en')} characters known` : 'Starting from zero'}</span></div></div></div></div>
+      <div class="ob-dock ob2-in" style="--i:14"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
+  }
+  else if (step === 'how1') {
+    const W = obTeach(), w = W.wall, rows = [[w[0], W.easy.h, W.hard.h, w[1], w[2]], [w[3], w[4], w[5], w[6], w[7]], [w[8], w[9], w[10], w[11], w[12]]];
+    html = obTop() + `<h2 class="ob2-q ob2-in">You don’t review every word</h2>
+      <div class="ob2-wall" id="ob2Wall">${rows.map(r => `<div class="row">${r.map(h => `<span class="ob2-tile${[...h].length === 1 ? ' one' : ''}${W.hits.includes(h) ? ' hit' : ''}">${esc(h)}</span>`).join('')}</div>`).join('')}</div>
+      <p class="ob2-sub ob2-c ob2-late" id="ob2Late" style="margin-top:18px">Only the ones you’re about to forget come back today.</p>
+      <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
+  }
+  else if (step === 'how2' || step === 'how3') {
+    const W = obTeach(), easy = step === 'how2', r = easy ? W.easy : W.hard;
+    const stops = easy ? ['Now', '4 days'] : ['Now', '10 min', '1 hour', 'Tomorrow'], at = k => easy ? (k ? 92 : 8) : 8 + k * 28;
+    html = obTop() + `<h2 class="ob2-q ob2-in">${easy ? 'Words you know come back in days' : 'Tricky words come back sooner'}</h2>
+      <div class="ob2-tl ob2-in" style="--i:1"><div class="ln"></div><svg viewBox="0 0 295 84" aria-hidden="true"><path id="ob2Arc"/></svg>
+        ${stops.map((l, k) => `<span class="st${k ? '' : ' on'}" style="left:${at(k)}%"><span>${l}</span>${k ? `<em>${easy ? 'Next review' : 'Review'}</em>` : ''}</span>`).join('')}</div>
+      <div class="ob2-fc ob2-in" style="--i:2"><div class="c"><div class="en">${esc(meanOf(r))}</div><div class="zh">${esc(r.h)}</div><div class="py">${esc(r.p)}</div></div></div>
+      <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
+  }
+  else if (step === 'how4') html = obTop() + `<h2 class="ob2-q ob2-in">Writing it helps it stick</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">Draw a character once and you’ll spot it faster. Every word has writing practice.</p>
+      <div class="ob2-wr ob2-in" style="--i:2"><div class="ob2-tzg jade">${obGrid('rgba(63,122,95,.55)')}<div class="ob2-hw"></div></div></div>
+      <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Sounds good</button></div>`;
+  else if (step === 'date') {
+    const y0 = new Date().getFullYear();
+    O.exam ||= obDay(56);
+    html = obTop() + `<h2 class="ob2-q ob2-in">When is your ${HSK_NAME(obLv())} exam?</h2><p class="ob2-sub ob2-in" style="--i:1">So your plan fits before it.</p>
+      <div class="ob2-wheel ob2-in" style="--i:2"><div class="ob2-col" data-col="m" aria-label="Month">${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => `<div>${m}</div>`).join('')}</div>
+        <div class="ob2-col" data-col="d" aria-label="Day">${Array.from({ length: 31 }, (_, k) => `<div>${k + 1}</div>`).join('')}</div>
+        <div class="ob2-col" data-col="y" aria-label="Year">${[y0, y0 + 1, y0 + 2].map(y => `<div>${y}</div>`).join('')}</div></div>
+      <div class="ob2-cd ob2-in" style="--i:3" id="ob2Cd"></div>
+      <div class="ob-dock ob2-in" style="--i:4"><button class="btn btn-primary" data-ob="next">Next</button><button class="ob-link" data-ob="nodate">No date yet</button></div>`;
+  }
+  else if (step === 'chart') {
+    const lv = obLv(), left = obLeft(lv), m = O.goal || 10, per = Math.max(2, Math.round(m * .4)), wk = Math.max(1, Math.round(left / per / 7));
+    const ex = obExamWeeks(), n = Math.min(10, Math.max(wk, ex)), spare = ex - wk;
+    const head = !ex ? `${HSK_NAME(lv)} done in about ${plural(wk, 'week')}` : spare > 0 ? `Ready ${spare === 1 ? 'a week' : plural(spare, 'week')} before your exam`
+      : spare === 0 ? 'Ready just in time for your exam' : 'Your exam comes first: try more minutes';
+    html = obTop() + `<h2 class="ob2-q ob2-in">${head}</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">${m} minutes a day · ${per} new words a day</p>
+      <div class="ob2-chart ob2-in" style="--i:2"><div class="ob2-bars"><div class="ob2-goal"></div>
+        ${Array.from({ length: n }, (_, k) => { const w = k + 1, rev = w > wk, h = rev ? 100 : Math.round(Math.min(w, wk) / wk * 100);
+          return `<div class="ob2-bar${rev ? ' rev' : ''}" style="--h:${h}%"><i style="height:${h}%"></i>${w === Math.min(wk, n) ? `<span class="val" data-n="${left}">0</span>` : ''}${ex && (w === ex || w === n && ex > n) ? '<span class="ob2-flag"><b>考</b></span>' : ''}</div>`; }).join('')}</div>
+        <div class="ob2-wk">${Array.from({ length: n }, (_, k) => `<span>W${k === n - 1 && ex > n ? ex : k + 1}</span>`).join('')}</div>
+        <div class="ob2-key"><span><i class="d"></i>All of ${HSK_NAME(lv)}</span><span><i></i>New words</span>${n > wk ? '<span><i class="j"></i>Review only</span>' : ''}${ex ? '<span><b>考</b> Exam</span>' : ''}</div></div>
+      <div class="ob-dock ob2-in" style="--i:4"><button class="btn btn-primary" data-ob="next">Sounds good</button></div>`;
+  }
+  else if (step === 'pay') html = `<div class="ob2-ptop"><button class="icon-btn" data-ob="done" aria-label="Close">${I.close}</button><span class="ob2-ptag">Preview · nothing is sold</span><span style="width:42px"></span></div>
+      <div class="ob2-shi ob2-pop">${shiFace('cheer')}</div>
+      <h2 class="ob2-ph ob2-in" style="--i:2">Read Chinese in a few minutes a day</h2><p class="ob2-ps ob2-in" style="--i:3">A new story every day, writing for every word, all HSK levels.</p>
+      <div class="ob2-plans ob2-in" style="--i:4">${[['year', 'Yearly', '7 days free, then $29.99 a year', '$2.50', 'a month', 'SAVE 50%'], ['month', 'Monthly', 'No free trial', '$4.99', 'a month', '']].map(([k, t, s, pr, per, sv]) =>
+        `<button class="ob2-tier" data-plan="${k}" aria-pressed="${O.plan === k}">${sv ? `<span class="save">${sv}</span>` : ''}<span class="rd"></span><span class="pt"><b>${t}</b><small>${s}</small></span><span class="pr">${pr}<small>${per}</small></span></button>`).join('')}</div>
+      <div class="ob2-trial ob2-in" style="--i:5"${O.plan === 'year' ? '' : ' hidden'}><span>Remind me 2 days before the trial ends</span><button class="ob2-sw" data-trial aria-pressed="${O.trial}" aria-label="Trial reminder"></button></div>
+      <div class="ob-dock ob2-in" style="--i:6"><button class="btn btn-white" data-ob="buy">${O.plan === 'year' ? 'Start my free week' : 'Continue with Monthly'}</button>
+        <p class="ob2-fine">${O.plan === 'year' ? 'Nothing is charged during the free week' : 'Cancel any time'}</p><button class="ob-link" data-ob="done">Not now</button></div>`;
   else if (step === 'level') html = obTop() + obSay('focus', 'How much Chinese do you know?', 'Next, a quick check to find your level.')
     + `<div class="ob-opts" data-pick="level">${OB_LEVEL.map(([v, g, t]) => obOpt(v, `<span class="ob-glyph">${g}</span>`, t, '', O.level === v)).join('')}</div>
     <div class="ob-dock"><button class="btn btn-primary" data-ob="next"${O.level ? '' : ' disabled'}>Continue</button></div>`;
@@ -12112,17 +12339,18 @@ function obShow() {
       <div class="ob-dock"><button class="btn btn-primary" data-ob="next">Continue</button></div>`;
   }
   else if (step === 'goal') {
-    const lv = obLevel() || 1, f = O.chk?.res?.[lv] || 0, left = Math.max(10, Math.round((S.H?.levels[lv]?.length || HSK_COUNT[lv]) * (1 - f)));
+    const lv = obLv(), left = obLeft(lv);
     html = obTop() + obSay('up', 'How many minutes a day?', `More minutes means more new words each day, so you finish ${HSK_NAME(lv)} sooner.`)
-      + `<div class="ob-opts" data-pick="goal">${GoalOpts(O.goal, lv, left)}</div>
+      + `<div class="ob-opts" data-pick="goal">${GoalOpts(O.goal, lv, left, obExamWeeks())}</div>
       <p class="ob-note">Estimates. One round a day keeps your streak; the goal is extra.</p>
       <div class="ob-dock"><button class="btn btn-primary" data-ob="next"${O.goal ? '' : ' disabled'}>Commit to my goal</button></div>`;
   }
   else if (step === 'habit') {
-    if (canRemind()) html = obTop() + `<div class="ob-art">${shiFace('up')}</div>
-        <h2 class="mo-title">When should Shi Shi remind you?</h2><p class="mo-text">One message a day, only on days you haven’t practised yet. Turn it off any time.</p>
-        <div class="chips ob-hours" id="obHr">${REMIND_HOURS.map(h => `<button class="chip${h === 19 ? ' on' : ''}" data-h="${h}">${h}:00</button>`).join('')}</div>
-        <div class="ob-dock"><button class="btn btn-seal" data-ob="remind">Remind me</button><button class="ob-link" data-ob="done">Not now</button></div>`;
+    if (canRemind() || O.replay) html = obTop() + `<h2 class="ob2-q ob2-in">Shi Shi reminds you before you forget</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">One message a day, only on days you haven’t practised.</p>
+        <div class="ob2-perm ob2-pop" style="--d:.35s" aria-hidden="true"><b>“ShiCards” wants to send you notifications</b><p>Alerts and sounds. You can change this in Settings.</p><div class="pb"><span>Don’t allow</span><span class="al">Allow</span></div></div>
+        <svg class="ob2-arrow ob2-in" style="--i:6" viewBox="0 0 34 44" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 42V4M5 16L17 4l12 12"/></svg>
+        <div class="ob2-hours ob2-in" style="--i:7">${[8, 12, 19, 21].map(h => `<button data-h="${h}" aria-pressed="${O.hour === h}">${h}:00</button>`).join('')}</div>
+        <div class="ob-dock ob2-in" style="--i:8"><button class="btn btn-seal" data-ob="remind">Remind me at ${O.hour}:00</button><button class="ob-link" data-ob="done">Not now</button></div>`;
     else html = obTop() + `<div class="ob-phone"><img src="icons/icon-192.png" alt=""></div>
         <h2 class="mo-title">Keep Shi Shi on your home screen</h2><p class="mo-text">Then today’s round is one tap away, and ShiCards opens full screen like any other app.</p>
         <div class="ob-dock"><button class="btn btn-seal" data-ob="install">Add to home screen</button><button class="ob-link" data-ob="done">Not now</button></div>`;
@@ -12131,8 +12359,96 @@ function obShow() {
   const el = layer(html, 'obs-' + step);
   el.querySelector('.ob-in').addEventListener('click', obClick);
   if (step === 'check' && !O.chk) obCheckStart();
-  if (step === 'placed') obReel(el);
-  if (step === 'habit' && canRemind()) el.querySelector('#obHr').onclick = e => { const b = e.target.closest('[data-h]'); if (b) el.querySelectorAll('#obHr .chip').forEach(c => c.classList.toggle('on', c === b)); };
+  const bar = el.querySelector('.ob-prog i[data-to]');
+  if (bar) { O.prog = +bar.dataset.to / 100; requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = bar.dataset.to + '%'; })); }
+  obAnim(el, step);
+}
+/* ---------- onboarding v2 helpers ---------- */
+const obGrid = c => `<svg class="g" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="${c}" stroke-width=".5" stroke-dasharray="2.2 2" fill="none"><path d="M50 0V100M0 50H100M0 0L100 100M100 0L0 100"/></g></svg>`;
+const obLv = () => obLevel() || S.ob.level || 1;
+function obLeft(lv) { const f = S.ob.chk?.res?.[lv] || 0; return Math.max(10, Math.round((S.H?.levels[lv]?.length || HSK_COUNT[lv]) * (1 - f))); }
+function obDay(add) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + add); return d; }
+const obExamDays = () => S.ob.for === 'exam' && S.ob.exam ? Math.round((S.ob.exam - obDay(0)) / 864e5) : 0;
+const obExamWeeks = () => { const n = obExamDays(); return n > 0 ? Math.max(1, Math.round(n / 7)) : 0; };
+const obHabit = () => S.ob.replay || canRemind() || !isInstalled();
+function obNext() {   // the next page, skipping the exam date for readers and the reminder page when there is nothing to ask
+  const O = S.ob; let i = O.i + 1;
+  while (i < OB_STEPS.length - 1 && (OB_STEPS[i] === 'date' && O.for !== 'exam' || OB_STEPS[i] === 'habit' && !obHabit())) i++;
+  return OB_STEPS[i];
+}
+function obTeach() {   // the words the how-it-works pages show: one you know, one tricky one at your level, and a wall of your level's words
+  const O = S.ob; if (O.tw) return O.tw;
+  const lv = obLv(), L = S.H?.levels[lv] || [], by = S.H?.byHz, pick = a => a[Math.random() * a.length | 0];
+  const known = O.chk ? O.chk.rounds.flatMap(r => r.chars.filter(c => r.on.has(c.h)).map(c => c.h)) : [];
+  const short = L.filter(r => HAN.test(r.h) && [...r.h].length <= 2 && r.e);
+  const easy = (known.length && by?.get(pick(known))) || by?.get('书') || { h: '书', p: 'shū', e: 'book' };
+  const hardPool = short.filter(r => [...r.h].length === 2 && !known.includes(r.h) && r.h !== easy.h);
+  const hard = (hardPool.length && pick(hardPool)) || by?.get('模糊') || { h: '模糊', p: 'móhu', e: 'blurry; unclear' };
+  const wall = shuffle(short.map(r => r.h).filter(h => h !== easy.h && h !== hard.h)).slice(0, 13);
+  for (const h of ['经过', '照顾', '节目', '必须', '季节', '猫', '换', '爱好', '灵活', '山', '促进', '被', '把']) { if (wall.length >= 13) break; if (!wall.includes(h)) wall.push(h); }
+  return O.tw = { easy, hard, wall, hits: [easy.h, hard.h, wall[4]] };
+}
+function obType(el, bub, text, speed = 85) {   // the speech bubble types itself out, word by word
+  if (!bub) return;
+  bub.innerHTML = text.split(' ').map(w => w === '|' ? '<br>' : `<span class="w">${esc(w)}</span>`).join(' ');
+  bub.querySelectorAll('.w').forEach((w, k) => obLater(el, 250 + k * speed, () => w.classList.add('on')));
+}
+const obLater = (el, ms, f) => setTimeout(() => { if (el.isConnected) f(); }, stillMotion() ? 0 : ms);
+function obDraw(el, ch, loop) {   // a character drawing itself, stroke by stroke
+  const box = el.querySelector('.ob2-hw'); if (!box) return;
+  const fall = () => { box.innerHTML = `<span class="ob2-fb">${esc(ch)}</span>`; };
+  if (!window.HanziWriter) { fall(); return; }
+  const w = HanziWriter.create(box, ch, writerOpts(box.clientWidth || 200, { showCharacter: stillMotion(), showOutline: true, outlineColor: '#EDE4D4', strokeColor: css('--ink'),
+    strokeAnimationSpeed: 1.5, delayBetweenStrokes: 70, onLoadCharDataError: fall }));
+  if (stillMotion()) return;
+  const run = () => { if (!box.isConnected) return; w.animateCharacter({ onComplete: () => { if (loop) obLater(el, 1400, () => { w.hideCharacter(); obLater(el, 300, run); }); } }); };
+  obLater(el, loop ? 500 : 300, run);
+}
+function obArc(el, path, done) {   // the dashed arc draws from one review to the next
+  const L = path.getTotalLength(); path.style.strokeDasharray = L; path.style.strokeDashoffset = L;
+  obLater(el, 500, () => { path.style.transition = 'stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)'; path.style.strokeDashoffset = 0;
+    obLater(el, 900, () => { path.style.transition = 'none'; path.style.strokeDasharray = '6 6'; path.style.strokeDashoffset = 0; done(); }); });
+}
+function obAnim(el, step) {
+  const O = S.ob;
+  if (step === 'hi') obDraw(el, '学');
+  if (step === 'hello') obType(el, el.querySelector('#ob2Bub'), 'Thousands of characters, not much time? | I’ll help you keep every one.');
+  if (step === 'plan') {
+    obType(el, el.querySelector('#ob2Bub'), 'Got it! | Building your plan now', 90);
+    const deck = el.querySelector('#ob2Deck');
+    el.querySelectorAll('.ob2-stamp').forEach((s, k) => obLater(el, 1100 + k * 620, () => { s.classList.add('on'); deck.classList.remove('jolt'); void deck.offsetWidth; obLater(el, 150, () => deck.classList.add('jolt')); }));
+  }
+  if (step === 'how1') obLater(el, 1700, () => { el.querySelector('#ob2Wall').classList.add('pick'); el.querySelector('#ob2Late').classList.add('on'); });
+  if (step === 'how2' || step === 'how3') {
+    const st = [...el.querySelectorAll('.ob2-tl .st')], p = el.querySelector('#ob2Arc'), x = k => 295 * parseFloat(st[k].style.left) / 100;
+    let k = 0;
+    const hop = () => { if (k >= st.length - 1) return;
+      p.setAttribute('d', `M${x(k) + 6} 38 Q${(x(k) + x(k + 1)) / 2} ${st.length > 2 ? 4 : -12} ${x(k + 1) - 6} 38`);
+      obArc(el, p, () => { st.forEach(s => s.classList.remove('on')); st[k + 1].classList.add('on'); k++; obLater(el, 300, hop); }); };
+    obLater(el, 100, hop);
+  }
+  if (step === 'how4') obDraw(el, [...obTeach().hard.h][0], true);
+  if (step === 'date') {
+    const col = c => el.querySelector(`[data-col="${c}"]`), C = { m: col('m'), d: col('d'), y: col('y') }, y0 = new Date().getFullYear();
+    C.m.scrollTop = O.exam.getMonth() * 40; C.d.scrollTop = (O.exam.getDate() - 1) * 40; C.y.scrollTop = Math.max(0, O.exam.getFullYear() - y0) * 40;
+    const paint = bump => { const n = obExamDays(), cd = el.querySelector('#ob2Cd');
+      cd.innerHTML = n > 0 ? `<span class="num${bump ? ' tick' : ''}">${n}</span><span><b>${n === 1 ? 'day' : 'days'} to go</b><small>That’s ${n < 7 ? 'less than a week' : `about ${plural(Math.round(n / 7), 'week')}`}. Every day counts.</small></span>`
+        : '<span class="num">–</span><span><b>Pick a day after today</b><small>Your exam needs to be in the future.</small></span>';
+      el.querySelector('[data-ob="next"]').disabled = n <= 0; };
+    let tm;
+    Object.values(C).forEach(c => c.addEventListener('scroll', () => { clearTimeout(tm); tm = setTimeout(() => {
+      const ix = c => Math.round(c.scrollTop / 40), y = y0 + ix(C.y), mo = Math.min(11, ix(C.m)), dim = new Date(y, mo + 1, 0).getDate();
+      const d = new Date(y, mo, Math.min(dim, ix(C.d) + 1)); if (+d !== +O.exam) { O.exam = d; paint(true); } }, 90); }, { passive: true }));
+    paint();
+  }
+  if (step === 'chart') {
+    const B = [...el.querySelectorAll('.ob2-bar')], v = el.querySelector('.ob2-bar .val'), end = 600 + B.length * 170;
+    B.forEach((b, k) => obLater(el, 600 + k * 170, () => b.classList.add('on')));
+    if (v) obLater(el, 600, () => { v.classList.add('on'); const n = +v.dataset.n, t0 = performance.now(), dur = stillMotion() ? 0 : end - 600;
+      const step = t => { if (!v.isConnected) return; const f = dur ? Math.min(1, (t - t0) / dur) : 1; v.textContent = Math.round(n * (1 - (1 - f) ** 2)) + ' words'; if (f < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step); });
+    obLater(el, end + 100, () => el.querySelector('.ob2-flag')?.classList.add('on'));
+  }
 }
 /* count the level up one number at a time: quick ticks first, the last ones slower, every number landing whole */
 function obReel(el) {
@@ -12151,6 +12467,11 @@ async function obCheckStart() {   // the HSK lists may still be loading
   S.ob.chk = { rounds: [], res: {} }; obRound(S.ob.level || 1); obShow();
 }
 function obFinish(how) {
+  if (S.ob?.demo) {   // the one-time look at the new pages: nothing about your words, level or goal changes
+    db.prefs.ob2Seen = Date.now(); save();
+    LOG.add('onboarding-done', { how, demo: true, for: S.ob.for, exam_days: obExamDays() || null, goal: S.ob.goal });
+    S.ob = null; closeLayer(() => { S.instant = true; render(); }); return;
+  }
   const O = S.ob, sig = O.chk ? obSignals() : {}, lv = O.chk ? obLevel(sig) : how === 'skipped' ? null : O.level ? Math.min(O.level, 2) : null;
   if (!O.replay && O.chk) {   // what you showed you know goes into the word bank as known (back for a light review over the next weeks)
     const now = Date.now(), have = new Set(db.bank.map(w => w.hanzi));
@@ -12164,7 +12485,8 @@ function obFinish(how) {
       db.bank.push({ id: uid(), hanzi: r.h, pinyin: r.p, en: meanOf(r), added: now - 60000 - i, hsk: r.lv,
         srs: { first: now, seen: now, iv: 30, n: 1, miss: 0, due: dayStart(now, 3 + Math.floor(i / 6)) } }); });
   }
-  if (!O.replay) { db.prefs.ob = { done: Date.now(), why: O.why, level: O.level, est: O.chk?.est, sig, how }; if (O.goal) db.prefs.goalMin = O.goal; if (lv) db.prefs.level = lv;
+  if (!O.replay) { db.prefs.ob = { done: Date.now(), why: O.why, for: O.for, level: O.level, est: O.chk?.est, sig, how }; if (O.goal) db.prefs.goalMin = O.goal; if (lv) db.prefs.level = lv;
+    if (obExamDays() > 0) db.prefs.exam = { day: dayKey(+O.exam), lv: lv || 1 };
     if (lv && db.hotd && !db.hotd.rev && (db.hotd.lv || 1) !== lv) { db.hotd.day = null; db.hotd.past = (db.hotd.past || []).slice(1); hotdPick(); }   // today's character was picked before your level was known
     save(); }
   else if (lv) {   // a replay keeps your words and goal, but the level it finds becomes yours (it unlocks the HSK levels up to it)
@@ -12175,7 +12497,7 @@ function obFinish(how) {
   S.ob = null; closeLayer(() => { S.instant = true; render(); });
 }
 async function obClick(e) {
-  const b = e.target.closest('[data-ob],[data-v],[data-c],[data-qo],[data-so]'); if (!b || !S.ob || b.disabled) return;
+  const b = e.target.closest('[data-ob],[data-v],[data-c],[data-qo],[data-so],[data-plan],[data-trial],[data-h]'); if (!b || !S.ob || b.disabled) return;
   const O = S.ob, step = OB_STEPS[O.i];
   if (b.dataset.qo) {   // a word card: show right or wrong for a moment, then the next card (a level up after a right answer, down after a wrong one)
     const Q = O.q, c = Q.cards.at(-1); if (c.pick != null) return;
@@ -12190,15 +12512,24 @@ async function obClick(e) {
   if (b.dataset.so) {   // the story question
     const T = O.st; if (T.pick != null) return;
     T.pick = +b.dataset.so; LOG.add('onboarding-story', { lv: T.lv, right: T.pick === T.ok }); obShow();
-    setTimeout(() => { if (S.ob === O && OB_STEPS[O.i] === 'read' && O.st === T) obGo('placed'); }, T.pick === T.ok ? 900 : 1600);
+    setTimeout(() => { if (S.ob === O && OB_STEPS[O.i] === 'read' && O.st === T) obGo('plan'); }, T.pick === T.ok ? 900 : 1600);
     return;
   }
   if (b.dataset.c) {   // the character check: tap to mark one you know
     const R = O.chk.rounds.at(-1), h = R.chars[+b.dataset.c].h; R.on.has(h) ? R.on.delete(h) : R.on.add(h);
     b.setAttribute('aria-pressed', R.on.has(h)); $('#ob [data-ob="next"]').textContent = R.on.size ? `Next · ${R.on.size} known` : 'I don’t know these'; return;
   }
+  if (b.dataset.plan) {   // paywall preview: the plan you pick changes the button's words and the trial line
+    O.plan = b.dataset.plan; const yr = O.plan === 'year';
+    $$('#ob [data-plan]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    $('#ob .ob2-trial').hidden = !yr; $('#ob [data-ob="buy"]').textContent = yr ? 'Start my free week' : 'Continue with Monthly';
+    $('#ob .ob2-fine').textContent = yr ? 'Nothing is charged during the free week' : 'Cancel any time'; return;
+  }
+  if (b.hasAttribute('data-trial')) { O.trial = !O.trial; b.setAttribute('aria-pressed', O.trial); return; }
+  if (b.dataset.h) { O.hour = +b.dataset.h; $$('#ob [data-h]').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#ob [data-ob="remind"]').textContent = `Remind me at ${O.hour}:00`; return; }
   if (b.dataset.v) {   // a choice: mark it (reasons: any number), wake the button
     const k = b.closest('[data-pick]').dataset.pick;
+    if (k === 'for') { O.for = b.dataset.v; O.why = [O.for]; O.tw = null; $$('#ob [data-pick="for"] .ob-opt').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#ob [data-ob="next"]').disabled = false; return; }
     if (k === 'why') { const v = b.dataset.v; O.why = O.why.includes(v) ? O.why.filter(x => x !== v) : [...O.why, v]; b.setAttribute('aria-pressed', O.why.includes(v)); $('#ob [data-ob="next"]').disabled = !O.why.length; return; }
     O[k] = +b.dataset.v;
     b.parentElement.querySelectorAll('.ob-opt').forEach(x => x.setAttribute('aria-pressed', x === b));
@@ -12206,8 +12537,13 @@ async function obClick(e) {
   }
   const a = b.dataset.ob;
   if (a === 'skip') { obFinish('skipped'); return; }
-  if (a === 'done') { obFinish(step === 'habit' ? 'not-now' : 'done'); return; }
-  if (a === 'quit') { LOG.add('onboarding-done', { how: 'closed', replay: O.replay }); S.ob = null; closeLayer(); return; }
+  if (a === 'done' && step === 'habit') { O.how = 'not-now'; obGo('pay'); return; }
+  if (a === 'done' || a === 'buy') {   // the paywall preview ends the pages
+    if (a === 'buy') toast('Preview only. Nothing was bought');
+    const how = O.how || 'done'; obFinish(how); if (how === 'install-help') setTimeout(installHelp, 350); return;
+  }
+  if (a === 'nodate') { O.exam = null; obGo(obNext()); return; }
+  if (a === 'quit') { LOG.add('onboarding-done', { how: 'closed', replay: O.replay, demo: O.demo }); if (O.demo) { db.prefs.ob2Seen = Date.now(); save(); } S.ob = null; closeLayer(); return; }
   if (a === 'back') {   // one page (or one round, one card) back; your answers there stay picked
     if (step === 'check' && O.chk?.rounds.length > 1) { const R = O.chk.rounds.pop(); delete O.chk.res[O.chk.rounds.at(-1).lv]; delete O.chk.res[R.lv]; obShow(); return; }
     if (step === 'words' && O.q?.cards.length > 1) { O.q.cards.pop(); O.q.cards.at(-1).pick = null; obShow(); return; }
@@ -12220,21 +12556,24 @@ async function obClick(e) {
     if (to === 'read' && O.st) O.st.pick = null;
     O.i = OB_STEPS.indexOf(to); obShow(); return;
   }
-  if (a === 'remind') { const h = +$('#obHr .chip.on')?.dataset.h || 19; await remindSet(true, h); obFinish('reminder'); return; }
+  if (a === 'remind') {
+    if (canRemind()) { const ok = await remindSet(true, O.hour); O.how = ok === false ? 'reminder-failed' : 'reminder'; }
+    else { toast(db.prefs.remind?.on ? `Reminders are already on` : 'Preview: reminders stay as they are on this copy'); O.how = 'reminder-preview'; }
+    if (S.ob === O) obGo('pay'); return;
+  }
   if (a === 'install') {
-    if (installEvt) { installEvt.prompt(); const { outcome } = await installEvt.userChoice; installEvt = null; LOG.add('install', { outcome, from: 'onboarding' }); obFinish('install-' + outcome); }
-    else { obFinish('install-help'); setTimeout(installHelp, 350); }
-    return;
+    if (installEvt) { installEvt.prompt(); const { outcome } = await installEvt.userChoice; installEvt = null; LOG.add('install', { outcome, from: 'onboarding' }); O.how = 'install-' + outcome; }
+    else O.how = 'install-help';
+    if (S.ob === O) obGo('pay'); return;
   }
   // next
   if (step === 'check') {
     if (!O.chk) return;
     const R = O.chk.rounds.at(-1); LOG.add('onboarding-check', { lv: R.lv, known: R.on.size, of: R.chars.length });
-    if (obPlace()) { LOG.add('onboarding-placed', O.chk.est); O.q = null; O.st = null; obGo(obSkipTests() ? 'placed' : 'words'); } else obShow();
+    if (obPlace()) { LOG.add('onboarding-placed', O.chk.est); O.q = null; O.st = null; O.tw = null; obGo(obSkipTests() ? 'plan' : 'words'); } else obShow();
     return;
   }
-  if (step === 'goal') { if (canRemind() || !isInstalled()) obGo('habit'); else obFinish('done'); return; }
-  obGo(OB_STEPS[O.i + 1]);
+  obGo(obNext());
 }
 
 /* ---------- streak moments: one full-screen card at a time, when you land on a main page ---------- */
@@ -12762,6 +13101,7 @@ LOG.add('open', deviceInfo()); paintRec();
 takePairLink();
 route();
 if (FRESH) obStart();
+else if (!db.prefs.ob2Seen) setTimeout(() => { if (!$('#ob') && !S.ob) obStart(true, true); }, 900);   // moka2: the new first-run pages, once, as a preview
 if ('serviceWorker' in navigator && location.hostname !== 'localhost') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
