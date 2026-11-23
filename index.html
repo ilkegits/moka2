@@ -548,9 +548,13 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 /* v3.53 adding cards (like Anki's Add screen): the count of cards in the deck, what you just added, Done */
 .ac-head{position:relative}
 .ac-head h3{margin-bottom:14px;padding:0 64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ac-n{position:absolute;right:0;top:1px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.ac-n.bump{animation:acBump .5s cubic-bezier(.3,1.6,.5,1);color:var(--jade);font-weight:600}
-@keyframes acBump{35%{transform:scale(1.22)}}
+/* v4.12: the corner holds Add (it saves the card); the count of cards and the big Add card button are gone */
+.ac-add{position:absolute;right:0;top:-6px;height:34px;padding:0 16px;border-radius:10px;background:linear-gradient(var(--seal-btn-top),var(--seal-btn) 55%);color:var(--seal-ink);font-size:15px;font-weight:700;transition:background .2s,color .2s}
+.ac-add::after{content:"";position:absolute;inset:-6px}
+.ac-add:disabled{background:var(--fill);color:var(--muted)}
+.ac-add:not(:disabled):active{opacity:.75}
+.ac-sugs:empty{display:none}
+.means.ac-sugs{margin:8px 0 0}
 /* v3.63 the front: type characters, or pinyin that turns into characters, or tap the pen and draw one */
 /* v3.66: each side is one box. The Chinese you have so far sits in it, left of where you type; Draw sits at its right end */
 .ac-box{display:flex;align-items:center;gap:8px;min-height:48px;border-radius:12px;background:var(--card);box-shadow:var(--ring);padding:4px 5px 4px 16px;transition:box-shadow .2s;cursor:text}
@@ -11262,7 +11266,7 @@ function cardSheet(cardId) {
   const d = curDeck(), c = cardId ? cardById(d, cardId) : null;
   const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [], ex: acExPick() };
   const exZh = () => `e.g. ${AC_EX[E.ex][0]} or ${AC_EX[E.ex][1]}`, exEn = () => `e.g. ${AC_EX[E.ex][2]}`;
-  openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : `Add to ${esc(d.name)}`}</h3>${c ? '' : `<span class="ac-n" id="acN">${plural(d.cards.length, 'card')}</span>`}</div>
+  openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : `Add to ${esc(d.name)}`}</h3>${c ? '' : `<button class="ac-add" id="csave">Add</button>`}</div>
     <div class="ac-sides" id="acSides">
     <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span></span>
       <div class="ac-box" id="fbox"><div class="ac-word" id="fword" hidden><span class="hz" id="fhz"></span><span class="py" id="fpyout"></span></div>
@@ -11271,18 +11275,19 @@ function cardSheet(cardId) {
         <button class="ac-draw" id="acPen" aria-label="Draw a character" aria-pressed="false">${I.pen}Draw</button></div>
       <div class="ac-pad" id="acPad" hidden></div>
       <div class="cands ac-cands" id="cands"></div>
-      <div class="means ac-reads" id="reads"></div></div>
+      <div class="means ac-reads" id="reads"></div>
+      <div class="means ac-sugs" id="sugs"></div></div>
     <div class="ac-swaprow"><button type="button" class="ac-swap" id="acSwap" aria-label="Swap front and back">${I.swapV}</button></div>
     <div class="ac-enb"><div class="field ac-en"><span class="lbl"><span class="ac-side">Back</span></span>
       <div class="ac-box" id="ebox"><input class="input" id="fen" placeholder="${exEn()}" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning"></div></div>
     <div class="means" id="means"></div></div>
     </div>
-    <div class="row-btns">${c ? `<button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>` : ''}
-      <button class="btn btn-primary" id="csave">${c ? 'Save' : 'Add card'}</button></div>
-    ${c ? '' : '<div class="ac-done"><span class="ac-last" id="acLast"></span><button class="link-btn" id="acClose">Done</button></div>'}`,
+    ${c ? `<div class="row-btns"><button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>
+      <button class="btn btn-primary" id="csave">Save</button></div>`
+      : '<div class="ac-done"><span class="ac-last" id="acLast"></span><button class="link-btn" id="acClose">Done</button></div>'}`,
     sh => {
       const $q = q => sh.querySelector(q);
-      const fen = $q('#fen'), fhz = $q('#fhz'), fpy = $q('#fpy'), pyOut = $q('#fpyout'), cands = $q('#cands'), reads = $q('#reads'), means = $q('#means'), btn = $q('#csave');
+      const fen = $q('#fen'), fhz = $q('#fhz'), fpy = $q('#fpy'), pyOut = $q('#fpyout'), cands = $q('#cands'), reads = $q('#reads'), means = $q('#means'), sugs = $q('#sugs'), btn = $q('#csave');
       const rows = () => (E.D && E.hanzi && E.D.byHz.get(E.hanzi)) || [];
       const curPy = () => E.pyDirty ? E.py : (rows()[E.reading]?.p || S.H?.byHz.get(E.hanzi)?.p || autoPinyin(E.hanzi));
       const paintBtn = () => { btn.disabled = !hanChars(E.hanzi).length || !fen.value.trim(); };
@@ -11292,11 +11297,13 @@ function cardSheet(cardId) {
           if (h && !ms.length) ms.push(meanOf(h));
           if (!E.enDirty && ms[0]) { fen.value = ms[0]; E.autoEn = true; }
           means.innerHTML = ms.length > 1 ? ms.slice(0, 8).map(m => `<button class="mean" data-m="${esc(m)}">${esc(m)}</button>`).join('') : '';
+          sugs.innerHTML = '';
           return;
         }
         if (!E.enDirty && E.autoEn) { fen.value = ''; E.autoEn = false; }
         const q = fen.value.trim(), hits = E.D && q.length >= 2 ? searchEnglish(E.D, q).slice(0, 6) : [];   // no Chinese yet: the English looked up the other way
-        means.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(r.p)}</span></button>`).join('');
+        means.innerHTML = '';   // v4.12: these Chinese picks sit under the Chinese box, not under the English
+        sugs.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(r.p)}</span></button>`).join('');
       };
       const paintHz = () => {
         fhz.textContent = E.hanzi; $q('#fword').hidden = !E.hanzi; fpy.placeholder = E.hanzi ? '' : exZh();
@@ -11329,7 +11336,7 @@ function cardSheet(cardId) {
         fpy.value = normPy(fpy.value).slice(x.len); setHz(E.hanzi + x.h); lookup(); fpy.focus();
       };
       const keep = el => el.addEventListener('pointerdown', e => { if (e.target.closest('button')) e.preventDefault(); });   // tapping these keeps the keyboard up
-      [cands, reads, means, $q('#bksp'), btn].forEach(keep);
+      [cands, reads, means, sugs, $q('#bksp'), btn].forEach(keep);
       /* the pen: a 田字格 square to draw one character in, as in Quick add's Write; matches show under it, tap one and it goes
          into the Chinese box. v3.68: only the Chinese side has Draw (v3.66 put one on the English side too) */
       const PENS = [[$q('#acPen'), $q('#acPad'), fpy]];
@@ -11414,7 +11421,7 @@ function cardSheet(cardId) {
       paintSides();
       cands.addEventListener('click', e => { const b = e.target.closest('.cand'); if (b) pick(+b.dataset.i); });
       reads.onclick = e => { const b = e.target.closest('[data-r]'); if (!b) return; E.reading = +b.dataset.r; E.pyDirty = false; if (E.autoEn) E.enDirty = false; paintHz(); };
-      means.onclick = e => {
+      means.onclick = sugs.onclick = e => {
         const b = e.target.closest('button'); if (!b) return;
         if (b.dataset.m) { fen.value = b.dataset.m; E.enDirty = true; E.autoEn = false; paintBtn(); return; }
         if (b.dataset.h) { LOG.add('card-en-pick', { typed: fen.value.trim(), picked: b.dataset.h }); fpy.value = ''; setHz(b.dataset.h);
@@ -11451,7 +11458,6 @@ function cardSheet(cardId) {
         E.added.unshift(E.hanzi); render();
         E.ex = acExPick(); fen.placeholder = exEn();
         E.enDirty = E.autoEn = false; fen.value = ''; fpy.value = ''; padOff(); setHz(''); paintCands([]);
-        const n = $q('#acN'); n.textContent = plural(d.cards.length, 'card'); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump');
         $q('#acLast').innerHTML = `Added <b>${E.added.slice(0, 5).map(esc).join(' · ')}</b>`;
         frontIn().focus({ preventScroll: true });
       };
