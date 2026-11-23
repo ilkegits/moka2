@@ -1,7 +1,7 @@
 {
   "id": "/moka2/",
-  "name": "ShiHanzi-2",
-  "short_name": "ShiHanzi-2",
+  "name": "ShiHanzi",
+  "short_name": "ShiHanzi",
   "description": "Flashcards for Chinese, with Shi Shi the lion",
   "start_url": "./#/",
   "scope": "./",

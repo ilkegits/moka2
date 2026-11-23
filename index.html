@@ -9,11 +9,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>ShiHanzi-2</title>
+<title>ShiHanzi</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon-64.png?v=462">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=462">
-<meta name="apple-mobile-web-app-title" content="ShiHanzi-2">
+<meta name="apple-mobile-web-app-title" content="ShiHanzi">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com">
@@ -3233,7 +3233,7 @@ button.scene-tile:active svg{opacity:.92}
 </style>
 </head>
 <body>
-<div class="m2-tag" aria-hidden="true">ShiHanzi-2 · test copy</div>
+<div class="m2-tag" aria-hidden="true">moka2 · test copy</div>
 <!-- colours for the streak flame (see .flame in the styles); kept out of view but not display:none, which would break the gradients -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <linearGradient id="flOut" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2442B"/><stop offset=".55" stop-color="#FF6A1F"/><stop offset="1" stop-color="#FF8A1A"/></linearGradient>
@@ -13075,7 +13075,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.18';
+const APP_VERSION = '3.45.19';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13440,7 +13440,7 @@ function acctSheet(welcome, viaEmail) {   // viaEmail: open on the email form, s
       <button class="acct-link" id="acDel">Delete account</button>`, sh => {
       sh.querySelector('#acOut').onclick = async () => { await CLOUD.signOut(); closeSheet(); paintAcct(); toast('Signed out. Your progress stays on this device'); };
       sh.querySelector('#acDel').onclick = () => confirmSheet('Delete your account?',
-        'ShiHanzi-2 and ShiHanzi share accounts, so this deletes your account and its online saves in both apps, for good. Everything stays on this device, but it no longer syncs.', 'Delete account',
+        'ShiHanzi and ShiHanzi2 share accounts, so this deletes your account and its online saves in both apps, for good. Everything stays on this device, but it no longer syncs.', 'Delete account',
         async () => { try { await CLOUD.remove(); paintAcct(); toast('Account deleted'); } catch (_) { toast('Couldn’t delete the account. Are you online?'); } });
     });
     return;
