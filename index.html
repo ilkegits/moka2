@@ -471,6 +471,68 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .dk-name .deck-face{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);font-size:21px;transition:color .2s,border-color .2s}
 .dk-name .deck-face::after{background:var(--accent)}
 .dk-sw{justify-content:space-between;margin:0 6px 20px}
+/* v3.62 the + in the corner of Decks: tap it and Create group and Create deck rise above it on a paper veil.
+   Each choice has a small 田字格 square with its character (组 group, 卡 deck). Inside a deck the corner button says Add */
+#fab-root{position:fixed;inset:0;z-index:30;pointer-events:none}
+.fab-veil{position:absolute;inset:0;background:color-mix(in srgb,var(--paper) 76%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .25s}
+#fab-root.open .fab-veil{opacity:1;pointer-events:auto}
+.fab{position:absolute;right:max(18px,calc(50% - 222px));bottom:calc(12px + var(--tabh) + 16px + env(safe-area-inset-bottom));pointer-events:auto;
+  display:grid;place-items:center;width:60px;height:60px;border-radius:50%;padding:0 0 3px;
+  background:linear-gradient(var(--seal-btn-top),var(--seal-btn) 55%);color:var(--seal-ink);
+  box-shadow:inset 0 -4px 0 rgba(60,10,5,.3),inset 0 2px 0 rgba(255,255,255,.25),0 14px 24px -10px rgba(150,25,20,.65),0 3px 8px -3px rgba(120,30,20,.35);
+  transition:transform .08s,box-shadow .08s,background .25s,color .25s}
+.fab:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(60,10,5,.3),inset 0 2px 0 rgba(255,255,255,.25),0 6px 12px -8px rgba(150,25,20,.6)}
+.fab svg.i{width:28px;height:28px;stroke-width:2.4;transition:transform .34s cubic-bezier(.3,1.5,.5,1);filter:drop-shadow(0 1.5px 0 rgba(90,10,5,.4))}
+#fab-root.open .fab{background:var(--ink);color:var(--paper);box-shadow:inset 0 -4px 0 rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.12),0 14px 24px -10px rgba(30,20,10,.6)}
+#fab-root.open .fab svg.i{transform:rotate(135deg);filter:none}
+.fab.fab-add{display:flex;gap:7px;width:auto;height:58px;border-radius:20px;padding:0 26px 3px 19px;font:600 18px/1 var(--display);text-shadow:0 1.5px 0 rgba(90,10,5,.45)}
+.fab.fab-add svg.i{width:24px;height:24px}
+.fab-menu{position:absolute;right:max(18px,calc(50% - 222px));bottom:calc(12px + var(--tabh) + 16px + 76px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+.fab-opt{display:flex;align-items:center;gap:14px;margin-right:4px;text-align:right;opacity:0;transform:translateY(16px) scale(.94);transform-origin:right center;transition:opacity .16s,transform .16s}
+#fab-root.open .fab-opt{opacity:1;transform:none;pointer-events:auto;transition:opacity .24s,transform .4s cubic-bezier(.25,1.4,.5,1)}
+#fab-root.open .fab-opt:first-child{transition-delay:.05s}
+.fab-lab{display:flex;flex-direction:column;padding:9px 15px 10px;border-radius:14px;background:var(--card);box-shadow:var(--shadow-sm),var(--ring);transition:background .2s}
+.fab-lab b{font:600 16.5px/1.2 var(--display);color:var(--ink)}
+.fab-lab small{font-size:12.5px;line-height:1.3;color:var(--muted)}
+.fab-tile{display:grid;place-items:center;width:52px;height:52px;border-radius:15px;background:var(--tzg) center/100% 100% no-repeat,var(--card);box-shadow:var(--shadow-sm),var(--ring);
+  font:400 26px/1 var(--hanzi);color:var(--seal);transition:background-color .2s}
+.fab-opt:active .fab-lab,.fab-opt:active .fab-tile{background-color:var(--paper-deep)}
+#frame.tabs .screen.has-fab{padding-bottom:calc(var(--tabh) + 100px + env(safe-area-inset-bottom))}
+/* v3.62 Create deck / Create group: a small card in the middle, above the keyboard: a floating Name label, a colour, Cancel and Create */
+#dlg-root{position:fixed;inset:0;z-index:55;pointer-events:none}
+#dlg-root.open{pointer-events:auto}
+.dlg-scrim{position:absolute;inset:0;background:rgba(30,20,10,.34);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .25s}
+#dlg-root.open .dlg-scrim{opacity:1}
+.dlg-wrap{position:absolute;left:0;right:0;top:0;bottom:var(--kb);display:grid;place-items:center;padding:20px;pointer-events:none;transition:bottom .15s}
+.dlg{width:min(100%,340px);pointer-events:auto;background:var(--paper);border-radius:26px;padding:22px 20px 14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 30px 60px -18px rgba(40,25,10,.55),0 4px 12px -6px rgba(40,25,10,.2);
+  opacity:0;transform:translateY(10px) scale(.96);transition:opacity .2s,transform .32s cubic-bezier(.2,1.25,.4,1)}
+#dlg-root.open .dlg{opacity:1;transform:none}
+.dlg-top{display:flex;align-items:center;gap:14px;margin:0 2px 20px}
+.dlg-top h3{margin:0;font:600 23px/1.1 var(--display);letter-spacing:-.01em}
+.dlg-mark{flex:none}
+.dlg-mark .deck-stack{width:38px;height:46px}
+.dlg-mark .deck-face{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);font-size:20px;transition:color .2s,border-color .2s}
+.dlg-mark .deck-face::after{background:var(--accent)}
+.dlg-mark .grp-ic{width:38px;height:46px}
+.fl{position:relative;display:block}
+.fl input{width:100%;height:58px;border-radius:14px;border:1.5px solid var(--line-2);background:var(--card);padding:21px 16px 5px;font-size:17px;outline:none;transition:border-color .2s,box-shadow .2s}
+.fl span{position:absolute;left:17.5px;top:18px;font-size:16.5px;color:var(--muted);pointer-events:none;transform-origin:left top;transition:transform .2s,color .2s}
+.fl input:focus{border-color:var(--seal);box-shadow:0 0 0 4px var(--seal-soft)}
+.fl input:focus + span,.fl input:not(:placeholder-shown) + span{transform:translateY(-10px) scale(.74);color:var(--seal)}
+.fl input:not(:focus):not(:placeholder-shown) + span{color:var(--muted)}
+.dlg-sw{display:flex;gap:12px;margin:16px 4px 4px}
+.dlg-sw .sw{width:24px;height:24px}
+.dlg-sw .sw.on{box-shadow:0 0 0 2.5px var(--paper),0 0 0 4.5px var(--c)}
+.dlg-act{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:16px}
+.dlg-act button{height:44px;padding:0 15px;border-radius:12px;font:600 16px/1 var(--display)}
+.dlg-x{color:var(--ink-2)}
+.dlg-del{margin-right:auto;color:var(--seal);padding-left:4px!important}
+.dlg-ok{min-width:96px;background:var(--ink);color:var(--paper);transition:background .2s,color .2s}
+.dlg-ok:disabled{opacity:1;background:var(--fill);color:var(--muted)}
+.dlg-ok:not(:disabled):active{opacity:.75}
+/* a group on Decks: a folder in its colour with its decks' cards peeking out */
+.grp-ic{display:block;width:44px;height:52px;flex:none;overflow:visible}
 /* v3.53 adding cards (like Anki's Add screen): the count of cards in the deck, what you just added, Done */
 .ac-head{position:relative}
 .ac-head h3{margin-bottom:14px;padding:0 64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -2794,6 +2856,8 @@ button.scene-tile:active svg{opacity:.92}
   <div id="ptr" aria-hidden="true"></div>
   <main id="app"></main>
   <nav id="tabbar" aria-label="Main"></nav>
+  <div id="fab-root"></div>
+  <div id="dlg-root"></div>
   <div id="drawer-root"></div>
   <div id="sheet-root"></div>
   <div id="toast"></div>
@@ -2940,6 +3004,7 @@ function parse() {
     if (p[2] === 'lesson') return { view: 'lesson', deckId: null, les: +p[3] || 0 };
     if (p[2] === 'unit') return { view: 'course', deckId: null, clv: lv, unit: UNIT(+p[3])?.lv === lv ? +p[3] : lvUnits(lv)[0].un };   // a unit's campaign
     return { view: 'course', deckId: null, clv: lv, part: lv === 1 ? p[2] || null : null }; }   // HSK 1's old /tones etc. links still open the Basics pages
+  if (p[0] === 'group' && groupById(p[1])) return { view: 'group', deckId: null, groupId: p[1] };
   if (p[0] === 'read') return { view: 'read', deckId: null, readId: p[1] || null };
   if (p[0] === 'map') return { view: 'map', deckId: null, city: Math.min(TRAIL.length, Math.max(0, +p[1] || 0)) || null };
   if (p[0] === 'build') return { view: 'build', deckId: null, city: Math.min(TRAIL.length, Math.max(1, +p[1] || 1)) };
@@ -2947,12 +3012,12 @@ function parse() {
   return { view: 'home', deckId: null };
 }
 function route() {
-  closeSheet(true); $('#cheer')?.remove(); closeDrawer();
+  closeSheet(true); closeDlg(true); $('#cheer')?.remove(); closeDrawer();
   const fromCity = S.view === 'map' && S.mapLv;   // leaving a temple for the map: the map pulls out of that city
   const r = parse(); S.view = r.view; S.deckId = r.deckId;
   S.mapLv = r.view === 'map' ? r.city || null : null; if (S.view === 'map' && !S.mapLv && fromCity) S.mapFrom = fromCity;
   if ((r.lv || null) !== S.hskLevel || !S.hskSel) S.hskSel = new Set();   // words ticked on an HSK level page, kept while you stay on it
-  S.hskLevel = r.lv || null; S.readId = r.readId || null; S.cPart = r.part || null; S.cBasics = !!r.basics; S.cUnit = r.unit || null; S.cLv = r.clv || 1;
+  S.hskLevel = r.lv || null; S.groupId = r.groupId || null; S.readId = r.readId || null; S.cPart = r.part || null; S.cBasics = !!r.basics; S.cUnit = r.unit || null; S.cLv = r.clv || 1;
   const d = curDeck();
   if ((S.view === 'study' || S.view === 'write') && (!d || !d.cards.length)) {
     if (S.deckId === 'today') { history.replaceState(history.state, '', '#/'); S.view = 'home'; S.deckId = null; }
@@ -3234,6 +3299,7 @@ function render() {
     if (!S.H) loadHsk().then(() => { const sh = $('#hskShelf'); if (sh) sh.outerHTML = HskShelf();
       const hd = $('#hotd[data-wait]'); if (hd) { hd.outerHTML = HotdCard(); mountHotd(); } }, () => {}); }
   else if (S.view === 'deck') { app.innerHTML = DeckView(d); }
+  else if (S.view === 'group') { app.innerHTML = GroupView(curGroup()); }
   else if (S.view === 'study') { app.innerHTML = StudyView(d); if (!S.study.done) mountStudy(); else setTimeout(() => coinRain($('.done-hero'), S.study?.pay), 900); }
   else if (S.view === 'write') { app.innerHTML = WriteView(d); mountWrite(); if (S.write?.done) setTimeout(() => coinRain($('.ws-end'), S.write?.pay), 700); }
   else if (S.view === 'learn') { app.innerHTML = LearnView(); }
@@ -3247,7 +3313,7 @@ function render() {
   else if (S.view === 'course') { app.innerHTML = CourseView(); mountCourse(); }
   else if (S.view === 'lesson') { app.innerHTML = LessonView(); mountLesson(); }
   if (S.instant) { app.firstElementChild?.classList.remove('fade-in'); S.instant = false; }  // tab switches are instant, like Uber
-  renderTabs();
+  renderTabs(); renderFab();
   const main = () => ['home', 'learn', 'profile'].includes(S.view) || S.view === 'read' && !S.readId;
   if (main()) setTimeout(() => { if (main()) moments(); }, 380);
   iconBadge(); S.lastView = S.view;
@@ -3257,7 +3323,7 @@ function render() {
 const TABS = [['decks', 'Decks', '#/'], ['read', 'Read', '#/read'], ['profile', 'Profile', '#/profile']];   // moka2: Map and Lessons are gone
 function renderTabs() {
   // picking words on an HSK level: its own bottom bar (Select all / Add) takes the tab bar's place, as in a select mode
-  const cur = S.view === 'hsk' && S.hskLevel ? null : S.view === 'home' || S.view === 'deck' || S.view === 'bank' || S.view === 'hsk' ? 'decks' : S.view === 'course' ? S.cUnit ? null : 'learn' : S.view;   // a unit's campaign is its own full page, without the tab bar
+  const cur = S.view === 'hsk' && S.hskLevel ? null : S.view === 'home' || S.view === 'deck' || S.view === 'group' || S.view === 'bank' || S.view === 'hsk' ? 'decks' : S.view === 'course' ? S.cUnit ? null : 'learn' : S.view;   // a unit's campaign is its own full page, without the tab bar
   const i = TABS.findIndex(t => t[0] === cur), bar = $('#tabbar'), frame = $('#frame');
   const wasShown = frame.classList.contains('tabs');
   frame.classList.toggle('tabs', i >= 0);
@@ -7597,14 +7663,15 @@ const goLab = (n, total, fmt = String, unit = '') => !n || n * 2 >= total ? `${f
 
 function Home() {
   const notice = db.freeze.notice; if (notice) { db.freeze.notice = null; save(); setTimeout(() => toast(notice), 600); }
-  return `<div class="screen fade-in">
+  const groups = db.groups || [], loose = db.decks.filter(d => !groupById(d.group));   // v3.62: groups first, then the decks in no group
+  const tally = [groups.length && plural(groups.length, 'group'), db.decks.length && plural(db.decks.length, 'deck')].filter(Boolean).join(' · ');
+  return `<div class="screen fade-in has-fab">
     <div class="section-head cal-head pg-head"><h2>Decks <span class="cal-zh">卡片</span></h2>
       <span class="pg-tr">${StreakBtn()}${MenuBtn()}</span></div>
     ${HotdStack()}
     ${BankCounter()}
-    <div class="section-head"><h2>Your decks</h2>${db.decks.length ? `<span class="sh-n">${plural(db.decks.length, 'deck')}</span>` : ''}</div>
-    ${db.decks.length ? `<div class="decks">${db.decks.map(DeckTile).join('')}</div>` : '<p class="dk-none">Make a deck for the words you want to learn.</p>'}
-    <button class="btn btn-seal wide dk-new" data-act="new-deck">${I.plus}New deck</button>
+    <div class="section-head"><h2>Your decks</h2>${tally ? `<span class="sh-n">${tally}</span>` : ''}</div>
+    ${groups.length || loose.length ? `<div class="decks">${groups.map(GroupTile).join('')}${loose.map(DeckTile).join('')}</div>` : '<p class="dk-none">Tap + to make your first deck.</p>'}
     <div class="section-head"><h2>Ready-made decks</h2><button class="link-btn" data-act="open-hsk">See all</button></div>
     ${HskShelf()}
     <p class="shelf-note">HSK levels 1 to 9. Tick the words you already know and they go into your word bank.</p>
@@ -9837,10 +9904,11 @@ function dots(c) {
 }
 function DeckView(d) {
   const n = d.cards.length;
-  return `<div class="screen fade-in" style="--accent:${d.accent}">
+  const g = groupById(d.group);
+  return `<div class="screen fade-in has-fab" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title"></div>
       <button class="icon-btn" data-act="deck-menu" aria-label="Deck options">${I.more}</button></header>
-    <section class="deck-hero"><div class="eyebrow">Deck</div><h1 class="deck-title">${esc(d.name)}</h1><div class="muted">${plural(n, 'card')}</div></section>
+    <section class="deck-hero"><div class="eyebrow">${g ? esc(g.name) : 'Deck'}</div><h1 class="deck-title">${esc(d.name)}</h1><div class="muted">${plural(n, 'card')}</div></section>
     <div class="modes">
       <button class="mode" data-act="study" ${n ? '' : 'disabled'}><div class="mode-ic">${I.flip}</div><div><div class="mode-t">Flip cards</div><div class="mode-s">Turn &amp; review</div></div></button>
       <button class="mode" data-act="write" ${n ? '' : 'disabled'}><div class="mode-ic tz">${miniTZG('写')}</div><div><div class="mode-t">Write</div><div class="mode-s">English → hanzi</div></div></button>
@@ -9849,10 +9917,113 @@ function DeckView(d) {
     ${n ? `<ul class="cards">${d.cards.map(c => `<li><button class="crow" data-act="edit-card" data-id="${c.id}">
         <span class="crow-hz">${esc(c.hanzi)}</span>
         <span class="crow-txt"><span class="crow-py">${esc(c.pinyin)}</span><span class="crow-en">${esc(c.en)}</span></span>${dots(c)}</button></li>`).join('')}</ul>`
-      : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Add your first card below.</p></div>`}
-    <div class="dock"><button class="btn btn-primary wide" data-act="add-card">${I.plus} Add card</button></div>
+      : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Tap Add to put in your first word.</p></div>`}
   </div>`;
 }
+/* v3.62 groups: a folder of decks. db.groups = [{ id, name, accent, created }]; a deck in one has d.group = its id */
+const groupById = id => id ? (db.groups || []).find(g => g.id === id) : null;
+const curGroup = () => groupById(S.groupId);
+const groupDecks = g => db.decks.filter(d => d.group === g.id);
+function grpIcon(g) {   // the folder: back panel with a tab, up to three cards in its decks' colours, the front panel in the group's colour
+  const cols = g.id ? groupDecks(g).slice(0, 3).map(d => d.accent) : [];
+  while (cols.length < 2) cols.push('var(--line-2)');
+  const cards = cols.map((c, i, a) => { const x = 22 + (i - (a.length - 1) / 2) * 7, r = (i - (a.length - 1) / 2) * 9;
+    return `<g transform="rotate(${r} ${x} 34)"><rect x="${x - 10}" y="${13 + Math.abs(r) / 4}" width="20" height="25" rx="3" fill="var(--card)" stroke="var(--line-2)" stroke-width="1"/><rect x="${x - 6}" y="${17 + Math.abs(r) / 4}" width="12" height="2.6" rx="1.3" fill="${c}"/></g>`; }).join('');
+  return `<svg class="grp-ic" viewBox="0 0 44 52" aria-hidden="true">
+    <path d="M3 14a3 3 0 0 1 3-3h10.5l3.2 3.4H38a3 3 0 0 1 3 3V44a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z" style="fill:color-mix(in srgb,var(--accent) 55%,var(--card))"/>${cards}
+    <rect x="3" y="24" width="38" height="23" rx="3.5" style="fill:var(--accent)"/><rect x="5" y="25.6" width="34" height="1.4" rx=".7" fill="#fff" opacity=".28"/></svg>`;
+}
+function GroupTile(g) {
+  const ds = groupDecks(g), n = ds.reduce((a, d) => a + d.cards.length, 0);
+  return `<button class="deck grp" data-act="open-group" data-id="${g.id}" style="--accent:${g.accent}">${grpIcon(g)}
+    <div class="deck-meta"><div class="deck-name">${esc(g.name)}</div><div class="deck-count">${ds.length ? `${plural(ds.length, 'deck')} · ${plural(n, 'card')}` : 'Empty · tap to add decks'}</div></div>
+    <span class="chev">${I.chev}</span></button>`;
+}
+function GroupView(g) {
+  const ds = groupDecks(g);
+  return `<div class="screen fade-in has-fab" style="--accent:${g.accent}">
+    <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title"></div>
+      <button class="icon-btn" data-act="group-menu" aria-label="Group options">${I.more}</button></header>
+    <section class="deck-hero"><div class="eyebrow">Group</div><h1 class="deck-title">${esc(g.name)}</h1><div class="muted">${plural(ds.length, 'deck')}</div></section>
+    ${ds.length ? `<div class="decks">${ds.map(DeckTile).join('')}</div>`
+      : `<div class="empty"><div class="big">组</div><p>This group is empty.<br>Tap + to make a deck here or move decks in.</p></div>`}
+  </div>`;
+}
+/* the corner button: + with two choices on Decks and in a group, Add inside a deck */
+function renderFab() {
+  const root = $('#fab-root'); if (!root) return;
+  const v = S.view, d = v === 'deck' && curDeck(), deck = d && db.decks.includes(d);
+  const opt = (act, hz, t, sub) => `<button class="fab-opt" data-act="${act}"><span class="fab-lab"><b>${t}</b><small>${sub}</small></span><span class="fab-tile" aria-hidden="true">${hz}</span></button>`;
+  let html = '';
+  if (deck) html = `<button class="fab fab-add" data-act="add-card">${I.plus}Add</button>`;
+  else if (v === 'home' || (v === 'group' && curGroup())) html = `<div class="fab-veil" data-act="fab-close"></div><div class="fab-menu">${v === 'home'
+      ? opt('new-group', '组', 'Create group', 'A folder for decks') + opt('new-deck', '卡', 'Create deck', 'Cards for your words')
+      : opt('group-add', '移', 'Add decks', 'Move decks you have here') + opt('new-deck', '卡', 'Create deck', 'A new deck in this group')}</div>
+    <button class="fab" data-act="fab" aria-label="Create" aria-expanded="false">${I.plus}</button>`;
+  root.classList.remove('open');
+  if (root._html !== html) { root.innerHTML = html; root._html = html; }
+}
+function fabShut() { const r = $('#fab-root'); if (!r?.classList.contains('open')) return false; r.classList.remove('open'); $('.fab', r)?.setAttribute('aria-expanded', 'false'); return true; }
+function closeDlg(instant) {
+  const root = $('#dlg-root'); if (!root?.innerHTML) return;
+  root.classList.remove('open');
+  if (instant) root.innerHTML = ''; else setTimeout(() => { if (!root.classList.contains('open')) root.innerHTML = ''; }, 280);
+}
+/* Create deck / Create group (and Edit group): a card in the middle, like Anki's, with the keyboard up at once.
+   Create stays grey until there is a name. A new deck opens straight away, with Add in the corner; a new group opens empty */
+function nameDialog(kind, it) {
+  const grp = kind === 'group', list = grp ? db.groups || [] : db.decks;
+  let accent = it?.accent || ACCENTS[list.length % ACCENTS.length];
+  const title = it ? 'Edit group' : grp ? 'Create group' : 'Create deck', root = $('#dlg-root');
+  root.innerHTML = `<div class="dlg-scrim"></div><div class="dlg-wrap"><form class="dlg" role="dialog" aria-modal="true" aria-label="${title}" novalidate>
+    <div class="dlg-top"><div class="dlg-mark" style="--accent:${accent}">${grp ? grpIcon(it || {}) : '<div class="deck-stack"><span></span><span></span><div class="deck-face">新</div></div>'}</div><h3>${title}</h3></div>
+    <label class="fl"><input id="dlgName" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder=" " value="${esc(it?.name || '')}"><span>Name</span></label>
+    <div class="dlg-sw">${ACCENTS.map(c => `<button type="button" class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="Colour"></button>`).join('')}</div>
+    <div class="dlg-act">${it ? '<button type="button" class="dlg-del">Delete</button>' : ''}<button type="button" class="dlg-x">Cancel</button><button type="submit" class="dlg-ok">${it ? 'Save' : 'Create'}</button></div>
+  </form></div>`;
+  const f = root.querySelector('.dlg'), inp = f.querySelector('#dlgName'), ok = f.querySelector('.dlg-ok'), mk = f.querySelector('.dlg-mark'), face = mk.querySelector('.deck-face');
+  const paint = () => { const name = inp.value.trim(); ok.disabled = !name; if (face) face.textContent = hanChars(name)[0] || '新'; };
+  f.querySelectorAll('.sw').forEach(b => {
+    b.addEventListener('pointerdown', e => e.preventDefault());   // picking a colour keeps the keyboard up
+    b.onclick = () => { accent = b.dataset.c; mk.style.setProperty('--accent', accent); f.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
+  });
+  ok.addEventListener('pointerdown', e => e.preventDefault());
+  inp.oninput = paint; paint();
+  f.querySelector('.dlg-x').onclick = () => closeDlg(); root.querySelector('.dlg-scrim').onclick = () => closeDlg();
+  f.querySelector('.dlg-del')?.addEventListener('click', () => { closeDlg();
+    confirmSheet('Delete group?', `“${esc(it.name)}” goes. Its ${plural(groupDecks(it).length, 'deck')} stay and move back to Your decks.`, 'Delete', () => {
+      db.decks.forEach(d => { if (d.group === it.id) delete d.group; }); db.groups = db.groups.filter(x => x !== it); save();
+      LOG.add('group-delete', { name: it.name }); history.replaceState({ d: 0 }, '', '#/'); route(); toast('Group deleted'); }); });
+  f.onsubmit = e => {
+    e.preventDefault(); const name = inp.value.trim(); if (!name) { inp.focus(); return; }
+    if (it) { it.name = name; it.accent = accent; save(); closeDlg(); render(); return; }
+    closeDlg(true);
+    if (grp) { const g = { id: uid(), name, accent, created: Date.now() }; (db.groups ||= []).push(g); save(); LOG.add('group-new', { name }); nav('#/group/' + g.id); }
+    else { const g = S.view === 'group' ? curGroup() : null, nd = { id: uid(), name, accent, created: Date.now(), cards: [] }; if (g) nd.group = g.id;
+      db.decks.push(nd); save(); LOG.add('deck-new', { name, from: g ? 'group' : 'decks' }); nav('#/deck/' + nd.id); }
+  };
+  root.offsetHeight; root.classList.add('open');
+  inp.focus({ preventScroll: true });   // inside the tap, so phones bring the keyboard up
+  LOG.add('dialog-open', title);
+}
+/* Add decks to a group: every deck in a tick list; ticked ones are in this group (ticking one from another group moves it) */
+function groupPicker(g) {
+  if (!g) return;
+  const sel = new Set(groupDecks(g).map(d => d.id));
+  openSheet(`<h3>Decks in ${esc(g.name)}</h3>
+    ${db.decks.length ? `<div class="group" id="gpList">${db.decks.map(d => { const og = d.group !== g.id && groupById(d.group);
+      return `<button class="row ${sel.has(d.id) ? 'on' : ''}" data-id="${d.id}" style="--sep:40px"><span class="pk-dot" style="background:${d.accent}"></span>
+        <span class="row-main"><span class="row-t">${esc(d.name)}</span><span class="row-s">${og ? `In ${esc(og.name)}` : plural(d.cards.length, 'card')}</span></span><span class="tick">${I.check}</span></button>`; }).join('')}</div>`
+      : '<p class="muted" style="text-align:center;margin:-6px 0 22px">You have no decks yet. Tap + and Create deck.</p>'}
+    <button class="btn btn-primary wide" id="gpDone">Done</button>`, sh => {
+      sh.querySelector('#gpList')?.addEventListener('click', e => { const b = e.target.closest('.row'); if (!b) return; const id = b.dataset.id; sel.has(id) ? sel.delete(id) : sel.add(id); b.classList.toggle('on'); });
+      sh.querySelector('#gpDone').onclick = () => {
+        db.decks.forEach(d => { if (sel.has(d.id)) d.group = g.id; else if (d.group === g.id) delete d.group; });
+        save(); LOG.add('group-decks', { name: g.name, n: sel.size }); closeSheet(); render();
+      };
+    });
+}
+addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('#dlg-root')?.classList.contains('open')) closeDlg(); else fabShut(); });
 
 /* ---------- memory: when each card comes back ----------
    Every card (and word bank word) keeps c.srs = { due, iv, n, miss, first, seen }: due = when to ask it again (ms),
@@ -12731,7 +12902,13 @@ const A = {
   'goal': () => goalSheet(),
   'home': () => goBack('#/'),
   'open-deck': t => nav('#/deck/' + t.dataset.id),
-  'new-deck': () => deckSheet(null),
+  'new-deck': () => { fabShut(); nameDialog('deck'); },
+  'new-group': () => { fabShut(); nameDialog('group'); },
+  'group-add': () => { fabShut(); groupPicker(curGroup()); },
+  'open-group': t => nav('#/group/' + t.dataset.id),
+  'group-menu': () => nameDialog('group', curGroup()),
+  'fab': () => { const r = $('#fab-root'); if (fabShut()) return; r.classList.add('open'); $('.fab', r)?.setAttribute('aria-expanded', 'true'); LOG.add('fab-open', S.view); },
+  'fab-close': () => fabShut(),
   'quick-add': () => quickAddSheet(),
   'open-bank': () => nav('#/bank'),
   'map-city': t => mapPick(+t.dataset.lv),
