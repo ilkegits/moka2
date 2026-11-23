@@ -53,6 +53,9 @@ html,body{margin:0}
 html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+/* UX 17: headings and short titles break into even lines; paragraphs avoid a single word alone on the last line */
+h1,h2,h3,h4,.deck-title,.mo-title,.row-t,.dlg h3,figcaption{text-wrap:balance}
+p,li,.muted,.row-s,.group-foot{text-wrap:pretty}
 img,svg{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 body{
   background:var(--paper); color:var(--ink); font-family:var(--ui); font-size:15px; line-height:1.45;
