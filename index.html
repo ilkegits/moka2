@@ -56,6 +56,11 @@ input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webk
 /* UX 17: headings and short titles break into even lines; paragraphs avoid a single word alone on the last line */
 h1,h2,h3,h4,.deck-title,.mo-title,.row-t,.dlg h3,figcaption{text-wrap:balance}
 p,li,.muted,.row-s,.group-foot{text-wrap:pretty}
+/* UX 18: Apple's continuous corners on the rounded rectangles (cards, lists, pop-ups, buttons, fields). Only Chromium draws
+   corner-shape; other browsers keep the plain rounded corner. Round buttons and pill shapes are left out on purpose:
+   a squircle at full radius would square off their ends */
+.group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wb-ctr,.bank-stages .bs,.cl,
+.rd-hero,.pf-card,.pf-stat,.bdg,.st-cal,.st-fz,.goal-row,.face,.hd-card,.un-hud,.icon-sq,#toast{corner-shape:squircle}
 img,svg{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 body{
   background:var(--paper); color:var(--ink); font-family:var(--ui); font-size:15px; line-height:1.45;
