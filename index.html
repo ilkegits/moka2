@@ -559,14 +559,17 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-pad{margin-top:10px}
 .ac-pad .cands{min-height:52px}
 /* v3.64 Swap: English can be the front. The first side's label carries the Swap link */
-.ac-swap{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--seal);padding:0 2px}
-.ac-swap svg.i{width:15px;height:15px;stroke-width:2.1}
-.ac-sides>:last-child .ac-swap{display:none}
+/* v3.67: Swap is a round button on a line between the two sides, like a translator's swap; the sides slide past each other */
+.ac-swaprow{position:relative;z-index:1;display:flex;align-items:center;gap:12px;margin:-4px 0 6px}
+.ac-swaprow::before,.ac-swaprow::after{content:'';flex:1;height:1px;background:var(--line)}
+.ac-swap{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--card);box-shadow:var(--ring);color:var(--seal)}
+.ac-swap svg.i{width:19px;height:19px;stroke-width:2.1}
+.ac-swap:active{background:var(--seal-soft)}
 .ac-sides .lbl{align-items:center;min-height:20px}
 .ac-cands{min-height:50px;padding-top:6px}
 .ac-cands:empty{min-height:0;padding:0}
 .ac-reads{margin:4px 0 0}
-.field.ac-fz{margin-bottom:12px}
+.field.ac-fz{margin-bottom:8px}
 .field.ac-en{margin-bottom:10px}
 .ac-sug{display:flex;align-items:baseline;gap:7px;padding:7px 11px;border-radius:9px;background:var(--fill);color:var(--ink);text-align:left}
 .ac-sug .hz{font-family:var(--hanzi);font-size:19px}
@@ -2920,6 +2923,7 @@ const I = {
   search: ic('<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/>'),
   eye: ic('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
   swap: ic('<path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>'),
+  swapV: ic('<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>'),
   bksp: ic('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="M12 9l6 6M18 9l-6 6"/>'),
   play: ic('<path d="M7 5l12 7-12 7z"/>'),
   pen: ic('<path d="M4 20l1.2-4.6L15.8 4.8a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14 6.6l3.4 3.4"/>'),
@@ -11147,21 +11151,32 @@ function deckSheet(d) {   /* v3.53: the keyboard comes up at once (focus inside 
    the cards you just added show at the bottom; Done closes it. Type pinyin (or hanzi) for the front and pick characters:
    the pinyin and the meaning fill in from the dictionary, with its other meanings and readings to tap. Or type the
    English first and pick the Chinese from the dictionary's suggestions (like Quizlet's suggested definitions). */
+/* v3.67: the grey example in each box changes every time (a new one after each Add), and both sides show the same word:
+   the Chinese side "e.g. 猫 or mao", the English side "e.g. cat" */
+const AC_EX = [['猫', 'mao', 'cat'], ['咖啡', 'kafei', 'coffee'], ['朋友', 'pengyou', 'friend'], ['学校', 'xuexiao', 'school'],
+  ['苹果', 'pingguo', 'apple'], ['水', 'shui', 'water'], ['老师', 'laoshi', 'teacher'], ['火车', 'huoche', 'train'],
+  ['医生', 'yisheng', 'doctor'], ['书', 'shu', 'book'], ['电影', 'dianying', 'film'], ['茶', 'cha', 'tea'],
+  ['米饭', 'mifan', 'rice'], ['天气', 'tianqi', 'weather'], ['商店', 'shangdian', 'shop'], ['手机', 'shouji', 'phone'],
+  ['熊猫', 'xiongmao', 'panda'], ['月亮', 'yueliang', 'moon'], ['面条', 'miantiao', 'noodles'], ['雨', 'yu', 'rain']];
+let acExLast = -1;
+const acExPick = () => { let i; do i = Math.floor(Math.random() * AC_EX.length); while (i === acExLast); return acExLast = i; };
 function cardSheet(cardId) {
   const d = curDeck(), c = cardId ? cardById(d, cardId) : null;
-  const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [] };
+  const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [], ex: acExPick() };
+  const exZh = () => `e.g. ${AC_EX[E.ex][0]} or ${AC_EX[E.ex][1]}`, exEn = () => `e.g. ${AC_EX[E.ex][2]}`;
   openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : `Add to ${esc(d.name)}`}</h3>${c ? '' : `<span class="ac-n" id="acN">${plural(d.cards.length, 'card')}</span>`}</div>
     <div class="ac-sides" id="acSides">
-    <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span><button type="button" class="ac-swap" aria-label="Swap front and back">${I.swap}Swap</button></span>
+    <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span></span>
       <div class="ac-box" id="fbox"><div class="ac-word" id="fword" hidden><span class="hz" id="fhz"></span><span class="py" id="fpyout"></span></div>
-        <input class="input" id="fpy" placeholder="e.g. 图书馆 or tushuguan" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Front">
+        <input class="input" id="fpy" placeholder="${exZh()}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Front">
         <button class="ac-bk" id="bksp" aria-label="Delete last character" hidden>${I.bksp}</button>
         <button class="ac-draw" id="acPen" aria-label="Draw a character" aria-pressed="false">${I.pen}Draw</button></div>
       <div class="ac-pad" id="acPad" hidden></div>
       <div class="cands ac-cands" id="cands"></div>
       <div class="means ac-reads" id="reads"></div></div>
-    <div class="ac-enb"><div class="field ac-en"><span class="lbl"><span class="ac-side">Back</span><button type="button" class="ac-swap" aria-label="Swap front and back">${I.swap}Swap</button></span>
-      <div class="ac-box" id="ebox"><input class="input" id="fen" placeholder="What it means" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning">
+    <div class="ac-swaprow"><button type="button" class="ac-swap" id="acSwap" aria-label="Swap front and back">${I.swapV}</button></div>
+    <div class="ac-enb"><div class="field ac-en"><span class="lbl"><span class="ac-side">Back</span></span>
+      <div class="ac-box" id="ebox"><input class="input" id="fen" placeholder="${exEn()}" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning">
         <button class="ac-draw" id="acPenB" aria-label="Draw a character" aria-pressed="false">${I.pen}Draw</button></div>
       <div class="ac-pad" id="acPadB" hidden></div></div>
     <div class="means" id="means"></div></div>
@@ -11188,7 +11203,7 @@ function cardSheet(cardId) {
         means.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(r.p)}</span></button>`).join('');
       };
       const paintHz = () => {
-        fhz.textContent = E.hanzi; $q('#fword').hidden = !E.hanzi; fpy.placeholder = E.hanzi ? '' : 'e.g. 图书馆 or tushuguan';
+        fhz.textContent = E.hanzi; $q('#fword').hidden = !E.hanzi; fpy.placeholder = E.hanzi ? '' : exZh();
         $q('#bksp').hidden = !E.hanzi || $q('#acPad').hidden;   // while typing, the keyboard's backspace does this; with the pad up there is no keyboard
         const k = hanChars(E.hanzi).length; $q('#hzcount').textContent = k ? ` · ${plural(k, 'character')}` : '';
         pyOut.textContent = E.hanzi ? curPy() : '';
@@ -11281,20 +11296,27 @@ function cardSheet(cardId) {
       const frontIn = () => enFront() ? fen : fpy;
       const paintSides = () => {
         const ef = enFront();
-        if (ef) sides.insertBefore(enB, zhB); else sides.insertBefore(zhB, enB);
+        sides.prepend(ef ? enB : zhB); sides.append(ef ? zhB : enB);   // the swap button stays between them
         zhB.querySelector('.ac-side').textContent = ef ? 'Back' : 'Front';
         enB.querySelector('.ac-side').textContent = ef ? 'Front' : 'Back';
-        fen.placeholder = ef ? 'e.g. library' : 'What it means';
+        fen.placeholder = exEn();
         fen.enterKeyHint = ef ? 'next' : c ? 'done' : 'send';
       };
-      sides.querySelectorAll('.ac-swap').forEach(b => {
-        b.addEventListener('pointerdown', e => e.preventDefault());   // keeps the keyboard up
-        b.onclick = () => {
-          db.prefs.addEnFront = !enFront(); db.prefs.englishFirst = db.prefs.addEnFront; save();
-          LOG.add('card-swap', db.prefs.addEnFront ? 'en-front' : 'zh-front');
-          padOff(); paintSides(); frontIn().focus({ preventScroll: true });
-        };
-      });
+      const swapB = $q('#acSwap');
+      swapB.addEventListener('pointerdown', e => e.preventDefault());   // keeps the keyboard up
+      swapB.onclick = () => {
+        db.prefs.addEnFront = !enFront(); db.prefs.englishFirst = db.prefs.addEnFront; save();
+        LOG.add('card-swap', db.prefs.addEnFront ? 'en-front' : 'zh-front');
+        padOff();
+        const was = [zhB, enB].map(el => el.getBoundingClientRect().top);
+        paintSides(); frontIn().focus({ preventScroll: true });
+        if (stillMotion()) return;
+        [zhB, enB].forEach((el, i) => {
+          const dy = was[i] - el.getBoundingClientRect().top;
+          if (dy) el.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 340, easing: 'cubic-bezier(.3,.9,.3,1)' });
+        });
+        swapB.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(180deg)' }], { duration: 340, easing: 'cubic-bezier(.3,.9,.3,1)' });
+      };
       paintSides();
       cands.addEventListener('click', e => { const b = e.target.closest('.cand'); if (b) pick(+b.dataset.i); });
       reads.onclick = e => { const b = e.target.closest('[data-r]'); if (!b) return; E.reading = +b.dataset.r; E.pyDirty = false; if (E.autoEn) E.enDirty = false; paintHz(); };
@@ -11333,6 +11355,7 @@ function cardSheet(cardId) {
       else btn.onclick = () => {   // Anki's Add: save, clear, cursor back on the front, keyboard still up
         if (!commit()) return;
         E.added.unshift(E.hanzi); render();
+        E.ex = acExPick(); fen.placeholder = exEn();
         E.enDirty = E.autoEn = false; fen.value = ''; fpy.value = ''; padOff(); setHz(''); paintCands([]);
         const n = $q('#acN'); n.textContent = plural(d.cards.length, 'card'); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump');
         $q('#acLast').innerHTML = `Added <b>${E.added.slice(0, 5).map(esc).join(' · ')}</b>`;
