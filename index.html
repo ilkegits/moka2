@@ -12885,7 +12885,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.10';
+const APP_VERSION = '3.45.11';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
@@ -13062,6 +13062,9 @@ function devSheet() {
 /* ---------- account and sync (v4.47) ----------
    Optional: signed in (Google, or email and password), this device's whole save (db) is kept online in one row of the
    Supabase table `saves` (user_id, data, rev, updated_at), so it follows you to every phone and computer.
+   moka2: the same accounts as the real app (one login for both), but its save sits in its own table `saves2`
+   (tools/cloud/schema-moka2.sql), its sign-in in its own storage ('moka2-auth') and its sync state in 'shicards2.cloud',
+   so the two apps never overwrite each other or sign each other in or out on a phone that has both.
    - rev counts uploads. Every upload names the rev it was built on and only lands if the cloud still has that rev, so two
      devices never overwrite each other blind: if the cloud moved on, this device downloads it, merges, and uploads again.
    - A check asks for the cloud's rev only (a few bytes); the save itself is downloaded only when the cloud has a newer one.
@@ -13072,7 +13075,7 @@ function devSheet() {
 const SB_URL = 'https://grzuyqtbfmaonzzmopny.supabase.co', SB_KEY = 'sb_publishable_25E6zhjRVNiv7-UvfmkjaA_ZR3Tvg77';
 const SB_LIB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/+esm';
 const CLOUD = (() => {
-  const KEYC = 'shicards.cloud';
+  const KEYC = 'shicards2.cloud';   // moka2: its own sync state
   let st = {};   // { user: { id, email, name }, owner: the account this device's save belongs to, rev, dirty, at: last change here, syncedAt, err }
   try { st = JSON.parse(localStorage.getItem(KEYC)) || {}; } catch (_) {}
   const keep = () => { try { localStorage.setItem(KEYC, JSON.stringify(st)); } catch (_) {} };
@@ -13085,7 +13088,7 @@ const CLOUD = (() => {
   async function lib() {
     if (sb) return sb;
     const { createClient } = await import(SB_LIB);
-    sb = createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } });
+    sb = createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'moka2-auth' } });
     return sb;
   }
   // did anything real happen on this device? (a fresh install only has the sample deck)
@@ -13113,15 +13116,15 @@ const CLOUD = (() => {
     cloudLock = true; clearTimeout(timer);
     try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (_) {}
     Object.assign(st, { rev, dirty: false, syncedAt: Date.now(), err: '' }); keep();
-    try { sessionStorage.setItem('shicards.cloudNote', note); } catch (_) {}
+    try { sessionStorage.setItem('shicards2.cloudNote', note); } catch (_) {}
     LOG.add('cloud-take', { rev }); location.reload();
   }
   // upload this device's save, built on st.rev; true when it landed
   async function push() {
     const s = JSON.stringify(db), base = st.rev || 0;
     const r = base
-      ? await sb.from('saves').update({ data: db, rev: base + 1, device: deviceInfo().os || '' }).eq('user_id', st.user.id).eq('rev', base).select('rev')
-      : await sb.from('saves').insert({ user_id: st.user.id, data: db, rev: 1, device: deviceInfo().os || '' }).select('rev');
+      ? await sb.from('saves2').update({ data: db, rev: base + 1, device: deviceInfo().os || '' }).eq('user_id', st.user.id).eq('rev', base).select('rev')
+      : await sb.from('saves2').insert({ user_id: st.user.id, data: db, rev: 1, device: deviceInfo().os || '' }).select('rev');
     if (r.error && r.error.code !== '23505') throw r.error;   // 23505: a save already exists (another device was first)
     if (r.error || !r.data?.length) return false;
     Object.assign(st, { rev: r.data[0].rev, dirty: false, syncedAt: Date.now(), err: '' }); sent = s; keep(); paint();
@@ -13134,13 +13137,13 @@ const CLOUD = (() => {
     busy = (async () => {
       try {
         for (let tries = 0; tries < 3; tries++) {
-          const head = await sb.from('saves').select('rev, updated_at').eq('user_id', st.user.id).maybeSingle();
+          const head = await sb.from('saves2').select('rev, updated_at').eq('user_id', st.user.id).maybeSingle();
           if (head.error) throw head.error;
           const cloud = head.data;
           if (!cloud) { st.rev = 0; if (await push()) return; continue; }   // nothing online yet: this device's save goes up
           if (!first && cloud.rev === st.rev) { if (st.dirty) { if (await push()) return; continue; } st.syncedAt = Date.now(); st.err = ''; keep(); paint(); return; }
           // the cloud has something this device hasn't seen
-          const full = await sb.from('saves').select('data, rev, updated_at').eq('user_id', st.user.id).single();
+          const full = await sb.from('saves2').select('data, rev, updated_at').eq('user_id', st.user.id).single();
           if (full.error) throw full.error;
           const mine = first ? used(db) && (!st.owner || st.owner === st.user.id) : st.dirty;
           st.owner = st.user.id;
@@ -13181,7 +13184,7 @@ const CLOUD = (() => {
     get user() { return st.user; }, back, line, status,
     // at start-up: pick up a sign-in that just finished, or carry on one from before
     async start() {
-      try { const n = sessionStorage.getItem('shicards.cloudNote'); if (n) { sessionStorage.removeItem('shicards.cloudNote'); setTimeout(() => toast(n), 700); } } catch (_) {}
+      try { const n = sessionStorage.getItem('shicards2.cloudNote'); if (n) { sessionStorage.removeItem('shicards2.cloudNote'); setTimeout(() => toast(n), 700); } } catch (_) {}
       if (!st.user && !back) return;
       try {
         await lib();
@@ -13236,19 +13239,19 @@ function acctSheet(welcome, viaEmail) {   // viaEmail: open on the email form, s
   if (u) {
     openSheet(`<h3>Your account</h3>
       <div class="acct-who"><div class="acct-face">${esc((u.name || u.email || '?')[0].toUpperCase())}</div><div><b>${esc(u.name || u.email)}</b><small id="acctSync">${esc(CLOUD.status())}</small></div></div>
-      <p class="muted acct-p">Your words, decks, streak and coins are saved online and follow you to every phone and computer you sign in on.</p>
+      <p class="muted acct-p">Your words, decks, streak and XP are saved online and follow you to every phone and computer you sign in on.</p>
       <button class="btn btn-ghost wide" id="acOut">Sign out</button>
       <button class="acct-link" id="acDel">Delete account</button>`, sh => {
       sh.querySelector('#acOut').onclick = async () => { await CLOUD.signOut(); closeSheet(); paintAcct(); toast('Signed out. Your progress stays on this device'); };
       sh.querySelector('#acDel').onclick = () => confirmSheet('Delete your account?',
-        'Your online save and your account are deleted for good. Everything stays on this device, but it no longer syncs.', 'Delete account',
+        'moka2 and ShiHanzi share accounts, so this deletes your account and its online saves in both apps, for good. Everything stays on this device, but it no longer syncs.', 'Delete account',
         async () => { try { await CLOUD.remove(); paintAcct(); toast('Account deleted'); } catch (_) { toast('Couldn’t delete the account. Are you online?'); } });
     });
     return;
   }
   openSheet(`<div class="acct-hero">${shiFace(welcome ? 'happy' : 'cheer')}</div>
     <h3 class="acct-h">${welcome ? 'Welcome back' : 'Keep your progress safe'}</h3>
-    <p class="muted acct-p">${welcome ? 'Sign in to bring back your words, decks, streak and coins.' : 'Sign in and your words, decks, streak and coins are saved online. They follow you to every phone and computer.'}</p>
+    <p class="muted acct-p">${welcome ? 'Sign in to bring back your words, decks, streak and XP.' : 'Sign in and your words, decks, streak and XP are saved online. They follow you to every phone and computer.'}</p>
     <button class="btn btn-ghost acct-g wide" id="acG">${GOOGLE_G}<span>Continue with Google</span></button>
     <button class="acct-link" id="acMail">Use email instead</button>
     <form class="acct-form" id="acForm" hidden novalidate>

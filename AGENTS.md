@@ -12,6 +12,7 @@ Both apps live on the same website (`ilkegits.github.io`), so they share the pho
 - Saved progress: `moka2.v1` (the real app uses `moka.v1`). On first open, moka2 copies the real progress once, read only, without the reminder sign-up. Never write to `moka.v1` from here.
 - Log, sync and reminder note: `shicards2.log`, `shicards2.sync`, `shicards2.remindNote`.
 - Offline caches: named `moka2-vNN`, and moka2 only ever deletes caches that start with `moka2-`.
+- Accounts: the same Supabase project and accounts as the real app (one login for both), but moka2's save is in its own table `saves2` (`tools/cloud/schema-moka2.sql`, already run), its sign-in in its own storage key `moka2-auth`, and its sync state in `shicards2.cloud` / `shicards2.cloudNote`. Supabase's redirect allow-list has `https://ilkegits.github.io/moka2/**`. Delete account removes the shared account, so it says so.
 - `manifest.webmanifest` id `/moka2/`, home-screen name `moka2`, icons with a blue "2" badge.
 
 ## Start again from the real app
