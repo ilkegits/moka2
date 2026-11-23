@@ -548,6 +548,11 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-pen.on{background:var(--ink);color:var(--paper)}
 .ac-pad{margin-top:10px}
 .ac-pad .cands{min-height:52px}
+/* v3.64 Swap: English can be the front. The first side's label carries the Swap link */
+.ac-swap{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--seal);padding:0 2px}
+.ac-swap svg.i{width:15px;height:15px;stroke-width:2.1}
+.ac-sides>:last-child .ac-swap{display:none}
+.ac-sides .lbl{align-items:center;min-height:20px}
 .ac-cands{min-height:50px;padding-top:6px}
 .ac-cands:empty{min-height:0;padding:0}
 .ac-reads{margin:4px 0 0}
@@ -11136,7 +11141,8 @@ function cardSheet(cardId) {
   const d = curDeck(), c = cardId ? cardById(d, cardId) : null;
   const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [] };
   openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : `Add to ${esc(d.name)}`}</h3>${c ? '' : `<span class="ac-n" id="acN">${plural(d.cards.length, 'card')}</span>`}</div>
-    <div class="field ac-fz"><span class="lbl"><span>Front</span><span id="hzcount"></span></span>
+    <div class="ac-sides" id="acSides">
+    <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span><button type="button" class="ac-swap" aria-label="Swap front and back">${I.swap}Swap</button></span>
       <div class="compose qa-compose ac-compose"><div class="qa-word"><div class="compose-hz" id="fhz"></div><div class="compose-py" id="fpyout"></div></div>
         <button class="icon-btn" id="bksp" aria-label="Delete last character">${I.bksp}</button></div>
       <div class="ac-in"><input class="input" id="fpy" placeholder="e.g. 图书馆 or tushuguan" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Front">
@@ -11144,8 +11150,10 @@ function cardSheet(cardId) {
       <div class="ac-pad" id="acPad" hidden></div>
       <div class="cands ac-cands" id="cands"></div>
       <div class="means ac-reads" id="reads"></div></div>
-    <label class="field ac-en"><span class="lbl">Back</span><input class="input" id="fen" placeholder="What it means" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}"></label>
-    <div class="means" id="means"></div>
+    <div class="ac-enb"><div class="field ac-en"><span class="lbl"><span class="ac-side">Back</span><button type="button" class="ac-swap" aria-label="Swap front and back">${I.swap}Swap</button></span>
+      <input class="input" id="fen" placeholder="What it means" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning"></div>
+    <div class="means" id="means"></div></div>
+    </div>
     <div class="row-btns">${c ? `<button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>` : ''}
       <button class="btn btn-primary" id="csave">${c ? 'Save' : 'Add card'}</button></div>
     ${c ? '' : '<div class="ac-done"><span class="ac-last" id="acLast"></span><button class="link-btn" id="acClose">Done</button></div>'}`,
@@ -11169,7 +11177,7 @@ function cardSheet(cardId) {
       };
       const paintHz = () => {
         fhz.textContent = E.hanzi || 'Type or draw it below…'; fhz.classList.toggle('ph', !E.hanzi);
-        const k = hanChars(E.hanzi).length; $q('#hzcount').textContent = k ? plural(k, 'character') : '';
+        const k = hanChars(E.hanzi).length; $q('#hzcount').textContent = k ? ` · ${plural(k, 'character')}` : '';
         pyOut.textContent = E.hanzi ? curPy() : '';
         const R = rows();
         reads.innerHTML = R.length > 1 ? R.map((r, i) => `<button class="mean ${i === E.reading && !E.pyDirty ? 'on' : ''}" data-r="${i}">${esc(r.p)}</button>`).join('') : '';
@@ -11238,6 +11246,26 @@ function cardSheet(cardId) {
       pen.addEventListener('pointerdown', e => e.preventDefault());
       pen.onclick = () => { if (pad.hidden) padOn(); else { padOff(); fpy.focus(); } };
       fpy.addEventListener('focus', padOff);   // typing again puts the pad away
+      const sides = $q('#acSides'), zhB = $q('.ac-fz'), enB = $q('.ac-enb');
+      const enFront = () => !!db.prefs.addEnFront;
+      const frontIn = () => enFront() ? fen : fpy;
+      const paintSides = () => {
+        const ef = enFront();
+        if (ef) sides.insertBefore(enB, zhB); else sides.insertBefore(zhB, enB);
+        zhB.querySelector('.ac-side').textContent = ef ? 'Back' : 'Front';
+        enB.querySelector('.ac-side').textContent = ef ? 'Front' : 'Back';
+        fen.placeholder = ef ? 'e.g. library' : 'What it means';
+        fen.enterKeyHint = ef ? 'next' : c ? 'done' : 'send';
+      };
+      sides.querySelectorAll('.ac-swap').forEach(b => {
+        b.addEventListener('pointerdown', e => e.preventDefault());   // keeps the keyboard up
+        b.onclick = () => {
+          db.prefs.addEnFront = !enFront(); db.prefs.englishFirst = db.prefs.addEnFront; save();
+          LOG.add('card-swap', db.prefs.addEnFront ? 'en-front' : 'zh-front');
+          padOff(); paintSides(); frontIn().focus({ preventScroll: true });
+        };
+      });
+      paintSides();
       cands.addEventListener('click', e => { const b = e.target.closest('.cand'); if (b) pick(+b.dataset.i); });
       reads.onclick = e => { const b = e.target.closest('[data-r]'); if (!b) return; E.reading = +b.dataset.r; E.pyDirty = false; if (E.autoEn) E.enDirty = false; paintHz(); };
       means.onclick = e => {
@@ -11253,16 +11281,16 @@ function cardSheet(cardId) {
       });
       fpy.addEventListener('keydown', e => {
         if ((e.key === 'Enter' || e.key === ' ') && fpy.value && cands._list?.length) { e.preventDefault(); pick(0); }
-        else if (e.key === 'Enter' && !fpy.value && E.hanzi) { e.preventDefault(); fen.focus(); fen.select(); }
+        else if (e.key === 'Enter' && !fpy.value && E.hanzi) { e.preventDefault(); if (enFront() && fen.value.trim()) btn.click(); else { fen.focus(); fen.select(); } }
         else if (e.key === 'Backspace' && !fpy.value && E.hanzi) { e.preventDefault(); setHz([...E.hanzi].slice(0, -1).join('')); }
       });
       $q('#bksp').onclick = () => { if (E.hanzi) setHz([...E.hanzi].slice(0, -1).join('')); };
       fen.addEventListener('input', () => { E.enDirty = !!fen.value.trim(); E.autoEn = false; if (!E.hanzi) paintMeans(); paintBtn(); });
-      fen.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); btn.click(); } };
+      fen.onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); if (enFront() && !E.hanzi) fpy.focus(); else btn.click(); };
       const commit = () => {
         const en = fen.value.trim(), hz = E.hanzi.trim();
-        if (!hanChars(hz).length) { fpy.focus(); toast('Add the front first'); return false; }
-        if (!en) { fen.focus(); toast('Add the back first'); return false; }
+        if (!hanChars(hz).length) { fpy.focus(); toast(`Add the ${enFront() ? 'back' : 'front'} first`); return false; }
+        if (!en) { fen.focus(); toast(`Add the ${enFront() ? 'front' : 'back'} first`); return false; }
         if (d.cards.some(x => x !== c && x.hanzi === hz)) { toast(`${hz} is already in this deck`); return false; }
         const pinyin = curPy();
         LOG.add(c ? 'card-edit' : 'card-add', { en, hz, pinyin });
@@ -11277,7 +11305,7 @@ function cardSheet(cardId) {
         E.enDirty = E.autoEn = false; fen.value = ''; fpy.value = ''; padOff(); setHz(''); paintCands([]);
         const n = $q('#acN'); n.textContent = plural(d.cards.length, 'card'); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump');
         $q('#acLast').innerHTML = `Added <b>${E.added.slice(0, 5).map(esc).join(' · ')}</b>`;
-        fpy.focus({ preventScroll: true });
+        frontIn().focus({ preventScroll: true });
       };
       $q('#acClose')?.addEventListener('click', () => { closeSheet(); if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${d.name}`); });
       const del = $q('#cdel');
@@ -11285,7 +11313,7 @@ function cardSheet(cardId) {
         d.cards = d.cards.filter(x => x !== c); save(); render(); toast('Card deleted');
       });
       paintHz(); paintCands([]);
-      if (!c) fpy.focus({ preventScroll: true });   // inside the tap, so the phone's keyboard comes up at once
+      if (!c) frontIn().focus({ preventScroll: true });   // inside the tap, so the phone's keyboard comes up at once
       loadDict().then(D => { E.D = D; if (sh.isConnected) paintHz(); }, () => {});
     });
 }
