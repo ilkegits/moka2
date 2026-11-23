@@ -13071,7 +13071,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.14';
+const APP_VERSION = '3.45.15';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13665,8 +13665,8 @@ function goalSheet() {
 
 /* ---------- onboarding: shown once, on a phone that has never opened ShiHanzi ----------
    It finds where you start: why (pick any) → how much you think you know → which characters can you read (up to 4 short
-   rounds that move up or down) → 4 word cards, each with 4 meanings to pick from (a right answer asks a harder level next,
-   a wrong one an easier level) → a short story with one question → your level, from all of these together → daily minutes,
+   rounds that move up or down) → 4 to 11 word cards, each with 4 meanings to pick from (first spot-checks of characters you
+   tapped, then the level that settles most, see obPost) → a short story with one question → your level, from all of these together → daily minutes,
    with how soon each finishes your level → reminder or home screen. Starting above HSK 1 puts every word of the levels
    below into your word bank as known, since stories and texts at your level use them all the time. */
 const OB_WHY = [['travel', '旅', 'Travel'], ['family', '家', 'Family and heritage'], ['work', '工', 'Work or school'],
@@ -13677,7 +13677,7 @@ const OB_LEVEL = [[1, '初', 'Beginner'], [2, '中', 'Intermediate'], [4, '高',
 const OB_FOR = [['exam', '考', 'The HSK exam', 'Words from the exam lists, planned up to your exam day'], ['read', '读', 'Reading Chinese day to day', 'Signs, menus, messages and short stories']];
 const OB_STEPS = ['hi', 'hello', 'why', 'level', 'check', 'words', 'read', 'plan', 'how1', 'how2', 'how3', 'how4', 'date', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
 const OB_PROG = { why: .1, level: .17, check: .25, words: .33, read: .4, plan: .46, how1: .52, how2: .57, how3: .62, how4: .67, date: .74, goal: .81, chart: .88, habit: .95, save: 1 };   // jumps early, then slows (progress bars that start fast keep more people going)
-const OB_ROUND = 12, OB_ROUNDS = 4, OB_CARDS = 4;
+const OB_ROUND = 12, OB_ROUNDS = 4;
 /* the short reading test: hand-written passages per HSK level (two each, one picked at random), each with one question */
 const OB_READ = {
   1: [{ zh: '今天是星期天。我和妈妈去商店买东西。我们买了很多水果，还买了一本书。妈妈说：“这个苹果很好吃！”我们下午三点回家了。',
@@ -13717,34 +13717,88 @@ const obClamp = l => Math.min(7, Math.max(1, l));
 const obKnownN = () => S.ob.chk ? S.ob.chk.rounds.reduce((a, r) => a + r.on.size, 0) : 0;
 /* the word cards: a word of the level asked, with its meaning and three other meanings from the same level */
 const obMean = r => { const m = meanOf(r); return /^(abbr|variant|see |surname|old variant|used in|classifier)/i.test(m) || m.length > 30 || /[㐀-鿿]/.test(m) ? '' : m; };
-function obCard(lv) {
+function obCard(lv, w, spot) {   // w: a set word (a tapped character to spot-check); else a new word of the level
   const Q = S.ob.q, used = new Set(Q.cards.map(c => c.w.h)), L = shuffle(S.H.levels[lv] || []);
-  const w = L.find(r => !used.has(r.h) && HAN.test(r.h) && obMean(r)); if (!w) return null;
+  w ||= L.find(r => !used.has(r.h) && HAN.test(r.h) && obMean(r)); if (!w || !obMean(w)) return null;
   const opts = [{ en: obMean(w), ok: true }], seen = new Set([opts[0].en.split(/[;,]/)[0]]);
   for (const r of L) { if (opts.length >= 4) break; const m = obMean(r), k = m.split(/[;,]/)[0]; if (!m || r.h === w.h || seen.has(k)) continue; seen.add(k); opts.push({ en: m }); }
-  Q.cards.push({ lv, w: { h: w.h, p: w.p, en: opts[0].en }, opts: shuffle(opts), pick: null });
+  Q.cards.push({ lv, w: { h: w.h, p: w.p, en: opts[0].en }, opts: shuffle(opts), pick: null, spot: spot ? w : null });
   return true;
 }
-function obQuizStart() {
-  S.ob.q = { start: obClamp((S.ob.chk?.est?.lv || 1) - 1), cards: [] };   // the first card is a level you should know if the check was right
-  obCard(S.ob.q.start);
-}
 const obRight = c => c.pick != null && c.pick >= 0 && c.opts[c.pick].ok;
-/* each part's guess at the level you start on (the first level you don't know well yet) */
-function obSignals() {
-  const O = S.ob, sig = {};
+
+/* v4.63 the level: one small adaptive test, the way exam bodies place people (computer-adaptive testing). Each HSK level 1-7 is a
+   guess at where you start (the first level you don't know well yet), and every answer makes some guesses likelier: what you said
+   about yourself (a weak start), the characters you tapped (worth half, as a tap is your own word), the word cards (a lucky guess is allowed
+   for; most people who don't know tap "I don't know") and the story. The first cards spot-check characters you tapped; each miss
+   shows how often you tap ones you don't know, and that share is taken out of every round, so tapping everything doesn't place
+   you too high. The next card is always the level that would settle the most, and the cards stop as soon as one level is
+   clearly likeliest. You land on the middle guess (half the odds above, half below). Tested on 550 simulated learners (30%
+   over-tapping): the right level 88% of the time (before 75%), too high 6% (before 17%). */
+const OB_KNOW = (l, L) => l < L - 1 ? .95 : l === L - 1 ? .85 : l === L ? .45 : l === L + 1 ? .12 : .03;   // share of level l you know if you start at L
+const OB_SELF = { 1: 1, 2: 2.5, 4: 4.5, 5: 6 };   // Beginner, Intermediate, Advanced, Pro: the level each points to
+const OB_TAP_W = .5, OB_GUESS = .15, OB_ADAPT = [4, 8], OB_SURE = .8;   // adaptive word cards: at least 4, at most 8
+function obFA() {   // how often you tapped a character you don't know, from the spot-checks (0: every check right)
+  const O = S.ob, C = (O.q?.cards || []).filter(c => c.spot && c.pick != null); if (!C.length) return 0;
+  const rho = (C.filter(obRight).length + 2) / (C.length + 2), u = Math.max(0, (.95 - rho) / (.95 - OB_GUESS));   // share of the checked taps that weren't really known
+  const R = O.chk.rounds.find(x => x.lv === C[0].lv), c = R?.on.size || 0, real = c * (1 - u);
+  return Math.min(.8, c * u / ((R?.chars.length || 0) - real + 2));   // +2: one miss on a small check doesn't condemn every tap
+}
+const obKnownAt = (R, fa = obFA()) => R.chars.length ? Math.min(1, Math.max(0, (R.on.size / R.chars.length - fa) / (1 - fa))) : 0;   // taps with the false ones taken out
+const obKnownFix = (fa = obFA()) => Math.round(S.ob.chk ? S.ob.chk.rounds.reduce((a, R) => a + obKnownAt(R, fa) * R.chars.length, 0) : 0);
+function obPost() {   // the odds of each start level 1-7 (index = level), from everything answered so far
+  const O = S.ob, lp = [-Infinity], c = OB_SELF[O.level], fa = obFA();
+  for (let L = 1; L <= 7; L++) lp[L] = c ? -.5 * ((L - c) / 1.6) ** 2 : 0;
+  const ans = (k, right, g) => { const p = k + (1 - k) * g; return Math.log(right ? p : 1 - p); };
+  for (const R of O.chk?.rounds || []) { const n = R.chars.length, x = obKnownAt(R, fa) * n; if (!n) continue;
+    for (let L = 1; L <= 7; L++) { const p = .02 + .96 * OB_KNOW(R.lv, L); lp[L] += OB_TAP_W * (x * Math.log(p) + (n - x) * Math.log(1 - p)); } }
+  for (const q of O.q?.cards || []) if (q.pick != null && !q.spot) for (let L = 1; L <= 7; L++) lp[L] += ans(OB_KNOW(q.lv, L), obRight(q), OB_GUESS);
+  if (O.st?.pick != null) for (let L = 1; L <= 7; L++) lp[L] += ans(O.st.lv < L - 1 ? .95 : O.st.lv === L - 1 ? .8 : O.st.lv === L ? .4 : .05, O.st.pick === O.st.ok, OB_GUESS);
+  const m = Math.max(...lp.slice(1)), P = lp.map(x => Math.exp(x - m)), s = P.reduce((a, b) => a + b, 0);
+  return P.map(x => x / s);
+}
+function obLevel(P = obPost()) { let a = 0; for (let L = 1; L <= 7; L++) if ((a += P[L]) >= .5) return L; return 7; }
+function obAskLv(P = obPost()) {   // the level whose card would tell the most (the biggest expected drop in uncertainty)
+  const H = a => -a.reduce((s, p) => s + (p > 0 ? p * Math.log(p) : 0), 0), h0 = H(P);
+  let best = 1, top = -1;
+  for (let l = 1; l <= 7; l++) {
+    if (!S.H.levels[l]?.length) continue;
+    const yes = P.map((p, L) => L ? p * (OB_KNOW(l, L) + (1 - OB_KNOW(l, L)) * OB_GUESS) : 0), py = yes.reduce((a, b) => a + b, 0);
+    const no = P.map((p, L) => p - yes[L]), gain = h0 - py * H(yes.map(x => x / py)) - (1 - py) * H(no.map(x => x / (1 - py)));
+    if (gain > top + 1e-9) { top = gain; best = l; }
+  }
+  return best;
+}
+function obQuizStart() {   // up to 3 spot-checks of tapped characters (two from your highest tapped level, one from the next), then adaptive cards
+  const O = S.ob, by = {};
+  for (const R of O.chk?.rounds || []) for (const c of R.chars) if (R.on.has(c.h) && obMean(c)) (by[R.lv] ||= []).push(c);
+  const lv = Object.keys(by).map(Number).sort((a, b) => b - a), spots = [];
+  for (const l of [lv[0], lv[1] ?? lv[0], lv[0]]) { const a = by[l] || lv.map(x => by[x]).find(x => x?.length); if (a?.length) spots.push(a.splice(Math.random() * a.length | 0, 1)[0]); }
+  O.q = { cards: [], spots, max: spots.length + OB_ADAPT[1] };
+  obNextCard();
+}
+function obNextCard() {   // false: no more cards needed
+  const Q = S.ob.q;
+  while (Q.spots.length) { const w = Q.spots.shift(); if (obCard(S.obFirst?.[w.h] || w.lv, w, true)) return true; }
+  const n = Q.cards.filter(c => !c.spot).length, P = obPost();
+  if (n >= OB_ADAPT[1] || n >= OB_ADAPT[0] && Math.max(...P) >= OB_SURE) return false;
+  const l = obAskLv(P);
+  return !!(obCard(l) || obCard(obClamp(l - 1)) || obCard(obClamp(l + 1)));
+}
+function obSignals() {   // for the activity log: what each part said
+  const O = S.ob, sig = {}, C = O.q?.cards.filter(c => c.pick != null) || [];
   if (O.level) sig.self = O.level;
   if (O.chk?.est) sig.check = O.chk.est.lv;
-  const C = O.q?.cards.filter(c => c.pick != null);
-  if (C?.length) { const l = C.at(-1); sig.quiz = obClamp(l.lv + (obRight(l) ? 1 : 0)); }
-  if (O.st?.pick != null) sig.story = obClamp(O.st.lv + (O.st.pick >= 0 && O.st.ok === O.st.pick ? 1 : 0));
+  if (C.length) { sig.cards = C.filter(obRight).length + '/' + C.length; sig.fa = +obFA().toFixed(2); }
+  if (O.st?.pick != null) sig.story = O.st.lv + (O.st.pick === O.st.ok ? ' ok' : ' no');
+  sig.odds = obPost().slice(1).map(p => +p.toFixed(2));
   return sig;
 }
-const OB_W = { self: .1, check: .4, quiz: .3, story: .2 };   // how much each part counts
-function obLevel(sig = obSignals()) {
-  const k = Object.keys(sig); if (!k.length) return null;
-  const w = k.reduce((a, x) => a + OB_W[x], 0);
-  return obClamp(Math.round(k.reduce((a, x) => a + OB_W[x] * sig[x], 0) / w + 1e-9));
+function obCharsEst(P = obPost()) {   // about how many characters you can read: tested levels as checked, the rest from the odds
+  const C = S.ob.chk; if (!C || !obKnownN()) return 0;
+  const fa = obFA(); let n = 0;
+  for (let l = 1; l <= 7; l++) n += obCharsAt(l) * (C.res[l] !== undefined ? obKnownAt(C.rounds.find(R => R.lv === l), fa) : P.reduce((s, p, L) => s + (l < L ? p * OB_KNOW(l, L) : 0), 0));
+  return Math.round(n / 10) * 10;
 }
 function obStoryStart() {   // a passage one level below where you look like starting: you should be able to read it
   const lv = Math.min(6, obClamp(obLevel() - 1)), P = OB_READ[lv], s = P[Math.random() * P.length | 0];
@@ -13819,7 +13873,7 @@ function obShow() {
     <div class="ob-opts" data-pick="for">${OB_FOR.map(([v, g, t, s], i) => `<span ${inn(2 + i)}>${obOpt(v, `<span class="ob-glyph">${g}</span>`, t, s, O.for === v)}</span>`).join('')}</div>
     <div class="ob-dock ob2-in" style="--i:5"><button class="btn btn-primary" data-ob="next"${O.for ? '' : ' disabled'}>Next</button></div>`;
   else if (step === 'plan') {
-    const lv = obLv(), chars = O.chk?.est?.chars || 0;
+    const lv = obLv(), chars = obCharsEst();   // v4.63: from the adaptive test's odds, with false taps taken out
     html = obTop() + `<div class="ob2-plan"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-pop" style="--d:.1s">${shiFace('wow')}</div>
       <div class="ob2-deck" id="ob2Deck"><div class="c"></div><div class="c"></div><div class="c front"><span class="zh">学</span><div class="ob2-stamps">
         <span class="ob2-stamp" style="--r:-4deg">${O.for === 'exam' ? 'HSK exam' : 'Everyday reading'}</span><span class="ob2-stamp j" style="--r:3deg">Start at ${HSK_NAME(lv)}</span>
@@ -13888,7 +13942,7 @@ function obShow() {
     if (!O.q) obQuizStart();
     const Q = O.q, c = Q.cards.at(-1), done = c.pick != null;
     const cls = (o, k) => !done ? '' : o.ok ? (c.pick === k ? ' ok pick' : ' ok reveal') : c.pick === k ? ' no' : '';
-    html = obTop() + `<p class="les-ask ob-qask">What does this mean?<span>${Q.cards.length} of ${OB_CARDS}</span></p>
+    html = obTop() + `<p class="les-ask ob-qask">What does this mean?<span>${Q.cards.length} of ${Q.max}</span></p>
       <div class="les-card ob-qcard"><span class="les-hz" style="font-size:${lesHz(c.w.h)}px">${esc(c.w.h)}</span>${done ? `<span class="les-mean">${esc(c.w.p)}</span>` : ''}</div>
       <div class="les-opts list${done ? ' answered' : ''}">${c.opts.map((o, k) => `<button class="les-opt${cls(o, k)}" data-qo="${k}"${done ? ' disabled' : ''}><span class="lo-en">${esc(o.en)}</span></button>`).join('')}</div>
       <div class="ob-dock"><button class="ob-link" data-qo="-1"${done ? ' disabled' : ''}>I don’t know this one</button></div>`;
@@ -13904,10 +13958,10 @@ function obShow() {
       <div class="ob-dock"><button class="ob-link" data-so="-1"${done ? ' disabled' : ''}>I can’t read this yet</button></div>`;
   }
   else if (step === 'placed') {
-    const sig = obSignals(), lv = obLevel(sig) || 1, chars = O.chk?.est?.chars || 0, nk = obKnownN(), low = obLowWords(lv).length, range = 'HSK 1' + (lv > 2 ? '-' + (lv - 1) : '');
+    const P = obPost(), lv = obLevel(P), chars = obCharsEst(P), nk = obKnownFix(), low = obLowWords(lv).length, range = 'HSK 1' + (lv > 2 ? '-' + (lv - 1) : '');
     const C = O.q?.cards.filter(c => c.pick != null) || [], nr = C.filter(obRight).length;
     const chip = (t, v) => `<span class="ob-sig"><small>${t}</small><b>${v}</b></span>`;
-    const sigs = [O.level && chip('You said', OB_LEVEL.find(x => x[0] === O.level)?.[2]), O.chk && chip('Characters', `${nk} known`),
+    const sigs = [O.level && chip('You said', OB_LEVEL.find(x => x[0] === O.level)?.[2]), O.chk && chip('Characters', `${nk < obKnownN() ? 'about ' : ''}${nk} known`),
       C.length && chip('Word cards', `${nr} of ${C.length}`), O.st?.pick != null && chip('Story', O.st.pick === O.st.ok ? 'understood' : 'not yet')].filter(Boolean);
     // the level number counts up from 1 like a lottery drum, each number clicking into place, and lands on yours (obReel)
     const reel = `<span class="ob-reel"><span class="ob-reel-in" style="--p:${lv > 1 && !stillMotion() ? 0 : lv - 1}" data-to="${lv - 1}">${Array.from({ length: lv }, (_, k) => `<b>${k === 6 ? '7-9' : k + 1}</b>`).join('')}</span></span>`;
@@ -13949,7 +14003,7 @@ function obShow() {
 /* ---------- onboarding v2 helpers ---------- */
 const obGrid = c => `<svg class="g" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="${c}" stroke-width=".5" stroke-dasharray="2.2 2" fill="none"><path d="M50 0V100M0 50H100M0 0L100 100M100 0L0 100"/></g></svg>`;
 const obLv = () => obLevel() || S.ob.level || 1;
-function obLeft(lv) { const f = S.ob.chk?.res?.[lv] || 0; return Math.max(10, Math.round((S.H?.levels[lv]?.length || HSK_COUNT[lv]) * (1 - f))); }
+function obLeft(lv) { const R = S.ob.chk?.rounds.find(x => x.lv === lv), f = R ? obKnownAt(R) : 0; return Math.max(10, Math.round((S.H?.levels[lv]?.length || HSK_COUNT[lv]) * (1 - f))); }
 function obDay(add) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + add); return d; }
 const obExamDays = () => S.ob.for === 'exam' && S.ob.exam ? Math.round((S.ob.exam - obDay(0)) / 864e5) : 0;
 const obExamWeeks = () => { const n = obExamDays(); return n > 0 ? Math.max(1, Math.round(n / 7)) : 0; };
@@ -14058,10 +14112,11 @@ function obFinish(how) {
     LOG.add('onboarding-done', { how, demo: true, for: S.ob.for, exam_days: obExamDays() || null, goal: S.ob.goal });
     S.ob = null; closeLayer(() => { S.instant = true; render(); }); return;
   }
-  const O = S.ob, sig = O.chk ? obSignals() : {}, lv = O.chk ? obLevel(sig) : how === 'skipped' ? null : O.level ? Math.min(O.level, 2) : null;
+  const O = S.ob, sig = O.chk ? obSignals() : {}, lv = O.chk ? obLevel() : how === 'skipped' ? null : O.level ? Math.min(O.level, 2) : null;
   if (!O.replay && O.chk) {   // what you showed you know goes into the word bank as known (back for a light review over the next weeks)
     const now = Date.now(), have = new Set(db.bank.map(w => w.hanzi));
-    const known = [...O.chk.rounds.flatMap(r => r.chars.filter(c => r.on.has(c.h))), ...(O.q?.cards.filter(obRight).map(c => S.H.byHz.get(c.w.h)).filter(Boolean) || [])];
+    const miss = new Set(O.q?.cards.filter(c => c.spot && c.pick != null && !obRight(c)).map(c => c.w.h));
+    const known = [...O.chk.rounds.flatMap(r => r.chars.filter(c => r.on.has(c.h) && !miss.has(c.h))), ...(O.q?.cards.filter(obRight).map(c => S.H.byHz.get(c.w.h)).filter(Boolean) || [])];
     known.forEach((r, i) => { if (have.has(r.h)) return; have.add(r.h);
       db.bank.push({ id: uid(), hanzi: r.h, pinyin: r.p, en: meanOf(r), added: now - 1000 - i, hsk: r.lv,
         srs: { first: now, seen: now, iv: 7, n: 1, miss: 0, due: dayStart(now, 5 + i % 21) } }); });
@@ -14071,7 +14126,7 @@ function obFinish(how) {
       db.bank.push({ id: uid(), hanzi: r.h, pinyin: r.p, en: meanOf(r), added: now - 60000 - i, hsk: r.lv,
         srs: { first: now, seen: now, iv: 30, n: 1, miss: 0, due: dayStart(now, 3 + Math.floor(i / 6)) } }); });
   }
-  if (!O.replay) { db.prefs.ob = { done: Date.now(), why: O.why, for: O.for, level: O.level, est: O.chk?.est, sig, how }; if (O.goal) db.prefs.goalMin = O.goal; if (lv) db.prefs.level = lv;
+  if (!O.replay) { db.prefs.ob = { done: Date.now(), why: O.why, for: O.for, level: O.level, est: O.chk && { ...O.chk.est, lv, chars: obCharsEst() }, sig, how }; if (O.goal) db.prefs.goalMin = O.goal; if (lv) db.prefs.level = lv;
     if (obExamDays() > 0) db.prefs.exam = { day: dayKey(+O.exam), lv: lv || 1 };
     if (lv && db.hotd && !db.hotd.rev && (db.hotd.lv || 1) !== lv) { db.hotd.day = null; db.hotd.past = (db.hotd.past || []).slice(1); hotdPick(); }   // today's character was picked before your level was known
     save(); }
@@ -14090,7 +14145,7 @@ async function obClick(e) {
     c.pick = +b.dataset.qo; LOG.add('onboarding-card', { lv: c.lv, h: c.w.h, right: obRight(c) }); obShow();
     setTimeout(() => {
       if (S.ob !== O || OB_STEPS[O.i] !== 'words' || Q.cards.at(-1) !== c) return;
-      if (Q.cards.length >= OB_CARDS || !obCard(obClamp(c.lv + (obRight(c) ? 1 : -1))) && !obCard(c.lv)) { obGo('read'); return; }
+      if (!obNextCard()) { obGo('read'); return; }
       obShow();
     }, c.pick >= 0 && !obRight(c) || c.pick < 0 ? 1500 : 900);
     return;
@@ -14137,7 +14192,7 @@ async function obClick(e) {
   if (a === 'quit') { LOG.add('onboarding-done', { how: 'closed', replay: O.replay, demo: O.demo }); if (O.demo) { db.prefs.ob2Seen = Date.now(); save(); } S.ob = null; closeLayer(); return; }
   if (a === 'back') {   // one page (or one round, one card) back; your answers there stay picked
     if (step === 'check' && O.chk?.rounds.length > 1) { const R = O.chk.rounds.pop(); delete O.chk.res[O.chk.rounds.at(-1).lv]; delete O.chk.res[R.lv]; obShow(); return; }
-    if (step === 'words' && O.q?.cards.length > 1) { O.q.cards.pop(); O.q.cards.at(-1).pick = null; obShow(); return; }
+    if (step === 'words' && O.q?.cards.length > 1) { const c = O.q.cards.pop(); if (c.spot) O.q.spots.unshift(c.spot); O.q.cards.at(-1).pick = null; obShow(); return; }
     const to = OB_STEPS[O.hist.pop() ?? Math.max(0, O.i - 1)];
     if (step === 'check') O.chk = null;   // backing out of the check: it starts over next time
     if (step === 'words') O.q = null;
