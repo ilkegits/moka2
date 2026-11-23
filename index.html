@@ -106,6 +106,10 @@ html{overscroll-behavior-y:none}   /* Chrome's own pull-to-refresh is off; this 
 .bar-title{flex:1;text-align:center;font-weight:600;font-size:17px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);transition:opacity .2s}
 .icon-btn:active{opacity:.4;transition:none}
+/* UX 13: every small button takes taps over at least 44 x 44 px, though it is drawn smaller: an invisible margin around it
+   (each side grows by half of what is missing, never shrinks). Map pins are left alone: some sit 24 px apart */
+.icon-btn,.hm-streak,.link-btn,.uc-pill button{position:relative}
+.icon-btn::after,.hm-streak::after,.link-btn::after,.uc-pill button::after,.tm-wallet::after{content:"";position:absolute;inset:min(0px,calc(50% - 22px))}
 .bar .icon-btn,.pg-tr .icon-btn{color:var(--seal)}
 .bar .icon-btn svg.i,.pg-tr .icon-btn svg.i{stroke-width:2.1}
 .icon-btn.lg{width:52px;height:52px;background:var(--fill);color:var(--ink)}
