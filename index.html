@@ -59,7 +59,7 @@ p,li,.muted,.row-s,.group-foot{text-wrap:pretty}
 /* UX 18: Apple's continuous corners on the rounded rectangles (cards, lists, pop-ups, buttons, fields). Only Chromium draws
    corner-shape; other browsers keep the plain rounded corner. Round buttons and pill shapes are left out on purpose:
    a squircle at full radius would square off their ends */
-.group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wb-ctr,.bk-f,.cl,
+.group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wbp-face,.bk-f,.cl,
 .rd-hero,.pf-card,.pf-stat,.bdg,.st-cal,.st-fz,.goal-row,.face,.hd-card,.un-hud,.icon-sq,#toast{corner-shape:squircle}
 img,svg{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 body{
@@ -461,20 +461,28 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .deck-plus{color:var(--seal)}
 .deck-plus::after{display:none}
 .deck-plus svg.i{width:22px;height:22px}
-/* v3.53 Decks: the word bank as a counter whose digits roll up to today's number (wb-ctr, odo), then your decks and New deck */
-.wb-ctr{display:block;width:100%;padding:13px 14px 14px 18px;margin:-2px 0 26px;background:var(--card);border-radius:16px;box-shadow:var(--ring);text-align:left;transition:background .25s}
-.wb-ctr:active{background:var(--paper-deep);transition:none}
-.wb-ctr-top{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;color:var(--ink-2)}
-.wb-ctr-zh{font-family:var(--hanzi);font-weight:400;color:var(--jade);margin-left:5px}
-.wb-ctr-mid{display:flex;align-items:flex-end;gap:9px;margin:9px 0 7px}
-.odo{display:flex;gap:3px;font:600 34px/1 var(--display);font-variant-numeric:tabular-nums lining-nums;color:var(--ink)}
-.odo-d{display:block;height:1.24em;width:.8em;overflow:hidden;border-radius:7px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line),inset 0 -9px 10px -9px rgba(70,45,20,.16)}
-.odo-s{display:flex;flex-direction:column;transform:translateY(calc(var(--d) * -1.24em));transition:transform .95s cubic-bezier(.2,.75,.25,1)}
-.odo-s i{display:grid;place-items:center;height:1.24em;font-style:normal}
-.odo-sep{align-self:flex-end;padding:0 1px .12em}
-.wb-ctr-w{font-size:15px;color:var(--ink-2);padding-bottom:6px}
-.wb-ctr-new{margin-left:auto;align-self:center;padding:4px 9px;border-radius:8px;background:var(--jade-soft);color:var(--jade);font-size:13px;font-weight:600;white-space:nowrap}
-.wb-ctr-pv{display:block;font-size:13px;color:var(--muted)}
+/* v4.39 Decks: the word bank as the top card of a pile (ilkem picked B1): the newest word on it, and under it the edges of
+   the cards beneath, one to four of them as the bank grows (--e). No tilt: a real pile sits straight. */
+.wbp{position:relative;display:block;width:100%;margin:-2px 0 26px;padding-bottom:calc(var(--e) * 4px);text-align:left}
+.wbp-face{position:relative;z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:16px;padding:13px 14px 13px 16px;border-radius:16px;
+  background:#FFFDF8;box-shadow:0 0 0 1px rgba(120,95,60,.13),0 1px 0 rgba(255,255,255,.9) inset;transition:background .25s}
+.wbp:active .wbp-face{background:var(--paper-deep);transition:none}
+.wbp-top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.wbp-zh{margin-left:5px;font-family:var(--hanzi);font-weight:400;color:var(--jade)}
+.wbp-hz{font:600 46px/1.1 var(--hanzi);color:var(--ink);letter-spacing:.02em;white-space:nowrap}
+.wbp-hz.l3{font-size:38px}
+.wbp-hz.l4{font-size:30px}
+.wbp-hz.none{color:var(--line-2)}
+.wbp-w{display:flex;flex-direction:column;gap:1px;min-width:0}
+.wbp-w b{font-size:15px;font-weight:600;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wbp-w small{font-size:13.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wbp-foot{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line-2)}
+.wbp-n{font:600 22px/1 var(--display);font-variant-numeric:tabular-nums lining-nums;color:var(--ink)}
+.wbp-l{font-size:14px;color:var(--ink-2)}
+.wbp-new{margin-left:auto;padding:3px 8px;border-radius:7px;background:var(--jade-soft);color:var(--jade);font-size:12.5px;font-weight:600;white-space:nowrap}
+.wbp-edge{position:absolute;left:0;right:0;height:24px;border-radius:0 0 16px 16px;background:#F6F0E4;box-shadow:0 0 0 1px rgba(120,95,60,.12)}
+.wbp-edge:nth-of-type(even){background:#EFE7D8}
+.wbp-edge:last-child{background:#E8DECC;box-shadow:0 0 0 1px rgba(120,95,60,.14),0 8px 12px -8px rgba(70,45,20,.35)}
 .dk-new{margin:-8px 0 30px}
 .dk-none{margin:0 2px 14px;font-size:14.5px;color:var(--muted)}
 /* the New deck pop-up: the name with a little deck beside it in the colour you pick */
@@ -3475,7 +3483,7 @@ function logSheet() {
 /* ---------- render ---------- */
 function render() {
   const app = $('#app'); const d = curDeck();
-  if (S.view === 'home') { app.innerHTML = Home(); mountHotd(); mountOdo();
+  if (S.view === 'home') { app.innerHTML = Home(); mountHotd();
     if (!S.H) loadHsk().then(() => { const sh = $('#hskShelf'); if (sh) sh.outerHTML = HskShelf();
       const hd = $('#hotd[data-wait]'); if (hd) { hd.outerHTML = HotdCard(); mountHotd(); } }, () => {}); }
   else if (S.view === 'deck') { app.innerHTML = DeckView(d); }
@@ -7844,34 +7852,28 @@ function Home() {
     <div class="section-head cal-head pg-head"><h2>Decks <span class="cal-zh">卡片</span></h2>
       <span class="pg-tr">${StreakBtn()}</span></div>
     ${HotdStack()}
-    ${BankCounter()}
+    ${BankPile()}
     <div class="section-head"><h2>Your decks</h2></div>
     ${groups.length || loose.length ? `<div class="decks">${groups.map(GroupTile).join('')}${loose.map(DeckTile).join('')}</div>` : '<p class="dk-none">Tap + to make your first deck.</p>'}
   </div>`;
 }
-/* v3.53: the word bank on Decks as a counter. Its digits roll up from the number you saw last time (db.bankSeen) to
-   the number now, and it says how many words came in today, or else this week. Tap it for the word bank page. */
-function BankCounter() {
-  const n = db.bank.length, pv = provenCount(), t0 = new Date().setHours(0, 0, 0, 0);
+/* v4.39 (ilkem picked B1 of three card-pile designs): the word bank on Decks is the top card of a pile. It shows your
+   newest word big with its pinyin, meaning and when it came in; the foot says how many words and how many came in today,
+   or else this week. Under the card sit the edges of the cards beneath: 1 edge from the first word, 2 from 20, 3 from 100,
+   4 from 300. Tap it for the word bank page. (It replaced the v3.53 counter with rolling digits.) */
+function BankPile() {
+  const n = db.bank.length, t0 = new Date().setHours(0, 0, 0, 0);
   const today = db.bank.filter(w => w.added >= t0).length, week = today ? 0 : db.bank.filter(w => w.added >= t0 - 6 * 864e5).length;
-  const digits = [...n.toLocaleString('en')].map(ch => /\d/.test(ch)
-    ? `<span class="odo-d"><span class="odo-s" style="--d:${ch}">${[...'01234567890123456789'].map(x => `<i>${x}</i>`).join('')}</span></span>` : `<span class="odo-sep">${ch}</span>`).join('');
-  return `<button class="wb-ctr" data-act="open-bank" aria-label="Word bank: ${plural(n, 'word')}, ${pv} proven">
-    <span class="wb-ctr-top"><span>Word bank<span class="wb-ctr-zh">词库</span></span><span class="chev">${I.chev}</span></span>
-    <span class="wb-ctr-mid"><span class="odo" id="odo" data-n="${n}" aria-hidden="true">${digits}</span><span class="wb-ctr-w">${n === 1 ? 'word' : 'words'}</span>
-      ${today || week ? `<span class="wb-ctr-new">+${today || week} ${today ? 'today' : 'this week'}</span>` : ''}</span>
-    <span class="wb-ctr-pv">${pv ? `${pv.toLocaleString('en')} proven` : 'Words you prove in practice show here'}</span></button>`;
-}
-function mountOdo() {
-  const el = $('#odo'); if (!el) return;
-  const n = +el.dataset.n, from = db.bankSeen ?? n;
-  if (db.bankSeen !== n) { db.bankSeen = n; save(); }
-  if (from === n || stillMotion()) return;
-  const strips = [...el.querySelectorAll('.odo-s')], k = strips.length, to = String(n), fd = String(Math.max(0, from)).padStart(k, '0').slice(-k);
-  strips.forEach((st, i) => { st.style.transition = 'none'; st.style.setProperty('--d', fd[i]); });
-  el.offsetHeight;
-  strips.forEach((st, i) => { st.style.transition = ''; st.style.transitionDelay = `${300 + (k - 1 - i) * 90}ms`;   // every digit rolls forward, like a real counter: 9 to 8 goes on round through 0
-    st.style.setProperty('--d', n > from && +to[i] < +fd[i] ? +to[i] + 10 : +to[i]); });
+  const w = db.bank.reduce((a, x) => !a || (x.added || 0) > (a.added || 0) ? x : a, null);   // the newest word
+  const e = n >= 300 ? 4 : n >= 100 ? 3 : n >= 20 ? 2 : n ? 1 : 0, len = w ? [...w.hanzi].length : 1;
+  const when = w ? (w.added >= t0 ? 'added today' : w.added >= t0 - 864e5 ? 'added yesterday' : w.added ? `added ${shortDate(w.added)}` : '') : '';
+  const face = w ? `<span class="wbp-hz${len >= 4 ? ' l4' : len === 3 ? ' l3' : ''}">${esc(w.hanzi)}</span>
+      <span class="wbp-w"><b>${esc(w.pinyin || '')}</b><small>${[w.en ? esc(w.en) : '', when].filter(Boolean).join(' · ')}</small></span>`
+    : `<span class="wbp-hz none">字</span><span class="wbp-w"><b>Your words land here</b><small>Finish a lesson or tick words you know</small></span>`;
+  return `<button class="wbp" style="--e:${e}" data-act="open-bank" aria-label="Word bank: ${plural(n, 'word')}${w ? `, newest ${esc(w.hanzi)}` : ''}">
+    <span class="wbp-face"><span class="wbp-top"><span>Word bank<span class="wbp-zh">词库</span></span><span class="chev">${I.chev}</span></span>${face}
+      <span class="wbp-foot"><span class="wbp-n">${n.toLocaleString('en')}</span><span class="wbp-l">${n === 1 ? 'word' : 'words'}</span>${today || week ? `<span class="wbp-new">+${today || week} ${today ? 'today' : 'this week'}</span>` : ''}</span></span>
+    ${Array.from({ length: e }, (_, i) => `<span class="wbp-edge" style="bottom:${(e - 1 - i) * 4}px;z-index:${4 - i}"></span>`).join('')}</button>`;
 }
 /* ---------- Hanzi of the day ----------
    One single character a day from the HSK lists at your level, one you don't know yet. It hides under gold foil on
