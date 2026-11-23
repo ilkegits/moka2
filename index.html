@@ -59,7 +59,7 @@ p,li,.muted,.row-s,.group-foot{text-wrap:pretty}
 /* UX 18: Apple's continuous corners on the rounded rectangles (cards, lists, pop-ups, buttons, fields). Only Chromium draws
    corner-shape; other browsers keep the plain rounded corner. Round buttons and pill shapes are left out on purpose:
    a squircle at full radius would square off their ends */
-.group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wb-ctr,.bk-goal,.bk-f,.cl,
+.group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wb-ctr,.bk-f,.cl,
 .rd-hero,.pf-card,.pf-stat,.bdg,.st-cal,.st-fz,.goal-row,.face,.hd-card,.un-hud,.icon-sq,#toast{corner-shape:squircle}
 img,svg{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 body{
@@ -478,11 +478,6 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .dk-new{margin:-8px 0 30px}
 .dk-none{margin:0 2px 14px;font-size:14.5px;color:var(--muted)}
 /* the New deck pop-up: the name with a little deck beside it in the colour you pick */
-.dk-name{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.dk-name .deck-stack{width:40px;height:48px}
-.dk-name .deck-face{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);font-size:21px;transition:color .2s,border-color .2s}
-.dk-name .deck-face::after{background:var(--accent)}
-.dk-sw{justify-content:space-between;margin:0 6px 20px}
 /* v3.62 the + in the corner of Decks: tap it and Create group and Create deck rise above it on a light dark veil.
    Each choice has a small 田字格 square with its character (组 group, 卡 deck). Inside a deck the corner button says Add */
 #fab-root{position:fixed;inset:0;z-index:30;pointer-events:none}
@@ -499,6 +494,10 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 #fab-root.open .fab svg.i{transform:rotate(135deg);filter:none}
 .fab.fab-add{display:flex;gap:7px;width:auto;height:58px;border-radius:20px;padding:0 26px 3px 19px;font:600 18px/1 var(--display);text-shadow:0 1.5px 0 rgba(90,10,5,.45)}
 .fab.fab-add svg.i{width:24px;height:24px}
+.fab.fab-ink{width:56px;height:56px;bottom:calc(12px + var(--tabh) + 16px + 62px + env(safe-area-inset-bottom));background:linear-gradient(#3a302b,var(--ink) 60%);color:var(--paper);
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 14px 24px -10px rgba(30,20,10,.6),0 3px 8px -3px rgba(30,20,10,.3)}
+.fab.fab-ink:active{box-shadow:inset 0 -2px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 6px 12px -8px rgba(30,20,10,.6)}
+.fab.fab-ink svg.i{filter:none}
 .fab-menu{position:absolute;right:max(18px,calc(50% - 222px));bottom:calc(12px + var(--tabh) + 16px + 76px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:14px}
 .fab-opt{display:flex;align-items:center;gap:14px;margin-right:4px;text-align:right;opacity:0;transform:translateY(16px) scale(.94);transform-origin:right center;transition:opacity .16s,transform .16s}
 #fab-root.open .fab-opt{opacity:1;transform:none;pointer-events:auto;transition:opacity .24s,transform .4s cubic-bezier(.25,1.4,.5,1)}
@@ -520,6 +519,18 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 30px 60px -18px rgba(40,25,10,.55),0 4px 12px -6px rgba(40,25,10,.2);
   opacity:0;transform:translateY(10px) scale(.96);transition:opacity .2s,transform .32s cubic-bezier(.2,1.25,.4,1)}
 #dlg-root.open .dlg{opacity:1;transform:none}
+/* v4.20 the deck's options: a panel that slides in from the right */
+.side{position:absolute;top:0;right:0;bottom:0;width:min(78%,300px);display:flex;flex-direction:column;gap:2px;padding:calc(22px + env(safe-area-inset-top)) 12px 20px;
+  background:var(--paper);border-radius:26px 0 0 26px;box-shadow:-24px 0 50px -20px rgba(40,25,10,.45);transform:translateX(105%);transition:transform .32s cubic-bezier(.2,.9,.3,1)}
+#dlg-root.open .side{transform:none}
+.side-top{display:flex;flex-direction:column;gap:2px;padding:6px 10px 18px}
+.side-top b{font:600 20px/1.2 var(--display);overflow-wrap:anywhere}
+.side-top small{font-size:13.5px;color:var(--muted)}
+.side-row{display:flex;align-items:center;gap:14px;min-height:52px;padding:0 12px;border-radius:14px;font-size:16.5px;font-weight:600;color:var(--ink);text-align:left;transition:background .2s}
+.side-row:active{background:var(--paper-deep);transition:none}
+.side-row svg.i{flex:none;width:21px;height:21px;stroke-width:2;color:var(--muted)}
+.side-del,.side-del svg.i{color:var(--seal)}
+@media (prefers-reduced-motion:reduce){.side{transition:none}}
 .dlg-top{display:flex;align-items:center;gap:14px;margin:0 2px 16px}
 .dlg-top h3{margin:0;font:600 18px/1.2 var(--display);letter-spacing:-.005em}
 .dlg-mark{flex:none}
@@ -1352,20 +1363,6 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bk-lbl .link-btn{display:inline-flex;align-items:center;gap:1px;min-height:32px;padding:4px 0 0;font-size:13.5px}
 .bk-lbl .link-btn svg.i{width:15px;height:15px}
 /* the goal: a bar that runs into the next piece, which waits on a square of practice paper */
-.bk-goal{display:block;width:100%;padding:13px 14px 14px 16px;margin:0 0 20px;border-radius:16px;background:var(--card);box-shadow:var(--ring);text-align:left;transition:background .25s}
-.bk-goal:active{background:var(--paper-deep);transition:none}
-.bk-goal-top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}
-.bk-goal-n{display:inline-flex;align-items:center;gap:2px;font-variant-numeric:tabular-nums}
-.bk-goal-n svg.i{width:15px;height:15px}
-.bk-goal-name{display:block;margin-top:1px;font:600 19px/1.2 var(--display);color:var(--ink)}
-.bk-goal-track{display:flex;align-items:center;gap:0;margin:8px 0 6px}
-.bk-goal-bar{flex:1;height:10px;margin-right:-4px;border-radius:5px 0 0 5px;background:var(--fill);overflow:hidden}
-.bk-goal-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(#EDC064,#E2AE45)}
-.bk-goal-art{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:var(--tzg) center/100% 100% no-repeat,var(--card-2);box-shadow:var(--ring)}
-.bk-goal-art svg{width:42px;height:42px;filter:grayscale(1);opacity:.45}
-.bk-goal-left{display:block;font-size:13.5px;color:var(--ink-2)}
-.bk-goal-left b{font-weight:700;font-variant-numeric:tabular-nums}
-.bk-goal.done .bk-goal-name{margin-bottom:2px}
 /* stage filter: one row, the one you are on is raised */
 .bk-f{display:flex;gap:2px;padding:2px;margin:-8px 0 14px;border-radius:11px;background:var(--fill)}
 .bk-f button{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:0 4px;border-radius:9px;font-size:13px;font-weight:500;color:var(--ink-2);white-space:nowrap;transition:background .2s}
@@ -1374,6 +1371,15 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bk-f button.on b{color:var(--ink-2)}
 .bk-none{margin:4px 4px 24px;font-size:14px;color:var(--muted);text-align:center}
 /* v3.74 sort: a small button over the list's right edge; by HSK level each level gets its heading */
+.bk-rm{margin-top:4px}
+.bk-fabgap{height:64px}
+/* v4.20 filter pop-up: the HSK levels to see, as chips that turn black when on */
+.bf-lv{display:flex;flex-wrap:wrap;gap:8px;margin:0 2px 18px}
+.bf-lv[hidden]{display:none}
+.bf-lv button{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;border-radius:12px;background:var(--card);box-shadow:var(--ring);font-size:15px;font-weight:600;color:var(--ink-2);transition:background .15s,color .15s}
+.bf-lv button b{font-weight:500;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bf-lv button.on{background:var(--ink);color:var(--paper);box-shadow:none}
+.bf-lv button.on b{color:color-mix(in srgb,var(--paper) 70%,transparent)}
 .bk-sort{display:flex;justify-content:flex-end;margin:-12px 0 2px}
 .bk-sort-btn{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 4px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
 .bk-sort-btn svg.i{width:16px;height:16px;stroke-width:2;color:var(--muted)}
@@ -1382,7 +1388,6 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bk-gh-n{font:500 13px var(--ui);color:var(--muted);font-variant-numeric:tabular-nums}
 .bk-sec .group{margin-bottom:18px}
 #bankWords:not(:has(.bk-gh)) .group{margin-bottom:24px}
-.bk-hsk{margin-top:-4px}
 .bk-empty h3{margin:14px 0 6px;font:600 19px/1.25 var(--display);color:var(--ink)}
 .bk-empty p{max-width:30ch;margin:0 auto;line-height:1.45}
 .bk-sh-note{margin:-6px 0 16px;font-size:13.5px;line-height:1.45}
@@ -1453,7 +1458,6 @@ svg.sil{filter:brightness(0);opacity:.28}
 .shelf-tile .ring-s{width:44px;height:44px;margin-bottom:12px}
 .shelf-t{font-size:15px;font-weight:600;letter-spacing:-.01em}
 .shelf-s{font-size:12.5px;color:var(--muted)}
-.shelf-note{font-size:13px;color:var(--muted);margin:0 2px 28px}
 /* Shi Shi cheers when you add words from an HSK list: he springs up out of the bottom bar, hops, and drops back */
 #cheer{position:fixed;left:0;right:0;bottom:var(--cheer-b,90px);height:320px;max-width:480px;margin:0 auto;overflow:hidden;pointer-events:none;z-index:40}
 .cheer-lion{position:absolute;bottom:-4px;left:calc(50% - 152px);width:150px;height:150px;transform-origin:50% 100%;pointer-events:auto;will-change:transform;transform:translateY(105%)}
@@ -2997,6 +3001,7 @@ const I = {
   swapV: ic('<path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/>'),
   bksp: ic('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="M12 9l6 6M18 9l-6 6"/>'),
   play: ic('<path d="M7 5l12 7-12 7z"/>'),
+  folder: ic('<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.6l2.2 2.4h7.2A2.5 2.5 0 0 1 21 9.9v7.6a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/>'),
   pen: ic('<path d="M4 20l1.2-4.6L15.8 4.8a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14 6.6l3.4 3.4"/>'),
   decks: ic('<rect x="8" y="3.5" width="11.5" height="14.5" rx="2"/><path d="M4.5 7.5v10a3 3 0 0 0 3 3h8"/>'),
   learn: ic('<path d="M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2z"/><path d="M12 6.5v13"/>'),
@@ -7775,17 +7780,13 @@ const goLab = (n, total, fmt = String, unit = '') => !n || n * 2 >= total ? `${f
 function Home() {
   const notice = db.freeze.notice; if (notice) { db.freeze.notice = null; save(); setTimeout(() => toast(notice), 600); }
   const groups = db.groups || [], loose = db.decks.filter(d => !groupById(d.group));   // v3.62: groups first, then the decks in no group
-  const tally = [groups.length && plural(groups.length, 'group'), db.decks.length && plural(db.decks.length, 'deck')].filter(Boolean).join(' · ');
   return `<div class="screen fade-in has-fab">
     <div class="section-head cal-head pg-head"><h2>Decks <span class="cal-zh">卡片</span></h2>
       <span class="pg-tr">${StreakBtn()}</span></div>
     ${HotdStack()}
     ${BankCounter()}
-    <div class="section-head"><h2>Your decks</h2>${tally ? `<span class="sh-n">${tally}</span>` : ''}</div>
+    <div class="section-head"><h2>Your decks</h2></div>
     ${groups.length || loose.length ? `<div class="decks">${groups.map(GroupTile).join('')}${loose.map(DeckTile).join('')}</div>` : '<p class="dk-none">Tap + to make your first deck.</p>'}
-    <div class="section-head"><h2>Ready-made decks</h2><button class="link-btn" data-act="open-hsk">See all</button></div>
-    ${HskShelf()}
-    <p class="shelf-note">HSK levels 1 to 9. Tick the words you already know and they go into your word bank.</p>
   </div>`;
 }
 /* v3.53: the word bank on Decks as a counter. Its digits roll up from the number you saw last time (db.bankSeen) to
@@ -10065,6 +10066,7 @@ function renderFab() {
   const opt = (act, hz, t, sub) => `<button class="fab-opt" data-act="${act}"><span class="fab-lab"><b>${t}</b><small>${sub}</small></span><span class="fab-tile" aria-hidden="true">${hz}</span></button>`;
   let html = '';
   if (deck) html = `<button class="fab fab-add" data-act="add-card">${I.plus}Add</button>`;
+  else if (v === 'bank') html = `<button class="fab fab-ink" data-act="quick-add" aria-label="Add a word">${I.plus}</button>`;   // v4.20: just above Practise
   else if (v === 'home' || (v === 'group' && curGroup())) html = `<div class="fab-veil" data-act="fab-close"></div><div class="fab-menu">${v === 'home'
       ? opt('new-group', '组', 'Create group', 'A folder for decks') + opt('new-deck', '卡', 'Create deck', 'Cards for your words')
       : opt('group-add', '移', 'Add decks', 'Move decks you have here') + opt('new-deck', '卡', 'Create deck', 'A new deck in this group')}</div>
@@ -10080,15 +10082,15 @@ function closeDlg(instant) {
 }
 /* Create deck / Create group (and Edit group): a card in the middle, like Anki's, with the keyboard up at once.
    Create stays grey until there is a name. A new deck opens straight away, with Add in the corner; a new group opens empty */
-function nameDialog(kind, it) {
+function nameDialog(kind, it, forDeck) {   // v4.20: it = a deck to rename (no colours); forDeck = put that deck in the new group
   const grp = kind === 'group', list = grp ? db.groups || [] : db.decks;
   let accent = it?.accent || ACCENTS[list.length % ACCENTS.length];
-  const title = it ? 'Edit group' : grp ? 'Create group' : 'Create deck', root = $('#dlg-root');
+  const title = it ? grp ? 'Edit group' : 'Rename deck' : grp ? 'Create group' : 'Create deck', root = $('#dlg-root'), eg = it && grp;
   root.innerHTML = `<div class="dlg-scrim"></div><div class="dlg-wrap"><form class="dlg" role="dialog" aria-modal="true" aria-label="${title}" novalidate>
     <div class="dlg-top"><h3>${title}</h3></div>
     <label class="fl"><input id="dlgName" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder=" " value="${esc(it?.name || '')}"><span>Name</span></label>
-    ${it ? `<div class="dlg-sw">${ACCENTS.map(c => `<button type="button" class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="Colour"></button>`).join('')}</div>` : ''}
-    <div class="dlg-act">${it ? '<button type="button" class="dlg-del">Delete</button>' : ''}<button type="button" class="dlg-x">Cancel</button><button type="submit" class="dlg-ok">${it ? 'Save' : 'Create'}</button></div>
+    ${eg ? `<div class="dlg-sw">${ACCENTS.map(c => `<button type="button" class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="Colour"></button>`).join('')}</div>` : ''}
+    <div class="dlg-act">${eg ? '<button type="button" class="dlg-del">Delete</button>' : ''}<button type="button" class="dlg-x">Cancel</button><button type="submit" class="dlg-ok">${it ? 'Save' : 'Create'}</button></div>
   </form></div>`;
   const f = root.querySelector('.dlg'), inp = f.querySelector('#dlgName'), ok = f.querySelector('.dlg-ok');   // v3.63: the colour is picked later (Edit), not while naming
   const paint = () => { ok.disabled = !inp.value.trim(); };
@@ -10108,8 +10110,10 @@ function nameDialog(kind, it) {
       moved.forEach(d => { if (db.decks.includes(d) && !d.group) d.group = it.id; }); save(); render(); }); });
   f.onsubmit = e => {
     e.preventDefault(); const name = inp.value.trim(); if (!name) { inp.focus(); return; }
-    if (it) { it.name = name; it.accent = accent; save(); closeDlg(); render(); return; }
+    if (it) { it.name = name; if (grp) it.accent = accent; save(); closeDlg(); render(); return; }
     closeDlg(true);
+    if (grp && forDeck) { const g = { id: uid(), name, accent, created: Date.now() }; (db.groups ||= []).push(g); forDeck.group = g.id; save();
+      LOG.add('group-new', { name, from: 'deck' }); render(); toast(`${forDeck.name} is in ${name}`); return; }
     if (grp) { const g = { id: uid(), name, accent, created: Date.now() }; (db.groups ||= []).push(g); save(); LOG.add('group-new', { name }); nav('#/group/' + g.id); }
     else { const g = S.view === 'group' ? curGroup() : null, nd = { id: uid(), name, accent, created: Date.now(), cards: [] }; if (g) nd.group = g.id;
       db.decks.push(nd); save(); LOG.add('deck-new', { name, from: g ? 'group' : 'decks' }); nav('#/deck/' + nd.id); }
@@ -10117,6 +10121,43 @@ function nameDialog(kind, it) {
   root.offsetHeight; root.classList.add('open');
   inp.focus({ preventScroll: true });   // inside the tap, so phones bring the keyboard up
   LOG.add('dialog-open', title);
+}
+/* v4.20: the deck page's ··· opens a panel from the right side: Rename, Add to group, Delete deck. No colours */
+function deckSide(d) {
+  if (!d) return; const root = $('#dlg-root'), g = groupById(d.group);
+  root.innerHTML = `<div class="dlg-scrim"></div><aside class="side" role="dialog" aria-modal="true" aria-label="Deck options">
+    <div class="side-top"><b>${esc(d.name)}</b><small>${plural(d.cards.length, 'card')}${g ? ` · in ${esc(g.name)}` : ''}</small></div>
+    <button class="side-row" data-side="rename">${I.pen}<span>Rename</span></button>
+    <button class="side-row" data-side="group">${I.folder}<span>${g ? 'Move to another group' : 'Add to group'}</span></button>
+    <button class="side-row side-del" data-side="del">${I.trash}<span>Delete deck</span></button></aside>`;
+  root.querySelector('.dlg-scrim').onclick = () => closeDlg();
+  root.querySelector('.side').onclick = e => {
+    const b = e.target.closest('[data-side]'); if (!b) return; const k = b.dataset.side;
+    if (k === 'rename') { closeDlg(true); nameDialog('deck', d); }
+    else if (k === 'group') { closeDlg(true); deckGroupSheet(d); }
+    else { closeDlg(true);   // UX 5: goes at once, Undo on the toast
+      const i = db.decks.indexOf(d); db.decks.splice(i, 1); save(); LOG.add('deck-delete', { name: d.name }); history.replaceState({ d: 0 }, '', '#/'); route();
+      undoToast('Deck deleted', () => { if (!db.decks.includes(d)) db.decks.splice(Math.min(i, db.decks.length), 0, d); save(); render(); }); }
+  };
+  root.offsetHeight; root.classList.add('open');
+  root.querySelector('.side-row').focus({ preventScroll: true });
+  LOG.add('dialog-open', 'Deck options');
+}
+function deckGroupSheet(d) {   // pick the group this deck is in; tapping one moves it there at once
+  const gs = db.groups || [];
+  const row = (id, t, sub, ic) => `<button class="row ${(d.group || '') === id ? 'on' : ''}" data-g="${id}" style="--sep:52px"><span class="icon-sq">${ic}</span>
+    <span class="row-main"><span class="row-t">${t}</span>${sub ? `<span class="row-s">${sub}</span>` : ''}</span><span class="tick">${I.check}</span></button>`;
+  openSheet(`<h3>Add to group</h3><div class="group" id="dgList" style="margin-bottom:8px">
+    ${gs.map(g => row(g.id, esc(g.name), plural(groupDecks(g).length, 'deck'), '组')).join('')}
+    ${d.group ? row('', 'No group', 'Back to Your decks', '卡') : ''}
+    <button class="row" data-new style="--sep:52px"><span class="icon-sq">${I.plus}</span><span class="row-main"><span class="row-t">New group</span></span></button></div>`, sh => {
+    sh.querySelector('#dgList').onclick = e => {
+      if (e.target.closest('[data-new]')) { S.onSheetClose = null; closeSheet(); setTimeout(() => nameDialog('group', null, d), 220); return; }
+      const b = e.target.closest('[data-g]'); if (!b) return; const g = groupById(b.dataset.g);
+      if (g) d.group = g.id; else delete d.group; save(); LOG.add('deck-group', { deck: d.name, group: g?.name || '' });
+      closeSheet(); render(); toast(g ? `${d.name} is in ${g.name}` : `${d.name} is back in Your decks`);
+    };
+  });
 }
 /* Add decks to a group: every deck in a tick list; ticked ones are in this group (ticking one from another group moves it) */
 function groupPicker(g) {
@@ -11226,41 +11267,6 @@ function undoToast(msg, undo) {
   toastT = setTimeout(hide, 7000);
 }
 
-function deckSheet(d) {   /* v3.53: the keyboard comes up at once (focus inside the tap, which iPhones need) and the colours sit right under the name */
-  let accent = d?.accent || ACCENTS[db.decks.length % ACCENTS.length];
-  openSheet(`<h3>${d ? 'Edit deck' : 'New deck'}</h3>
-    <div class="dk-name"><div class="deck-stack" id="dprev" style="--accent:${accent}" aria-hidden="true"><span></span><span></span><div class="deck-face">${d ? esc(hanChars(d.cards[0]?.hanzi)[0] || '字') : '新'}</div></div>
-      <input class="input" id="dname" placeholder="Deck name, e.g. Food" value="${esc(d?.name || '')}" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Deck name"></div>
-    <div class="swatches dk-sw">${ACCENTS.map(c => `<button class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="colour"></button>`).join('')}</div>
-    <button class="btn btn-primary wide" id="dsave">${d ? 'Save' : 'Create deck'}</button>
-    ${d ? `<button class="btn btn-danger wide" id="ddel" style="margin-top:6px">${I.trash}Delete deck</button>` : ''}`,
-    sh => {
-      const inp = sh.querySelector('#dname'), prev = sh.querySelector('#dprev');
-      inp.focus({ preventScroll: true });
-      sh.querySelectorAll('.sw').forEach(b => {
-        b.addEventListener('pointerdown', e => e.preventDefault());   // picking a colour keeps the keyboard up
-        b.onclick = () => { accent = b.dataset.c; prev.style.setProperty('--accent', accent); sh.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
-      });
-      sh.querySelector('#dsave').addEventListener('pointerdown', e => e.preventDefault());
-      const go = () => {
-        const name = inp.value.trim(); if (!name) { inp.focus(); return; }
-        if (d) { d.name = name; d.accent = accent; save(); closeSheet(); render(); }
-        else {   // like Anki and Quizlet: a new deck goes straight on to adding its first card, keyboard still up
-          const nd = { id: uid(), name, accent, created: Date.now(), cards: [] }; db.decks.push(nd); save(); LOG.add('deck-new', { name, from: 'decks' });
-          nav('#/deck/' + nd.id); cardSheet(null);
-        }
-      };
-      sh.querySelector('#dsave').onclick = go;
-      inp.onkeydown = e => { if (e.key === 'Enter') go(); };
-      const del = sh.querySelector('#ddel');
-      if (del) del.onclick = () => {   // UX 5: goes at once, Undo on the toast
-        const i = db.decks.indexOf(d); S.onSheetClose = null; closeSheet();
-        db.decks.splice(i, 1); save(); history.replaceState({ d: 0 }, '', '#/'); route();
-        undoToast('Deck deleted', () => { if (!db.decks.includes(d)) db.decks.splice(Math.min(i, db.decks.length), 0, d); save(); render(); });
-      };
-    });
-}
-
 /* v3.53: adding cards works like Anki's Add screen with Pleco's look-up. The pop-up stays open: each Add saves the card,
    clears the fields and puts the cursor back for the next one, with the keyboard still up; the deck's count ticks up and
    the cards you just added show at the bottom; Done closes it. Type pinyin (or hanzi) for the front and pick characters:
@@ -11789,49 +11795,41 @@ function quickAddSheet() {
   });
 }
 
-/* v3.73: the word bank page, reworked to ilkem's design rules. One red button (Practise), Quick add as the + in the
-   corner, the next piece for your collection as a goal bar that ends at that piece (tap it for the whole collection),
-   and the words, newest first, with a search and a filter by stage. The characters and the collection open in pop-ups. */
+/* v3.73: the word bank page, reworked to ilkem's design rules. One red button (Practise) and the words, newest first,
+   with a search and a filter by stage. The characters open in a pop-up.
+   v4.20: Quick add is a black + in the corner just above Practise (renderFab); the collection card and its bar are gone;
+   the ready-made HSK decks moved here from Decks; and the filter offers Last added, First added or HSK level, where you
+   pick which levels to see (db.prefs.bankSort = 'new' | 'old' | 'hsk', db.prefs.bankLv = the levels; none = all). */
 const BANK_ST = [['all', 'All'], ['known', 'Known'], ['proven', 'Proven'], ['mastered', 'Mastered']];
-function BankGoal(pv) {   // the next piece for your collection: how far, how many proven words to go
-  const next = COINS.find(c => pv < c.n), got = COINS.filter(c => pv >= c.n).length;
-  if (!next) return `<button class="bk-goal done" data-act="bank-coll"><span class="bk-goal-top"><small>Your collection</small><span class="bk-goal-n">${got} of ${COINS.length}${I.chev}</span></span>
-    <b class="bk-goal-name">Every piece is yours</b></button>`;
-  const i = COINS.indexOf(next), from = i ? COINS[i - 1].n : 0, left = next.n - pv;
-  return `<button class="bk-goal" data-act="bank-coll" aria-label="Next for your collection: ${next.name}, ${plural(left, 'proven word')} to go. Open your collection">
-    <span class="bk-goal-top"><small>Next for your collection</small><span class="bk-goal-n">${got} of ${COINS.length}${I.chev}</span></span>
-    <b class="bk-goal-name">${next.name}</b>
-    <span class="bk-goal-track"><span class="bk-goal-bar"><i style="width:${gBar((pv - from) / (next.n - from))}%"></i></span><span class="bk-goal-art">${coinArt(next)}</span></span>
-    <span class="bk-goal-left"><b>${left.toLocaleString('en')}</b> proven ${left === 1 ? 'word' : 'words'} to go</span></button>`;
-}
 function BankView() {
   const n = db.bank.length, chars = bankCharList(), cnt = { all: n, known: 0, proven: 0, mastered: 0 };
   db.bank.forEach(w => cnt[wStage(w)]++);
   const shown = BANK_ST.filter(([k]) => cnt[k]);   // a stage with no words is not offered as a filter
   if (!cnt[S.bankF] || shown.length < 3) S.bankF = 'all';
   // v3.74: sort by HSK level. The words' levels come with the HSK lists; until they are loaded there is nothing to sort by.
-  if (n && !S.H) loadHsk().then(() => { if (S.view === 'bank') { S.instant = true; render(); } }, () => {});
-  const lvOf = w => S.H ? S.H.byHz.get(w.hanzi)?.lv || 0 : null, lvls = [...new Set(db.bank.map(lvOf))].filter(l => l !== null);
-  const byHsk = db.prefs.bankSort === 'hsk' && lvls.length > 1;   // only one level among your words: nothing to sort, so no button
-  const groups = byHsk ? [1, 2, 3, 4, 5, 6, 7, 0].filter(l => lvls.includes(l)).map(l => [l, db.bank.filter(w => lvOf(w) === l)]) : [[null, db.bank]];
-  const hsk = `<div class="group bk-hsk"><button class="row" data-act="open-hsk" style="--sep:58px"><span class="icon-sq">汉</span>
-      <span class="row-main"><span class="row-t">Know more words?</span><span class="row-s">Tick them in the HSK word lists</span></span><span class="chev">${I.chev}</span></button></div>`;
+  if (!S.H) loadHsk().then(() => { if (S.view === 'bank') { S.instant = S.keepQ = true; render(); } }, () => {});
+  const lvOf = w => S.H ? S.H.byHz.get(w.hanzi)?.lv || 0 : null, lvls = bankLevels();
+  const mode = bankMode(), pick = bankPick(lvls);
+  const byHsk = mode === 'hsk' && !!S.H;
+  const groups = byHsk ? [1, 2, 3, 4, 5, 6, 7, 0].filter(l => pick.includes(l)).map(l => [l, db.bank.filter(w => lvOf(w) === l)])
+    : [[null, mode === 'old' ? [...db.bank].reverse() : db.bank]];
+  const shelf = `<div class="section-head bk-rm"><h2>Ready-made decks</h2><button class="link-btn" data-act="open-hsk">See all</button></div>${HskShelf()}`;
   return `<div class="screen fade-in">
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title">Word bank</div>
-      <button class="icon-btn" data-act="quick-add" aria-label="Quick add a word">${I.plus}</button></header>
+      <span class="icon-btn" aria-hidden="true"></span></header>
     ${n ? `<section class="bk-hero"><div class="bk-num">${n.toLocaleString('en')}</div>
         <div class="bk-lbl">${n === 1 ? 'word' : 'words'} in your bank<button class="link-btn" data-act="bank-chars">${plural(chars.length, 'character')}${I.chev}</button></div></section>
-      ${BankGoal(provenCount())}
+      ${shelf}
       ${searchField('bankQ', 'Search hanzi, pinyin or English')}
       ${shown.length >= 3 ? `<div class="bk-f" id="bankF" role="group" aria-label="Show words by stage">${shown.map(([k, t]) => `<button data-f="${k}" class="${S.bankF === k ? 'on' : ''}" aria-pressed="${S.bankF === k}">${k === 'all' ? '' : `<i class="w-dot ${k}"></i>`}${t}<b>${cnt[k].toLocaleString('en')}</b></button>`).join('')}</div>` : ''}
-      ${lvls.length > 1 ? `<div class="bk-sort"><button class="bk-sort-btn" data-act="bank-sort" aria-label="Sort words: ${byHsk ? 'by HSK level' : 'newest first'}. Change">${I.sort}${byHsk ? 'HSK level' : 'Newest first'}</button></div>` : ''}
+      ${n > 1 ? `<div class="bk-sort"><button class="bk-sort-btn" data-act="bank-sort" aria-label="Filter words: ${bankModeLabel(lvls)}. Change">${I.sort}${bankModeLabel(lvls)}</button></div>` : ''}
       <div id="bankWords">${groups.map(([lv, ws]) => `<section class="bk-sec">${byHsk ? `<h3 class="bk-gh">${lv ? HSK_NAME(lv) : 'Not in HSK'}<span class="bk-gh-n">${ws.length}</span></h3>` : ''}
         <div class="group word-list">${ws.map(w => `<button class="row word word-row st-${wStage(w)}" style="--sep:76px" data-act="bank-word" data-id="${w.id}" data-st="${wStage(w)}" data-s="${esc((w.hanzi + ' ' + normPy(w.pinyin || '') + ' ' + (w.pinyin || '') + ' ' + (w.en || '')).toLowerCase())}">
           <span class="hz">${esc(w.hanzi)}<i class="w-dot ${wStage(w)}" title="${wStage(w)}"></i></span><span class="row-main"><span class="wp">${esc(w.pinyin)}</span><span class="we">${esc(w.en || '—')}</span></span>${w.hsk && !byHsk ? `<span class="row-val">${HSK_NAME(w.hsk)}</span>` : ''}<span class="chev">${I.chev}</span></button>`).join('')}</div></section>`).join('')}</div>
       <p class="bk-none" id="bankNone" hidden></p>
-      ${hsk}
-      <p class="muted" style="font-size:11.5px;margin:18px 2px 0">Meanings from CC-CEDICT (mdbg.net, CC BY-SA 4.0)</p>`
-    : `<div class="empty bk-empty"><div class="big">字</div><h3>Your word bank is empty</h3><p>Words from the lessons you finish land here by themselves. Already know some? Tick them in the HSK lists, or tap + to add one.</p></div>`}
+      <p class="muted" style="font-size:11.5px;margin:18px 2px 0">Meanings from CC-CEDICT (mdbg.net, CC BY-SA 4.0)</p>
+      <div class="bk-fabgap"></div>`
+    : `<div class="empty bk-empty"><div class="big">字</div><h3>Your word bank is empty</h3><p>Words from the lessons you finish land here by themselves. Already know some? Tick them in a ready-made deck, or tap + to add one.</p></div>${shelf}`}
     <div class="dock">${n ? `<button class="btn btn-seal wide" data-act="practise-bank">${I.flip}Practise ${plural(n, 'word')}</button>`
       : `<button class="btn btn-seal wide" data-act="open-hsk">Tick words you know</button>`}</div>
   </div>`;
@@ -11859,15 +11857,45 @@ function mountBank() {
   });
   apply();
 }
-function bankSortSheet() {   // two ways to order the words; the one in use has the tick
-  const cur = db.prefs.bankSort === 'hsk' ? 'hsk' : 'new';
-  const row = (k, t, d) => `<button class="row${cur === k ? ' on' : ''}" data-sort="${k}"><span class="row-main"><span class="row-t">${t}</span><span class="row-s">${d}</span></span><span class="tick">${I.check}</span></button>`;
-  openSheet(`<h3>Sort words</h3><div class="group" style="margin-bottom:8px">${row('new', 'Newest first', 'The words you added last at the top')}${row('hsk', 'HSK level', 'HSK 1 first, each level under its own heading')}</div>`, sh => {
-    sh.querySelector('.group').onclick = e => {
-      const b = e.target.closest('[data-sort]'); if (!b) return;
-      db.prefs.bankSort = b.dataset.sort; save(); LOG.add('bank-sort', { by: b.dataset.sort });
-      closeSheet(); S.instant = S.keepQ = true; render();
+const bankLevels = () => S.H ? [1, 2, 3, 4, 5, 6, 7, 0].filter(l => db.bank.some(w => (S.H.byHz.get(w.hanzi)?.lv || 0) === l)) : [];
+const bankMode = () => ['old', 'hsk'].includes(db.prefs.bankSort) ? db.prefs.bankSort : 'new';
+function bankPick(lvls) {   // the HSK levels to show: the ones you picked that are still among your words, else all of them
+  const p = (db.prefs.bankLv || []).filter(l => lvls.includes(l));
+  return p.length ? p : lvls;
+}
+const lvShort = l => l === 7 ? '7–9' : l ? String(l) : 'none';
+function bankModeLabel(lvls) {
+  const m = bankMode(); if (m !== 'hsk') return m === 'old' ? 'First added' : 'Last added';
+  const p = (db.prefs.bankLv || []).filter(l => lvls.includes(l));
+  if (!p.length || p.length === lvls.length) return 'HSK level';
+  return p.filter(Boolean).length ? 'HSK ' + p.filter(Boolean).map(lvShort).join(', ') + (p.includes(0) ? ' + not in HSK' : '') : 'Not in HSK';
+}
+function bankSortSheet() {   // v4.20: Last added, First added, or HSK level with the levels to see; the page behind changes as you tap
+  const lvls = bankLevels();
+  const row = (k, t, d) => `<button class="row" data-sort="${k}"><span class="row-main"><span class="row-t">${t}</span><span class="row-s">${d}</span></span><span class="tick">${I.check}</span></button>`;
+  openSheet(`<h3>Filter words</h3><div class="group" id="bfRows" style="margin-bottom:12px">${row('new', 'Last added', 'The words you added last at the top')}${row('old', 'First added', 'The words you added first at the top')}${row('hsk', 'HSK level', 'Pick which levels to see')}</div>
+    <div class="bf-lv" id="bfLv" role="group" aria-label="HSK levels to see">${lvls.length ? lvls.map(l => `<button data-lv="${l}">${l ? HSK_NAME(l) : 'Not in HSK'}<b>${db.bank.filter(w => (S.H.byHz.get(w.hanzi)?.lv || 0) === l).length}</b></button>`).join('') : '<p class="muted">Loading the HSK levels…</p>'}</div>
+    <button class="btn btn-primary wide" id="bfDone">Done</button>`, sh => {
+    const paint = () => {
+      const m = bankMode(), p = bankPick(lvls);
+      sh.querySelectorAll('[data-sort]').forEach(b => b.classList.toggle('on', b.dataset.sort === m));
+      sh.querySelector('#bfLv').hidden = m !== 'hsk';
+      sh.querySelectorAll('[data-lv]').forEach(b => { const on = p.includes(+b.dataset.lv); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
     };
+    const apply = () => { save(); paint(); S.instant = S.keepQ = true; render(); };
+    sh.querySelector('#bfRows').onclick = e => {
+      const b = e.target.closest('[data-sort]'); if (!b) return;
+      db.prefs.bankSort = b.dataset.sort; LOG.add('bank-sort', { by: b.dataset.sort }); apply();
+      if (b.dataset.sort !== 'hsk') closeSheet();
+    };
+    sh.querySelector('#bfLv').onclick = e => {
+      const b = e.target.closest('[data-lv]'); if (!b) return;
+      const l = +b.dataset.lv, p = new Set(bankPick(lvls));
+      if (p.has(l)) { if (p.size === 1) return; p.delete(l); } else p.add(l);   // at least one level stays on
+      db.prefs.bankLv = p.size === lvls.length ? [] : [...p]; LOG.add('bank-levels', { lv: db.prefs.bankLv }); apply();
+    };
+    sh.querySelector('#bfDone').onclick = () => closeSheet();
+    paint();
   });
 }
 function collectionSheet() {   // every piece, earned or still to come, and how they are earned
@@ -13272,7 +13300,7 @@ const A = {
   'practise-bank': () => practiseSheet(),
   'decks-sheet': () => decksSheet(),
   'bank-word': t => wordSheet(t.dataset.id),
-  'deck-menu': () => deckSheet(curDeck()),
+  'deck-menu': () => deckSide(curDeck()),
   'add-card': () => cardSheet(null),
   'edit-card': t => cardSheet(t.dataset.id),
   'settings': () => settingsSheet(),
