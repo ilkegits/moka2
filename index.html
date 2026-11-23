@@ -12395,6 +12395,7 @@ function mountBank() {
 }
 /* v4.37 (ilkem): the word bank page shows two measures. The stages bar splits your words into Mastered, Proven and Known,
    its key filters the list (tap the same one again for all), and a line counts down to the next proven-words milestone. */
+const WORD_MILES = (() => { const a = []; for (let n = 25; n <= 20000; n += n < 100 ? 25 : n < 300 ? 50 : n < 1000 ? 100 : n < 3000 ? 250 : 500) a.push(n); return a; })();   // moka2: the real app's words milestones (v3.75), the steps the word bank's stages bar counts down to
 function BankStages(cnt, filter) {
   const pv = cnt.proven + cnt.mastered, next = WORD_MILES.find(m => m > pv);
   const st = [['mastered', 'Mastered'], ['proven', 'Proven'], ['known', 'Known']].filter(([k]) => cnt[k]);
@@ -12843,7 +12844,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.7';
+const APP_VERSION = '3.45.8';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
