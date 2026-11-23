@@ -59,7 +59,7 @@ p,li,.muted,.row-s,.group-foot{text-wrap:pretty}
 /* UX 18: Apple's continuous corners on the rounded rectangles (cards, lists, pop-ups, buttons, fields). Only Chromium draws
    corner-shape; other browsers keep the plain rounded corner. Round buttons and pill shapes are left out on purpose:
    a squircle at full radius would square off their ends */
-.group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wb-ctr,.bank-stages .bs,.cl,
+.group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wb-ctr,.bk-goal,.bk-f,.cl,
 .rd-hero,.pf-card,.pf-stat,.bdg,.st-cal,.st-fz,.goal-row,.face,.hd-card,.un-hud,.icon-sq,#toast{corner-shape:squircle}
 img,svg{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 body{
@@ -1327,17 +1327,38 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bank-chars .msg{flex:1;font-size:13px;line-height:1.4;color:var(--muted);text-align:left;padding-left:14px;border-left:1px solid var(--line)}
 .qa-glyph{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;background:var(--seal);color:var(--seal-ink);font-family:var(--hanzi);font-size:15px;transform:rotate(-4deg)}
 .dock.row-btns{display:flex}
-.bank-hero{display:flex;align-items:flex-end;gap:14px;padding:22px 4px 24px}
-.bank-hero .bank-num{font-size:76px}
-.bank-hero .bank-lbl{font-size:15px;color:var(--ink-2)}
-.bank-hero .bank-lbl small{display:block;font-size:13px;color:var(--muted)}
-/* the word bank by stage: known (ticked or placed), proven (they build the temples), mastered (they hang lanterns) */
-.bank-stages{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 22px}
-.bank-stages .bs{padding:10px 10px 11px;border-radius:12px;background:var(--card);box-shadow:var(--ring)}
-.bank-stages .bs b{display:block;font-family:var(--display);font-weight:600;font-size:24px;line-height:1.05;font-variant-numeric:lining-nums tabular-nums}
-.bank-stages .bs span{display:flex;align-items:center;gap:5px;margin-top:3px;font-size:13px;font-weight:700;color:var(--ink-2)}
-.bank-stages .bs small{display:block;margin-top:2px;font-size:11.5px;line-height:1.3;color:var(--muted)}
-.bank-stages p{grid-column:1/-1;margin:2px 2px 0;font-size:12.5px;line-height:1.4;color:var(--muted)}
+/* v3.73 word bank page: the number, the next collection piece as a goal bar, a stage filter, the words */
+.bk-hero{display:flex;align-items:flex-end;gap:12px;padding:16px 4px 18px}
+.bk-num{font-family:var(--display);font-weight:600;font-size:72px;line-height:.8;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
+.bk-lbl{display:flex;flex-direction:column;align-items:flex-start;font-size:15px;line-height:1.3;color:var(--ink-2)}
+.bk-lbl .link-btn{display:inline-flex;align-items:center;gap:1px;min-height:32px;padding:4px 0 0;font-size:13.5px}
+.bk-lbl .link-btn svg.i{width:15px;height:15px}
+/* the goal: a bar that runs into the next piece, which waits on a square of practice paper */
+.bk-goal{display:block;width:100%;padding:13px 14px 14px 16px;margin:0 0 20px;border-radius:16px;background:var(--card);box-shadow:var(--ring);text-align:left;transition:background .25s}
+.bk-goal:active{background:var(--paper-deep);transition:none}
+.bk-goal-top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}
+.bk-goal-n{display:inline-flex;align-items:center;gap:2px;font-variant-numeric:tabular-nums}
+.bk-goal-n svg.i{width:15px;height:15px}
+.bk-goal-name{display:block;margin-top:1px;font:600 19px/1.2 var(--display);color:var(--ink)}
+.bk-goal-track{display:flex;align-items:center;gap:0;margin:8px 0 6px}
+.bk-goal-bar{flex:1;height:10px;margin-right:-4px;border-radius:5px 0 0 5px;background:var(--fill);overflow:hidden}
+.bk-goal-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(#EDC064,#E2AE45)}
+.bk-goal-art{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:var(--tzg) center/100% 100% no-repeat,var(--card-2);box-shadow:var(--ring)}
+.bk-goal-art svg{width:42px;height:42px;filter:grayscale(1);opacity:.45}
+.bk-goal-left{display:block;font-size:13.5px;color:var(--ink-2)}
+.bk-goal-left b{font-weight:700;font-variant-numeric:tabular-nums}
+.bk-goal.done .bk-goal-name{margin-bottom:2px}
+/* stage filter: one row, the one you are on is raised */
+.bk-f{display:flex;gap:2px;padding:2px;margin:-8px 0 14px;border-radius:11px;background:var(--fill)}
+.bk-f button{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:0 4px;border-radius:9px;font-size:13px;font-weight:500;color:var(--ink-2);white-space:nowrap;transition:background .2s}
+.bk-f button b{font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.bk-f button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.06)}
+.bk-f button.on b{color:var(--ink-2)}
+.bk-none{margin:4px 4px 24px;font-size:14px;color:var(--muted);text-align:center}
+.bk-hsk{margin-top:-4px}
+.bk-empty h3{margin:14px 0 6px;font:600 19px/1.25 var(--display);color:var(--ink)}
+.bk-empty p{max-width:30ch;margin:0 auto;line-height:1.45}
+.bk-sh-note{margin:-6px 0 16px;font-size:13.5px;line-height:1.45}
 .w-dot{display:inline-block;flex:none;width:8px;height:8px;border-radius:50%;font-style:normal}
 .w-dot.known{box-shadow:inset 0 0 0 1.5px var(--muted)}
 .w-dot.proven{background:var(--jade)}
@@ -8577,10 +8598,9 @@ function BankTile() {   // the word bank on the Decks page: how many words, how 
     <span class="wb-next">${next ? `<span class="wb-next-art cl-off" aria-hidden="true">${coinArt(next)}</span><span class="wb-next-t">${got.length ? 'Next' : 'First'} piece for your collection: <b>${(next.n - pv).toLocaleString('en')}</b> proven ${next.n - pv === 1 ? 'word' : 'words'} to go</span>
       <span class="wb-bar"><i style="width:${gBar(pct / 100)}%"></i></span>` : `<span class="wb-next-t">Your collection is complete: all ${COINS.length} pieces</span>`}</span></button>`;
 }
-function CollectionHtml() {   // on the word bank page: every piece, earned or still to come (only the next one is named)
+function CollectionHtml() {   // in the collection pop-up of the word bank page: every piece, earned or still to come (only the next one is named)
   const pv = provenCount(), next = COINS.find(c => pv < c.n), got = COINS.filter(c => pv >= c.n).length;
-  return `<div class="section-head cal-head"><h2>Collection <span class="cal-zh">收藏</span></h2><span class="sh-n">${got} of ${COINS.length}</span></div>
-    <div class="coll">${COINS.map((c, i) => { const on = pv >= c.n, nx = c === next, from = i ? COINS[i - 1].n : 0;
+  return `<div class="coll">${COINS.map((c, i) => { const on = pv >= c.n, nx = c === next, from = i ? COINS[i - 1].n : 0;
       return `<button class="cl${on ? '' : ' cl-off'}"${on ? ` data-act="coin" data-id="${c.id}"` : ' disabled'} aria-label="${on ? `${c.name}, earned` : `${nx ? c.name : 'Not yet found'}, at ${c.n} proven words`}">
         <span class="cl-art">${coinArt(c)}</span><b>${on || nx ? c.name : '???'}</b><small>${on ? (c.badge ? 'Badge' : c.era.replace(/,.*/, '')) : nx ? `${(c.n - pv).toLocaleString('en')} to go` : `${c.n.toLocaleString('en')} proven`}</small>
         ${nx ? `<span class="wb-bar"><i style="width:${gBar((pv - from) / (c.n - from))}%"></i></span>` : ''}</button>`; }).join('')}</div>`;
@@ -11751,34 +11771,73 @@ function quickAddSheet() {
   });
 }
 
+/* v3.73: the word bank page, reworked to ilkem's design rules. One red button (Practise), Quick add as the + in the
+   corner, the next piece for your collection as a goal bar that ends at that piece (tap it for the whole collection),
+   and the words, newest first, with a search and a filter by stage. The characters and the collection open in pop-ups. */
+const BANK_ST = [['all', 'All'], ['known', 'Known'], ['proven', 'Proven'], ['mastered', 'Mastered']];
+function BankGoal(pv) {   // the next piece for your collection: how far, how many proven words to go
+  const next = COINS.find(c => pv < c.n), got = COINS.filter(c => pv >= c.n).length;
+  if (!next) return `<button class="bk-goal done" data-act="bank-coll"><span class="bk-goal-top"><small>Your collection</small><span class="bk-goal-n">${got} of ${COINS.length}${I.chev}</span></span>
+    <b class="bk-goal-name">Every piece is yours</b></button>`;
+  const i = COINS.indexOf(next), from = i ? COINS[i - 1].n : 0, left = next.n - pv;
+  return `<button class="bk-goal" data-act="bank-coll" aria-label="Next for your collection: ${next.name}, ${plural(left, 'proven word')} to go. Open your collection">
+    <span class="bk-goal-top"><small>Next for your collection</small><span class="bk-goal-n">${got} of ${COINS.length}${I.chev}</span></span>
+    <b class="bk-goal-name">${next.name}</b>
+    <span class="bk-goal-track"><span class="bk-goal-bar"><i style="width:${gBar((pv - from) / (next.n - from))}%"></i></span><span class="bk-goal-art">${coinArt(next)}</span></span>
+    <span class="bk-goal-left"><b>${left.toLocaleString('en')}</b> proven ${left === 1 ? 'word' : 'words'} to go</span></button>`;
+}
 function BankView() {
-  const chars = bankCharList(), n = db.bank.length, cnt = { known: 0, proven: 0, mastered: 0 };
+  const n = db.bank.length, chars = bankCharList(), cnt = { all: n, known: 0, proven: 0, mastered: 0 };
   db.bank.forEach(w => cnt[wStage(w)]++);
+  const shown = BANK_ST.filter(([k]) => cnt[k]);   // a stage with no words is not offered as a filter
+  if (!cnt[S.bankF] || shown.length < 3) S.bankF = 'all';
+  const hsk = `<div class="group bk-hsk"><button class="row" data-act="open-hsk" style="--sep:58px"><span class="icon-sq">汉</span>
+      <span class="row-main"><span class="row-t">Know more words?</span><span class="row-s">Tick them in the HSK word lists</span></span><span class="chev">${I.chev}</span></button></div>`;
   return `<div class="screen fade-in">
-    <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title">Word bank</div><div style="width:42px"></div></header>
-    <section class="bank-hero"><div class="bank-num">${chars.length}</div>
-      <div class="bank-lbl">${chars.length === 1 ? 'character' : 'characters'} you know<small>${plural(n, 'word')} in your word bank</small></div></section>
-    ${n ? `<section class="bank-stages" aria-label="Your words by stage">${[['known', 'Known', 'Ticked or placed'], ['proven', 'Proven', 'Right on two days'], ['mastered', 'Mastered', 'Still right 3 weeks on']]
-      .map(([k, t, d]) => `<div class="bs bs-${k}"><b>${cnt[k].toLocaleString('en')}</b><span><i class="w-dot ${k}"></i>${t}</span><small>${d}</small></div>`).join('')}
-      <p>Each proven word puts ${PAY.word} coins in Shi Shi's bag to buy monuments on the Map, and earns pieces for your collection. Prove the ones you know with Prove words there.</p></section>
-    ${CollectionHtml()}` : ''}
-    <div class="group"><button class="row" data-act="open-hsk" style="--sep:58px"><span class="icon-sq">汉</span>
-      <span class="row-main"><span class="row-t">HSK word lists</span><span class="row-s">Tick the words you already know</span></span><span class="chev">${I.chev}</span></button></div>
-    ${n ? `${searchField('bankQ', 'Search hanzi, pinyin or English')}
-      <div class="section-head"><h2>Characters</h2></div>
-      <div class="char-grid">${chars.map(c => `<span>${esc(c)}</span>`).join('')}</div>
-      <div class="section-head"><h2>Words</h2><span class="muted" style="font-size:12.5px">newest first</span></div>
-      <div class="group word-list" id="bankWords">${db.bank.map(w => `<button class="row word word-row st-${wStage(w)}" style="--sep:76px" data-act="bank-word" data-id="${w.id}" data-s="${esc((w.hanzi + ' ' + normPy(w.pinyin || '') + ' ' + (w.pinyin || '') + ' ' + (w.en || '')).toLowerCase())}">
+    <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title">Word bank</div>
+      <button class="icon-btn" data-act="quick-add" aria-label="Quick add a word">${I.plus}</button></header>
+    ${n ? `<section class="bk-hero"><div class="bk-num">${n.toLocaleString('en')}</div>
+        <div class="bk-lbl">${n === 1 ? 'word' : 'words'} in your bank<button class="link-btn" data-act="bank-chars">${plural(chars.length, 'character')}${I.chev}</button></div></section>
+      ${BankGoal(provenCount())}
+      ${searchField('bankQ', 'Search hanzi, pinyin or English')}
+      ${shown.length >= 3 ? `<div class="bk-f" id="bankF" role="group" aria-label="Show words by stage">${shown.map(([k, t]) => `<button data-f="${k}" class="${S.bankF === k ? 'on' : ''}" aria-pressed="${S.bankF === k}">${k === 'all' ? '' : `<i class="w-dot ${k}"></i>`}${t}<b>${cnt[k].toLocaleString('en')}</b></button>`).join('')}</div>` : ''}
+      <div class="group word-list" id="bankWords">${db.bank.map(w => `<button class="row word word-row st-${wStage(w)}" style="--sep:76px" data-act="bank-word" data-id="${w.id}" data-st="${wStage(w)}" data-s="${esc((w.hanzi + ' ' + normPy(w.pinyin || '') + ' ' + (w.pinyin || '') + ' ' + (w.en || '')).toLowerCase())}">
           <span class="hz">${esc(w.hanzi)}<i class="w-dot ${wStage(w)}" title="${wStage(w)}"></i></span><span class="row-main"><span class="wp">${esc(w.pinyin)}</span><span class="we">${esc(w.en || '—')}</span></span>${w.hsk ? `<span class="row-val">${HSK_NAME(w.hsk)}</span>` : ''}<span class="chev">${I.chev}</span></button>`).join('')}</div>
+      <p class="bk-none" id="bankNone" hidden></p>
+      ${hsk}
       <p class="muted" style="font-size:11.5px;margin:18px 2px 0">Meanings from CC-CEDICT (mdbg.net, CC BY-SA 4.0)</p>`
-    : `<div class="empty"><div class="big">字</div><p>Your word bank is empty. Finish an HSK 1 lesson and its words land here by themselves. You can also tick words you know in the HSK lists, or add them one by one with Quick add.</p></div>`}
-    <div class="dock row-btns">${n ? `<button class="btn btn-ghost" data-act="practise-bank">${I.flip}Practise</button>` : ''}<button class="btn btn-primary" data-act="quick-add"><span class="qa-glyph">字</span>Quick add</button></div>
+    : `<div class="empty bk-empty"><div class="big">字</div><h3>Your word bank is empty</h3><p>Words from the lessons you finish land here by themselves. Already know some? Tick them in the HSK lists, or tap + to add one.</p></div>`}
+    <div class="dock">${n ? `<button class="btn btn-seal wide" data-act="practise-bank">${I.flip}Practise ${plural(n, 'word')}</button>`
+      : `<button class="btn btn-seal wide" data-act="open-hsk">Tick words you know</button>`}</div>
   </div>`;
 }
 function mountBank() {
   const q = $('#bankQ'); if (!q) return;
-  wireSearch(q, () => q.oninput());
-  q.oninput = () => { const s = q.value.trim().toLowerCase(), sp = normPy(s); $$('#bankWords .word-row').forEach(r => { r.hidden = !!s && !r.dataset.s.includes(s) && !(sp && r.dataset.s.includes(sp)); }); };
+  const list = $('#bankWords'), rows = $$('#bankWords .word-row'), none = $('#bankNone');
+  const apply = () => {
+    const s = q.value.trim().toLowerCase(), sp = normPy(s), f = S.bankF || 'all'; let k = 0;
+    rows.forEach(r => { const off = (f !== 'all' && r.dataset.st !== f) || (!!s && !r.dataset.s.includes(s) && !(sp && r.dataset.s.includes(sp))); r.hidden = off; if (!off) k++; });
+    list.hidden = !k; none.hidden = !!k;
+    none.textContent = k ? '' : `No ${f === 'all' ? '' : f + ' '}word matches “${q.value.trim()}”.`;
+  };
+  wireSearch(q, apply); q.oninput = apply;
+  $('#bankF')?.addEventListener('click', e => {
+    const b = e.target.closest('[data-f]'); if (!b) return;
+    S.bankF = b.dataset.f; LOG.add('bank-filter', { stage: S.bankF });
+    $$('#bankF button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
+    apply();
+  });
+  apply();
+}
+function collectionSheet() {   // every piece, earned or still to come, and how they are earned
+  openSheet(`<h3>Your collection <span class="cal-zh">收藏</span></h3>
+    <p class="muted bk-sh-note">Every word you prove (right on two different days) earns a piece at set numbers, and puts ${PAY.word} coins in Shi Shi's bag for the Map.</p>
+    ${CollectionHtml()}`);
+}
+function charsSheet() {   // every character in your words, the first ones you learned first
+  const chars = bankCharList();
+  openSheet(`<h3>${plural(chars.length, 'character')}</h3><p class="muted bk-sh-note">Every character in your words, the first ones you learned first.</p>
+    <div class="char-grid">${chars.map(c => `<span>${esc(c)}</span>`).join('')}</div>`);
 }
 function wordSheet(id) {
   const w = db.bank.find(x => x.id === id); if (!w) return;
@@ -13137,7 +13196,9 @@ const A = {
   'map-buy': t => mapBuy(+t.dataset.lv),
   'shop-see': t => { closeSheet(); const lv = +t.dataset.lv; if (S.view === 'map' && !S.mapLv) setTimeout(() => mapMon(() => mapPick(lv)), 300); else nav('#/map/' + lv); },
   'coin': t => coinSheet(t.dataset.id),
-  'mo-coll': () => closeLayer(() => nav('#/bank')),
+  'mo-coll': () => closeLayer(() => { nav('#/bank'); collectionSheet(); }),
+  'bank-coll': () => collectionSheet(),
+  'bank-chars': () => charsSheet(),
   'fast-build': t => { closeSheet(true); LOG.add('fast-build-open', { lv: +t.dataset.lv }); nav('#/build/' + t.dataset.lv); },
   'fb-opt': t => fbPick(+t.dataset.i),
   'fb-next': () => fbNext(),
