@@ -1519,7 +1519,8 @@ svg.sil{filter:brightness(0);opacity:.28}
 .shelf-s{font-size:12.5px;color:var(--muted)}
 /* Shi Shi cheers when you add words from an HSK list: he springs up out of the bottom bar, hops, and drops back */
 #cheer{position:fixed;left:0;right:0;bottom:var(--cheer-b,90px);height:320px;max-width:480px;margin:0 auto;overflow:hidden;pointer-events:none;z-index:40}
-.cheer-lion{position:absolute;bottom:-4px;left:calc(50% - 152px);width:150px;height:150px;transform-origin:50% 100%;pointer-events:auto;will-change:transform;transform:translateY(105%)}
+.cheer-lion{position:absolute;bottom:-4px;left:calc(50% - 150px);width:146px;height:138px;transform-origin:50% 100%;pointer-events:auto;will-change:transform;transform:translateY(105%)}
+.cheer-lion .shi-body{display:block;width:100%;height:100%;overflow:visible}   /* v4.43: the app's own Shi Shi, arms up (shiBody), not the old inked drawing */
 .cheer-bubble{position:absolute;z-index:2;bottom:104px;left:calc(50% + 2px);max-width:166px;padding:10px 14px 11px;border-radius:16px;background:var(--card);
   box-shadow:0 12px 28px -12px rgba(70,45,20,.4),0 0 0 1px rgba(120,95,60,.08);transform-origin:0 100%;opacity:0}
 .cheer-bubble::before{content:"";position:absolute;left:-5px;bottom:16px;width:14px;height:14px;border-radius:3px;background:var(--card);transform:rotate(45deg)}
@@ -12328,14 +12329,13 @@ function HskView() {
 }
 /* Shi Shi pops up to cheer: springs out of the bottom bar with a squash, two happy hops, a speech bubble and
    paper confetti from behind his mane, then drops back after about 3 s. Tap him to send him away early. */
-let cheerImg = null;
 function cheer(n, say) {   // say: { zh, py, en } to replace the words-added message
   $('#cheer')?.remove();
   const dock = $('.dock'), b = dock ? Math.max(0, innerHeight - dock.getBoundingClientRect().top) : 90;
   const [zh, py] = say ? [say.zh, say.py] : n >= 20 ? ['太棒了！', 'tài bàng le'] : n >= 5 ? ['真棒！', 'zhēn bàng'] : ['很好！', 'hěn hǎo'];
   const el = document.createElement('div'); el.id = 'cheer'; el.style.setProperty('--cheer-b', b + 'px');
   el.innerHTML = `<div class="cheer-bubble" role="status"><div class="cheer-zh">${zh}</div><div class="cheer-py">${py}</div>
-    <div class="cheer-en">${say ? say.en : `+${plural(n, 'word')} in your word bank`}</div></div><img class="cheer-lion" src="mascots/shi-shi.svg" alt="Shi Shi the lion cheering">`;
+    <div class="cheer-en">${say ? say.en : `+${plural(n, 'word')} in your word bank`}</div></div><span class="cheer-lion" role="img" aria-label="Shi Shi the lion cheering">${shiBody('cheer')}</span>`;
   document.body.appendChild(el);
   const lion = el.querySelector('.cheer-lion'), bub = el.querySelector('.cheer-bubble');
   let gone = false;
@@ -12388,7 +12388,6 @@ function cheer(n, say) {   // say: { zh, py, en } to replace the words-added mes
   }
 }
 function mountHsk() {
-  if (!cheerImg) { cheerImg = new Image(); cheerImg.src = 'mascots/shi-shi.svg'; }   // ready before the first cheer
   S.hskIO?.disconnect();
   const H = S.H, lv = S.hskLevel;
   if (!H) { loadHsk().then(() => { if (S.view === 'hsk') render(); }, () => { const p = $('#hskLoad'); if (p) p.textContent = 'Could not load the HSK lists. Check your connection and open this page again.'; }); return; }
