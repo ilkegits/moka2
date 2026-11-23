@@ -2424,6 +2424,65 @@ button.st-d:active{transform:scale(.9);transition:none}
 .les-end-box{width:100%;margin-top:22px;padding:16px;border-radius:18px;background:var(--card);box-shadow:var(--ring);text-align:left}
 .les-end-box > b{display:block;margin-bottom:12px;font-size:16.5px;color:var(--jade)}
 .les-end-box > small{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
+/* moka2: the red envelope (利是) from the real app, for the reading card on Read */
+/* v3.82: the 3D envelope (lx3), on the path and in its moment. --W is its width; its height is 10/7 of that */
+.lx3p{display:grid;place-items:center;perspective:calc(var(--W)*6);pointer-events:none}
+.lx3{--H:calc(var(--W)*10/7);--T:calc(var(--W)*.2);--B:calc(var(--W)*.05);--R:calc(var(--W)*.072);position:relative;width:var(--W);height:var(--H);transform-style:preserve-3d;transform:rotateX(10deg) rotateY(-28deg)}
+.lx3>span{position:absolute}
+.lx3 svg{display:block;width:100%;height:100%;overflow:visible}
+.lx3-f{inset:0;transform:translateZ(calc(var(--T)/2))}
+.lx3-f::after{content:"";position:absolute;inset:0;border-radius:var(--R);background:linear-gradient(115deg,rgba(255,255,255,.22),transparent 38%,transparent 62%,rgba(0,0,0,.18))}
+.lx3-b{inset:0;border-radius:var(--R);background:var(--in);box-shadow:inset 0 0 0 2px rgba(0,0,0,.25);transform:translateZ(calc(var(--T)/-2)) rotateY(180deg)}
+/* v4.31: its body is 13 thin slices of paper between the front and the back, the middle ones a little bigger, so it bulges like an envelope full of money (ilkem: "the lixi is too 2d").
+   v4.34 (ilkem: "whe the lixi turns, the yellow line on the bottom of the lixi is pixely glitching"): the flat edge strips with their thin gold stripe and ridges are gone. Each side is
+   now a curved band of six strips that follow the bulge from the front to the back, shaded by which way they face, so the edge is one smooth solid surface as it turns; the slices sit
+   just inside it and only round off the corners */
+.lx3-l{inset:calc(var(--B)*var(--i)*-.9);border-radius:calc(var(--R) + var(--B)*var(--i)*.9);transform:translateZ(calc(var(--T)*var(--u)/2))}
+.lx3-a{outline:1px solid transparent}
+.lx3-glow{left:-22%;right:-22%;top:-20%;height:40%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,250,225,.95),rgba(255,214,90,.7) 40%,rgba(255,176,32,0));opacity:0;transform:scale(.2)}
+.lx3-flap{left:0;top:0;width:var(--W);height:calc(var(--W)*var(--fh));transform-origin:50% 0;transform-style:preserve-3d;transform:translateZ(calc(var(--T)/2 + 1px))}
+.lx3-flap>span{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.lx3-flap>.in{transform:rotateY(180deg)}
+.lx3.open .lx3-flap,.pp-lx[data-s="open"] .lx3-flap{transform:translateZ(calc(var(--T)/-2)) rotateX(196deg)}   /* swung up and back, standing behind what comes out */
+@keyframes lxSway{0%,60%,100%{transform:rotateX(10deg) rotateY(-28deg)}15%{transform:translateY(-6%) rotateX(10deg) rotateY(-14deg) rotateZ(-5deg)}30%{transform:translateY(-10%) rotateX(12deg) rotateY(-38deg) rotateZ(5deg)}45%{transform:translateY(-4%) rotateX(10deg) rotateY(-22deg) rotateZ(-2deg)}}
+@keyframes lxWake{0%{transform:rotateX(10deg) rotateY(-28deg)}10%{transform:translateY(6%) rotateX(10deg) rotateY(-28deg) scale(1.12,.84)}30%{transform:translateY(-55%) rotateX(10deg) rotateY(-208deg) scale(1.1)}46%{transform:translateY(0) rotateX(10deg) rotateY(-388deg) scale(1.14,.86)}54%{transform:rotateX(10deg) rotateY(-388deg) rotateZ(-13deg)}62%{transform:rotateX(10deg) rotateY(-388deg) rotateZ(12deg)}70%{transform:rotateX(10deg) rotateY(-388deg) rotateZ(-10deg)}78%{transform:rotateX(10deg) rotateY(-388deg) rotateZ(8deg)}88%{transform:rotateX(10deg) rotateY(-388deg) rotateZ(-4deg)}100%{transform:rotateX(10deg) rotateY(-388deg)}}
+@keyframes lxRing{0%{transform:scale(.3);opacity:1}100%{transform:scale(2.4);opacity:0}}
+/* v4.33: the red envelope's moment (lxShow). v4.31 was idea 5 of lixi-opening-ideas.html made calm; then ilkem: "Ideally there
+   is a red background... the opening should be more dramatic. I want more haptic feedbacks... U click on the lixi on the
+   roadmap. Then it spins into the screen. Drama. And then u click it and it buzzes. And u need to click it another time. And
+   then it opens." Deep red (no rays), it spins in, a tap sets it buzzing, a second tap bursts it open; its coins circle it
+   and fly into your coin count */
+.lxo{position:fixed;inset:0;z-index:62;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.lxo.out{opacity:0;transition:opacity .3s}
+.lxo-bg{position:absolute;inset:0;background:radial-gradient(120% 75% at 50% var(--cy),#A8301E,#6A140D 52%,#2A0605);opacity:0;transition:opacity .4s}
+.lxo.on .lxo-bg{opacity:1}
+.lxo-fly{position:absolute;left:50%;top:var(--cy);width:0;height:0}
+.lxo-fly>.lx3p{position:absolute;left:calc(var(--W)/-2);top:calc(var(--W)*-5/7);width:var(--W);height:calc(var(--W)*10/7);perspective:1000px}
+.lxo-sc{position:relative;width:var(--W);height:calc(var(--W)*10/7);transform-style:preserve-3d}
+.lxo-sc>.lx3{position:absolute;left:0;top:0}
+.lxo .lx3-flap{transition:transform .55s cubic-bezier(.4,0,.3,1.15)}
+.lxo-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% var(--top),#fff,rgba(255,236,170,.8) 30%,rgba(255,210,120,0) 70%);opacity:0;pointer-events:none}
+.lxo-tap{position:absolute;left:0;right:0;top:calc(var(--cy) + var(--W)*5/7 + 30px);margin:0;text-align:center;font:800 19px/1.2 var(--ui);color:#FFE7B0;opacity:0;transition:opacity .3s}
+.lxo-tap.on{opacity:1;animation:lxoTap 1.4s ease-in-out infinite}
+@keyframes lxoTap{50%{transform:scale(1.06)}}
+.lxo-c{position:absolute;left:50%;top:50%;width:var(--cz);height:var(--cz);margin:calc(var(--cz)/-2) 0 0 calc(var(--cz)/-2);transform-style:preserve-3d;opacity:0}
+.lxo-c>i{position:absolute;inset:0}
+.lxo-c svg{display:block;width:100%;height:100%}
+.lxo-pill{position:absolute;right:16px;display:flex;align-items:center;gap:4px;padding:0 10px 0 6px;border-radius:20px;background:#FFF8E8;box-shadow:0 2px 0 rgba(0,0,0,.18);opacity:0;transition:opacity .3s}
+.lxo.on .lxo-pill{opacity:1}
+.lxo-pill .coin{width:22px;height:22px;flex:none}
+.lxo-pill b{font:900 16px/1 var(--ui);color:#A86A0C;font-variant-numeric:tabular-nums}
+.lxo-h{position:absolute;left:0;right:0;top:calc(var(--cy) + var(--W)*5/7 + 22px);display:flex;align-items:baseline;justify-content:center;gap:8px;opacity:0;transform:translateY(8px)}
+.lxo-h i{font:normal 700 15px/1 var(--hanzi);color:#F6C445;letter-spacing:.25em;padding-left:.25em}
+.lxo-h b{font:800 20px/1.1 var(--ui);color:#FFF4E2}
+.lxo.lit .lxo-h{opacity:1;transform:none;transition:opacity .5s,transform .5s ease-out}
+.lxo-sum{position:absolute;left:0;right:0;top:calc(var(--cy) + var(--W)*5/7 + 58px);margin:0;display:flex;justify-content:center;align-items:baseline;gap:6px;opacity:0}
+.lxo-sum b{font:800 34px/1 var(--ui);color:#FFE07A;font-variant-numeric:tabular-nums}
+.lxo-sum small{font:700 16px/1 var(--ui);color:#F2D3A8}
+.lxo.lit .lxo-sum{opacity:1;transition:opacity .4s .3s}
+.lxo-dock{position:absolute;left:20px;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));opacity:0;transform:translateY(16px);pointer-events:none}
+.lxo.done .lxo-dock{opacity:1;transform:none;pointer-events:auto;transition:opacity .35s,transform .4s ease-out}
+.lxo-dock .btn{width:100%;height:54px;font-size:17px;background:linear-gradient(#FFE79A,#FFD15C 55%);color:#7E1D19;text-shadow:none;--edge:rgba(150,90,10,.55);--drop:rgba(60,8,4,.7)}
 /* moka2: the mahjong tiles from the real app (v4.15-v4.30), used by the end of a deck round */
 .le2-burst{position:absolute;z-index:-1;left:50%;top:-30px;width:820px;height:820px;margin-left:-410px;pointer-events:none;background:repeating-conic-gradient(from 0deg,#FFDC8C 0deg 9deg,transparent 9deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 10%,transparent 46%);mask-image:radial-gradient(circle,#000 10%,transparent 46%);opacity:.9}
 .lt-row{display:flex;gap:18px;justify-content:center;margin:40px 0 0}
@@ -10449,6 +10508,229 @@ function finishFlip() {
   LOG.add('flip-round', { remembered: ids.filter(id => st.graded[id] > 0).length, of: ids.length, new: st.fresh.length });
   render(); window.scrollTo(0, 0); $('#app').scrollTop = 0;
   try { navigator.vibrate?.([10, 70, 16]); } catch (_) {}
+}
+/* moka2: the red envelope (利是) from the real app (v3.82-v4.35), for the reading card on Read */
+/* v3.82, the red envelope (利是) is a little 3D envelope, turned to the side so its paper edge shows (ilkem: "slightly 3d
+   looking to the side... I like the plum, jade and golden cloud version"; the looks are drawn in lixi-samples.html). Each unit
+   takes the next look in turn. The faces are drawn in a 240 x 300 space: the front runs x 50..190, y 70..270, and the flap
+   hangs from its top edge (y 70) */
+const LX_LOOKS = ['plum', 'clouds', 'jade', 'fu'];   // v4.35: Classic Fu is back as the fourth (ilkem: "u can also add the fu one in there")
+const lxLook = un => LX_LOOKS[(un - 1) % LX_LOOKS.length];
+const LX_EDGE = { plum: ['#C42A33', '#E85A50', 0, '#A0202A', .75], clouds: ['#6E1018', '#8A1820', 1, '#5E0C12', 1.46], jade: ['#8E1218', '#A8161E', 1, '#7A0F14', 1.3], fu: ['#9A1A16', '#D23026', 0, '#8E1612', .8] };   // paper edge, gold line on it, inside colour, flap height (x the width)
+let lxId = 0;
+function lxArt(look) {   // { defs, body, flap, inner (the flap's inside, as a path) } for one look, its gradient ids its own
+  const id = 'lx' + (++lxId), X0 = 50, X1 = 190, Y0 = 70, Y1 = 270, CX = 120, R = 10, G = '#F6C445', GD = '#B9800F', GL = '#FFE9A3';
+  const lin = (k, a, b) => `<linearGradient id="${id}${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  const body = (k, stroke) => `<rect x="${X0}" y="${Y0}" width="${X1 - X0}" height="${Y1 - Y0}" rx="${R}" fill="url(#${id}${k})" stroke="${stroke}" stroke-width="3"/>`;
+  const top = `M${X0} ${Y0 + R}Q${X0} ${Y0} ${X0 + R} ${Y0}H${X1 - R}Q${X1} ${Y0} ${X1} ${Y0 + R}`;
+  const vFlap = tip => `${top}V${Y0 + 18}Q${CX} ${tip + 26} ${X0} ${Y0 + 18}Z`, sharp = `${top}V${Y0 + 16}L${CX} 152L${X0} ${Y0 + 16}Z`;
+  if (look === 'plum') {
+    const bloom = (x, y, s, c = '#FFD6DF') => `<g transform="translate(${x} ${y}) scale(${s})">${[0, 72, 144, 216, 288].map(a => `<circle cx="${(Math.cos((a - 90) * Math.PI / 180) * 7).toFixed(2)}" cy="${(Math.sin((a - 90) * Math.PI / 180) * 7).toFixed(2)}" r="6.5" fill="${c}" stroke="#C2405E" stroke-width="1.6"/>`).join('')}<circle r="3.8" fill="${G}" stroke="${GD}" stroke-width="1.2"/></g>`;
+    return { defs: lin('b', '#E8333B', '#FF7A64') + lin('f', '#F45252', '#EC3D40'), inner: vFlap(140),
+      body: body('b', '#8F1D22')
+        + `<path d="M${X1} 170Q160 190 138 196Q110 204 96 232Q88 248 ${X0 + 4} 258M138 196q-6-16 4-28M110 214q16 4 26 18" fill="none" stroke="#5A2A1C" stroke-width="5" stroke-linecap="round"/>`
+        + bloom(142, 166, 1) + bloom(136, 234, .85, '#fff') + bloom(98, 226, 1.05) + bloom(66, 254, .7, '#fff') + bloom(176, 182, .6)
+        + [[78, 190], [170, 214], [118, 252], [158, 252]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.2" fill="${GL}" opacity=".9"/>`).join('')
+        + `<rect x="${X0 + 14}" y="160" width="26" height="26" rx="4" fill="${G}" stroke="${GD}" stroke-width="2.5"/><text x="${X0 + 27}" y="174" text-anchor="middle" dominant-baseline="central" font-size="17" font-weight="900" fill="#B3202A" style="font-family:var(--hanzi)">春</text>`,
+      flap: `<path d="${vFlap(140)}" fill="url(#${id}f)" stroke="#8F1D22" stroke-width="3" stroke-linejoin="round"/>`
+        + `<path d="M${X0 + 6} ${Y0 + 26}Q90 96 128 100Q150 102 166 86M110 98q2-14 14-20" fill="none" stroke="#5A2A1C" stroke-width="4.5" stroke-linecap="round"/>`
+        + bloom(92, 94, .9, '#fff') + bloom(130, 76, .8) + bloom(160, 92, .95) + bloom(124, 106, .65, '#fff') };
+  }
+  if (look === 'clouds') {
+    const cloud = (x, y, s, c) => `<path transform="translate(${x} ${y}) scale(${s})" d="M-24 6q-8 0-8-8t9-8q2-10 13-10t13 9q4-6 11-4t7 9q8 0 8 6t-8 6Z M-14 -2q4-5 9-1q4 4 0 7" fill="none" stroke="${c}" stroke-width="${(3 / s).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const btn = y => `<circle cx="${CX}" cy="${y}" r="13" fill="${G}" stroke="${GD}" stroke-width="3"/><circle cx="${CX}" cy="${y}" r="4.5" fill="${GD}"/>`;
+    return { defs: lin('b', '#B3202A', '#7D1219') + lin('f', '#C4282F', '#951820'), inner: vFlap(140),
+      body: body('b', '#4E0A0F')
+        + cloud(88, 196, 1.2, '#D8434A') + cloud(158, 232, 1, '#D8434A') + cloud(86, 250, .7, '#D8434A') + cloud(162, 176, .7, '#D8434A')
+        + `<path d="M${X0 + 8} ${Y1 - 16}H${X1 - 8}" stroke="${G}" stroke-width="3" opacity=".8"/><path d="M${X0 + 8} ${Y1 - 10}H${X1 - 8}" stroke="${G}" stroke-width="2.4" opacity=".7"/>`
+        + btn(208).replace('r="13"', 'r="12"'),
+      flap: `<path d="${vFlap(140)}" fill="url(#${id}f)" stroke="#4E0A0F" stroke-width="3" stroke-linejoin="round"/>`
+        + cloud(92, 92, .9, '#E05A60') + cloud(150, 96, .8, '#E05A60') + `<path d="M${X0 + 2} ${Y0 + 3}H${X1 - 2}" stroke="${G}" stroke-width="3"/>`
+        + `<path d="M${CX - 14} 146C${CX - 14} 168 ${CX + 16} 186 ${CX + 14} 208C${CX + 12} 224 ${CX - 12} 224 ${CX - 14} 208C${CX - 16} 186 ${CX + 14} 168 ${CX + 14} 146C${CX + 14} 128 ${CX - 14} 128 ${CX - 14} 146Z" fill="none" stroke="${G}" stroke-width="2.6" stroke-linejoin="round"/>`
+        + `<path d="M${CX + 10} 214q10 14 4 26M${CX + 6} 216q2 16-6 22" fill="none" stroke="${G}" stroke-width="2.4" stroke-linecap="round"/>` + btn(146) };
+  }
+  if (look === 'fu') {   // v4.35, Classic Fu from lixi-samples (first version): deep red, a gold frame, a round gold 福 seal holding the flap shut and 大吉 below
+    return { defs: lin('b', '#E2342B', '#B51E1A') + lin('f', '#EE4B3F', '#CC2B24'), inner: vFlap(150),
+      body: body('b', '#7E1512')
+        + `<rect x="${X0 + 10}" y="${Y0 + 10}" width="${X1 - X0 - 20}" height="${Y1 - Y0 - 20}" rx="7" fill="none" stroke="${G}" stroke-width="2.4" opacity=".9"/>`
+        + [[X0 + 10, Y1 - 10, 1], [X1 - 10, Y1 - 10, -1]].map(([x, y, a]) => `<path d="M${x} ${y - 22}V${y}H${x + a * 22}" fill="none" stroke="${G}" stroke-width="5" stroke-linecap="round"/>`).join('')
+        + `<text x="${CX}" y="226" text-anchor="middle" font-size="34" font-weight="900" fill="${G}" style="font-family:var(--hanzi)">大吉</text>`
+        + `<path d="M84 244h72" stroke="${G}" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>`,
+      flap: `<path d="${vFlap(150)}" fill="url(#${id}f)" stroke="#7E1512" stroke-width="3" stroke-linejoin="round"/>`
+        + `<path d="M${X0 + 10} ${Y0 + 20}Q${CX} 172 ${X1 - 10} ${Y0 + 20}" fill="none" stroke="${G}" stroke-width="2.2" opacity=".85"/>`
+        + `<circle cx="${CX}" cy="148" r="27" fill="${G}" stroke="${GD}" stroke-width="3.5"/><circle cx="${CX}" cy="148" r="21" fill="none" stroke="#D9A21E" stroke-width="2"/>`
+        + `<text x="${CX}" y="149" text-anchor="middle" dominant-baseline="central" font-size="29" font-weight="900" fill="#C0241D" style="font-family:var(--hanzi)">福</text>`
+        + `<path d="M101 134a20 20 0 0 1 9-8" stroke="${GL}" stroke-width="3" fill="none" stroke-linecap="round"/>` };
+  }
+  const lat = [];   // jade: a gold lattice like a paper window cut, and a jade 平安扣 clasp with a red tassel
+  for (let y = 176; y <= 252; y += 19) for (let x = 66; x <= 174; x += 18) lat.push(`M${x} ${y - 7}L${x + 7} ${y}L${x} ${y + 7}L${x - 7} ${y}Z`);
+  return { defs: lin('b', '#D8262C', '#A3141B') + lin('f', '#E2342F', '#C01E23') + `<mask id="${id}m"><circle cx="${CX}" cy="150" r="22" fill="#fff"/><circle cx="${CX}" cy="150" r="8.5" fill="#000"/></mask>`, inner: sharp,
+    body: body('b', '#6E0E12') + `<path d="${lat.join('')}" fill="none" stroke="${G}" stroke-width="1.4" opacity=".55"/>`
+      + `<rect x="${X0 + 10}" y="${Y0 + 10}" width="${X1 - X0 - 20}" height="${Y1 - Y0 - 20}" rx="7" fill="none" stroke="${G}" stroke-width="1.6" opacity=".7"/>`,
+    flap: `<path d="${sharp}" fill="url(#${id}f)" stroke="#6E0E12" stroke-width="3" stroke-linejoin="round"/>`
+      + `<path d="M${X0 + 12} ${Y0 + 20}L${CX} 140L${X1 - 12} ${Y0 + 20}" fill="none" stroke="${G}" stroke-width="1.8" opacity=".75"/><circle cx="${CX}" cy="152" r="24" fill="#6E0E12" opacity=".25"/>`
+      + `<g mask="url(#${id}m)"><circle cx="${CX}" cy="150" r="22" fill="#5CC898"/><circle cx="${CX + 2}" cy="152" r="17" fill="none" stroke="#2FA273" stroke-width="7"/><path d="M${CX - 16} 142a17 17 0 0 1 9-8" stroke="#B6F0D2" stroke-width="4" fill="none" stroke-linecap="round"/></g>`
+      + `<circle cx="${CX}" cy="150" r="22" fill="none" stroke="#1F5A41" stroke-width="2.6"/><circle cx="${CX}" cy="150" r="8.5" fill="none" stroke="#1F5A41" stroke-width="2.4"/>`
+      + `<path d="M${CX} 172v10" stroke="#E2342F" stroke-width="3"/><path d="M${CX - 7} 182h14l3 34q-10 6-20 0z" fill="#E43A2E" stroke="#8E1612" stroke-width="2.4" stroke-linejoin="round"/><path d="M${CX - 4} 190v22M${CX} 190v24M${CX + 4} 190v22" stroke="#FF8A6E" stroke-width="1.4"/><rect x="${CX - 8}" y="180" width="16" height="6" rx="2" fill="${G}" stroke="${GD}" stroke-width="1.6"/>` };
+}
+/* the envelope in 3D: a front and a back, its four paper edges, and the flap on a hinge at the top (its inside on its back).
+   The light and the coins go between the front and the back. Sized by --W on its .lx3p */
+const LX_BANDS = (() => {   // v4.34: the four curved sides, six strips each (numbers in units of the width W), shaded by where they face; the top catches more light, the bottom less
+  const out = [], c = (k, f) => `color-mix(in srgb,var(--e2) ${Math.round(Math.max(0, Math.min(1, f)) * 100)}%,var(--e1))`;
+  for (const [o, z, l, ay, ax, f] of [[0.0125, 0.0933, 0.0284, 28.19, -28.19, 0.259], [0.0342, 0.0683, 0.0409, 63.43, -63.43, 0.707], [0.0467, 0.025, 0.0504, 82.37, -82.37, 0.966], [0.0467, -0.025, 0.0504, 97.63, -97.63, 0.966], [0.0342, -0.0683, 0.0409, 116.57, -116.57, 0.707], [0.0125, -0.0933, 0.0284, 151.81, -151.81, 0.259]]) {
+    out.push(`<span class="lx3-a" style="left:calc(50% - var(--W)*${l / 2});top:var(--R);width:calc(var(--W)*${l});height:calc(var(--H) - 2*var(--R));background:${c(0, f * .85 + .1)};transform:translate3d(calc(var(--W)*${.5 + o}),0,calc(var(--W)*${z})) rotateY(${ay}deg)"></span>`);
+    out.push(`<span class="lx3-a" style="left:calc(50% - var(--W)*${l / 2});top:var(--R);width:calc(var(--W)*${l});height:calc(var(--H) - 2*var(--R));background:${c(0, f * .7)};transform:translate3d(calc(var(--W)*${-.5 - o}),0,calc(var(--W)*${z})) rotateY(${180 - ay}deg)"></span>`);
+    out.push(`<span class="lx3-a" style="top:calc(50% - var(--W)*${l / 2});left:var(--R);height:calc(var(--W)*${l});width:calc(var(--W) - 2*var(--R));background:${c(0, f + .15)};transform:translate3d(0,calc(var(--H)*-.5 - var(--W)*${o}),calc(var(--W)*${z})) rotateX(${-ax}deg)"></span>`);
+    out.push(`<span class="lx3-a" style="top:calc(50% - var(--W)*${l / 2});left:var(--R);height:calc(var(--W)*${l});width:calc(var(--W) - 2*var(--R));background:${c(0, f * .55)};transform:translate3d(0,calc(var(--H)*.5 + var(--W)*${o}),calc(var(--W)*${z})) rotateX(${ax}deg)"></span>`);
+  }
+  return out.join('');
+})();
+const LX_SLICES = Array.from({ length: 13 }, (_, i) => {   // v4.31: the puffed body, back to front (v4.34: no gold line round the middle, it flickered as it turned)
+  const u = -.94 + 1.88 * i / 12, r = Math.sqrt(1 - u * u);
+  return `<span class="lx3-l" style="--u:${u.toFixed(3)};--i:${r.toFixed(3)};background:color-mix(in srgb,var(--e2) ${Math.round(r * 100)}%,var(--e1))"></span>`;
+}).join('');
+function lx3(look) {
+  const a = lxArt(look), [e1, e2, g, ins, fh] = LX_EDGE[look];
+  return `<span class="lx3p" aria-hidden="true"><span class="lx3 lx3-${look}" style="--e1:${e1};--e2:${e2};--g:${g ? '#F6C445' : 'transparent'};--in:${ins};--fh:${fh}">`
+    + '<span class="lx3-b"></span>' + LX_SLICES + LX_BANDS + '<span class="lx3-glow"></span>'
+    + `<span class="lx3-f"><svg viewBox="50 70 140 200"><defs>${a.defs}</defs>${a.body}</svg></span>`
+    + `<span class="lx3-flap"><span class="out"><svg viewBox="50 70 140 ${(140 * fh).toFixed(1)}"><defs>${a.defs}</defs>${a.flap}</svg></span>`
+    + `<span class="in"><svg viewBox="50 70 140 ${(140 * fh).toFixed(1)}"><path d="${a.inner}" fill="${ins}" stroke="rgba(0,0,0,.35)" stroke-width="3" stroke-linejoin="round"/></svg></span></span></span></span>`;
+}
+const lxFlat = look => { const a = lxArt(look); return `<svg viewBox="46 66 148 208" aria-hidden="true"><defs>${a.defs}</defs>${a.body}${a.flap}</svg>`; };   // a small flat one, for a list
+function lxShow(look, n, from, done) {
+  const fr = $('#frame') || document.body, still = stillMotion(), fh = fr.clientHeight || innerHeight, fw = fr.clientWidth || innerWidth, f0 = fr.getBoundingClientRect();
+  const W = Math.round(Math.min(140, fh * .19, fw * .34)), H = W * 10 / 7, cy = Math.round(fh * .44), top = Math.round(cy - H / 2), cz = Math.round(W * .21), th = cz * .2;
+  const real = $('.uc-coins'), shown = real && real.offsetParent ? parseInt((real.querySelector('b')?.textContent || '').replace(/\D/g, '')) : NaN, bal0 = isFinite(shown) ? shown : coinBal();
+  const o = document.createElement('div'); o.className = 'lxo'; o.tabIndex = -1; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', `Red envelope, ${n} coins`);
+  o.style.cssText = `--W:${W}px;--cy:${cy}px;--top:${top}px;--cz:${cz}px`;
+  o.innerHTML = `<div class="lxo-bg"></div><div class="lxo-fly">${lx3(look)}</div><div class="lxo-flash"></div>
+    <p class="lxo-tap" aria-live="polite"></p>
+    <div class="lxo-h"><i lang="zh">利是</i><b>Lucky money</b></div>
+    <p class="lxo-sum" role="status"><b>+0</b><small>coins</small></p>
+    <div class="lxo-pill" aria-hidden="true">${coinSvg()}<b>${coinFmt(bal0)}</b></div>
+    <div class="lxo-dock"><button class="btn btn-seal" data-lxo="go">Collect</button></div>`;
+  fr.append(o);
+  // the envelope and its coins share one 3D space, so the ring passes in front of it and behind it
+  const p3 = o.querySelector('.lx3p'), env = o.querySelector('.lx3'), fly = o.querySelector('.lxo-fly'), sc = document.createElement('div'), glow = env.querySelector('.lx3-glow');
+  sc.className = 'lxo-sc'; p3.append(sc); sc.append(env); env.style.animation = 'none';
+  const rim = '<svg viewBox="0 0 24 24"><path d="M1.7 12a10.3 10.3 0 1 0 20.6 0a10.3 10.3 0 1 0-20.6 0ZM9.5 9.5h5v5h-5Z" fill-rule="evenodd" fill="#C98A0A" stroke="#8A4A06" stroke-width="1"/></svg>';
+  const k = Math.max(8, Math.min(14, Math.round(n / 4)));
+  const coins = Array.from({ length: k }, () => {   // thick coins: a face on each side and four rim discs between
+    const c = document.createElement('span'); c.className = 'lxo-c';
+    c.innerHTML = Array.from({ length: 6 }, (_, j) => `<i style="transform:translateZ(${(-th / 2 + th * j / 5).toFixed(2)}px)${j === 0 ? ' rotateY(180deg)' : ''}">${j === 0 || j === 5 ? coinSvg(1) : rim}</i>`).join('');
+    sc.append(c); return c;
+  });
+  // your coin count, drawn over the red at the height of the real one and kept inside the screen (it grows to the left)
+  const pill = o.querySelector('.lxo-pill'), pillN = pill.querySelector('b'), sumN = o.querySelector('.lxo-sum b'), tap = o.querySelector('.lxo-tap');
+  const pr = real && real.offsetParent ? real.getBoundingClientRect() : null;
+  pill.style.top = pr ? `${pr.top - f0.top + pr.height / 2 - 17}px` : 'calc(env(safe-area-inset-top) + 12px)'; pill.style.height = '34px';
+  const pcR = pill.querySelector('.coin').getBoundingClientRect();
+  const pc = { x: pcR.left + pcR.width / 2 - f0.left - fw / 2, y: pcR.top + pcR.height / 2 - f0.top - cy };   // where the coins land, from the middle of the envelope
+  // buzzing: a vibration that keeps going (Android), or a tick every 110 ms where there is no vibration (iPhone's switch tick)
+  let buzzT = 0;
+  const buzzStop = () => { clearTimeout(buzzT); clearInterval(buzzT); buzzT = 0; try { navigator.vibrate?.(0); } catch (_) {} };
+  const buzzGo = (dense) => {
+    try {
+      if (navigator.vibrate) { const pat = []; for (let i = 0; i < 30; i++) pat.push(30, dense ? 45 : Math.max(45, 170 - i * 6)); navigator.vibrate(pat); buzzT = setTimeout(() => buzzGo(true), pat.reduce((x, y) => x + y, 0)); }
+      else buzzT = setInterval(() => haptic(10), 110);
+    } catch (_) {}
+  };
+  let st = 'arrive', closed = false, raf = 0, got = 0, tL = 0, tB = 0, tO = 0;
+  const close = () => {
+    if (closed) return; closed = true; cancelAnimationFrame(raf); buzzStop(); o.classList.add('out');
+    if (from) from.style.visibility = ''; done?.(); setTimeout(() => o.remove(), still ? 0 : 320);
+  };
+  o.querySelector('[data-lxo="go"]').onclick = e => { e.stopPropagation(); haptic(10); close(); };
+  const show = m => { pillN.textContent = coinFmt(bal0 + Math.round(n * m / k)); sumN.textContent = '+' + coinFmt(Math.round(n * m / k)); };
+  const finish = () => {
+    st = 'done'; cancelAnimationFrame(raf); buzzStop(); tap.classList.remove('on');
+    coins.forEach(c => { c.style.opacity = 0; if (c.parentNode === env) sc.append(c); }); env.classList.add('open'); o.classList.add('lit', 'done'); show(k);
+    env.style.transform = 'rotateX(8deg) rotateY(-24deg)'; glow.style.cssText = 'opacity:.5;transform:scale(.6)';
+    o.querySelector('[data-lxo="go"]').focus({ preventScroll: true });
+  };
+  const say = t => { tap.textContent = t; tap.classList.toggle('on', !!t); };
+  const press = () => {
+    if (st === 'wait') { st = 'buzz'; tB = performance.now() - t0; say('Tap again to open'); haptic(20); buzzGo(false); }
+    else if (st === 'buzz') { st = 'open'; tO = performance.now() - t0; say(''); open(); }
+    else if (st === 'open') finish();
+  };
+  const open = () => {   // the burst
+    buzzStop(); try { if (navigator.vibrate) navigator.vibrate([90, 50, 160]); else haptic(30); } catch (_) {}
+    env.classList.add('open'); o.classList.add('lit');
+    o.querySelector('.lxo-flash').animate([{ opacity: 0 }, { opacity: .9, offset: .15 }, { opacity: 0 }], { duration: 650, easing: 'ease-out' });
+    fly.animate([{ transform: 'none' }, { transform: 'translate(-6px,4px)' }, { transform: 'translate(6px,-4px)' }, { transform: 'translate(-3px,-2px)' }, { transform: 'none' }], { duration: 320 });
+    glow.animate([{ opacity: .4, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1.2)', offset: .3 }, { opacity: .5, transform: 'scale(.6)' }], { duration: 1100, easing: 'ease-out', fill: 'forwards' });
+  };
+  o.addEventListener('click', () => { if (st !== 'done' && st !== 'arrive') press(); });
+  o.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && st !== 'done' && st !== 'arrive') { e.preventDefault(); press(); } else if (e.key === 'Escape' && st === 'done') close(); });
+  requestAnimationFrame(() => o.classList.add('on'));
+  if (from) from.style.visibility = 'hidden';
+  if (still) { finish(); return; }
+  o.focus({ preventScroll: true }); haptic(12);
+  // the spin in, from where it stood on the path
+  const fl = 1100;
+  if (from) {
+    const r = from.getBoundingClientRect(), dx = r.left + r.width / 2 - f0.left - fw / 2, dy = r.top + r.height / 2 - f0.top - cy, s0 = Math.max(.12, Math.min(1, r.height / H * .9));
+    fly.animate([{ transform: `translate(${dx}px,${dy}px) scale(${s0})` }, { transform: `translate(${(dx * .3).toFixed(1)}px,${(dy * .3 - fh * .08).toFixed(1)}px) scale(${((s0 + 1.3) / 2).toFixed(2)})`, offset: .55 }, { transform: 'none' }], { duration: fl, easing: 'cubic-bezier(.4,0,.2,1)' });
+  } else fly.animate([{ transform: `translateY(${fh * .5}px) scale(.3)` }, { transform: 'none' }], { duration: fl, easing: 'cubic-bezier(.3,.7,.3,1)' });
+  const cl = x => Math.min(1, Math.max(0, x)), seg = (t, a, b) => cl((t - a) / (b - a)), lerp = (a, b, x) => a + (b - a) * x;
+  const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2, eo = x => 1 - Math.pow(1 - x, 3);
+  const R = W * .92, ringY = -H * .02, step = 90, yOut = -H / 2 - cz * 1.1;
+  const t0 = performance.now();
+  const frame = () => {
+    if (closed || st === 'done') return;
+    const t = performance.now() - t0;
+    let ry = -26, rz = 0, tx = 0, ty = 0, sx = 1, sy = 1;
+    if (st === 'arrive') {   // two turns, slowing down as it lands
+      ry = -26 - 720 * (1 - eo(seg(t, 0, fl)));
+      if (t >= fl) { st = 'wait'; tL = t; say('Tap it'); haptic(30); }
+    } else {
+      const d = t - tL, q = Math.sin(cl(d / 500) * Math.PI * 3) * Math.exp(-d / 170) * .14;   // the squash as it lands
+      sx = 1 + q; sy = 1 - q;
+      ry = -26 + Math.sin(d / 900) * 10; ty = Math.sin(d / 700) * 3;
+    }
+    if (st === 'buzz') {   // trembling harder and harder, light leaking out
+      const a = seg(t, tB, tB + 2500), b = t - tB;
+      rz = Math.sin(b / 26) * (2 + 5 * a); tx = Math.sin(b / 17) * (1 + 2.5 * a); ty = Math.sin(b / 21) * (1 + 1.5 * a); ry = -26 + Math.sin(b / 45) * 4;
+      sx = sy = 1 + .03 * a * Math.sin(b / 60);
+      glow.style.opacity = (.2 + .4 * a).toFixed(2); glow.style.transform = `scale(${(.35 + .15 * a).toFixed(2)})`;
+    }
+    if (st === 'open') {   // a pop, then hovering; the coins burst out, circle it and fly to your coin count
+      const d = t - tO, q = Math.sin(cl(d / 420) * Math.PI * 2) * Math.exp(-d / 140) * .16; sx = 1 + q; sy = 1 - q;
+      ry = -26 + Math.sin(d / 900) * 10; ty = Math.sin(d / 700) * 3;
+      const tOut = tO + 120, tGo = tOut + k * 35 + 1300, tEnd = tGo + k * step + 650, spin = (t - tOut) / 1000 * Math.PI * 1.1;
+      coins.forEach((c, i) => {
+        const s0 = tOut + i * 35, go = tGo + i * step;
+        if (t >= go + 600 && !c.dataset.in) { c.dataset.in = 1; got++; show(got); clink(i); haptic(8); pill.animate([{ transform: 'scale(1.12)' }, { transform: 'none' }], { duration: 220, easing: 'ease-out' }); }
+        if (t < s0 || t >= go + 600) { c.style.opacity = 0; return; }
+        c.style.opacity = 1;
+        // v4.34 (ilkem: "the coins dont come out of the top, it kinda just comes out of the middle"): first each coin rises out of the
+        // opening inside the envelope itself, flat between its front and its back, so the front hides it until it clears the top
+        // edge; only then does it join the ring
+        if (t < s0 + 320 && !c._S) {
+          if (c.parentNode !== env) env.append(c);
+          const u = eo(seg(t, s0, s0 + 320));
+          c.style.transform = `translate3d(0,${lerp(-H / 2 + cz * .3, yOut, u).toFixed(1)}px,0) scale(${lerp(.6, 1, u).toFixed(3)})`;
+          return;
+        }
+        if (!c._S) {   // clear of the top: hand it over to the ring's space where it is now
+          const P = new DOMMatrix(getComputedStyle(env).transform).transformPoint(new DOMPoint(0, yOut, 0));
+          c._S = { x: P.x, y: P.y, z: P.z, r: ry }; sc.append(c);
+        }
+        const S = c._S, a = i / k * Math.PI * 2 + spin, out = eio(seg(t, s0 + 320, s0 + 900)), down = eio(seg(t, s0 + 560, s0 + 1050));
+        let ra = -a * 57.3 + 90; ra = S.r + ((((ra - S.r) % 360) + 540) % 360 - 180);   // the shortest turn from facing like the envelope to its place in the ring
+        let x = lerp(S.x, Math.cos(a) * R, out), z = lerp(S.z, Math.sin(a) * R, out), y = lerp(S.y, ringY + Math.sin(a) * R * .3, down), s1 = 1, rr = lerp(S.r, ra, out);
+        const g = eio(seg(t, go, go + 600));
+        if (g > 0) { x = lerp(x, pc.x, g); y = lerp(y, pc.y, g) - Math.sin(g * Math.PI) * 40; z = lerp(z, 0, g); s1 = lerp(1, 22 / cz, g); }
+        c.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateX(${(8 * (1 - out)).toFixed(2)}deg) rotateY(${rr.toFixed(1)}deg) scale(${s1.toFixed(3)})`;
+      });
+      if (t >= tEnd) { finish(); return; }
+    }
+    env.style.transform = `translate(${tx.toFixed(2)}px,${ty.toFixed(2)}px) rotateX(8deg) rotateY(${ry.toFixed(2)}deg) rotateZ(${rz.toFixed(2)}deg) scale(${sx.toFixed(3)},${sy.toFixed(3)})`;
+    raf = requestAnimationFrame(frame);
+  };
+  raf = requestAnimationFrame(frame);
 }
 const lesClock = ms => { const t = Math.round(ms / 1e3); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
 function lesTile(i, ch, col, val, lab) {   // a tile 38px deep: 1px slices, ivory at the front and jade at the back, so its sides show and stay solid as it turns
