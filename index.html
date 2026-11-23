@@ -2856,13 +2856,6 @@ button.scene-tile:active svg{opacity:.92}
 .ob-phone{position:relative;width:150px;height:150px;margin:24px auto 0;border-radius:34px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);display:grid;place-items:center}
 .ob-phone img{width:88px;height:88px;border-radius:22px;box-shadow:0 6px 16px -6px rgba(70,45,20,.4)}
 .ob-phone::after{content:"";position:absolute;top:22px;right:24px;width:22px;height:22px;border-radius:50%;background:var(--seal);box-shadow:0 0 0 3px var(--card)}
-/* daily goal ring around the flame on Decks */
-.hm-streak .gring{position:relative;width:34px;height:34px;display:grid;place-items:center;flex:none}
-.hm-streak .gring svg.gr{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
-.gr circle{fill:none;stroke-width:3}
-.gr .gr-bg{stroke:var(--fill)}
-.gr .gr-fg{stroke:var(--jade);stroke-linecap:round;transition:stroke-dashoffset .6s ease}
-.hm-streak .gring .flame{width:22px;height:22px}
 /* daily goal: Streak page row and end of round */
 .goal-row{display:flex;align-items:center;gap:12px;width:100%;margin:16px 0 0;padding:12px 14px;border-radius:16px;background:var(--card);box-shadow:var(--ring);text-align:left}
 .goal-row .goal-main{flex:1;min-width:0}
@@ -6950,7 +6943,6 @@ function StreakView() {
       <p class="st-note">${note}</p>
       <div class="st-fz${fz ? '' : ' none'}">${ICE_SVG.replace('class="ice"', 'class="ice st-ice"')}<div><p>${fzT}</p><span>${fzS}</span></div></div>
     </section>
-    ${GoalRow()}
     ${db.earn ? `<div class="mo-card"><div style="flex:1"><b>Win back your ${db.earn.n}-day streak</b><small>Practise 3 days in a row by ${new Date(db.earn.until - DAY).toLocaleDateString('en-GB', { weekday: 'long' })}. It’s free.</small>
       <div class="mo-pips">${[0, 1, 2].map(i => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div></div></div>` : ''}
     <h2 class="st-h">Streak calendar <span class="cal-zh">日历</span></h2>
@@ -7234,12 +7226,9 @@ function ProfileView() {
   </div>`;
 }
 
-/* the menu button in the top-left corner of Decks; tap it for the side menu */
-const MenuBtn = () => `<button class="icon-btn hm-menu" data-act="drawer" aria-label="Open menu">${I.menu}</button>`;
 /* the flame in the top-right corner of the Decks page: your streak, tap it to open the Streak page */
-const StreakBtn = () => { const { n, today } = practiceStreak(), { min: g, goal } = goalToday(), C = 97.39, f = goal ? Math.min(1, g / goal) : 0;
-  const fl = goal ? `<span class="gring${n ? ' on' : ''}${n && !today ? ' wait' : ''}"><svg class="gr" viewBox="0 0 34 34" aria-hidden="true"><circle class="gr-bg" cx="17" cy="17" r="15.5"/><circle class="gr-fg" cx="17" cy="17" r="15.5" stroke-dasharray="${C}" stroke-dashoffset="${(C * (1 - f)).toFixed(1)}"/></svg>${FLAME}</span>` : FLAME;
-  return `<button class="hm-streak${n ? ' on' : ''}${n && !today ? ' wait' : ''}" data-act="streak" aria-label="${n ? `${n} day streak` : 'No streak yet'}.${goal ? ` Daily goal ${Math.min(g, goal)} of ${goal} minutes.` : ''} Open your calendar">${fl}<b>${n}</b></button>`; };
+const StreakBtn = () => { const { n, today } = practiceStreak();
+  return `<button class="hm-streak${n ? ' on' : ''}${n && !today ? ' wait' : ''}" data-act="streak" aria-label="${n ? `${n} day streak` : 'No streak yet'}. Open your calendar">${FLAME}<b>${n}</b></button>`; };
 /* ---------- side menu ----------
    Slides in from the left when you tap the menu button in the top-left corner of Decks. Holds Profile and all the settings.
    Close it by tapping outside, swiping it back to the left, or picking an item. */
@@ -7771,7 +7760,7 @@ function Home() {
   const tally = [groups.length && plural(groups.length, 'group'), db.decks.length && plural(db.decks.length, 'deck')].filter(Boolean).join(' · ');
   return `<div class="screen fade-in has-fab">
     <div class="section-head cal-head pg-head"><h2>Decks <span class="cal-zh">卡片</span></h2>
-      <span class="pg-tr">${StreakBtn()}${MenuBtn()}</span></div>
+      <span class="pg-tr">${StreakBtn()}</span></div>
     ${HotdStack()}
     ${BankCounter()}
     <div class="section-head"><h2>Your decks</h2>${tally ? `<span class="sh-n">${tally}</span>` : ''}</div>
