@@ -84,14 +84,6 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 #app.swiping{user-select:none;-webkit-user-select:none}
 .screen{min-height:100dvh;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 
-/* desktop: show as a phone */
-@media (min-width:700px){
-  body{display:grid;place-items:center;min-height:100vh;background:var(--paper-deep)}
-  #frame{width:400px;height:min(860px,94vh);border-radius:44px;overflow:hidden;background:var(--paper);
-    box-shadow:0 0 0 10px #1b1813,0 0 0 11px #3a342b,0 40px 80px -20px rgba(0,0,0,.45);transform:translateZ(0);display:flex}
-  #app{flex:1;overflow-y:auto;width:100%;scrollbar-width:none}
-  .screen{min-height:100%}
-}
 
 /* no pull to refresh: pulling down at the top of a page never reloads the app (Chrome's own one is off too) */
 html{overscroll-behavior-y:none}
@@ -695,6 +687,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .py{font-size:17px;color:var(--seal);margin-top:14px;letter-spacing:.03em}
 .en{font-family:var(--display);font-weight:500;line-height:1.15;color:var(--ink)}
 .hint{text-align:center;font-size:12.5px;color:var(--muted);margin:4px 0 0;transition:opacity .6s;height:18px}
+.hint .kb{display:none}
 .controls{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 0 calc(22px + env(safe-area-inset-bottom))}
 .controls .mid{display:flex;gap:8px}
 .controls[hidden],.grades[hidden]{display:none}
@@ -851,6 +844,15 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 #sheet-root .picker.on .scrim{opacity:1}
 #sheet-root .picker .sheet{transform:translateY(105%)}
 #sheet-root .picker.on .sheet{transform:none}
+@media (min-width:900px){   /* desktop: a window in the middle that fades up, closed with its X, Escape or a click outside */
+  .sheet{top:50%;bottom:auto;width:min(480px,calc(100% - 48px));padding:14px 26px 26px;border-radius:28px;max-height:min(780px,calc(100% - 48px));
+    opacity:0;transform:translateY(calc(-50% + 28px)) scale(.97);transition:transform .32s cubic-bezier(.2,.85,.25,1),opacity .2s;box-shadow:0 30px 80px -20px rgba(40,25,10,.45)}
+  #sheet-root.open .sheet{opacity:1;transform:translateY(-50%)}
+  #sheet-root .picker .sheet{opacity:0;transform:translateY(calc(-50% + 28px)) scale(.97)}
+  #sheet-root .picker.on .sheet{opacity:1;transform:translateY(-50%)}
+  .sheet>.handle{visibility:hidden}
+}
+@media (min-width:900px) and (prefers-reduced-motion:reduce){.sheet{transition:opacity .2s}}
 .picker .group{margin-bottom:16px}
 .pk-dot{width:10px;height:10px;border-radius:3px;flex:none}
 .picker .row.has .tick svg.i{opacity:.4}
@@ -3230,6 +3232,85 @@ button.scene-tile:active svg{opacity:.92}
 ::view-transition-new(root){animation:vtIn .3s .07s cubic-bezier(.2,.8,.2,1) both}
 @keyframes vtOut{to{opacity:0}}
 @keyframes vtIn{from{opacity:0;transform:translateY(10px)}}
+/* ---------- desktop (moka2 v3.45.20) ----------
+   900px and wider: a menu down the left instead of the bottom tab bar, the page in a wider middle column (the window
+   scrolls, as on a phone), pop-ups as windows in the middle. 1280px and wider: a right-hand column with the
+   "Save your progress" card (or who you are) and your streak, words and XP. Flip and write rounds hide both sides. */
+#side-nav,#side-rail{display:none}
+@media (min-width:900px){
+  :root{--navw:236px;--colw:600px}
+  #app{max-width:var(--colw)}
+  body:has(#frame.tabs) #app{margin-left:max(calc(var(--navw) + 28px),calc((100% - var(--colw)) / 2))}
+  #frame.tabs #tabbar{display:none}
+  #frame.tabs .screen{padding-bottom:28px}
+  #frame.tabs .dock{margin-bottom:-28px;padding-bottom:28px;background:linear-gradient(transparent,var(--paper) 32%)}
+  #toast{bottom:32px}
+  .hint .kb{display:inline}.hint .touch{display:none}
+
+  body:has(#frame.tabs) #side-nav{display:flex}
+  #side-nav{position:fixed;z-index:6;top:0;bottom:0;left:0;width:var(--navw);flex-direction:column;gap:4px;padding:22px 14px 18px;
+    border-right:1px solid var(--line);background:color-mix(in srgb,var(--paper) 70%,var(--card))}
+  .sn-brand{display:flex;align-items:center;gap:10px;height:48px;padding:0 10px;margin-bottom:18px;color:var(--ink);text-decoration:none;border-radius:14px}
+  .sn-brand img{width:38px;height:38px}
+  .sn-brand b{font:800 21px/1 var(--display);letter-spacing:-.025em}
+  .sn-brand b span{color:var(--seal)}
+  .sn-item{display:flex;align-items:center;gap:13px;height:50px;padding:0 14px;border-radius:14px;color:var(--ink-2);font-size:16px;font-weight:600;text-align:left;transition:background .15s,color .15s}
+  .sn-item:hover{background:var(--fill)}
+  .sn-item svg.i{width:23px;height:23px}
+  .sn-item .i-on,.sn-item.on .i-off{display:none}
+  .sn-item.on .i-on{display:block}
+  .sn-item span{flex:1}
+  .sn-item i{font:600 15px/1 var(--hanzi);font-style:normal;color:var(--muted);letter-spacing:.04em}
+  .sn-item.on{background:var(--seal-soft);color:var(--seal)}
+  .sn-item.on i{color:var(--seal)}
+  .sn-item:focus-visible,.sn-brand:focus-visible,.sr-me:focus-visible,.sr-stat:focus-visible,.sr-join .btn:focus-visible,.sr-link:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+  .sn-foot{margin-top:auto}
+
+  /* the account, in either column: signed out, a red card with Shi Shi and one button; signed in, who you are */
+  .sr-join{position:relative;overflow:hidden;padding:18px 18px 16px;border-radius:22px;background:#C4432E;color:var(--seal-ink);corner-shape:squircle;
+    box-shadow:0 14px 30px -18px rgba(120,30,20,.8)}
+  .sr-join .sr-shi{position:absolute;right:-12px;top:-10px;width:82px;height:82px;transform:rotate(10deg)}
+  .sr-join .sr-shi svg{width:100%;height:100%}
+  .sr-join h3{position:relative;margin:0;max-width:calc(100% - 70px);font:800 20px/1.15 var(--display);letter-spacing:-.02em}
+  .sr-join p{position:relative;margin:8px 0 16px;padding-right:34px;font-size:14px;line-height:1.45;color:rgba(255,248,242,.86)}
+  .sr-join .btn{width:100%;height:48px;background:var(--seal-ink);color:#B23A2C;font-weight:700;--edge:rgba(120,30,20,.2);--drop:rgba(60,10,5,.7)}
+  .sr-link{display:block;width:100%;height:40px;margin-top:4px;border-radius:12px;font-size:14.5px;font-weight:600;color:var(--seal-ink)}
+  .sr-link:hover{background:rgba(255,248,242,.12)}
+  .sr-me{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:18px;background:var(--card);box-shadow:var(--ring);text-align:left;transition:background .15s}
+  .sr-me:hover{background:var(--card-2)}
+  .sr-me .acct-face{width:40px;height:40px;font-size:17px}
+  .sr-me b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sr-me small{display:block;font-size:12.5px;color:var(--muted)}
+  .sr-me>span:last-child{min-width:0}
+  .sn-foot .sr-join{padding:16px 14px 12px;border-radius:18px}
+  .sn-foot .sr-join .sr-shi{width:70px;height:70px;right:-12px;top:-8px}
+  .sn-foot .sr-join h3{font-size:17px;max-width:calc(100% - 46px)}
+  .sn-foot .sr-join p{font-size:13px;margin:6px 0 12px;padding-right:0}
+  /* the + button sits at the bottom right of the middle column */
+  .fab,.fab-menu{right:calc(100% - max(var(--navw) + 28px,(100% - var(--colw)) / 2) - var(--colw) + 20px);bottom:32px}
+  .fab.fab-ink{bottom:94px}
+  .fab-menu{bottom:108px}
+  /* the welcome pages and the first-open splash are full screen: no side columns behind them */
+  body:has(#ob) #side-nav,body:has(#ob) #side-rail{display:none!important}
+  .sn-foot .sr-join .btn{height:44px;font-size:15px}
+}
+@media (min-width:1280px){
+  body:has(#frame.tabs) #side-rail{display:flex}
+  .sn-foot{display:none}
+  #side-rail{position:fixed;z-index:6;top:0;bottom:0;left:calc(50% + var(--colw) / 2 + 32px);width:min(310px,calc(50% - var(--colw) / 2 - 56px));
+    flex-direction:column;gap:16px;padding:26px 0 18px;overflow-y:auto;scrollbar-width:none}
+  .sr-stats{display:flex;flex-direction:column;padding:6px;border-radius:20px;background:var(--card);box-shadow:var(--ring);corner-shape:squircle}
+  .sr-stat{display:flex;align-items:center;gap:12px;padding:10px 10px;border-radius:14px;text-align:left;transition:background .15s}
+  .sr-stat:hover{background:var(--fill)}
+  .sr-stat+.sr-stat{margin-top:2px}
+  .sr-ic{flex:none;width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:var(--fill)}
+  .sr-ic .flame{width:28px;height:28px}
+  .sr-ic .pf-zh{font:700 20px/1 var(--hanzi);color:var(--seal)}
+  .sr-ic svg:not(.flame){width:28px;height:28px}
+  .sr-stat b{display:block;font:800 19px/1.1 var(--display);letter-spacing:-.01em}
+  .sr-stat small{display:block;font-size:13px;color:var(--muted)}
+}
+@media (min-width:900px) and (prefers-reduced-motion:reduce){.sn-item,.sr-me,.sr-stat{transition:none}}
 </style>
 </head>
 <body>
@@ -3241,6 +3322,8 @@ button.scene-tile:active svg{opacity:.92}
   <linearGradient id="flCore" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset="1" stop-color="#FFE066"/></linearGradient>
 </defs></svg>
 <div id="frame">
+  <nav id="side-nav" aria-label="Menu"></nav>
+  <aside id="side-rail" aria-label="Your account and progress"></aside>
   <main id="app"></main>
   <nav id="tabbar" aria-label="Main"></nav>
   <div id="fab-root"></div>
@@ -3703,6 +3786,45 @@ function logSheet() {
     });
 }
 
+/* ---------- desktop: menu on the left, account and progress on the right (moka2 v3.45.20) ---------- */
+const WIDE = () => matchMedia('(min-width:900px)').matches;
+const SIDE_ZH = { decks: '卡片', read: '故事', profile: '我的' };
+function sideAcct() {
+  const u = CLOUD.user;
+  if (u) return `<button class="sr-me" data-act="side-acct" aria-label="Your account"><span class="acct-face">${esc((u.name || u.email || '?')[0].toUpperCase())}</span>
+    <span><b>${esc(u.name || u.email)}</b><small>${esc(CLOUD.status())}</small></span></button>`;
+  return `<section class="sr-join"><span class="sr-shi" aria-hidden="true">${shiFace('cheer')}</span>
+    <h3>Save your progress</h3><p>Make a free account. Your words, decks and streak follow you to your phone and every computer.</p>
+    <button class="btn" data-act="side-join">Create account</button>
+    <button class="sr-link" data-act="side-in">I already have an account</button></section>`;
+}
+function paintSide(on) {
+  const nv = $('#side-nav'), rl = $('#side-rail'); if (!nv || !WIDE()) return;
+  if (on == null) on = +(nv.dataset.on ?? -1); nv.dataset.on = on;
+  nv.innerHTML = `<button class="sn-brand" data-act="tab" data-h="#/" aria-label="ShiHanzi, go to Decks"><img src="icons/logo.svg" alt=""><b>Shi<span>Hanzi</span></b></button>`
+    + TABS.map(([k, label, h], j) => `<button class="sn-item${j === on ? ' on' : ''}" data-act="tab" data-h="${h}"${j === on ? ' aria-current="page"' : ''}>${I[k].replace('class="i"', 'class="i i-off"')}${IF[k]}<span>${label}</span><i lang="zh">${SIDE_ZH[k]}</i></button>`).join('')
+    + `<div class="sn-foot">${sideAcct()}</div>`;
+  const { n, today } = practiceStreak(), pv = provenCount(), xp = xpTotal();
+  const stat = (act, icon, big, sub) => `<button class="sr-stat" data-act="${act}"><span class="sr-ic">${icon}</span><span><b>${big}</b><small>${sub}</small></span></button>`;
+  rl.innerHTML = sideAcct() + (on === 2 ? '' : `<section class="sr-stats" aria-label="Your progress">
+    ${stat('streak', FLAME, n + ' day streak', n && !today ? 'Finish a deck today to keep it' : n ? 'Done for today' : 'Finish a deck to start one')}
+    ${stat('open-bank', '<span class="pf-zh">字</span>', plural(pv, 'word') + ' proven', db.bank.length ? `${plural(db.bank.length, 'word')} in your bank` : 'Learn words to prove them')}
+    ${stat('pf-xp', xpSvg(), xp + ' XP', 'From your reading card')}</section>`);   // Profile shows these itself
+}
+matchMedia('(min-width:900px)').addEventListener('change', () => paintSide());
+/* desktop keys in a flip round: Space or Enter turns the card, 1 2 3 answer, the arrow keys go back and on */
+addEventListener('keydown', e => {
+  if (S.view !== 'study' || S.study?.done || !$('#card3d') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if ($('#sheet-root').classList.contains('open') || e.target.closest?.('input,textarea,[contenteditable]')) return;
+  const st = S.study, g = $('#grades');
+  if ((e.key === ' ' || e.key === 'Enter') && !e.target.closest?.('button,a')) {
+    e.preventDefault(); const base = Math.round(st.angle / 180) * 180; st.angle = base + 180;
+    noteDeck(curDeck(), st.order[st.i]); LOG.add('card-flip', { shows: Math.abs(Math.round(st.angle / 180)) % 2 ? 'English' : 'Chinese', key: true });
+    setAngle(true); dismissHint(); if (!st.flipped) showGrades(true);
+  } else if (/^[123]$/.test(e.key) && g && !g.hidden) { e.preventDefault(); gradeFlip(+e.key - 1); }
+  else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !st.flipped) { e.preventDefault(); stepCard(e.key === 'ArrowRight' ? 1 : -1); }
+});
+
 /* ---------- render ---------- */
 function render() {
   const app = $('#app'); const d = curDeck();
@@ -3736,6 +3858,7 @@ function renderTabs() {
   // picking words on an HSK level: its own bottom bar (Select all / Add) takes the tab bar's place, as in a select mode
   const cur = S.view === 'hsk' && S.hskLevel ? null : S.view === 'home' || S.view === 'deck' || S.view === 'group' || S.view === 'bank' || S.view === 'hsk' ? 'decks' : S.view === 'course' ? S.cUnit ? null : 'learn' : S.view;   // a unit's campaign is its own full page, without the tab bar
   const i = TABS.findIndex(t => t[0] === cur), bar = $('#tabbar'), frame = $('#frame');
+  paintSide(i);
   const wasShown = frame.classList.contains('tabs');
   frame.classList.toggle('tabs', i >= 0);
   if (i < 0) return;
@@ -10750,7 +10873,7 @@ function StudyView(d) {
       <div class="count" id="pcount">${st.i + 1} / ${n}</div></header>
     <div class="stage" id="stage"><div class="stage-shadow" id="sshadow"></div>
       <div class="wrap" id="wrap"><div class="card3d" id="card3d">${Faces(c, d)}</div></div></div>
-    <p class="hint" id="hint" style="opacity:${st.hinted ? 0 : 1}">Tap to flip · drag sideways to turn it</p>
+    <p class="hint" id="hint" style="opacity:${st.hinted ? 0 : 1}"><span class="touch">Tap to flip · drag sideways to turn it</span><span class="kb">Click or press Space to flip · ← → for the other cards</span></p>
     <div class="controls" id="ctrls">
       <button class="icon-btn lg" data-act="prev" aria-label="Previous">${I.left}</button>
       <div class="mid">
@@ -10769,7 +10892,7 @@ function showGrades(on) {
     const c = cardById(curDeck(), st.order[st.i]);
     g.innerHTML = [['Forgot', 'g-no'], ['Almost', 'g-mid'], ['Knew it', 'g-yes']].map(([t, cls], i) =>
       `<button class="gbtn ${cls}" data-act="sgrade" data-g="${i}"><b>${t}</b><small>${gradeLabel(c, i)}</small></button>`).join('');
-    if (h) { h.textContent = 'Did you know it?'; h.classList.add('ask'); h.style.opacity = 1; }
+    if (h) { h.innerHTML = 'Did you know it?<span class="kb"> Press 1, 2 or 3</span>'; h.classList.add('ask'); h.style.opacity = 1; }
   } else if (h) { h.classList.remove('ask'); h.style.opacity = 0; }
   g.hidden = !on; if (ctrls) ctrls.hidden = on;
 }
@@ -11912,6 +12035,7 @@ function speed(hist, p, t) {
 /* Drag a pop-up down to close it. Works from anywhere on the sheet once its content is scrolled to the top.
    Let go past a quarter of its height, or flick it, and it closes; otherwise it springs back. */
 function sheetDrag(sh, scrim, close = closeSheet) {
+  if (WIDE()) return;   // desktop: the pop-up is a window in the middle, closed with its X, Escape or a click outside
   let g = null;
   const begin = (x, y, t) => { g = { x, y, hist: [[y, t]], v: 0, off: 0, on: false, top: sh.scrollTop <= 0 }; };
   // UX 11: caught while still sliding in or springing back, it carries on from where it is drawn instead of jumping
@@ -13075,7 +13199,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.19';
+const APP_VERSION = '3.45.20';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13278,7 +13402,7 @@ const CLOUD = (() => {
   const back = /[?&](code|error)=/.test(location.search);   // just came back from Google's sign-in page
   let sb = null, busy = null, timer = 0, sent = null;
   if (!st.dirty) sent = JSON.stringify(db);   // what start-up made of the last synced save (filled-in defaults) is not a change of yours
-  const paint = () => { const e = $('#acctSub'), f = $('#acctSync'); if (e) e.textContent = line(); if (f) f.textContent = status(); };
+  const paint = () => { const e = $('#acctSub'), f = $('#acctSync'); if (e) e.textContent = line(); if (f) f.textContent = status(); if (typeof paintSide === 'function') paintSide(); };
   const fail = (e, what) => { st.err = navigator.onLine ? 'Couldn’t sync, will try again' : 'Waiting for internet'; keep(); paint(); LOG.add('cloud-error', { what, msg: String(e?.message || e).slice(0, 120) }); };
 
   async function lib() {
@@ -13529,7 +13653,7 @@ function resetSheet(email) {
     };
   });
 }
-function paintAcct() { const e = $('#acctSub'); if (e) e.textContent = CLOUD.line(); const r = $('#sAcct .acct-t'); if (r) r.textContent = CLOUD.user ? 'Your account' : 'Sign in'; }
+function paintAcct() { const e = $('#acctSub'); if (e) e.textContent = CLOUD.line(); const r = $('#sAcct .acct-t'); if (r) r.textContent = CLOUD.user ? 'Your account' : 'Sign in'; paintSide(); }
 /* ---------- settings ----------
    The same rows sit in the side menu (tap the menu button on the Decks page) and in the sheet behind Profile's menu button. */
 function settingsRows(dr) {
@@ -14511,6 +14635,9 @@ const A = {
   'rc-open': () => { const st = rcState(); if (st.ready) rcOpen(moments); else { const left = RC_N - 1 - st.n; toast(`${plural(left, 'more story').replace('storys', 'stories')} to open your 利是`); } },
   'rc-all': () => storiesSheet(),
   'pf-xp': () => nav('#/read'),
+  'side-join': () => { LOG.add('side-account', { pick: 'create' }); acctSheet(false, true); },
+  'side-in': () => { LOG.add('side-account', { pick: 'sign-in' }); acctSheet(true); },
+  'side-acct': () => acctSheet(),
   'rec-note': () => noteSheet(),
   'close-sheet': () => closeSheet(),
   'tab': t => { haptic(8); if (location.hash === t.dataset.h || (t.dataset.h === '#/' && S.view === 'home')) { $('#app').scrollTo({ top: 0, behavior: 'smooth' }); window.scrollTo({ top: 0, behavior: 'smooth' }); return; } S.instant = true; nav(t.dataset.h); },
@@ -14636,7 +14763,7 @@ document.addEventListener('click', e => {
     }, dur + 20);
   };
   app.addEventListener('pointerdown', e => {
-    if (g || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (g || !e.isPrimary || (e.pointerType === 'mouse' && (e.button !== 0 || WIDE()))) return;   // desktop: the menu changes pages, a mouse drag doesn't
     if (e.target.closest('input,textarea,select,[contenteditable],.stage,.tzg,canvas,.shelf,.hd-stack,.tm-stage')) return;
     const T = targets(); if (!T) return;
     g = { id: e.pointerId, sx: e.clientX, sy: e.clientY, hist: [[e.clientX, e.timeStamp]], v: 0, x0: 0, T, on: false };
