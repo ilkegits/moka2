@@ -13231,7 +13231,7 @@ const CLOUD = (() => {
 const GOOGLE_G = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.2C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg>';
 /* The account pop-up. Signed out: Continue with Google (the one obvious button), email under it. Signed in: who you are,
    when it last synced, Sign out; deleting the account sits small at the bottom. welcome = opened from "I've used ShiCards before". */
-function acctSheet(welcome) {
+function acctSheet(welcome, viaEmail) {   // viaEmail: open on the email form, set to create an account
   const u = CLOUD.user;
   if (u) {
     openSheet(`<h3>Your account</h3>
@@ -13280,6 +13280,7 @@ function acctSheet(welcome) {
       catch (x) { err.textContent = /rate|seconds|security/i.test(String(x?.message)) ? 'An email was just sent. Wait a minute, then try again' : navigator.onLine ? 'Couldn’t send the email. Try again' : 'You’re offline. Connect and try again'; }
       finally { btn.disabled = false; }
     };
+    if (viaEmail) { sh.querySelector('#acMail').click(); sh.querySelector('#acNew').click(); }
     f.onsubmit = async e => {
       e.preventDefault();
       const em = sh.querySelector('#acEm').value.trim(), p = pw.value;
@@ -13479,8 +13480,8 @@ const OB_LEVEL = [[1, '初', 'Beginner'], [2, '中', 'Intermediate'], [4, '高',
 /* v2 (moka2 3.45.7): every question is used later. What you learn for picks the exam date page and the plan's flag;
    the level check fills the plan; how it works uses words at your level; the chart shows your own pace; a paywall preview ends it */
 const OB_FOR = [['exam', '考', 'The HSK exam', 'Words from the exam lists, planned up to your exam day'], ['read', '读', 'Reading Chinese day to day', 'Signs, menus, messages and short stories']];
-const OB_STEPS = ['hi', 'hello', 'why', 'level', 'check', 'words', 'read', 'plan', 'how1', 'how2', 'how3', 'how4', 'date', 'goal', 'chart', 'habit', 'pay'];
-const OB_PROG = { why: .1, level: .17, check: .25, words: .33, read: .4, plan: .46, how1: .52, how2: .57, how3: .62, how4: .67, date: .74, goal: .81, chart: .88, habit: .95 };   // jumps early, then slows (progress bars that start fast keep more people going)
+const OB_STEPS = ['hi', 'hello', 'why', 'level', 'check', 'words', 'read', 'plan', 'how1', 'how2', 'how3', 'how4', 'date', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
+const OB_PROG = { why: .1, level: .17, check: .25, words: .33, read: .4, plan: .46, how1: .52, how2: .57, how3: .62, how4: .67, date: .74, goal: .81, chart: .88, habit: .95, save: 1 };   // jumps early, then slows (progress bars that start fast keep more people going)
 const OB_ROUND = 12, OB_ROUNDS = 4, OB_CARDS = 4;
 /* the short reading test: hand-written passages per HSK level (two each, one picked at random), each with one question */
 const OB_READ = {
@@ -13672,6 +13673,10 @@ function obShow() {
         <div class="ob2-key"><span><i class="d"></i>All of ${HSK_NAME(lv)}</span><span><i></i>New words</span>${n > wk ? '<span><i class="j"></i>Review only</span>' : ''}${ex ? '<span><b>考</b> Exam</span>' : ''}</div></div>
       <div class="ob-dock ob2-in" style="--i:4"><button class="btn btn-primary" data-ob="next">Sounds good</button></div>`;
   }
+  else if (step === 'save') html = obTop(false) + `<div class="ob-art">${shiFace('happy')}</div>
+      <h2 class="mo-title">Save your progress</h2><p class="mo-text">Make a free account and your level, words and streak are safe, even if you lose your phone. They follow you to every device.</p>
+      <div class="ob-dock"><button class="btn btn-ghost acct-g wide" data-ob="google">${GOOGLE_G}<span>Continue with Google</span></button>
+        <button class="btn btn-ghost wide" data-ob="email">Continue with email</button><button class="ob-link" data-ob="nosave">Not now</button></div>`;
   else if (step === 'pay') html = `<div class="ob2-ptop"><button class="icon-btn" data-ob="done" aria-label="Close">${I.close}</button><span class="ob2-ptag">Preview · nothing is sold</span><span style="width:42px"></span></div>
       <div class="ob2-shi ob2-pop">${shiFace('cheer')}</div>
       <h2 class="ob2-ph ob2-in" style="--i:2">Read Chinese in a few minutes a day</h2><p class="ob2-ps ob2-in" style="--i:3">A new story every day, writing for every word, all HSK levels.</p>
@@ -13849,6 +13854,9 @@ async function obCheckStart() {   // the HSK lists may still be loading
   if (!S.ob || OB_STEPS[S.ob.i] !== 'check') return;
   S.ob.chk = { rounds: [], res: {} }; obRound(S.ob.level || 1); obShow();
 }
+/* v4.57/4.58 (real app): the last page offers an account (Google or email), unless you already have one; a replay shows it too */
+const obSaveAsk = () => S.ob && (S.ob.replay || !CLOUD.user);
+const obHaveAcct = () => { if (!CLOUD.user) return false; toast('You’re already signed in as ' + (CLOUD.user.email || CLOUD.user.name)); return true; };
 function obFinish(how) {
   if (S.ob?.demo) {   // the one-time look at the new pages: nothing about your words, level or goal changes
     db.prefs.ob2Seen = Date.now(); save();
@@ -13923,8 +13931,13 @@ async function obClick(e) {
   if (a === 'done' && step === 'habit') { O.how = 'not-now'; obGo('pay'); return; }
   if (a === 'done' || a === 'buy') {   // the paywall preview ends the pages
     if (a === 'buy') toast('Preview only. Nothing was bought');
-    const how = O.how || 'done'; obFinish(how); if (how === 'install-help') setTimeout(installHelp, 350); return;
+    const how = O.how || 'done'; if (obSaveAsk()) { O.how = how; obGo('save'); return; }   // moka2: the account page comes after the paywall preview
+    obFinish(how); if (how === 'install-help') setTimeout(installHelp, 350); return;
   }
+  if (a === 'google') { LOG.add('onboarding-save', { pick: 'google' }); obFinish(O.how || 'done'); if (obHaveAcct()) return;
+    try { await CLOUD.google(); } catch (_) { toast('Couldn’t reach Google. Are you online?'); } return; }   // Google takes over the page and comes back signed in
+  if (a === 'email') { LOG.add('onboarding-save', { pick: 'email' }); obFinish(O.how || 'done'); if (obHaveAcct()) return; setTimeout(() => acctSheet(false, true), 450); return; }
+  if (a === 'nosave') { LOG.add('onboarding-save', { pick: 'not-now' }); const how = O.how || 'done'; obFinish(how); if (how === 'install-help') setTimeout(installHelp, 350); return; }
   if (a === 'nodate') { O.exam = null; obGo(obNext()); return; }
   if (a === 'quit') { LOG.add('onboarding-done', { how: 'closed', replay: O.replay, demo: O.demo }); if (O.demo) { db.prefs.ob2Seen = Date.now(); save(); } S.ob = null; closeLayer(); return; }
   if (a === 'back') {   // one page (or one round, one card) back; your answers there stay picked
