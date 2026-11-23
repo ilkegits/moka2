@@ -892,6 +892,22 @@ html.kb-up .sheet{max-height:calc(100% - var(--kb) - 8px)}
 .input{width:100%;height:48px;border-radius:12px;border:0;background:var(--card);box-shadow:var(--ring);padding:0 16px;font-size:16px;outline:none;transition:box-shadow .2s}
 .input:focus{box-shadow:0 0 0 2px var(--seal)}
 .input::placeholder{color:var(--muted)}
+/* v4.47 account pop-up: Shi Shi on top, Continue with Google as the one big button, email folded away under it */
+.acct-hero{width:84px;height:84px;margin:-4px auto 6px}
+.acct-hero svg{width:100%;height:100%}
+.sheet h3.acct-h{font-size:21px;margin:0 0 6px}
+.acct-p{text-align:center;margin:0 8px 18px;font-size:14.5px;line-height:1.45}
+.acct-g{background:var(--card);color:var(--ink);--edge:rgba(90,60,25,.22);--drop:rgba(60,35,10,.3);gap:12px}
+.acct-link{display:block;margin:6px auto 0;height:44px;padding:0 12px;font-weight:600;font-size:15px;color:var(--ink-2)}
+.acct-form{display:grid;gap:10px;margin-top:10px}
+.acct-link[hidden]{display:none}
+.acct-form[hidden]{display:none}
+.acct-err{min-height:18px;margin:-2px 4px 0;font-size:13.5px;color:var(--seal)}
+.acct-err:empty{min-height:0;margin:0}
+.acct-who{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:var(--card);box-shadow:var(--ring);margin-bottom:14px}
+.acct-who b{display:block;font-size:16px;overflow-wrap:anywhere}
+.acct-who small{color:var(--muted);font-size:13.5px}
+.acct-face{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--seal);color:var(--seal-ink);font:700 19px var(--display)}
 .compose{display:flex;align-items:center;gap:6px;min-height:78px;border-radius:14px;background:var(--card);box-shadow:var(--ring);padding:8px 8px 8px 18px;margin-bottom:10px}
 .compose-hz{flex:1;font-family:var(--hanzi);font-size:38px;line-height:1.2;letter-spacing:.04em;word-break:break-all}
 .compose-hz.ph{font-family:var(--ui);font-size:14px;color:var(--muted);letter-spacing:0}
@@ -3259,7 +3275,8 @@ function seed() {
   };
 }
 function load() { try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.decks)) return d; } catch (e) {} return seed(); }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
+let cloudHook = null, cloudLock = false;   // v4.47: the account (CLOUD, near the settings) hears about every save; locked while a download takes over
+function save() { if (cloudLock) return; let s; try { s = JSON.stringify(db); localStorage.setItem(KEY, s); } catch (e) {} if (s && cloudHook) cloudHook(s); }
 const FRESH = (() => { try { return !localStorage.getItem(KEY); } catch (e) { return false; } })();   // first time ShiCards opens on this phone: show the onboarding
 let db = load();
 db.prefs = Object.assign({ englishFirst: true, writeMode: 'free', outline: false }, db.prefs);
@@ -13039,6 +13056,227 @@ function devSheet() {
     sh.querySelector('#devToss').onclick = go('toss', back, () => hdRotate(1));
   });
 }
+/* ---------- account and sync (v4.47) ----------
+   Optional: signed in (Google, or email and password), this device's whole save (db) is kept online in one row of the
+   Supabase table `saves` (user_id, data, rev, updated_at), so it follows you to every phone and computer.
+   - rev counts uploads. Every upload names the rev it was built on and only lands if the cloud still has that rev, so two
+     devices never overwrite each other blind: if the cloud moved on, this device downloads it, merges, and uploads again.
+   - A check asks for the cloud's rev only (a few bytes); the save itself is downloaded only when the cloud has a newer one.
+     It is then written to this device and the app restarts on it (at start-up, or on coming back to a quiet page).
+   - Uploads go 5 s after the last change, and at once when you leave the app.
+   - The Supabase library loads only when you sign in, or were signed in before. Nothing changes for guests.
+   - Signing out keeps everything on this device. Another account signing in here gets its own save, never a mix. */
+const SB_URL = 'https://grzuyqtbfmaonzzmopny.supabase.co', SB_KEY = 'sb_publishable_25E6zhjRVNiv7-UvfmkjaA_ZR3Tvg77';
+const SB_LIB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/+esm';
+const CLOUD = (() => {
+  const KEYC = 'shicards.cloud';
+  let st = {};   // { user: { id, email, name }, owner: the account this device's save belongs to, rev, dirty, at: last change here, syncedAt, err }
+  try { st = JSON.parse(localStorage.getItem(KEYC)) || {}; } catch (_) {}
+  const keep = () => { try { localStorage.setItem(KEYC, JSON.stringify(st)); } catch (_) {} };
+  const back = /[?&](code|error)=/.test(location.search);   // just came back from Google's sign-in page
+  let sb = null, busy = null, timer = 0, sent = null;
+  if (!st.dirty) sent = JSON.stringify(db);   // what start-up made of the last synced save (filled-in defaults) is not a change of yours
+  const paint = () => { const e = $('#acctSub'), f = $('#acctSync'); if (e) e.textContent = line(); if (f) f.textContent = status(); };
+  const fail = (e, what) => { st.err = navigator.onLine ? 'Couldn’t sync, will try again' : 'Waiting for internet'; keep(); paint(); LOG.add('cloud-error', { what, msg: String(e?.message || e).slice(0, 120) }); };
+
+  async function lib() {
+    if (sb) return sb;
+    const { createClient } = await import(SB_LIB);
+    sb = createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } });
+    return sb;
+  }
+  // did anything real happen on this device? (a fresh install only has the sample deck)
+  const used = d => Object.keys(d.days || {}).length + (d.bank || []).length + Object.keys(d.lessons || {}).length
+    + (d.decks || []).reduce((n, k) => n + (k.cards || []).filter(c => c.hist?.length).length, 0);   // how much happened here (0: a fresh install with the sample deck)
+  /* Two saves that both changed: everything from both sides is kept. Lists of things with an id (decks, cards, words,
+     stories) are joined by id, other lists are joined without repeats, and where both have a different single value
+     (coins, settings) the side changed last wins. */
+  function merge(a, b, aNewer) {
+    if (Array.isArray(a) && Array.isArray(b)) {
+      const hasId = x => x && typeof x === 'object' && x.id != null;
+      if (a.every(hasId) && b.every(hasId)) {
+        const theirs = new Map(b.map(x => [x.id, x])), mine = new Set(a.map(x => x.id));
+        return [...a.map(x => theirs.has(x.id) ? merge(x, theirs.get(x.id), aNewer) : x), ...b.filter(x => !mine.has(x.id))];
+      }
+      const k = x => typeof x === 'object' ? JSON.stringify(x) : x, seen = new Set(a.map(k));
+      return [...a, ...b.filter(x => !seen.has(k(x)) && seen.add(k(x)))];
+    }
+    const obj = x => x && typeof x === 'object' && !Array.isArray(x);
+    if (obj(a) && obj(b)) { const out = { ...b, ...a }; for (const key in a) if (key in b) out[key] = merge(a[key], b[key], aNewer); return out; }
+    return a === undefined ? b : b === undefined ? a : aNewer ? a : b;
+  }
+  // put a save from the cloud on this device and restart the app on it
+  function take(data, rev, note) {
+    cloudLock = true; clearTimeout(timer);
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (_) {}
+    Object.assign(st, { rev, dirty: false, syncedAt: Date.now(), err: '' }); keep();
+    try { sessionStorage.setItem('shicards.cloudNote', note); } catch (_) {}
+    LOG.add('cloud-take', { rev }); location.reload();
+  }
+  // upload this device's save, built on st.rev; true when it landed
+  async function push() {
+    const s = JSON.stringify(db), base = st.rev || 0;
+    const r = base
+      ? await sb.from('saves').update({ data: db, rev: base + 1, device: deviceInfo().os || '' }).eq('user_id', st.user.id).eq('rev', base).select('rev')
+      : await sb.from('saves').insert({ user_id: st.user.id, data: db, rev: 1, device: deviceInfo().os || '' }).select('rev');
+    if (r.error && r.error.code !== '23505') throw r.error;   // 23505: a save already exists (another device was first)
+    if (r.error || !r.data?.length) return false;
+    Object.assign(st, { rev: r.data[0].rev, dirty: false, syncedAt: Date.now(), err: '' }); sent = s; keep(); paint();
+    return true;
+  }
+  // bring this device and the cloud together; first = this account just signed in here
+  async function sync(first) {
+    if (!st.user || !navigator.onLine) return;
+    if (busy) return busy;
+    busy = (async () => {
+      try {
+        for (let tries = 0; tries < 3; tries++) {
+          const head = await sb.from('saves').select('rev, updated_at').eq('user_id', st.user.id).maybeSingle();
+          if (head.error) throw head.error;
+          const cloud = head.data;
+          if (!cloud) { st.rev = 0; if (await push()) return; continue; }   // nothing online yet: this device's save goes up
+          if (!first && cloud.rev === st.rev) { if (st.dirty) { if (await push()) return; continue; } st.syncedAt = Date.now(); st.err = ''; keep(); paint(); return; }
+          // the cloud has something this device hasn't seen
+          const full = await sb.from('saves').select('data, rev, updated_at').eq('user_id', st.user.id).single();
+          if (full.error) throw full.error;
+          const mine = first ? used(db) && (!st.owner || st.owner === st.user.id) : st.dirty;
+          st.owner = st.user.id;
+          if (!mine) { if (calm() || first) take(full.data.data, full.data.rev, 'Your progress is here from your other device'); else keep(); return; }
+          // single values (coins, settings): the side changed last wins; on a first sign-in, the side with more progress
+          const both = merge(db, full.data.data, first ? used(db) >= used(full.data.data) : (st.at || 0) > Date.parse(full.data.updated_at));
+          st.rev = full.data.rev; db = both; st.dirty = true; keep();
+          if (await push()) { take(both, st.rev, 'Progress from your devices put together'); return; }
+        }
+      } catch (e) { fail(e, 'sync'); }
+      finally { busy = null; }
+    })();
+    return busy;
+  }
+  // restarting is only safe on a resting page: not mid-lesson, mid-round or in a pop-up
+  const calm = () => ['course', 'home', 'map', 'profile', 'streak', 'hsk', 'bank', 'group', 'read'].includes(S.view) && !S.readId && !$('#sheet-root.open') && !$('#ob');
+  function later(ms = 5000) { clearTimeout(timer); timer = setTimeout(() => sync(), ms); }
+
+  cloudHook = s => {
+    if (s === sent) return;
+    sent = s; st.dirty = true; st.at = Date.now(); keep();
+    if (st.user && sb) later();
+  };
+  document.addEventListener('visibilitychange', () => { if (!st.user || !sb) return; document.visibilityState === 'hidden' ? (st.dirty && sync()) : sync(); });
+  addEventListener('online', () => { if (st.user && sb) sync(); });
+
+  async function signedIn(user, first) {
+    const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
+    st.user = { id: user.id, email: user.email || '', name }; st.err = ''; keep();
+    if (!db.prefs.name && name) { db.prefs.name = name.split(' ')[0]; save(); }
+    LOG.add('cloud-in', { first, via: user.app_metadata?.provider });
+    await sync(first);
+    paint();
+  }
+  const status = () => st.err || (st.dirty ? 'Syncing…' : st.syncedAt ? `Synced ${clock(st.syncedAt)}` : 'Synced');
+  const line = () => st.user ? `${st.user.email} · ${status().toLowerCase()}` : 'Sign in to keep your progress on every device';
+  return {
+    get user() { return st.user; }, back, line, status,
+    // at start-up: pick up a sign-in that just finished, or carry on one from before
+    async start() {
+      try { const n = sessionStorage.getItem('shicards.cloudNote'); if (n) { sessionStorage.removeItem('shicards.cloudNote'); setTimeout(() => toast(n), 700); } } catch (_) {}
+      if (!st.user && !back) return;
+      try {
+        await lib();
+        const { data: { session } } = await sb.auth.getSession();
+        if (back) history.replaceState(history.state, '', location.pathname + (location.hash || '#/'));
+        if (!session) { if (st.user) { st.user = null; keep(); } if (back) toast('Sign-in didn’t finish. Try again'); return; }
+        const first = !st.user || st.user.id !== session.user.id;
+        await signedIn(session.user, first);
+        if (back && !cloudLock) toast('Signed in. Your progress now syncs');   // (cloudLock: the app is restarting on the cloud's save, which says so itself)
+      } catch (e) { fail(e, 'start'); }
+    },
+    async google() {
+      await lib();
+      const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+      if (error) throw error;
+    },
+    async email(email, password, create) {
+      await lib();
+      const r = create ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });
+      if (r.error) throw r.error;
+      if (!r.data.session) return 'check-email';
+      await signedIn(r.data.user, true);
+      return 'ok';
+    },
+    async signOut() {
+      if (st.dirty) await sync().catch(() => {});
+      await lib(); await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+      LOG.add('cloud-out'); st.user = null; st.err = ''; keep();
+    },
+    async remove() {   // deletes the account and its online save; this device keeps its copy
+      await lib();
+      const { error } = await sb.rpc('delete_me'); if (error) throw error;
+      await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+      LOG.add('cloud-deleted'); Object.assign(st, { user: null, owner: null, rev: 0, err: '' }); keep();
+    },
+  };
+})();
+const GOOGLE_G = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.2C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg>';
+/* The account pop-up. Signed out: Continue with Google (the one obvious button), email under it. Signed in: who you are,
+   when it last synced, Sign out; deleting the account sits small at the bottom. welcome = opened from "I've used ShiCards before". */
+function acctSheet(welcome) {
+  const u = CLOUD.user;
+  if (u) {
+    openSheet(`<h3>Your account</h3>
+      <div class="acct-who"><div class="acct-face">${esc((u.name || u.email || '?')[0].toUpperCase())}</div><div><b>${esc(u.name || u.email)}</b><small id="acctSync">${esc(CLOUD.status())}</small></div></div>
+      <p class="muted acct-p">Your words, decks, streak and coins are saved online and follow you to every phone and computer you sign in on.</p>
+      <button class="btn btn-ghost wide" id="acOut">Sign out</button>
+      <button class="acct-link" id="acDel">Delete account</button>`, sh => {
+      sh.querySelector('#acOut').onclick = async () => { await CLOUD.signOut(); closeSheet(); paintAcct(); toast('Signed out. Your progress stays on this device'); };
+      sh.querySelector('#acDel').onclick = () => confirmSheet('Delete your account?',
+        'Your online save and your account are deleted for good. Everything stays on this device, but it no longer syncs.', 'Delete account',
+        async () => { try { await CLOUD.remove(); paintAcct(); toast('Account deleted'); } catch (_) { toast('Couldn’t delete the account. Are you online?'); } });
+    });
+    return;
+  }
+  openSheet(`<div class="acct-hero">${shiFace(welcome ? 'happy' : 'cheer')}</div>
+    <h3 class="acct-h">${welcome ? 'Welcome back' : 'Keep your progress safe'}</h3>
+    <p class="muted acct-p">${welcome ? 'Sign in to bring back your words, decks, streak and coins.' : 'Sign in and your words, decks, streak and coins are saved online. They follow you to every phone and computer.'}</p>
+    <button class="btn btn-ghost acct-g wide" id="acG">${GOOGLE_G}<span>Continue with Google</span></button>
+    <button class="acct-link" id="acMail">Use email instead</button>
+    <form class="acct-form" id="acForm" hidden novalidate>
+      <input class="input" id="acEm" type="email" placeholder="Email" autocomplete="email" inputmode="email" enterkeyhint="next" required>
+      <input class="input" id="acPw" type="password" placeholder="Password (8 or more letters)" autocomplete="current-password" minlength="8" enterkeyhint="go" required>
+      <p class="acct-err" id="acErr" role="alert"></p>
+      <button class="btn btn-primary wide" id="acGo" type="submit">Sign in</button>
+      <button class="acct-link" id="acNew" type="button">New here? Create an account</button>
+    </form>`, sh => {
+    const f = sh.querySelector('#acForm'), err = sh.querySelector('#acErr'), go = sh.querySelector('#acGo'), pw = sh.querySelector('#acPw');
+    let create = false;
+    sh.querySelector('#acG').onclick = async e => {
+      e.currentTarget.disabled = true; save();
+      try { await CLOUD.google(); } catch (_) { e.currentTarget.disabled = false; toast('Couldn’t reach Google. Are you online?'); }
+    };
+    sh.querySelector('#acMail').onclick = e => { e.currentTarget.hidden = true; f.hidden = false; setTimeout(() => sh.querySelector('#acEm').focus(), 50); };
+    sh.querySelector('#acNew').onclick = e => {
+      create = !create; go.textContent = create ? 'Create account' : 'Sign in';
+      e.currentTarget.textContent = create ? 'Already have an account? Sign in' : 'New here? Create an account';
+      pw.autocomplete = create ? 'new-password' : 'current-password'; err.textContent = '';
+    };
+    f.onsubmit = async e => {
+      e.preventDefault();
+      const em = sh.querySelector('#acEm').value.trim(), p = pw.value;
+      if (!/^\S+@\S+\.\S+$/.test(em)) { err.textContent = 'Type your email address'; return; }
+      if (p.length < 8) { err.textContent = 'The password needs 8 or more letters'; return; }
+      err.textContent = ''; go.disabled = true; go.innerHTML = '<span class="spin"></span>';
+      try {
+        const r = await CLOUD.email(em, p, create);
+        if (r === 'check-email') { err.textContent = 'Check your email and tap the link to finish'; return; }
+        closeSheet(); paintAcct(); toast(create ? 'Account made. Your progress now syncs' : 'Signed in. Your progress now syncs');
+      } catch (x) {
+        const m = String(x?.message || '');
+        err.textContent = /invalid login/i.test(m) ? 'That email and password don’t match' : /already registered|exists/i.test(m) ? 'This email has an account. Sign in instead'
+          : /password/i.test(m) ? m : navigator.onLine ? 'Something went wrong. Try again' : 'You’re offline. Connect and try again';
+      } finally { go.disabled = false; go.textContent = create ? 'Create account' : 'Sign in'; }
+    };
+  });
+}
+function paintAcct() { const e = $('#acctSub'); if (e) e.textContent = CLOUD.line(); const r = $('#sAcct .acct-t'); if (r) r.textContent = CLOUD.user ? 'Your account' : 'Sign in'; }
 /* ---------- settings ----------
    The same rows sit in the side menu (tap the menu button on the Decks page) and in the sheet behind Profile's menu button. */
 function settingsRows(dr) {
@@ -13046,6 +13284,7 @@ function settingsRows(dr) {
   const row = (id, icon, t, small, side = `<span class="side">${chev}</span>`, tag = 'button', extra = '') =>
     `<${tag} class="${dr ? 'dr-item' : 'list-btn'}"${id ? ` id="${id}"` : ''}${tag === 'label' ? ' style="cursor:pointer"' : ''}>${dr ? icon : ''}<span${dr ? ' class="dr-t"' : ''}>${t}${dr ? '' : '<br>'}${small}</span>${side}${extra}</${tag}>`;
   return [
+    row('sAcct', I.profile, `<span class="acct-t">${CLOUD.user ? 'Your account' : 'Sign in'}</span>`, `<small id="acctSub"${CLOUD.user ? '' : ' class="opt"'}>${esc(CLOUD.line())}</small>`),   // v4.47
     row('sName', I.pen, 'Your name', db.prefs.name ? `<small>${esc(db.prefs.name)}</small>` : '<small class="opt">Shown in the menu and on your profile</small>'),
     row('sRem', I.bell, 'Daily reminder', `<small id="remSub">${remindLine()}</small>`),   // v2.91: moved here from Profile
     isInstalled() ? '' : row('sInst', I.install, 'Install app', '<small class="opt">Put ShiCards on your home screen</small>'),
@@ -13082,6 +13321,7 @@ function bindSettings(sh, dr) {
   sh.querySelector('#sLog').onclick = leave(logSheet);
   sh.querySelector('#sDev').onclick = leave(devSheet);
   sh.querySelector('#sName').onclick = leave(nameSheet);
+  sh.querySelector('#sAcct').onclick = leave(() => acctSheet());
   sh.querySelector('#sRem').onclick = leave(remindSheet);
   sh.querySelector('#sExp').onclick = () => {
     const a = document.createElement('a');
@@ -13096,7 +13336,7 @@ function bindSettings(sh, dr) {
 }
 function settingsSheet() {
   openSheet(`<h3>Menu</h3><div class="list-group">${settingsRows(false)}</div>
-    <p class="muted" style="font-size:12.5px;margin:8px 16px 0">Decks are stored only in this browser. Pinyin lookup uses Google Input Tools, so typing pinyin needs internet.</p>`,
+    <p class="muted" style="font-size:12.5px;margin:8px 16px 0">${CLOUD.user ? 'Your progress is saved online and on this device.' : 'Decks are stored only in this browser until you sign in.'} Pinyin lookup uses Google Input Tools, so typing pinyin needs internet.</p>`,
     sh => bindSettings(sh, false));
 }
 
@@ -13626,7 +13866,7 @@ async function obClick(e) {
     $('#ob [data-ob="next"]').disabled = false; return;
   }
   const a = b.dataset.ob;
-  if (a === 'skip') { obFinish('skipped'); return; }
+  if (a === 'skip') { obFinish('skipped'); if (!CLOUD.user) setTimeout(() => acctSheet(true), 450); return; }   // v4.47: bring your progress back
   if (a === 'done' && step === 'habit') { O.how = 'not-now'; obGo('pay'); return; }
   if (a === 'done' || a === 'buy') {   // the paywall preview ends the pages
     if (a === 'buy') toast('Preview only. Nothing was bought');
@@ -14216,8 +14456,9 @@ history.replaceState({ d: 0 }, '', location.hash || '#/');
 LOG.add('open', deviceInfo()); paintRec();
 takePairLink();
 route();
-if (FRESH) obStart();
-else if (!db.prefs.ob2Seen) setTimeout(() => { if (!$('#ob') && !S.ob) obStart(true, true); }, 900);   // moka2: the new first-run pages, once, as a preview
+CLOUD.start();
+if (FRESH && !CLOUD.back) obStart();
+else if (!db.prefs.ob2Seen && !CLOUD.back) setTimeout(() => { if (!$('#ob') && !S.ob) obStart(true, true); }, 900);   // moka2: the new first-run pages, once, as a preview
 if ('serviceWorker' in navigator && location.hostname !== 'localhost') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
