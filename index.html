@@ -560,7 +560,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-pad .cands{min-height:52px}
 /* v3.64 Swap: English can be the front. The first side's label carries the Swap link */
 /* v3.67: Swap is a round button on a line between the two sides, like a translator's swap; the sides slide past each other */
-.ac-swaprow{position:relative;z-index:1;display:flex;align-items:center;gap:12px;margin:-4px 0 6px}
+.ac-swaprow{position:relative;z-index:1;display:flex;align-items:center;gap:12px;margin:20px 0 -6px}   /* v3.68: as far from the top box as from the bottom one (its label is 26px) */
 .ac-swaprow::before,.ac-swaprow::after{content:'';flex:1;height:1px;background:var(--line)}
 .ac-swap{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--card);box-shadow:var(--ring);color:var(--seal)}
 .ac-swap svg.i{width:19px;height:19px;stroke-width:2.1}
@@ -569,8 +569,9 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-cands{min-height:50px;padding-top:6px}
 .ac-cands:empty{min-height:0;padding:0}
 .ac-reads{margin:4px 0 0}
-.field.ac-fz{margin-bottom:8px}
-.field.ac-en{margin-bottom:10px}
+.field.ac-fz{margin-bottom:0}
+.field.ac-en{margin-bottom:0}
+.ac-sides{margin-bottom:12px}
 .ac-sug{display:flex;align-items:baseline;gap:7px;padding:7px 11px;border-radius:9px;background:var(--fill);color:var(--ink);text-align:left}
 .ac-sug .hz{font-family:var(--hanzi);font-size:19px}
 .ac-sug .wp{font-size:12.5px;color:var(--seal)}
@@ -11176,9 +11177,7 @@ function cardSheet(cardId) {
       <div class="means ac-reads" id="reads"></div></div>
     <div class="ac-swaprow"><button type="button" class="ac-swap" id="acSwap" aria-label="Swap front and back">${I.swapV}</button></div>
     <div class="ac-enb"><div class="field ac-en"><span class="lbl"><span class="ac-side">Back</span></span>
-      <div class="ac-box" id="ebox"><input class="input" id="fen" placeholder="${exEn()}" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning">
-        <button class="ac-draw" id="acPenB" aria-label="Draw a character" aria-pressed="false">${I.pen}Draw</button></div>
-      <div class="ac-pad" id="acPadB" hidden></div></div>
+      <div class="ac-box" id="ebox"><input class="input" id="fen" placeholder="${exEn()}" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning"></div></div>
     <div class="means" id="means"></div></div>
     </div>
     <div class="row-btns">${c ? `<button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>` : ''}
@@ -11235,18 +11234,15 @@ function cardSheet(cardId) {
       const keep = el => el.addEventListener('pointerdown', e => { if (e.target.closest('button')) e.preventDefault(); });   // tapping these keeps the keyboard up
       [cands, reads, means, $q('#bksp'), btn].forEach(keep);
       /* the pen: a 田字格 square to draw one character in, as in Quick add's Write; matches show under it, tap one and it goes
-         into that side's box. v3.66: both sides have Draw, so Chinese can go on the back too */
-      const PENS = [[$q('#acPen'), $q('#acPad'), fpy], [$q('#acPenB'), $q('#acPadB'), fen]];
+         into the Chinese box. v3.68: only the Chinese side has Draw (v3.66 put one on the English side too) */
+      const PENS = [[$q('#acPen'), $q('#acPad'), fpy]];
       let pen, pad, side;
       const padOff = () => {
         let was = false;
         for (const [pn, pd] of PENS) if (!pd.hidden) { pd.hidden = true; pd.innerHTML = ''; pn.classList.remove('on'); pn.setAttribute('aria-pressed', 'false'); was = true; }
         if (was) { E.seq++; paintHz(); }
       };
-      const put = ch => {   // a drawn character goes into the box of the side you drew for
-        if (side === fpy) { setHz(E.hanzi + ch); return; }
-        fen.value += ch; fen.scrollLeft = fen.scrollWidth; fen.dispatchEvent(new Event('input'));
-      };
+      const put = ch => setHz(E.hanzi + ch);   // a drawn character goes into the Chinese box
       const padOn = i => {
         padOff(); [pen, pad, side] = PENS[i];
         const s = Math.min(240, Math.max(170, sh.clientWidth - 40 - 46));
@@ -11254,7 +11250,7 @@ function cardSheet(cardId) {
           <div class="tzg no-drag" id="acBox" style="--s:${s}px">${TZG}<canvas></canvas></div></div>
           <div class="cands" id="acC"><span class="msg">Draw one character. Matches show here.</span></div>`;
         pad.hidden = false; pen.classList.add('on'); pen.setAttribute('aria-pressed', 'true');
-        if (side === fpy) { fpy.value = ''; paintCands([]); }
+        fpy.value = ''; paintCands([]);
         side.blur(); paintHz();   // the keyboard goes down so there is room to draw
         const box = pad.querySelector('#acBox'), cv = box.querySelector('canvas'), dpr = Math.min(3, devicePixelRatio || 1), hc = pad.querySelector('#acC');
         cv.width = cv.height = s * dpr; cv.style.width = cv.style.height = s + 'px';
@@ -11280,14 +11276,15 @@ function cardSheet(cardId) {
         cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
         pad.querySelector('#acUndo').onclick = () => { box._strokes.pop(); redraw(box); read(); };
         pad.querySelector('#acClr').onclick = clear;
-        hc.onclick = e => { const b = e.target.closest('.cand'); if (!b) return; LOG.add('card-draw-pick', { picked: b.textContent, strokes: box._strokes.length, side: side === fpy ? 'zh' : 'en' }); put(b.textContent); clear(); };
-        LOG.add('card-pen', side === fpy ? 'on' : 'on-en');
+        hc.onclick = e => { const b = e.target.closest('.cand'); if (!b) return; LOG.add('card-draw-pick', { picked: b.textContent, strokes: box._strokes.length }); put(b.textContent); clear(); };
+        LOG.add('card-pen', 'on');
       };
       PENS.forEach(([pn, pd, inp], i) => {
         pn.addEventListener('pointerdown', e => e.preventDefault());
         pn.onclick = () => { if (pd.hidden) padOn(i); else { padOff(); inp.focus(); } };
         inp.addEventListener('focus', padOff);   // typing again puts the pad away
       });
+      fen.addEventListener('focus', padOff);   // so does typing the English
       ['#fbox', '#ebox'].forEach(q => $q(q).addEventListener('pointerdown', e => {   // a tap anywhere in the box types there
         if (e.target.closest('button,input')) return; e.preventDefault(); (q === '#fbox' ? fpy : fen).focus();
       }));
