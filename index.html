@@ -508,8 +508,8 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 30px 60px -18px rgba(40,25,10,.55),0 4px 12px -6px rgba(40,25,10,.2);
   opacity:0;transform:translateY(10px) scale(.96);transition:opacity .2s,transform .32s cubic-bezier(.2,1.25,.4,1)}
 #dlg-root.open .dlg{opacity:1;transform:none}
-.dlg-top{display:flex;align-items:center;gap:14px;margin:0 2px 20px}
-.dlg-top h3{margin:0;font:600 23px/1.1 var(--display);letter-spacing:-.01em}
+.dlg-top{display:flex;align-items:center;gap:14px;margin:0 2px 16px}
+.dlg-top h3{margin:0;font:600 18px/1.2 var(--display);letter-spacing:-.005em}
 .dlg-mark{flex:none}
 .dlg-mark .deck-stack{width:38px;height:46px}
 .dlg-mark .deck-face{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);font-size:20px;transition:color .2s,border-color .2s}
@@ -540,7 +540,14 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-n.bump{animation:acBump .5s cubic-bezier(.3,1.6,.5,1);color:var(--jade);font-weight:600}
 @keyframes acBump{35%{transform:scale(1.22)}}
 .ac-compose{margin-bottom:8px}
-.ac-compose.empty{display:none}   /* the word shows once you have picked a character */
+/* v3.63 the front: type characters, or pinyin that turns into characters, or tap the pen and draw one */
+.ac-in{position:relative}
+.ac-in .input{padding-right:52px}
+.ac-pen{position:absolute;right:5px;top:5px;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--ink-2);transition:background .2s,color .2s}
+.ac-pen svg.i{width:19px;height:19px}
+.ac-pen.on{background:var(--ink);color:var(--paper)}
+.ac-pad{margin-top:10px}
+.ac-pad .cands{min-height:52px}
 .ac-cands{min-height:50px;padding-top:6px}
 .ac-cands:empty{min-height:0;padding:0}
 .ac-reads{margin:4px 0 0}
@@ -9976,16 +9983,16 @@ function nameDialog(kind, it) {
   let accent = it?.accent || ACCENTS[list.length % ACCENTS.length];
   const title = it ? 'Edit group' : grp ? 'Create group' : 'Create deck', root = $('#dlg-root');
   root.innerHTML = `<div class="dlg-scrim"></div><div class="dlg-wrap"><form class="dlg" role="dialog" aria-modal="true" aria-label="${title}" novalidate>
-    <div class="dlg-top"><div class="dlg-mark" style="--accent:${accent}">${grp ? grpIcon(it || {}) : '<div class="deck-stack"><span></span><span></span><div class="deck-face">新</div></div>'}</div><h3>${title}</h3></div>
+    <div class="dlg-top"><h3>${title}</h3></div>
     <label class="fl"><input id="dlgName" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder=" " value="${esc(it?.name || '')}"><span>Name</span></label>
-    <div class="dlg-sw">${ACCENTS.map(c => `<button type="button" class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="Colour"></button>`).join('')}</div>
+    ${it ? `<div class="dlg-sw">${ACCENTS.map(c => `<button type="button" class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="Colour"></button>`).join('')}</div>` : ''}
     <div class="dlg-act">${it ? '<button type="button" class="dlg-del">Delete</button>' : ''}<button type="button" class="dlg-x">Cancel</button><button type="submit" class="dlg-ok">${it ? 'Save' : 'Create'}</button></div>
   </form></div>`;
-  const f = root.querySelector('.dlg'), inp = f.querySelector('#dlgName'), ok = f.querySelector('.dlg-ok'), mk = f.querySelector('.dlg-mark'), face = mk.querySelector('.deck-face');
-  const paint = () => { const name = inp.value.trim(); ok.disabled = !name; if (face) face.textContent = hanChars(name)[0] || '新'; };
+  const f = root.querySelector('.dlg'), inp = f.querySelector('#dlgName'), ok = f.querySelector('.dlg-ok');   // v3.63: the colour is picked later (Edit), not while naming
+  const paint = () => { ok.disabled = !inp.value.trim(); };
   f.querySelectorAll('.sw').forEach(b => {
     b.addEventListener('pointerdown', e => e.preventDefault());   // picking a colour keeps the keyboard up
-    b.onclick = () => { accent = b.dataset.c; mk.style.setProperty('--accent', accent); f.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
+    b.onclick = () => { accent = b.dataset.c; f.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
   });
   ok.addEventListener('pointerdown', e => e.preventDefault());
   inp.oninput = paint; paint();
@@ -11129,13 +11136,15 @@ function cardSheet(cardId) {
   const d = curDeck(), c = cardId ? cardById(d, cardId) : null;
   const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [] };
   openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : `Add to ${esc(d.name)}`}</h3>${c ? '' : `<span class="ac-n" id="acN">${plural(d.cards.length, 'card')}</span>`}</div>
-    <div class="field ac-fz"><span class="lbl"><span>Chinese · front</span><span id="hzcount"></span></span>
+    <div class="field ac-fz"><span class="lbl"><span>Front</span><span id="hzcount"></span></span>
       <div class="compose qa-compose ac-compose"><div class="qa-word"><div class="compose-hz" id="fhz"></div><div class="compose-py" id="fpyout"></div></div>
         <button class="icon-btn" id="bksp" aria-label="Delete last character">${I.bksp}</button></div>
-      <input class="input" id="fpy" placeholder="Type pinyin, e.g. tushuguan" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Type pinyin">
+      <div class="ac-in"><input class="input" id="fpy" placeholder="e.g. 图书馆 or tushuguan" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Front">
+        <button class="ac-pen" id="acPen" aria-label="Draw a character" aria-pressed="false">${I.pen}</button></div>
+      <div class="ac-pad" id="acPad" hidden></div>
       <div class="cands ac-cands" id="cands"></div>
       <div class="means ac-reads" id="reads"></div></div>
-    <label class="field ac-en"><span class="lbl">English · back</span><input class="input" id="fen" placeholder="What it means" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}"></label>
+    <label class="field ac-en"><span class="lbl">Back</span><input class="input" id="fen" placeholder="What it means" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}"></label>
     <div class="means" id="means"></div>
     <div class="row-btns">${c ? `<button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>` : ''}
       <button class="btn btn-primary" id="csave">${c ? 'Save' : 'Add card'}</button></div>
@@ -11159,7 +11168,7 @@ function cardSheet(cardId) {
         means.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(r.p)}</span></button>`).join('');
       };
       const paintHz = () => {
-        fhz.textContent = E.hanzi; $q('.ac-compose').classList.toggle('empty', !E.hanzi);
+        fhz.textContent = E.hanzi || 'Type or draw it below…'; fhz.classList.toggle('ph', !E.hanzi);
         const k = hanChars(E.hanzi).length; $q('#hzcount').textContent = k ? plural(k, 'character') : '';
         pyOut.textContent = E.hanzi ? curPy() : '';
         const R = rows();
@@ -11189,6 +11198,46 @@ function cardSheet(cardId) {
       };
       const keep = el => el.addEventListener('pointerdown', e => { if (e.target.closest('button')) e.preventDefault(); });   // tapping these keeps the keyboard up
       [cands, reads, means, $q('#bksp'), btn].forEach(keep);
+      /* the pen: a 田字格 square to draw one character in, as in Quick add's Write; matches show under it, tap one to add it */
+      const pen = $q('#acPen'), pad = $q('#acPad');
+      const padOff = () => { if (pad.hidden) return; pad.hidden = true; pad.innerHTML = ''; pen.classList.remove('on'); pen.setAttribute('aria-pressed', 'false'); E.seq++; };
+      const padOn = () => {
+        const s = Math.min(240, Math.max(170, sh.clientWidth - 40 - 46));
+        pad.innerHTML = `<div class="qa-pad"><div class="qa-tools"><button class="qa-tool" id="acUndo" aria-label="Undo last stroke">${I.undo}</button><button class="qa-tool" id="acClr" aria-label="Clear">${I.trash}</button></div>
+          <div class="tzg no-drag" id="acBox" style="--s:${s}px">${TZG}<canvas></canvas></div></div>
+          <div class="cands" id="acC"><span class="msg">Draw one character. Matches show here.</span></div>`;
+        pad.hidden = false; pen.classList.add('on'); pen.setAttribute('aria-pressed', 'true');
+        fpy.value = ''; paintCands([]); fpy.blur();   // the keyboard goes down so there is room to draw
+        const box = pad.querySelector('#acBox'), cv = box.querySelector('canvas'), dpr = Math.min(3, devicePixelRatio || 1), hc = pad.querySelector('#acC');
+        cv.width = cv.height = s * dpr; cv.style.width = cv.style.height = s + 'px';
+        box._ctx = cv.getContext('2d'); box._ctx.setTransform(dpr, 0, 0, dpr, 0, 0); box._s = s; box._strokes = [];
+        let cur = null, tw;
+        const pt = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp }; };
+        const read = () => {
+          clearTimeout(tw); const seq = ++E.seq;
+          if (!box._strokes.length) { hc.innerHTML = '<span class="msg">Draw one character. Matches show here.</span>'; return; }
+          tw = setTimeout(async () => {
+            try {
+              const list = (await recognize(box._strokes, s)).filter(x => [...x].length === 1 && HAN.test(x)).slice(0, 12);
+              if (seq !== E.seq) return;
+              hc.innerHTML = list.length ? list.map(x => `<button class="cand">${esc(x)}</button>`).join('') : '<span class="msg">No match yet. Keep drawing.</span>';
+              hc.scrollLeft = 0;
+            } catch (_) { if (seq === E.seq) hc.innerHTML = '<span class="msg">Drawing needs internet. Type it instead.</span>'; }
+          }, 160);
+        };
+        const clear = () => { box._strokes = []; redraw(box); read(); };
+        cv.addEventListener('pointerdown', e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); cur = [pt(e)]; box._strokes.push(cur); redraw(box); });
+        cv.addEventListener('pointermove', e => { if (!cur) return; const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; for (const ev of (evs.length ? evs : [e])) cur.push(pt(ev)); redraw(box); });
+        const up = () => { if (cur) { cur = null; read(); } };
+        cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+        pad.querySelector('#acUndo').onclick = () => { box._strokes.pop(); redraw(box); read(); };
+        pad.querySelector('#acClr').onclick = clear;
+        hc.onclick = e => { const b = e.target.closest('.cand'); if (!b) return; LOG.add('card-draw-pick', { picked: b.textContent, strokes: box._strokes.length }); setHz(E.hanzi + b.textContent); clear(); };
+        LOG.add('card-pen', 'on');
+      };
+      pen.addEventListener('pointerdown', e => e.preventDefault());
+      pen.onclick = () => { if (pad.hidden) padOn(); else { padOff(); fpy.focus(); } };
+      fpy.addEventListener('focus', padOff);   // typing again puts the pad away
       cands.addEventListener('click', e => { const b = e.target.closest('.cand'); if (b) pick(+b.dataset.i); });
       reads.onclick = e => { const b = e.target.closest('[data-r]'); if (!b) return; E.reading = +b.dataset.r; E.pyDirty = false; if (E.autoEn) E.enDirty = false; paintHz(); };
       means.onclick = e => {
@@ -11212,8 +11261,8 @@ function cardSheet(cardId) {
       fen.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); btn.click(); } };
       const commit = () => {
         const en = fen.value.trim(), hz = E.hanzi.trim();
-        if (!hanChars(hz).length) { fpy.focus(); toast('Type the Chinese first'); return false; }
-        if (!en) { fen.focus(); toast('Add what it means'); return false; }
+        if (!hanChars(hz).length) { fpy.focus(); toast('Add the front first'); return false; }
+        if (!en) { fen.focus(); toast('Add the back first'); return false; }
         if (d.cards.some(x => x !== c && x.hanzi === hz)) { toast(`${hz} is already in this deck`); return false; }
         const pinyin = curPy();
         LOG.add(c ? 'card-edit' : 'card-add', { en, hz, pinyin });
@@ -11225,7 +11274,7 @@ function cardSheet(cardId) {
       else btn.onclick = () => {   // Anki's Add: save, clear, cursor back on the front, keyboard still up
         if (!commit()) return;
         E.added.unshift(E.hanzi); render();
-        E.enDirty = E.autoEn = false; fen.value = ''; fpy.value = ''; setHz(''); paintCands([]);
+        E.enDirty = E.autoEn = false; fen.value = ''; fpy.value = ''; padOff(); setHz(''); paintCands([]);
         const n = $q('#acN'); n.textContent = plural(d.cards.length, 'card'); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump');
         $q('#acLast').innerHTML = `Added <b>${E.added.slice(0, 5).map(esc).join(' · ')}</b>`;
         fpy.focus({ preventScroll: true });
