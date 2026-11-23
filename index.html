@@ -952,6 +952,36 @@ html.kb-up .sheet{max-height:calc(100% - var(--kb) - 8px)}
 .mo-coin{position:relative;z-index:1;width:150px;height:150px;margin:26px auto 0;filter:drop-shadow(0 10px 10px rgba(60,40,20,.25));animation:donePop .7s cubic-bezier(.2,.9,.3,1.3) both}
 .mo-kicker{margin:16px 0 0;text-align:center;font-size:14px;font-weight:700;color:var(--seal)}
 .mo-kicker + .mo-title{margin-top:4px}
+/* v3.75 words milestone (25, 50, 75, 100, 150 proven words and on): lucky-red paper, your own latest words fanned out
+   behind Shi Shi like a hand of cards, and the count climbing to the new number in gold */
+#ob.wm{background:radial-gradient(130% 75% at 50% 26%,#E4392E 0%,#B9221B 52%,#8C1611 100%);overflow-x:hidden}
+#ob.wm .ob-dock{background:none}
+.wm-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.wm-bg b{position:absolute;font:600 var(--s) var(--hanzi);color:#FFD15C;opacity:.09;line-height:1;white-space:nowrap;animation:wmDrift 16s ease-in-out infinite alternate}
+@keyframes wmDrift{to{transform:translate(var(--dx),18px) rotate(var(--dr))}}
+.wm-stage{position:relative;width:280px;height:250px;margin:4px auto 0;flex:none}
+.wm-glow{position:absolute;left:50%;top:44%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,209,92,.42),rgba(255,209,92,0));animation:wmGlow 3.4s ease-in-out infinite alternate}
+@keyframes wmGlow{to{transform:scale(1.08);opacity:.75}}
+.wm-fan{position:absolute;left:50%;top:22px;width:0;height:0;animation:wmSway 4s ease-in-out 1.4s infinite alternate}
+@keyframes wmSway{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
+.wm-card{position:absolute;left:-31px;top:0;width:62px;height:84px;border-radius:10px;background:#FCF9F3;display:flex;align-items:flex-start;justify-content:flex-start;padding:8px 0 0 9px;
+  box-shadow:inset 0 0 0 3px #FCF9F3,inset 0 0 0 4.5px rgba(178,58,44,.55),0 8px 14px -6px rgba(60,8,4,.55);
+  transform-origin:50% 165%;transform:rotate(var(--a));animation:wmDeal .55s cubic-bezier(.3,1.45,.5,1) calc(.3s + var(--i) * 70ms) both}
+.wm-card b{writing-mode:vertical-rl;font:600 var(--f,30px)/1 var(--hanzi);color:#2A0E0C;letter-spacing:.02em}   /* down the left edge, the part of each card the next one leaves in view */
+@keyframes wmDeal{from{transform:rotate(0) translateY(60px) scale(.5);opacity:0}to{transform:rotate(var(--a));opacity:1}}
+.wm-shi{position:absolute;left:50%;bottom:0;width:150px;height:150px;margin-left:-75px;animation:donePop .6s cubic-bezier(.2,.9,.3,1.3) both}
+.wm-shi .shi-face{display:block;width:100%;height:100%;filter:drop-shadow(0 10px 12px rgba(60,8,4,.45));animation:wmBob 2.8s ease-in-out .8s infinite}
+@keyframes wmBob{50%{transform:translateY(-7px) rotate(-2deg)}}
+.wm-spark{position:absolute;width:var(--z);height:var(--z);fill:#FFE38A;animation:wmTw 2.2s ease-in-out var(--d) infinite both}
+@keyframes wmTw{0%,100%{transform:scale(.35) rotate(0);opacity:.2}50%{transform:scale(1) rotate(45deg);opacity:1}}
+.wm-num{position:relative;margin:14px 0 0;text-align:center;font:600 124px/.9 var(--display);color:#FFD15C;font-variant-numeric:lining-nums tabular-nums;
+  text-shadow:0 5px 0 #7E1D19,0 14px 26px rgba(60,8,4,.45)}
+.wm-num.land{animation:wmLand .5s cubic-bezier(.3,1.7,.5,1)}
+@keyframes wmLand{40%{transform:scale(1.14)}}
+.wm-title{position:relative;margin:12px 0 0;text-align:center;font-size:25px;font-weight:800;letter-spacing:-.02em;color:#FFF4E0}
+.wm-sub{position:relative;margin:8px auto 0;max-width:22em;text-align:center;font-size:15.5px;line-height:1.45;color:rgba(255,236,214,.8)}
+#ob.wm .btn-seal{background:linear-gradient(#FFE79A,#FFD15C 55%);color:#7E1D19;text-shadow:none;--edge:rgba(150,90,10,.55);--drop:rgba(60,8,4,.7)}
+@media (prefers-reduced-motion:reduce){.wm-bg b,.wm-glow,.wm-fan,.wm-card,.wm-shi,.wm-shi .shi-face,.wm-spark,.wm-num.land{animation:none!important}.wm-spark{transform:none;opacity:.8}}
 .mo-sub{margin:12px auto 0;text-align:center;font-size:13.5px;color:var(--muted);max-width:24em}
 /* ---------- Map: a temple in five cities (Trail draws the map and the temples) ---------- */
 /* the terrain map fills the page and runs under the tab bar; the title, the zoom buttons and the monument card float on it */
@@ -9019,6 +9049,45 @@ function coinMoment() {   // a new piece for the collection, full screen, once; 
     ${moDock('Continue', 'mo-close', '<button class="ob-link" data-act="mo-coll">See my collection</button>')}`, 'mo');
   return true;
 }
+/* v3.75 words milestones: the count of proven words is celebrated full screen at 25, 50, 75 and 100, then every 50 to 300,
+   every 100 to 1,000, every 250 to 3,000 and every 500 after. Proven, not just added, so ticking a list never sets it off.
+   db.wordMile = the milestone last celebrated; phones that already had proven words start from where they are, so nobody
+   gets a pile of old ones at once. When a collection piece comes at the same count, it follows on Continue */
+const WORD_MILES = (() => { const a = []; for (let n = 25; n <= 20000; n += n < 100 ? 25 : n < 300 ? 50 : n < 1000 ? 100 : n < 3000 ? 250 : 500) a.push(n); return a; })();
+const wordMileAt = pv => WORD_MILES.filter(m => m <= pv).at(-1) || 0;
+db.wordMile ??= wordMileAt(provenCount());
+function wordMileMoment(then, demo) {   // shows the newest milestone not yet celebrated; then = what to do after Continue
+  const pv = provenCount(), m = demo || wordMileAt(pv);
+  if (!demo && (!m || m <= (db.wordMile || 0) || $('#ob'))) return false;
+  if (!demo) { db.wordMile = m; save(); LOG.add('moment', { what: 'words', n: m, proven: pv }); }
+  const i = WORD_MILES.indexOf(m), from = i > 0 ? WORD_MILES[i - 1] : 0, next = WORD_MILES[i + 1];
+  const mine = db.bank.filter(w => w.pf?.at).sort((a, b) => b.pf.at - a.pf.at).map(w => w.hanzi);
+  const hz = [...new Set([...mine, '你好', '谢谢', '中国', '学', '爱'])].slice(0, 5);
+  const fit = h => [...h].length > 2 ? 17 : [...h].length > 1 ? 23 : 30;
+  const cards = [hz[3], hz[1], hz[0], hz[2], hz[4]].map((h, k) => `<span class="wm-card" style="--a:${(k - 2) * 21}deg;--i:${k};--f:${fit(h)}px"><b lang="zh">${esc(h)}</b></span>`).join('');
+  const star = 'M12 0C13 7 17 11 24 12C17 13 13 17 12 24C11 17 7 13 0 12C7 11 11 7 12 0Z';
+  const sparks = [[18, 40, 22, 0], [238, 24, 16, .5], [252, 132, 20, 1.1], [6, 150, 14, 1.6], [128, -6, 12, .8]]
+    .map(([x, y, z, d]) => `<svg class="wm-spark" viewBox="0 0 24 24" style="left:${x}px;top:${y}px;--z:${z}px;--d:${d}s"><path d="${star}"/></svg>`).join('');
+  const bg = [[hz[0], -6, 9, 150, -30, -6], [hz[1], 62, 58, 120, 26, 5], [hz[2], 4, 74, 104, 18, -4]]
+    .map(([h, x, y, s, dx, dr]) => `<b lang="zh" style="left:${x}%;top:${y}%;--s:${s}px;--dx:${dx}px;--dr:${dr}deg">${esc(h)}</b>`).join('');
+  S.wmThen = then || null;
+  const el = layer(`<div class="wm-bg" aria-hidden="true">${bg}</div><div class="ob-top"></div>
+    <div class="wm-stage" aria-hidden="true"><div class="wm-glow"></div><div class="wm-fan">${cards}</div><div class="wm-shi">${shiFace('star')}</div>${sparks}</div>
+    <p class="wm-num" aria-label="${m.toLocaleString('en')}"><b>${from.toLocaleString('en')}</b></p>
+    <h2 class="wm-title">words learned!</h2>
+    <p class="wm-sub">Each one right on two different days.${next ? `<br>Next stop: ${next.toLocaleString('en')}` : ''}</p>
+    ${moDock('Continue', 'wm-go')}`, 'mo wm');
+  const num = el.querySelector('.wm-num'), b = num.firstChild;
+  const land = () => { b.textContent = m.toLocaleString('en'); num.classList.add('land'); fanfare(); try { navigator.vibrate?.([12, 50, 24]); } catch (_) {} };
+  if (stillMotion()) { land(); return true; }
+  setTimeout(() => {   // the count climbs from the last milestone, fast then slowing into the new number
+    const t0 = performance.now(), dur = 950, step = t => { if (!el.isConnected) return;
+      const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      if (p < 1) { b.textContent = Math.round(from + (m - from) * e).toLocaleString('en'); requestAnimationFrame(step); } else land(); };
+    requestAnimationFrame(step);
+  }, 750);
+  return true;
+}
 /* ---------- Coins (铜钱): Shi Shi's money bag ----------
    Round bronze coins with a square hole, cast with 狮狮通宝. They come from practice, never from just adding words:
    10 for each word you prove, 20 more when it is mastered, 25 for each lesson and each story you finish (the first time)
@@ -10293,7 +10362,7 @@ function fbNext() {
   if (++F.qi >= F.q.length) {
     F.done = true; const day = db.days[dayKey(Date.now())] ||= { decks: {} }; day.fb = (day.fb || 0) + 1; save(); F.pay = takePay();   // counts for the streak
     LOG.add('fast-build-done', { lv: F.lv, right: F.right, of: F.q.length, proven: F.proven, unlocked: trailOpened(trailStates()) - F.k0 });
-    setTimeout(() => { if (S.view === 'build' && S.fb === F) coinMoment(); }, F.pay ? 2800 : 900);   // a new piece for the collection: celebrated over the end of the round
+    setTimeout(() => { if (S.view === 'build' && S.fb === F) wordMileMoment() || coinMoment(); }, F.pay ? 2800 : 900);   // a new piece for the collection: celebrated over the end of the round
   }
   fbPaint();
 }
@@ -12541,7 +12610,6 @@ function mountBank() {
 }
 /* v4.37 (ilkem): the word bank page shows two measures. The stages bar splits your words into Mastered, Proven and Known,
    its key filters the list (tap the same one again for all), and a line counts down to the next proven-words milestone. */
-const WORD_MILES = (() => { const a = []; for (let n = 25; n <= 20000; n += n < 100 ? 25 : n < 300 ? 50 : n < 1000 ? 100 : n < 3000 ? 250 : 500) a.push(n); return a; })();   // moka2: the real app's words milestones (v3.75), the steps the word bank's stages bar counts down to
 function BankStages(cnt, filter) {
   const pv = cnt.proven + cnt.mastered, next = WORD_MILES.find(m => m > pv);
   const st = [['mastered', 'Mastered'], ['proven', 'Proven'], ['known', 'Known']].filter(([k]) => cnt[k]);
@@ -13003,7 +13071,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.13';
+const APP_VERSION = '3.45.14';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13122,6 +13190,7 @@ function devSheet() {
       ${p('devSaved', 'Play: streak saved', 'What you see after a freeze covers a missed day')}
       ${p('devKept', 'Play: streak kept today', 'After your first practice of the day: the count goes up by one, today’s dot fills in')}
       ${p('devMile', 'Play: streak milestone', 'The celebration at 3, 7, 14, 30 days and on')}
+      ${p('devWords', 'Play: words milestone', 'The celebration at 25, 50, 75, 100, 150 proven words and on')}
       ${p('devCard', 'Play: 7-day streak card', 'The one-week celebration, then the streak card you can share')}
       ${p('devBack', 'Play: welcome back', 'After 3 or more days away, with the win-back offer')}
       ${p('devPay', 'Show: paywall layout', 'Preview only. Nothing can be bought')}
@@ -13149,6 +13218,7 @@ function devSheet() {
     sh.querySelector('#devOb').onclick = play(function onboarding() { obStart(true); });
     sh.querySelector('#devSaved').onclick = play(function saved() { momentSaved({ days: 1, left: db.freeze.have }); });
     sh.querySelector('#devKept').onclick = play(function kept() { const { n, today } = practiceStreak(); momentKept(today ? Math.max(1, n) : n + 1, { on: lastDays(1) }); });
+    sh.querySelector('#devWords').onclick = play(function wordsMilestone() { wordMileMoment(null, wordMileAt(provenCount()) || 25); });
     sh.querySelector('#devCard').onclick = play(function card7() { momentMile(7, { on: lastDays(7) }); });
     sh.querySelector('#devMile').onclick = play(function milestone() { const { n } = practiceStreak(); momentMile(MILES.includes(n) ? n : 7); });
     sh.querySelector('#devBack').onclick = play(function welcomeBack() { momentBack(4, 12); });
@@ -14181,7 +14251,7 @@ function moments() {
   const tk = dayKey(Date.now());
   if (today && MILES.includes(n) && db.mile !== n) { db.mile = n; db.kept = tk; save(); LOG.add('moment', { what: 'milestone', n }); return momentMile(n); }
   if (today && db.kept !== tk) { db.kept = tk; save(); LOG.add('moment', { what: 'kept', n }); return momentKept(n); }   // v3.54 once a day, after the first practice
-  if (coinMoment()) return;
+  if (wordMileMoment() || coinMoment()) return;
   const last = lastPractice();
   if (!today && last && db.back !== tk) {
     const away = Math.round((dayStart() - last.getTime()) / DAY);
@@ -14270,6 +14340,7 @@ function paywall() {
 
 const A = {
   'mo-close': () => closeLayer(),
+  'wm-go': () => closeLayer(() => { const f = S.wmThen; S.wmThen = null; if (f) f(); else coinMoment(); }),
   'mo-share': () => closeLayer(() => shareStreak()),   // the milestone page steps aside so the card's sheet shows
   'mo-card': () => momentCard(S.moCard || { n: practiceStreak().n }),
   'mo-warm': () => closeLayer(() => { const P = todayPile(); if (!P.cards.length) { nav('#/read'); return; }
