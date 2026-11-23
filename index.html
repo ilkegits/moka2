@@ -818,6 +818,12 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .qa-decks .row-val{max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .handle{width:40px;height:5px;border-radius:5px;background:var(--line-2);margin:0 auto 14px;position:relative;cursor:grab}
 .handle::after{content:"";position:absolute;inset:-14px -40px}  /* bigger grab area */
+/* UX 10: the close button in a pop-up's corner (drawn 30 px, takes taps over 44 px) */
+.sheet-x{position:absolute;top:12px;right:14px;z-index:1;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--fill);color:var(--ink-2)}
+.sheet-x::after{content:"";position:absolute;inset:-7px}
+.sheet-x svg.i{width:15px;height:15px;stroke-width:2.6}
+.sheet-x:active{opacity:.5}
+.sheet.x-row>.handle{margin-bottom:40px}
 .sheet h3{font-size:17px;font-weight:600;letter-spacing:-.01em;text-align:center;margin:0 0 20px}
 .field{display:block;margin-bottom:18px}
 .field>.lbl{display:flex;justify-content:space-between;font-size:13px;font-weight:400;color:var(--muted);margin:0 16px 6px}
@@ -11104,6 +11110,15 @@ function openSheet(html, mount) {
   LOG.add('sheet-open', sh.querySelector('h3')?.textContent || '');
   sheetDrag(sh, root.querySelector('.scrim'));
   mount?.(sh);
+  // UX 10: a pop-up you can drag away also has a button that closes it, unless it already has a Done, Cancel or Close
+  if (!sh.querySelector('[data-act="close-sheet"]') && ![...sh.querySelectorAll('button')].some(b => /^(done|cancel|close)$/i.test(b.textContent.trim()))) {
+    // something of the pop-up's own already in that corner (the shop's coins): the button gets a row of its own above it
+    const S0 = sh.getBoundingClientRect(), hit = q => q.width && q.right > S0.right - 52 && q.top < S0.top + 46 && q.bottom > S0.top;
+    const tw = document.createTreeWalker(sh, NodeFilter.SHOW_TEXT); let busy = [...sh.querySelectorAll('button,input,img,svg,canvas')].some(e => hit(e.getBoundingClientRect()));
+    for (let n; !busy && (n = tw.nextNode());) { if (!n.nodeValue.trim()) continue; const r = document.createRange(); r.selectNodeContents(n); busy = [...r.getClientRects()].some(hit); }
+    sh.classList.toggle('x-row', busy);
+    sh.insertAdjacentHTML('afterbegin', `<button type="button" class="sheet-x" data-act="close-sheet" aria-label="Close">${I.close}</button>`);
+  }
 }
 /* finger speed in px per ms, measured over the last ~80 ms so one jittery sample can't fake a flick */
 function speed(hist, p, t) {
