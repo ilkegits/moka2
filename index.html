@@ -844,6 +844,10 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .pk-make .input{height:42px;flex:1}
 .pk-make .btn{height:42px;padding:0 16px}
 .qa-decks{margin-bottom:16px}
+/* v4.21 (ilkem: "like in anki"): the Add pop-up has a Deck row to send the card to another deck than the one you opened */
+.ac-deck{margin-bottom:14px}
+.ac-deck .row{min-height:46px}
+.ac-deck .row-val{max-width:62%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-weight:600}
 .qa-decks .row-val{max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .handle{width:40px;height:5px;border-radius:5px;background:var(--line-2);margin:0 auto 14px;position:relative;cursor:grab}
 .handle::after{content:"";position:absolute;inset:-14px -40px}  /* bigger grab area */
@@ -11282,10 +11286,11 @@ const AC_EX = [['猫', 'mao', 'cat'], ['咖啡', 'kafei', 'coffee'], ['朋友', 
 let acExLast = -1;
 const acExPick = () => { let i; do i = Math.floor(Math.random() * AC_EX.length); while (i === acExLast); return acExLast = i; };
 function cardSheet(cardId) {
-  const d = curDeck(), c = cardId ? cardById(d, cardId) : null;
-  const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [], ex: acExPick() };
+  let d = curDeck(); const c = cardId ? cardById(d, cardId) : null;
+  const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [], into: new Set(), ex: acExPick() };
   const exZh = () => `e.g. ${AC_EX[E.ex][0]} or ${AC_EX[E.ex][1]}`, exEn = () => `e.g. ${AC_EX[E.ex][2]}`;
-  openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : `Add to ${esc(d.name)}`}</h3>${c ? '' : `<button class="ac-add" id="csave">Add</button>`}</div>
+  openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : 'Add card'}</h3>${c ? '' : `<button class="ac-add" id="csave">Add</button>`}</div>
+    ${c ? '' : `<div class="group ac-deck"><button class="row" id="acDeck"><span class="row-main"><span class="row-t">Deck</span></span><span class="row-val" id="acDeckVal">${esc(d.name)}</span><span class="chev">${I.chev}</span></button></div>`}
     <div class="ac-sides" id="acSides">
     <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span></span>
       <div class="ac-box" id="fbox"><div class="ac-word" id="fword" hidden><span class="hz" id="fhz"></span><span class="py" id="fpyout"></span></div>
@@ -11474,13 +11479,25 @@ function cardSheet(cardId) {
       if (c) btn.onclick = () => { if (commit()) { closeSheet(); render(); toast('Saved'); } };
       else btn.onclick = () => {   // Anki's Add: save, clear, cursor back on the front, keyboard still up
         if (!commit()) return;
-        E.added.unshift(E.hanzi); render();
+        E.added.unshift(E.hanzi); E.into.add(d); render();
         E.ex = acExPick(); fen.placeholder = exEn();
         E.enDirty = E.autoEn = false; fen.value = ''; fpy.value = ''; padOff(); setHz(''); paintCands([]);
         $q('#acLast').innerHTML = `Added <b>${E.added.slice(0, 5).map(esc).join(' · ')}</b>`;
         frontIn().focus({ preventScroll: true });
       };
-      $q('#acClose')?.addEventListener('click', () => { closeSheet(); if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${d.name}`); });
+      $q('#acClose')?.addEventListener('click', () => { closeSheet(); if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${E.into.size > 1 ? plural(E.into.size, 'deck') : [...E.into][0].name}`); });
+      const deckB = $q('#acDeck');
+      if (deckB) {   // like Anki's Deck: choose which deck the next cards go to; the one you opened is picked to start with
+        deckB.addEventListener('pointerdown', e => e.preventDefault());
+        deckB.onclick = () => {
+          padOff(); const sel = new Set([d.id]);
+          deckPicker(sel, () => {
+            const nd = deckById([...sel][0]);
+            if (nd && nd !== d) { LOG.add('card-deck', { from: d.name, to: nd.name }); d = nd; $q('#acDeckVal').textContent = d.name; render(); }
+            frontIn().focus({ preventScroll: true });
+          }, new Set(), true);
+        };
+      }
       const del = $q('#cdel');
       if (del) del.onclick = () => {   // UX 5: goes at once, Undo on the toast
         const i = d.cards.indexOf(c); S.onSheetClose = null; closeSheet();
@@ -11550,12 +11567,12 @@ function newDeckNamed(name) {
 }
 /* a second pop-up on top of the current one: every deck in a tick list, plus New deck. `sel` is the set of picked deck ids;
    `has` = decks that already have the word (shown ticked and greyed, not tappable) */
-function deckPicker(sel, onChange, has = new Set()) {
+function deckPicker(sel, onChange, has = new Set(), single = false) {   // single: pick one deck, a tap picks it and closes
   const root = $('#sheet-root');
   root.querySelector('.picker')?.remove();
   const wrap = document.createElement('div'); wrap.className = 'picker';
-  wrap.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog"><div class="handle"></div><h3>Add to deck</h3>
-    <div class="group" id="pkList"></div><button class="btn btn-primary wide" id="pkDone">Done</button></div>`;
+  wrap.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog"><div class="handle"></div><h3>${single ? 'Deck' : 'Add to deck'}</h3>
+    <div class="group" id="pkList"></div>${single ? '' : '<button class="btn btn-primary wide" id="pkDone">Done</button>'}</div>`;
   root.appendChild(wrap);
   const list = wrap.querySelector('#pkList'), sh = wrap.querySelector('.sheet'), scrim = wrap.querySelector('.scrim');
   const paint = () => {
@@ -11573,15 +11590,16 @@ function deckPicker(sel, onChange, has = new Set()) {
   };
   list.onclick = e => {
     const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.id && single) { sel.clear(); sel.add(b.dataset.id); paint(); close(); return; }
     if (b.dataset.id) { sel.has(b.dataset.id) ? sel.delete(b.dataset.id) : sel.add(b.dataset.id); b.classList.toggle('on'); return; }
     if (!b.dataset.new) return;
     b.outerHTML = `<div class="row pk-make"><input class="input" placeholder="New deck name" maxlength="40" autocomplete="off"><button class="btn btn-primary">Create</button></div>`;
     const row = list.querySelector('.pk-make'), inp = row.querySelector('input');
-    const make = () => { const name = inp.value.trim(); if (!name) { inp.focus(); return; } const d = newDeckNamed(name); sel.add(d.id); LOG.add('deck-new', { name, from: 'picker' }); paint(); };
+    const make = () => { const name = inp.value.trim(); if (!name) { inp.focus(); return; } const d = newDeckNamed(name); if (single) sel.clear(); sel.add(d.id); LOG.add('deck-new', { name, from: 'picker' }); paint(); if (single) close(); };
     row.querySelector('button').onclick = make; inp.onkeydown = ev => { if (ev.key === 'Enter') { ev.preventDefault(); make(); } };
     inp.focus();
   };
-  scrim.onclick = close; wrap.querySelector('#pkDone').onclick = close; wrap._close = close;
+  scrim.onclick = close; if (!single) wrap.querySelector('#pkDone').onclick = close; wrap._close = close;
   sheetDrag(sh, scrim, close);
   paint(); wrap.offsetHeight; wrap.classList.add('on');
 }
