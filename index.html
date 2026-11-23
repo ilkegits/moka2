@@ -483,10 +483,10 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .dk-name .deck-face{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);font-size:21px;transition:color .2s,border-color .2s}
 .dk-name .deck-face::after{background:var(--accent)}
 .dk-sw{justify-content:space-between;margin:0 6px 20px}
-/* v3.62 the + in the corner of Decks: tap it and Create group and Create deck rise above it on a paper veil.
+/* v3.62 the + in the corner of Decks: tap it and Create group and Create deck rise above it on a light dark veil.
    Each choice has a small 田字格 square with its character (组 group, 卡 deck). Inside a deck the corner button says Add */
 #fab-root{position:fixed;inset:0;z-index:30;pointer-events:none}
-.fab-veil{position:absolute;inset:0;background:color-mix(in srgb,var(--paper) 76%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .25s}
+.fab-veil{position:absolute;inset:0;background:rgba(42,20,13,.28);opacity:0;transition:opacity .18s}   /* v4.02: just a little darker, no blur, like the HSK level menu */
 #fab-root.open .fab-veil{opacity:1;pointer-events:auto}
 .fab{position:absolute;right:max(18px,calc(50% - 222px));bottom:calc(12px + var(--tabh) + 16px + env(safe-area-inset-bottom));pointer-events:auto;
   display:grid;place-items:center;width:60px;height:60px;border-radius:50%;padding:0 0 3px;
@@ -513,7 +513,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 /* v3.62 Create deck / Create group: a small card in the middle, above the keyboard: a floating Name label, a colour, Cancel and Create */
 #dlg-root{position:fixed;inset:0;z-index:55;pointer-events:none}
 #dlg-root.open{pointer-events:auto}
-.dlg-scrim{position:absolute;inset:0;background:rgba(30,20,10,.34);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .25s}
+.dlg-scrim{position:absolute;inset:0;background:rgba(42,20,13,.28);opacity:0;transition:opacity .18s}
 #dlg-root.open .dlg-scrim{opacity:1}
 .dlg-wrap{position:absolute;left:0;right:0;top:0;bottom:var(--kb);display:grid;place-items:center;padding:20px;pointer-events:none;transition:bottom .15s}
 .dlg{width:min(100%,340px);pointer-events:auto;background:var(--paper);border-radius:26px;padding:22px 20px 14px;
