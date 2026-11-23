@@ -551,10 +551,11 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .dlg-ok:not(:disabled):active{opacity:.75}
 /* a group on Decks: a folder in its colour with its decks' cards peeking out */
 /* v3.53 adding cards (like Anki's Add screen): the count of cards in the deck, what you just added, Done */
-.ac-head{position:relative}
+/* v4.23: the heading (✕, Add card, Add) stays at the top while the pop-up scrolls, so Add is always in reach above the keyboard */
+.ac-head{position:sticky;top:-10px;z-index:3;margin:-10px -20px 0;padding:14px 20px 0;background:var(--paper)}   /* -10px: covers the pop-up's own top padding too */
 .ac-head h3{margin-bottom:14px;padding:0 64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* v4.12: the corner holds Add (it saves the card); the count of cards and the big Add card button are gone */
-.ac-add{position:absolute;right:0;top:-6px;height:34px;padding:0 16px;border-radius:10px;background:linear-gradient(var(--seal-btn-top),var(--seal-btn) 55%);color:var(--seal-ink);font-size:15px;font-weight:700;transition:background .2s,color .2s}
+.ac-add{position:absolute;right:20px;top:8px;height:34px;padding:0 16px;border-radius:10px;background:linear-gradient(var(--seal-btn-top),var(--seal-btn) 55%);color:var(--seal-ink);font-size:15px;font-weight:700;transition:background .2s,color .2s}
 .ac-add::after{content:"";position:absolute;inset:-6px}
 .ac-add:disabled{background:var(--fill);color:var(--muted)}
 .ac-add:not(:disabled):active{opacity:.75}
@@ -599,7 +600,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-done{display:flex;align-items:center;gap:10px;margin-top:4px;min-height:24px}
 .ac-done:has(.ac-last:empty){display:none}
 /* v4.22: no Done button; a close button on the left of the heading (Add is on the right), like Anki's back arrow */
-.ac-head .sheet-x{left:0;right:auto;top:-4px}
+.ac-head .sheet-x{left:20px;right:auto;top:10px}
 .ac-last{min-width:0;font-size:13.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ac-last b{font:400 16px/1 var(--hanzi);color:var(--ink)}
 /* v4.16: a deck or group in a list is one plain line: name on the left, count on the far right */
@@ -854,6 +855,8 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-deck .row-val{max-width:62%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-weight:600}
 .qa-decks .row-val{max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .handle{width:40px;height:5px;border-radius:5px;background:var(--line-2);margin:0 auto 14px;position:relative;cursor:grab}
+/* v4.23: with the keyboard up, a pop-up reaches nearer the top so more of it fits above the keyboard */
+html.kb-up .sheet{max-height:calc(100% - var(--kb) - 8px)}
 .handle::after{content:"";position:absolute;inset:-14px -40px}  /* bigger grab area */
 /* UX 10: the close button in a pop-up's corner (drawn 30 px, takes taps over 44 px) */
 .sheet-x{position:absolute;top:12px;right:14px;z-index:1;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--fill);color:var(--ink-2)}
@@ -861,6 +864,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .sheet-x svg.i{width:15px;height:15px;stroke-width:2.6}
 .sheet-x:active{opacity:.5}
 .sheet.x-row>.handle{margin-bottom:40px}
+.sheet:has(>.ac-head)>.handle{margin-bottom:10px}
 .sheet h3{font-size:17px;font-weight:600;letter-spacing:-.01em;text-align:center;margin:0 0 20px}
 .field{display:block;margin-bottom:18px}
 .field>.lbl{display:flex;justify-content:space-between;font-size:13px;font-weight:400;color:var(--muted);margin:0 16px 6px}
@@ -11525,6 +11529,22 @@ function cardSheet(cardId) {
         d.cards.splice(i, 1); save(); render();
         undoToast('Card deleted', () => { if (!d.cards.includes(c)) d.cards.splice(Math.min(i, d.cards.length), 0, c); save(); render(); });
       };
+      /* v4.23: the side you are typing in, with the picks under it, stays in view above the keyboard (on a Samsung the
+         bottom box and its suggestions were hidden behind it). The heading stays on top; the deck row scrolls away first */
+      const head = $q('.ac-head');
+      const inView = () => {
+        if (!sh.isConnected) { ro.disconnect(); visualViewport?.removeEventListener('resize', soon); return; }
+        const a = document.activeElement, blk = a === fpy ? zhB : a === fen ? enB : null; if (!blk) return;
+        const s = sh.getBoundingClientRect(), r = blk.getBoundingClientRect();
+        const lo = s.top + head.offsetHeight + 6, hi = s.bottom - 10;
+        let dy = r.bottom > hi ? r.bottom - hi : 0;
+        if (r.top - dy < lo) dy = r.top - lo;   // too tall to show all of it: its label and box win
+        if (Math.abs(dy) > 1) sh.scrollTop += dy;
+      };
+      let raf = 0; const soon = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(inView); };
+      const ro = new ResizeObserver(soon); [sh, zhB, enB].forEach(el => ro.observe(el));
+      visualViewport?.addEventListener('resize', soon);
+      fpy.addEventListener('focus', soon); fen.addEventListener('focus', soon);
       paintHz(); paintCands([]);
       if (!c) frontIn().focus({ preventScroll: true });   // inside the tap, so the phone's keyboard comes up at once
       loadDict().then(D => { E.D = D; if (sh.isConnected) paintHz(); }, () => {});
@@ -13646,8 +13666,20 @@ document.addEventListener('keydown', e => { if (e.target.id === 'pName' && e.key
 /* keep sheets above the on-screen keyboard */
 if (window.visualViewport) {
   const vv = visualViewport;
-  const upd = () => document.documentElement.style.setProperty('--kb', Math.max(0, innerHeight - vv.height - vv.offsetTop) + 'px');
+  // v4.23: html.kb-up while the keyboard is up. Samsung and Chrome shrink the whole page for the keyboard (--kb stays 0),
+  // iPhones only the visible part (--kb is the keyboard), so both are told by the visible height dropping while typing
+  let tall = 0, tw = 0;
+  const upd = () => {
+    const de = document.documentElement;
+    de.style.setProperty('--kb', Math.max(0, innerHeight - vv.height - vv.offsetTop) + 'px');
+    if (innerWidth !== tw) { tw = innerWidth; tall = 0; }
+    const typing = !!document.activeElement?.matches?.('input:not([type=checkbox],[type=radio],[type=range],[type=button]),textarea,[contenteditable]');
+    if (!typing) tall = Math.max(tall, vv.height);
+    de.classList.toggle('kb-up', typing && tall > 0 && vv.height < tall - 120);
+  };
+  upd();
   vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd);
+  document.addEventListener('focusout', () => setTimeout(upd, 400));
 }
 /* re-layout tianzige on rotation */
 let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (S.view === 'write' && !S.write?.done && !S.write?.revealed && !S.write?.history?.length) render(); }, 200); });
