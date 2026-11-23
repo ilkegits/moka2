@@ -567,6 +567,10 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-box:focus-within{box-shadow:0 0 0 2px var(--seal)}
 .ac-box .input{flex:1;align-self:flex-start;min-width:56px;height:40px;padding:0;border-radius:0;background:none;box-shadow:none}
 .ac-box .input:focus{box-shadow:none}
+/* v4.25: the Add card boxes are plain editable lines, not <input>s, so Chrome's passwords / cards / addresses bar stays away */
+.pf{position:relative;display:block;line-height:40px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;cursor:text}
+.pf::-webkit-scrollbar{display:none}
+.pf:empty::before{content:attr(data-ph);position:absolute;left:0;top:0;color:var(--muted);pointer-events:none;white-space:nowrap}
 .ac-word{flex:0 1 auto;min-width:0;display:flex;flex-direction:column;padding:3px 0}
 .ac-word[hidden]{display:none}
 .ac-word .hz{font:400 26px/1.2 var(--hanzi);letter-spacing:.03em;color:var(--ink);word-break:break-all}
@@ -11263,7 +11267,7 @@ function sheetDrag(sh, scrim, close = closeSheet) {
   sh.addEventListener('touchend', finish); sh.addEventListener('touchcancel', finish);
   // mouse (desktop): grab anywhere that is not a control
   sh.addEventListener('pointerdown', e => {
-    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('input,textarea,select,button,label,a,.cands,.no-drag')) return;
+    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('input,textarea,select,[contenteditable],button,label,a,.cands,.no-drag')) return;
     begin(e.clientX, e.clientY, e.timeStamp);
     const mv = ev => { if (!g) return; if (!g.on) { if (ev.clientY - g.y > 4 && g.top) claim(); else if (Math.abs(ev.clientY - g.y) > 4) { g = null; return; } else return; } follow(ev.clientY, ev.timeStamp); };
     const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); finish(); };
@@ -11310,6 +11314,22 @@ const AC_EX = [['猫', 'mao', 'cat'], ['咖啡', 'kafei', 'coffee'], ['朋友', 
   ['熊猫', 'xiongmao', 'panda'], ['月亮', 'yueliang', 'moon'], ['面条', 'miantiao', 'noodles'], ['雨', 'yu', 'rain']];
 let acExLast = -1;
 const acExPick = () => { let i; do i = Math.floor(Math.random() * AC_EX.length); while (i === acExLast); return acExLast = i; };
+/* v4.25: Chrome on Android puts its passwords / payment cards / addresses bar above the keyboard on every real text box,
+   and autocomplete="off" does not stop it. So the Add card boxes are plain one-line editable spans, which autofill leaves
+   alone. plainBox gives one the .value, .placeholder and .select() of an <input>, so the code that uses them is unchanged */
+function plainBox(el) {
+  el.contentEditable = 'plaintext-only'; if (el.contentEditable !== 'plaintext-only') el.contentEditable = 'true';
+  const sel = atEnd => { const r = document.createRange(), s = getSelection(); r.selectNodeContents(el); if (atEnd) r.collapse(false); s.removeAllRanges(); s.addRange(r); };
+  Object.defineProperty(el, 'value', { get: () => el.textContent, set: v => { el.textContent = v; if (document.activeElement === el) sel(true); } });
+  Object.defineProperty(el, 'placeholder', { get: () => el.dataset.ph || '', set: v => { el.dataset.ph = v; } });
+  el.select = () => sel(false);
+  el.addEventListener('focus', () => { const s = getSelection(); if (!s.rangeCount || !el.contains(s.anchorNode) || !s.anchorOffset) sel(true); });   // the cursor goes after what is there, as in a text box
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });   // one line only
+  el.addEventListener('beforeinput', e => { if (e.inputType === 'insertParagraph' || e.inputType === 'insertLineBreak') e.preventDefault(); });
+  el.addEventListener('paste', e => { e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData?.getData('text/plain') || '').replace(/\s+/g, ' ')); });
+  el.addEventListener('input', () => { if (!el.textContent && el.firstChild) el.textContent = ''; });   // a left-over <br> would hide the grey example
+  return el;
+}
 function cardSheet(cardId) {
   let d = curDeck(); const c = cardId ? cardById(d, cardId) : null;
   const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [], into: new Set(), ex: acExPick() };
@@ -11319,7 +11339,7 @@ function cardSheet(cardId) {
     <div class="ac-sides" id="acSides">
     <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span></span>
       <div class="ac-box" id="fbox"><div class="ac-word" id="fword" hidden><span class="hz" id="fhz"></span><span class="py" id="fpyout"></span></div>
-        <input class="input" id="fpy" placeholder="${exZh()}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Front">
+        <span class="input pf" id="fpy" role="textbox" data-ph="${exZh()}" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next" aria-label="Front"></span>
         <button class="ac-bk" id="bksp" aria-label="Delete last character" hidden>${I.bksp}</button>
         <button class="ac-draw" id="acPen" aria-label="Draw a character" aria-pressed="false">${I.pen}Draw</button></div>
       <div class="ac-pad" id="acPad" hidden></div>
@@ -11328,7 +11348,7 @@ function cardSheet(cardId) {
       <div class="means ac-sugs" id="sugs"></div></div>
     <div class="ac-swaprow"><button type="button" class="ac-swap" id="acSwap" aria-label="Swap front and back">${I.swapV}</button></div>
     <div class="ac-enb"><div class="field ac-en"><span class="lbl"><span class="ac-side">Back</span></span>
-      <div class="ac-box" id="ebox"><input class="input" id="fen" placeholder="${exEn()}" value="${esc(c?.en || '')}" autocomplete="off" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning"></div></div>
+      <div class="ac-box" id="ebox"><span class="input pf" id="fen" role="textbox" data-ph="${exEn()}" enterkeyhint="${c ? 'done' : 'send'}" aria-label="Meaning">${esc(c?.en || '')}</span></div></div>
     <div class="means" id="means"></div></div>
     </div>
     ${c ? `<div class="row-btns"><button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>
@@ -11336,7 +11356,7 @@ function cardSheet(cardId) {
       : '<div class="ac-done"><span class="ac-last" id="acLast"></span></div>'}`,
     sh => {
       const $q = q => sh.querySelector(q);
-      const fen = $q('#fen'), fhz = $q('#fhz'), fpy = $q('#fpy'), pyOut = $q('#fpyout'), cands = $q('#cands'), reads = $q('#reads'), means = $q('#means'), sugs = $q('#sugs'), btn = $q('#csave');
+      const fen = plainBox($q('#fen')), fhz = $q('#fhz'), fpy = plainBox($q('#fpy')), pyOut = $q('#fpyout'), cands = $q('#cands'), reads = $q('#reads'), means = $q('#means'), sugs = $q('#sugs'), btn = $q('#csave');
       const rows = () => (E.D && E.hanzi && E.D.byHz.get(E.hanzi)) || [];
       const curPy = () => E.pyDirty ? E.py : (rows()[E.reading]?.p || S.H?.byHz.get(E.hanzi)?.p || autoPinyin(E.hanzi));
       const paintBtn = () => { btn.disabled = !hanChars(E.hanzi).length || !fen.value.trim(); };
@@ -11439,7 +11459,7 @@ function cardSheet(cardId) {
       });
       fen.addEventListener('focus', padOff);   // so does typing the English
       ['#fbox', '#ebox'].forEach(q => $q(q).addEventListener('pointerdown', e => {   // a tap anywhere in the box types there
-        if (e.target.closest('button,input')) return; e.preventDefault(); (q === '#fbox' ? fpy : fen).focus();
+        if (e.target.closest('button,input,.pf')) return; e.preventDefault(); (q === '#fbox' ? fpy : fen).focus();
       }));
       const sides = $q('#acSides'), zhB = $q('.ac-fz'), enB = $q('.ac-enb');
       const enFront = () => !!db.prefs.addEnFront;
@@ -13517,7 +13537,7 @@ document.addEventListener('click', e => {
   };
   app.addEventListener('pointerdown', e => {
     if (g || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    if (e.target.closest('input,textarea,select,.stage,.tzg,canvas,.shelf,.hd-stack,.tm-stage')) return;
+    if (e.target.closest('input,textarea,select,[contenteditable],.stage,.tzg,canvas,.shelf,.hd-stack,.tm-stage')) return;
     const T = targets(); if (!T) return;
     g = { id: e.pointerId, sx: e.clientX, sy: e.clientY, hist: [[e.clientX, e.timeStamp]], v: 0, x0: 0, T, on: false };
   });
@@ -13583,7 +13603,7 @@ document.addEventListener('click', e => {
   const ARM = 100, HOLD = 104;   // how far the page has to come down (px) before letting go reloads; where it rests while reloading
   let t = null, busy = false, inset = 0, kh = 90;   // kh: the knot's height, measured once per pull
   const atTop = () => (document.scrollingElement?.scrollTop || 0) <= 0 && app.scrollTop <= 0;
-  const blocked = el => $('#sheet-root').classList.contains('open') || el.closest?.('input,textarea,select,.stage,.tm-stage,.tzg,canvas,.shelf,#tabbar,#rec,#drawer-root,.uc');   // the map: dragging it down looks north, never reloads
+  const blocked = el => $('#sheet-root').classList.contains('open') || el.closest?.('input,textarea,select,[contenteditable],.stage,.tm-stage,.tzg,canvas,.shelf,#tabbar,#rec,#drawer-root,.uc');   // the map: dragging it down looks north, never reloads
   const topInset = () => { const d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;height:env(safe-area-inset-top);visibility:hidden'; document.body.append(d); const h = d.offsetHeight; d.remove(); return h; };
   const pull = d => 200 * (1 - Math.exp(-Math.max(0, d) / 240));   // follows the finger at first, then gets heavier
   const place = (p, dur, curve = EASE) => {
