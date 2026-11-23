@@ -8227,10 +8227,13 @@ function BankPile() {
    db.hotd = { day, h, p, e, lv, n (strokes), rev (foil is off), past: the last 60 characters, so none comes back soon } */
 const strHash = s => [...s].reduce((a, c) => Math.imul(a ^ c.codePointAt(0), 16777619) >>> 0, 2166136261);
 function hotdPick(fresh) {   // fresh: the Developer sheet's "Try another character", a random one instead of today's
-  const today = dayKey(Date.now()), H = db.hotd;
-  if (H?.day === today && H.h && !fresh) return H;
+  const today = dayKey(Date.now()), H = db.hotd, known = knownWords();
+  /* in sync with the word bank: once today's character is in it some other way (Quick add, a lesson, an HSK list),
+     it can't be the Hanzi of the day any more and a new one takes its place. Added from this card (H.mine) it stays, as done */
+  if (H?.day === today && H.h && !fresh && !(known.has(H.h) && !H.mine && !hdDone(H))) return H;
   if (!S.H) return null;
-  const known = knownWords(), past = new Set(H?.past || []);
+  if (H?.day === today && H.h && !fresh) LOG.add('hotd-swap', { hz: H.h });
+  const past = new Set(H?.past || []);
   const ok = r => [...r.h].length === 1 && HAN.test(r.h) && r.e && r.e[0] !== '(' && !/^surname /.test(r.e) && S.H.byHz.get(r.h) === r;   // no particles, no surnames; a character's first line
   let pool = [];
   for (const l of [1, 2, 3, 4, 5, 6, 7].filter(l => l >= (db.prefs.level || 1))) { pool = (S.H.levels[l] || []).filter(r => ok(r) && !known.has(r.h) && !past.has(r.h)); if (pool.length) break; }
@@ -8616,6 +8619,7 @@ function mountHotdSheet(sh, H) {
     if (mood) { shi.innerHTML = shiFace(mood); shi.classList.remove('hop'); void shi.offsetWidth; if (mood === 'cheer') shi.classList.add('hop'); } };
   sh.querySelector('#hsAdd').onclick = e => {
     const b = e.currentTarget; if (bankHas(H.h)) return;
+    H.mine = true;   // added from today's card, so it stays today's character (hotdPick)
     db.bank.unshift({ id: uid(), hanzi: H.h, pinyin: H.p, en: meanOf(H), added: Date.now(), hsk: H.lv }); save();
     LOG.add('hotd-add', { hz: H.h });
     b.classList.add('done'); b.disabled = true; b.textContent = 'In your word bank ✓';
@@ -13071,7 +13075,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.15';
+const APP_VERSION = '3.45.16';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
