@@ -2000,6 +2000,11 @@ button.st-d:active{transform:scale(.9);transition:none}
 .pf-stat b em{font-style:normal;font-size:17px;color:var(--muted)}
 .pf-stat>span:not(.pf-st-ic){grid-column:1 / -1;margin-top:8px;font-size:14px;font-weight:700}
 .pf-stat small{grid-column:1 / -1;font-size:12px;line-height:1.3;color:var(--muted)}
+.pf-stat.pf-xp{grid-column:1 / -1;grid-template-columns:auto auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:2px}   /* moka2: the XP tile, one row across: icon, number, then the label over the line */
+.pf-stat.pf-xp .pf-st-ic{grid-column:1;grid-row:1 / 3}
+.pf-stat.pf-xp b{grid-column:2;grid-row:1 / 3;color:var(--jade)}
+.pf-stat.pf-xp>span:not(.pf-st-ic){grid-column:3;grid-row:1;margin-top:0;align-self:end}
+.pf-stat.pf-xp small{grid-column:3;grid-row:2;align-self:start}
 .pf-week{padding:14px 14px 10px;margin-bottom:6px}
 .pf-wk-top{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
 .pf-wk-top span{font-size:14px;color:var(--ink-2)}
@@ -7448,6 +7453,7 @@ function ProfileView() {
     <div class="pf-stats">
       ${tile('streak', FLAME, n, 'Day streak', n && !today ? 'Finish a deck today to keep it' : best ? `Best ${plural(best, 'day')}` : 'Finish a deck to start one', `${n} day streak, open your calendar`, `${n ? ' on' : ''}${n && !today ? ' wait' : ''}`)}
       ${tile('open-bank', '<span class="pf-zh">字</span>', pv, 'Words proven', db.bank.length ? `${plural(db.bank.length, 'word')} in your bank` : 'Learn words to prove them', `${pv} words proven, open your word bank`)}
+      ${PfXp()}
     </div>
     <div class="section-head"><h2>This week <span class="cal-zh">本周</span></h2></div>
     ${pfWeek()}
@@ -7455,6 +7461,14 @@ function ProfileView() {
   </div>`;
 }
 
+/* moka2: your XP on Profile, a full-width tile under the two above. XP comes from the reading card's 利是 (+RC_XP each);
+   the line under it says how far the next one is. Tap it for Read */
+function PfXp() {
+  const xp = xpTotal(), rc = rcState(), left = rc.ready ? 0 : RC_N - 1 - rc.n, lsh = '<span lang="zh">利是</span>';
+  const sub = rc.ready ? `Your ${lsh} is ready on Read` : `${plural(left, 'story').replace('storys', 'stories')} to the next ${lsh} · +${RC_XP} XP`;
+  return `<button class="pf-stat pf-xp" data-act="pf-xp" aria-label="${xp} XP. ${rc.ready ? 'Your red envelope is ready' : `${plural(left, 'story').replace('storys', 'stories')} to the next red envelope`}. Open Read">
+    <span class="pf-st-ic">${xpSvg()}</span><b>${xp.toLocaleString('en')}</b><span>XP from reading</span><small>${sub}</small></button>`;
+}
 /* the flame in the top-right corner of the Decks page: your streak, tap it to open the Streak page */
 const StreakBtn = () => { const { n, today } = practiceStreak();
   return `<button class="hm-streak${n ? ' on' : ''}${n && !today ? ' wait' : ''}" data-act="streak" aria-label="${n ? `${n} day streak` : 'No streak yet'}. Open your calendar">${FLAME}<b>${n}</b></button>`; };
@@ -12851,7 +12865,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.9';
+const APP_VERSION = '3.45.10';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
@@ -13904,6 +13918,7 @@ const A = {
   'read-done-ok': () => closeLayer(() => { riffleBook(S.readFrom); S.readFrom = null; if (rcState().ready) setTimeout(() => rcOpen(moments), stillMotion() ? 0 : 700); else moments(); }),
   'rc-open': () => { const st = rcState(); if (st.ready) rcOpen(moments); else { const left = RC_N - 1 - st.n; toast(`${plural(left, 'more story').replace('storys', 'stories')} to open your 利是`); } },
   'rc-all': () => storiesSheet(),
+  'pf-xp': () => nav('#/read'),
   'rec-note': () => noteSheet(),
   'close-sheet': () => closeSheet(),
   'tab': t => { haptic(8); if (location.hash === t.dataset.h || (t.dataset.h === '#/' && S.view === 'home')) { $('#app').scrollTo({ top: 0, behavior: 'smooth' }); window.scrollTo({ top: 0, behavior: 'smooth' }); return; } S.instant = true; nav(t.dataset.h); },
