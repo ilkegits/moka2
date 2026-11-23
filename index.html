@@ -1393,6 +1393,33 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bk-f button b{font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
 .bk-f button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.06)}
 .bk-f button.on b{color:var(--ink-2)}
+/* v4.37: the word bank page's stages bar (its key filters the list) and HSK ladder (a row opens that level's list) */
+.bs{margin:-4px 0 26px;padding:14px 16px 12px;border-radius:16px;background:var(--card);box-shadow:var(--ring)}
+.bs-bar{display:flex;gap:2px;height:12px;border-radius:6px;overflow:hidden;background:var(--fill)}
+.bs-bar i{display:block;min-width:5px}
+.bs-mastered{background:#E2AE45}.bs-proven{background:var(--jade)}.bs-known{background:var(--line-2)}
+.bs-key{display:flex;gap:2px;margin:8px -8px 0}
+.bs-key button{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 4px;border-radius:10px;font-size:13px;font-weight:500;color:var(--ink-2);white-space:nowrap;transition:background .2s}
+.bs-key button b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.bs-key button.on{background:var(--fill);color:var(--ink);font-weight:600}
+.bs-key button:active{opacity:.6}
+.bs-goal{margin:4px 0 0;padding-top:10px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.4;color:var(--ink-2)}
+.bs-goal b{color:var(--jade);font-weight:700}
+.bl{margin:0 0 26px;border-radius:16px;background:var(--card);box-shadow:var(--ring);overflow:hidden}
+.bl-row{display:grid;grid-template-columns:64px 1fr auto 16px;align-items:center;gap:10px;width:100%;min-height:50px;padding:0 12px 0 16px;text-align:left;transition:background .25s}
+.bl-row+.bl-row{box-shadow:inset 0 1px 0 var(--line)}
+.bl-row:active{background:var(--paper-deep);transition:none}
+.bl-row b{font-size:14.5px;font-weight:700;color:var(--ink)}
+.bl-bar{height:8px;border-radius:4px;background:var(--fill);overflow:hidden}
+.bl-bar i{display:block;height:100%;border-radius:4px;background:var(--ink-2)}
+.bl-row.done .bl-bar i{background:var(--jade)}
+.bl-row.now .bl-bar i{background:var(--seal)}
+.bl-n{min-width:66px;font-size:13px;color:var(--ink-2);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bl-row.done .bl-n{color:var(--jade);font-weight:600}
+.bl-row.now .bl-n{color:var(--seal);font-weight:700}
+.bl-row.later>:not(.chev){opacity:.45}
+.bl-row .chev{display:flex;opacity:.55}
+.bl-row .chev svg.i{width:17px;height:17px;stroke-width:2.2}
 .bk-none{margin:4px 4px 24px;font-size:14px;color:var(--muted);text-align:center}
 /* v3.74 sort: a small button over the list's right edge; by HSK level each level gets its heading */
 .bk-rm{margin-top:4px}
@@ -11915,15 +11942,14 @@ function BankView() {
   const byHsk = mode === 'hsk' && !!S.H;
   const groups = byHsk ? [1, 2, 3, 4, 5, 6, 7, 0].filter(l => pick.includes(l)).map(l => [l, db.bank.filter(w => lvOf(w) === l)])
     : [[null, mode === 'old' ? [...db.bank].reverse() : db.bank]];
-  const shelf = `<div class="section-head bk-rm"><h2>Ready-made decks</h2><button class="link-btn" data-act="open-hsk">See all</button></div>${HskShelf()}`;
   return `<div class="screen fade-in">
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title">Word bank</div>
       <span class="icon-btn" aria-hidden="true"></span></header>
     ${n ? `<section class="bk-hero"><div class="bk-num">${n.toLocaleString('en')}</div>
         <div class="bk-lbl">${n === 1 ? 'word' : 'words'} in your bank<button class="link-btn" data-act="bank-chars">${plural(chars.length, 'character')}${I.chev}</button></div></section>
-      ${shelf}
+      ${BankStages(cnt, shown.length >= 3)}
+      ${BankLadder()}
       ${searchField('bankQ', 'Search hanzi, pinyin or English')}
-      ${shown.length >= 3 ? `<div class="bk-f" id="bankF" role="group" aria-label="Show words by stage">${shown.map(([k, t]) => `<button data-f="${k}" class="${S.bankF === k ? 'on' : ''}" aria-pressed="${S.bankF === k}">${k === 'all' ? '' : `<i class="w-dot ${k}"></i>`}${t}<b>${cnt[k].toLocaleString('en')}</b></button>`).join('')}</div>` : ''}
       ${n > 1 ? `<div class="bk-sort"><button class="bk-sort-btn" data-act="bank-sort" aria-label="Filter words: ${bankModeLabel(lvls)}. Change">${I.sort}${bankModeLabel(lvls)}</button></div>` : ''}
       <div id="bankWords">${groups.map(([lv, ws]) => `<section class="bk-sec">${byHsk ? `<h3 class="bk-gh">${lv ? HSK_NAME(lv) : 'Not in HSK'}<span class="bk-gh-n">${ws.length}</span></h3>` : ''}
         <div class="group word-list">${ws.map(w => `<button class="row word word-row st-${wStage(w)}" style="--sep:76px" data-act="bank-word" data-id="${w.id}" data-st="${wStage(w)}" data-s="${esc((w.hanzi + ' ' + normPy(w.pinyin || '') + ' ' + (w.pinyin || '') + ' ' + (w.en || '')).toLowerCase())}">
@@ -11931,7 +11957,7 @@ function BankView() {
       <p class="bk-none" id="bankNone" hidden></p>
       <p class="muted" style="font-size:11.5px;margin:18px 2px 0">Meanings from CC-CEDICT (mdbg.net, CC BY-SA 4.0)</p>
       <div class="bk-fabgap"></div>`
-    : `<div class="empty bk-empty"><div class="big">字</div><h3>Your word bank is empty</h3><p>Words from the lessons you finish land here by themselves. Already know some? Tick them in a ready-made deck, or tap + to add one.</p></div>${shelf}`}
+    : `<div class="empty bk-empty"><div class="big">字</div><h3>Your word bank is empty</h3><p>Words from the lessons you finish land here by themselves. Already know some? Tick them in an HSK level below, or tap + to add one.</p></div>${BankLadder()}`}
     <div class="dock">${n ? `<button class="btn btn-seal wide" data-act="practise-bank">${I.flip}Practise ${plural(n, 'word')}</button>`
       : `<button class="btn btn-seal wide" data-act="open-hsk">Tick words you know</button>`}</div>
   </div>`;
@@ -11953,11 +11979,38 @@ function mountBank() {
   wireSearch(q, apply); q.oninput = apply;
   $('#bankF')?.addEventListener('click', e => {
     const b = e.target.closest('[data-f]'); if (!b) return;
-    S.bankF = b.dataset.f; LOG.add('bank-filter', { stage: S.bankF });
-    $$('#bankF button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
+    S.bankF = S.bankF === b.dataset.f ? 'all' : b.dataset.f; LOG.add('bank-filter', { stage: S.bankF });
+    $$('#bankF button').forEach(x => { const on = x.dataset.f === S.bankF; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
     apply();
   });
   apply();
+}
+/* v4.37 (ilkem): the word bank page shows two measures. The stages bar splits your words into Mastered, Proven and Known,
+   its key filters the list (tap the same one again for all), and a line counts down to the next proven-words milestone. */
+function BankStages(cnt, filter) {
+  const pv = cnt.proven + cnt.mastered, next = WORD_MILES.find(m => m > pv);
+  const st = [['mastered', 'Mastered'], ['proven', 'Proven'], ['known', 'Known']].filter(([k]) => cnt[k]);
+  const key = st.map(([k, t]) => filter ? `<button data-f="${k}" class="${S.bankF === k ? 'on' : ''}" aria-pressed="${S.bankF === k}"><i class="w-dot ${k}"></i>${t}<b>${cnt[k].toLocaleString('en')}</b></button>`
+    : `<button disabled><i class="w-dot ${k}"></i>${t}<b>${cnt[k].toLocaleString('en')}</b></button>`).join('');
+  return `<section class="bs" aria-label="Your words by stage"><div class="bs-bar" aria-hidden="true">${st.map(([k]) => `<i class="bs-${k}" style="flex:${cnt[k]}"></i>`).join('')}</div>
+    <div class="bs-key"${filter ? ' id="bankF" role="group" aria-label="Show words by stage"' : ''}>${key}</div>
+    <p class="bs-goal">${pv ? `Prove <b>${(next - pv).toLocaleString('en')} more</b> to reach ${next.toLocaleString('en')} proven words` : 'Get a word right on two different days and it is proven'}</p></section>`;
+}
+/* v4.37 (ilkem): the HSK ladder instead of the ready-made decks. One row per level up to the one after your highest:
+   finished levels get a tick, the first unfinished one counts down what is left, a level with none of your words waits
+   faintly. A row opens that level's full list, where you tick the words you know. */
+function BankLadder() {
+  const inBank = new Set(db.bank.map(w => w.hanzi));
+  const lv = [1, 2, 3, 4, 5, 6, 7].map(l => { const L = S.H?.levels[l];
+    return { l, n: L ? L.length : HSK_COUNT[l], k: L ? L.filter(r => inBank.has(r.h)).length : db.bank.filter(w => w.hsk === l).length }; });
+  const hi = lv.filter(x => x.k).at(-1)?.l || 0, upto = Math.min(7, Math.max(1, hi) + 1), cur = lv.find(x => x.k < x.n)?.l;
+  const rows = lv.filter(x => x.l <= upto).map(({ l, n, k }) => {
+    const c = k >= n ? 'done' : l === cur ? 'now' : k ? 'part' : 'later';
+    const t = c === 'done' ? `All ${n.toLocaleString('en')} ✓` : c === 'now' ? `${(n - k).toLocaleString('en')} to go` : c === 'part' ? `${k.toLocaleString('en')} / ${n.toLocaleString('en')}` : `${n.toLocaleString('en')} words`;
+    return `<button class="bl-row ${c}" data-act="hsk-level" data-lv="${l}" aria-label="${HSK_NAME(l)}: ${k} of ${n} words in your bank. Open the list">
+      <b>${HSK_NAME(l)}</b><span class="bl-bar"><i style="width:${c === 'later' ? 0 : gBar(k / n)}%"></i></span><span class="bl-n">${t}</span><span class="chev">${I.chev}</span></button>`;
+  }).join('');
+  return `<div class="section-head"><h2>HSK levels</h2>${upto < 7 ? '<button class="link-btn" data-act="open-hsk">See all</button>' : ''}</div><div class="bl">${rows}</div>`;
 }
 const bankLevels = () => S.H ? [1, 2, 3, 4, 5, 6, 7, 0].filter(l => db.bank.some(w => (S.H.byHz.get(w.hanzi)?.lv || 0) === l)) : [];
 const bankMode = () => ['old', 'hsk'].includes(db.prefs.bankSort) ? db.prefs.bankSort : 'new';
