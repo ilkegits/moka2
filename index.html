@@ -1459,6 +1459,12 @@ svg.sil{filter:brightness(0);opacity:.28}
 #toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:14px;font-size:14px;
   opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:60;white-space:nowrap;max-width:90%}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+/* UX 5: a toast with an Undo button (deletes happen at once instead of asking first) */
+#toast.act{display:flex;align-items:center;gap:6px;padding:0 4px 0 18px}
+#toast.act.show{pointer-events:auto}
+.toast-undo{min-height:44px;padding:0 14px;border-radius:10px;font:inherit;font-weight:700;color:#FFB0A3}
+.toast-undo:active{background:rgba(255,255,255,.12)}
+@media (prefers-reduced-motion:reduce){#toast,#toast.show{transform:translate(-50%,0);transition:opacity .2s}}
 /* ---------- bottom tab bar ---------- */
 /* A small floating capsule of frosted glass: the page shows through it, blurred, with a lit top rim.
    The tapped icon fills at once; a red lacquer bead glides to it, stretching a little on the way. */
@@ -2886,7 +2892,7 @@ button.scene-tile:active svg{opacity:.92}
   <div id="dlg-root"></div>
   <div id="drawer-root"></div>
   <div id="sheet-root"></div>
-  <div id="toast"></div>
+  <div id="toast" role="status"></div>
   <button id="rec" data-act="rec-note" hidden aria-label="Recording your activity. Tap to add a note"><i></i></button>
 </div>
 
@@ -10017,10 +10023,13 @@ function nameDialog(kind, it) {
   ok.addEventListener('pointerdown', e => e.preventDefault());
   inp.oninput = paint; paint();
   f.querySelector('.dlg-x').onclick = () => closeDlg(); root.querySelector('.dlg-scrim').onclick = () => closeDlg();
-  f.querySelector('.dlg-del')?.addEventListener('click', () => { closeDlg();
-    confirmSheet('Delete group?', `“${esc(it.name)}” goes. Its ${plural(groupDecks(it).length, 'deck')} stay and move back to Your decks.`, 'Delete', () => {
-      db.decks.forEach(d => { if (d.group === it.id) delete d.group; }); db.groups = db.groups.filter(x => x !== it); save();
-      LOG.add('group-delete', { name: it.name }); history.replaceState({ d: 0 }, '', '#/'); route(); toast('Group deleted'); }); });
+  f.querySelector('.dlg-del')?.addEventListener('click', () => { closeDlg();   // UX 5: goes at once (its decks move back to Your decks), Undo on the toast
+    const gi = db.groups.indexOf(it), moved = db.decks.filter(d => d.group === it.id);
+    moved.forEach(d => delete d.group); db.groups.splice(gi, 1); save();
+    LOG.add('group-delete', { name: it.name }); history.replaceState({ d: 0 }, '', '#/'); route();
+    undoToast('Group deleted', () => {
+      db.groups ||= []; if (!db.groups.includes(it)) db.groups.splice(Math.min(gi, db.groups.length), 0, it);
+      moved.forEach(d => { if (db.decks.includes(d) && !d.group) d.group = it.id; }); save(); render(); }); });
   f.onsubmit = e => {
     e.preventDefault(); const name = inp.value.trim(); if (!name) { inp.focus(); return; }
     if (it) { it.name = name; it.accent = accent; save(); closeDlg(); render(); return; }
@@ -11112,7 +11121,17 @@ function confirmSheet(title, body, yesLabel, onYes) {
     sh => sh.querySelector('#yes').onclick = () => { closeSheet(); onYes(); });
 }
 let toastT;
-function toast(msg) { LOG.add('toast', msg); const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+function toast(msg) { LOG.add('toast', msg); const t = $('#toast'); t.textContent = msg; t.classList.remove('act'); t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+/* UX 5 (like Gmail): something you can take back (a deleted deck, card, group or word) goes at once, with Undo on the
+   toast for 7 s instead of an "Are you sure?" pop-up first. undo puts the very same object back where it was */
+function undoToast(msg, undo) {
+  LOG.add('toast', msg); const t = $('#toast');
+  t.innerHTML = `<span>${esc(msg)}</span><button type="button" class="toast-undo">Undo</button>`;
+  t.classList.add('act', 'show'); clearTimeout(toastT);
+  const hide = () => { t.classList.remove('show'); setTimeout(() => { if (!t.classList.contains('show')) { t.classList.remove('act'); t.textContent = ''; } }, 260); };
+  t.querySelector('.toast-undo').onclick = () => { clearTimeout(toastT); hide(); LOG.add('undo', msg); undo(); };
+  toastT = setTimeout(hide, 7000);
+}
 
 function deckSheet(d) {   /* v3.53: the keyboard comes up at once (focus inside the tap, which iPhones need) and the colours sit right under the name */
   let accent = d?.accent || ACCENTS[db.decks.length % ACCENTS.length];
@@ -11141,9 +11160,11 @@ function deckSheet(d) {   /* v3.53: the keyboard comes up at once (focus inside 
       sh.querySelector('#dsave').onclick = go;
       inp.onkeydown = e => { if (e.key === 'Enter') go(); };
       const del = sh.querySelector('#ddel');
-      if (del) del.onclick = () => confirmSheet('Delete deck?', `“${esc(d.name)}” and its ${plural(d.cards.length, 'card')} will be removed. This can’t be undone.`, 'Delete', () => {
-        db.decks = db.decks.filter(x => x !== d); save(); history.replaceState({ d: 0 }, '', '#/'); route(); toast('Deck deleted');
-      });
+      if (del) del.onclick = () => {   // UX 5: goes at once, Undo on the toast
+        const i = db.decks.indexOf(d); S.onSheetClose = null; closeSheet();
+        db.decks.splice(i, 1); save(); history.replaceState({ d: 0 }, '', '#/'); route();
+        undoToast('Deck deleted', () => { if (!db.decks.includes(d)) db.decks.splice(Math.min(i, db.decks.length), 0, d); save(); render(); });
+      };
     });
 }
 
@@ -11360,9 +11381,11 @@ function cardSheet(cardId) {
       };
       $q('#acClose')?.addEventListener('click', () => { closeSheet(); if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${d.name}`); });
       const del = $q('#cdel');
-      if (del) del.onclick = () => confirmSheet('Delete card?', `${esc(c.hanzi)} · ${esc(c.en)} will be removed from this deck.`, 'Delete', () => {
-        d.cards = d.cards.filter(x => x !== c); save(); render(); toast('Card deleted');
-      });
+      if (del) del.onclick = () => {   // UX 5: goes at once, Undo on the toast
+        const i = d.cards.indexOf(c); S.onSheetClose = null; closeSheet();
+        d.cards.splice(i, 1); save(); render();
+        undoToast('Card deleted', () => { if (!d.cards.includes(c)) d.cards.splice(Math.min(i, d.cards.length), 0, c); save(); render(); });
+      };
       paintHz(); paintCands([]);
       if (!c) frontIn().focus({ preventScroll: true });   // inside the tap, so the phone's keyboard comes up at once
       loadDict().then(D => { E.D = D; if (sh.isConnected) paintHz(); }, () => {});
@@ -11725,9 +11748,11 @@ function wordSheet(id) {
       save(); closeSheet(); render();
       if (into.length) toast(`Added ${w.hanzi} to ${into.length === 1 ? into[0].name : plural(into.length, 'deck')}`);
     };
-    sh.querySelector('#wDel').onclick = () => confirmSheet('Remove from word bank?', `${esc(w.hanzi)} will leave your word bank. Cards in your decks stay.`, 'Remove', () => {
-      db.bank = db.bank.filter(x => x !== w); save(); render(); toast('Removed from word bank');
-    });
+    sh.querySelector('#wDel').onclick = () => {   // UX 5: goes at once, Undo on the toast
+      const i = db.bank.indexOf(w); S.onSheetClose = null; closeSheet();
+      db.bank.splice(i, 1); save(); render();
+      undoToast(`${w.hanzi} removed from word bank`, () => { if (!db.bank.some(x => x.hanzi === w.hanzi)) db.bank.splice(Math.min(i, db.bank.length), 0, w); save(); render(); });
+    };
   });
 }
 
