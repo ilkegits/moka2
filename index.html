@@ -600,7 +600,10 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-sug{display:flex;align-items:baseline;gap:7px;padding:7px 11px;border-radius:9px;background:var(--fill);color:var(--ink);text-align:left}
 .ac-sug .hz{font-family:var(--hanzi);font-size:19px}
 .ac-sug .wp{font-size:12.5px;color:var(--seal)}
-.ac-done{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;min-height:42px}
+.ac-done{display:flex;align-items:center;gap:10px;margin-top:4px;min-height:24px}
+.ac-done:has(.ac-last:empty){display:none}
+/* v4.22: no Done button; a close button on the left of the heading (Add is on the right), like Anki's back arrow */
+.ac-head .sheet-x{left:0;right:auto;top:-4px}
 .ac-last{min-width:0;font-size:13.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ac-last b{font:400 16px/1 var(--hanzi);color:var(--ink)}
 /* v4.16: a deck or group in a list is one plain line: name on the left, count on the far right */
@@ -11289,7 +11292,7 @@ function cardSheet(cardId) {
   let d = curDeck(); const c = cardId ? cardById(d, cardId) : null;
   const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [], into: new Set(), ex: acExPick() };
   const exZh = () => `e.g. ${AC_EX[E.ex][0]} or ${AC_EX[E.ex][1]}`, exEn = () => `e.g. ${AC_EX[E.ex][2]}`;
-  openSheet(`<div class="ac-head"><h3>${c ? 'Edit card' : 'Add card'}</h3>${c ? '' : `<button class="ac-add" id="csave">Add</button>`}</div>
+  openSheet(`<div class="ac-head">${c ? '' : `<button type="button" class="sheet-x" data-act="close-sheet" aria-label="Close">${I.close}</button>`}<h3>${c ? 'Edit card' : 'Add card'}</h3>${c ? '' : `<button class="ac-add" id="csave">Add</button>`}</div>
     ${c ? '' : `<div class="group ac-deck"><button class="row" id="acDeck"><span class="row-main"><span class="row-t">Deck</span></span><span class="row-val" id="acDeckVal">${esc(d.name)}</span><span class="chev">${I.chev}</span></button></div>`}
     <div class="ac-sides" id="acSides">
     <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span></span>
@@ -11308,7 +11311,7 @@ function cardSheet(cardId) {
     </div>
     ${c ? `<div class="row-btns"><button class="btn btn-ghost" id="cdel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Delete card">${I.trash}</button>
       <button class="btn btn-primary" id="csave">Save</button></div>`
-      : '<div class="ac-done"><span class="ac-last" id="acLast"></span><button class="link-btn" id="acClose">Done</button></div>'}`,
+      : '<div class="ac-done"><span class="ac-last" id="acLast"></span></div>'}`,
     sh => {
       const $q = q => sh.querySelector(q);
       const fen = $q('#fen'), fhz = $q('#fhz'), fpy = $q('#fpy'), pyOut = $q('#fpyout'), cands = $q('#cands'), reads = $q('#reads'), means = $q('#means'), sugs = $q('#sugs'), btn = $q('#csave');
@@ -11485,7 +11488,7 @@ function cardSheet(cardId) {
         $q('#acLast').innerHTML = `Added <b>${E.added.slice(0, 5).map(esc).join(' · ')}</b>`;
         frontIn().focus({ preventScroll: true });
       };
-      $q('#acClose')?.addEventListener('click', () => { closeSheet(); if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${E.into.size > 1 ? plural(E.into.size, 'deck') : [...E.into][0].name}`); });
+      if (!c) S.onSheetClose = () => { if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${E.into.size > 1 ? plural(E.into.size, 'deck') : [...E.into][0].name}`); };   // however the pop-up closes: ✕, a tap outside or a drag down
       const deckB = $q('#acDeck');
       if (deckB) {   // like Anki's Deck: choose which deck the next cards go to; the one you opened is picked to start with
         deckB.addEventListener('pointerdown', e => e.preventDefault());
