@@ -10246,6 +10246,13 @@ function StudySummary(d) {
     <div class="dock row-btns"><button class="btn btn-ghost" data-act="study-again">Again</button><button class="btn btn-primary" data-act="study-done">Done</button></div>
   </div>`;
 }
+/* UX 11: the angle the card is drawn at right now, also halfway through a flip, so grabbing it mid-turn carries on from
+   there instead of jumping to where the flip was headed */
+function cardShownAngle() {
+  const st = S.study, el = $('#card3d'); if (!el) return st.angle;
+  const m = new DOMMatrix(getComputedStyle(el).transform), a = Math.atan2(-m.m13, m.m11) * 180 / Math.PI;
+  return a + Math.round((st.angle - a) / 360) * 360;
+}
 function setAngle(anim, tilt = 0) {
   const st = S.study, el = $('#card3d'); if (!el) return;
   el.style.transition = anim ? 'transform .7s cubic-bezier(.18,.89,.26,1.05)' : 'none';
@@ -10264,7 +10271,7 @@ function mountStudy() {
   stage.addEventListener('pointermove', e => {
     if (!down || e.pointerId !== down.id) return;
     const dx = e.clientX - down.x, dy = e.clientY - down.y;
-    if (!down.moved && Math.abs(dx) > 7 && Math.abs(dx) > Math.abs(dy)) { down.moved = true; try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
+    if (!down.moved && Math.abs(dx) > 7 && Math.abs(dx) > Math.abs(dy)) { down.moved = true; down.a = cardShownAngle() - dx * 0.6; try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
     if (!down.moved) return;
     const now = performance.now();
     down.v = (e.clientX - down.lx) / Math.max(1, now - down.lt); down.lx = e.clientX; down.lt = now;
@@ -11095,16 +11102,17 @@ function speed(hist, p, t) {
 function sheetDrag(sh, scrim, close = closeSheet) {
   let g = null;
   const begin = (x, y, t) => { g = { x, y, hist: [[y, t]], v: 0, off: 0, on: false, top: sh.scrollTop <= 0 }; };
-  const claim = () => { g.on = true; g.h = sh.offsetHeight; sh.style.transition = scrim.style.transition = 'none'; };
+  // UX 11: caught while still sliding in or springing back, it carries on from where it is drawn instead of jumping
+  const claim = () => { g.on = true; g.h = sh.offsetHeight; g.base = Math.max(0, new DOMMatrix(getComputedStyle(sh).transform).m42); sh.style.transition = scrim.style.transition = 'none'; };
   const follow = (y, t) => {
     g.v = speed(g.hist, y, t);
-    g.off = Math.max(0, y - g.y);
+    g.off = Math.max(0, g.base + y - g.y);
     sh.style.transform = `translateY(${g.off}px)`;
     scrim.style.opacity = String(1 - Math.min(1, g.off / g.h) * 0.9);
   };
   const finish = () => {
     if (!g) return; const G = g; g = null; if (!G.on) return;
-    const shut = G.off > G.h * 0.25 || (G.v > 0.45 && G.off > 12);
+    const moved = G.off - G.base, shut = (G.off > G.h * 0.25 && moved > 24) || (G.v > 0.45 && moved > 12);   // caught mid-slide, a small touch alone never closes it
     LOG.add('sheet-drag', { closed: shut, pulled: Math.round(G.off / G.h * 100) + '%', speed: +G.v.toFixed(2) });
     sh.style.transition = shut ? 'transform .26s cubic-bezier(.3,.7,.4,1)' : '';
     scrim.style.transition = sh.style.transform = scrim.style.opacity = '';
