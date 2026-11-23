@@ -129,7 +129,8 @@ html{overscroll-behavior-y:none}   /* Chrome's own pull-to-refresh is off; this 
 .hm-streak{justify-self:end;display:flex;align-items:center;gap:1px;height:42px;padding:0 8px 0 4px;border-radius:21px;transition:opacity .2s}
 .hm-streak:active{opacity:.4;transition:none}
 .hm-streak .flame{width:30px;height:30px;flex:none;margin-right:1px}
-.hm-streak b{font-family:var(--display);font-size:21px;font-weight:600;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+/* v4.54: the day count looks the same on every tab: orange, in the round Baloo numbers of the Map's coin bar (it was black on Decks, orange on Lessons) */
+.hm-streak b{font:800 21px/1 "Baloo 2",var(--ui);padding-top:3px;color:#D9651A;font-variant-numeric:tabular-nums}
 .hm-streak:not(.on) b{color:var(--muted)}
 /* one place for every tab's headline (Decks, Lessons, Map, Read, Profile): a 60px row at the very top, the headline on the left
    and its buttons (streak flame, menu) on the right, so they sit at the same spot on every tab */
