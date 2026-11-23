@@ -12178,7 +12178,6 @@ function settingsRows(dr) {
     row('sRem', I.bell, 'Daily reminder', `<small id="remSub">${remindLine()}</small>`),   // v2.91: moved here from Profile
     isInstalled() ? '' : row('sInst', I.install, 'Install app', '<small class="opt">Put ShiCards on your home screen</small>'),
     row('sUpd', I.refresh, 'Check for updates', `<small id="sUpdSub">You have version ${APP_VERSION}</small>`, `<span class="side" id="sUpdR">${chev}</span>`),
-    row('sEn', I.swap, 'Flip cards start on English', '<small class="opt">On by default. Off: the Chinese side shows first</small>', `<span class="switch ${db.prefs.englishFirst ? 'on' : ''}"></span>`),
     row('sExp', I.download, 'Export backup', '<small class="opt">Saves all decks and your word bank as a .json file</small>'),
     row('', I.upload, 'Import backup', '<small>Replaces everything on this device</small>', undefined, 'label', '<input type="file" id="sImp" accept="application/json,.json" hidden>'),
     row('sDev', I.code, 'Developer', '<small class="opt">Replay the daily cards and their animations</small>'),
@@ -12212,7 +12211,6 @@ function bindSettings(sh, dr) {
   sh.querySelector('#sDev').onclick = leave(devSheet);
   sh.querySelector('#sName').onclick = leave(nameSheet);
   sh.querySelector('#sRem').onclick = leave(remindSheet);
-  sh.querySelector('#sEn').onclick =e => { db.prefs.englishFirst = !db.prefs.englishFirst; save(); e.currentTarget.querySelector('.switch').classList.toggle('on', db.prefs.englishFirst); };
   sh.querySelector('#sExp').onclick = () => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' }));
