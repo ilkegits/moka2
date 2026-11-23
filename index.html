@@ -2874,6 +2874,9 @@ button.scene-tile:active svg{opacity:.92}
 .q-host{position:relative}
 .q-ghost{position:absolute;inset:0;z-index:1;pointer-events:none}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* UX 9: page changes made with startViewTransition (a deck opening): quick, and taps go straight through to the new page */
+::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation-duration:.25s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition{pointer-events:none}
 </style>
 </head>
 <body>
@@ -3070,6 +3073,24 @@ function route() {
 }
 function nav(h) { const d = (history.state?.d || 0) + 1; history.pushState({ d }, '', h); route(); window.scrollTo(0, 0); $('#app').scrollTop = 0; }
 function goBack(fallback) { if ((history.state?.d || 0) > 0) history.back(); else { history.replaceState({ d: 0 }, '', fallback); route(); } }
+/* UX 9: opening a deck, its name glides from the tile up into the page title, and back down on Back (View Transitions,
+   about 250 ms). Only for the app's own buttons: the phone's back swipe keeps its own animation. Off with reduced motion */
+function deckGlide(id, update) {
+  const pick = () => document.querySelector(`.deck[data-id="${CSS.escape(id)}"] .deck-name`) || document.querySelector('#app .deck-title');
+  const old = document.startViewTransition && !stillMotion() && pick();
+  if (!old) return update();
+  old.style.viewTransitionName = 'deck-name';
+  document.startViewTransition(async () => {
+    old.style.viewTransitionName = ''; S.instant = true;   // the page's own fade-in would play twice
+    await update();
+    const nw = pick(); if (nw) nw.style.viewTransitionName = 'deck-name';
+  }).finished.finally(() => { const nw = pick(); if (nw) nw.style.viewTransitionName = ''; });
+}
+/* goBack that resolves once the page behind has been drawn (history.back() lands a moment later, on popstate) */
+const goBackDrawn = fallback => {
+  const p = (history.state?.d || 0) > 0 ? new Promise(r => { addEventListener('popstate', () => setTimeout(r), { once: true }); setTimeout(r, 400); }) : null;
+  goBack(fallback); return p;
+};
 addEventListener('popstate', route);
 
 /* ---------- activity log ----------
@@ -13051,8 +13072,8 @@ const A = {
     S.today = { id: 'today', name: 'Today', accent: ACCENTS[0], cards: P.cards.slice(0, 5) }; S.study = null; LOG.add('warm-up', { n: S.today.cards.length }); nav('#/deck/today/study'); }),
   'pw-buy': () => toast('Preview only. Nothing was bought'),
   'goal': () => goalSheet(),
-  'home': () => goBack('#/'),
-  'open-deck': t => nav('#/deck/' + t.dataset.id),
+  'home': () => S.view === 'deck' && S.deckId ? deckGlide(S.deckId, () => goBackDrawn('#/')) : goBack('#/'),
+  'open-deck': t => deckGlide(t.dataset.id, () => nav('#/deck/' + t.dataset.id)),
   'new-deck': () => { fabShut(); nameDialog('deck'); },
   'new-group': () => { fabShut(); nameDialog('group'); },
   'group-add': () => { fabShut(); groupPicker(curGroup()); },
