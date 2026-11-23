@@ -64,13 +64,13 @@ s = sub(s, "persistSession: true, autoRefreshToken: true }", "persistSession: tr
 s = sub(s, "sb.from('saves')", "sb.from('saves2')", 4)
 s = sub(s, "https://ilkegits.github.io/moka/#pair=", "https://ilkegits.github.io/moka2/#pair=")
 s = sub(s, "for (const k of await caches.keys()) { const c", "for (const k of await caches.keys()) { if (!k.startsWith('moka2-')) continue; const c")
-s = sub(s, "<title>ShiCards", "<title>moka2 · ShiCards")
+s = sub(s, "<title>ShiHanzi", "<title>moka2 · ShiHanzi")
 # a blue label at the top of every screen, so moka2 never passes for the real app
 s = sub(s, '#frame{position:relative;z-index:1}\n', '#frame{position:relative;z-index:1}\n'
         '.m2-tag{position:fixed;top:calc(env(safe-area-inset-top) + 3px);left:50%;transform:translateX(-50%);z-index:9999;padding:2px 8px;border-radius:6px;'
         'background:#1F4FA8;color:#fff;font:700 10px/1.35 system-ui,sans-serif;letter-spacing:.04em;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}\n')
 s = sub(s, '<body>\n', '<body>\n<div class="m2-tag" aria-hidden="true">moka2 · test copy</div>\n')
-s = sub(s, 'apple-mobile-web-app-title" content="ShiCards"', 'apple-mobile-web-app-title" content="moka2"')
+s = sub(s, 'apple-mobile-web-app-title" content="ShiHanzi"', 'apple-mobile-web-app-title" content="moka2"')
 if s.count('localStorage') != 16 or re.search(r"indexedDB", s) or re.findall(r"sessionStorage\.\w+\('([^']+)'", s) != ['shicards2.cloudNote'] * 3:   # the real app's 13 uses (v4.65) plus the 3 in the first-open copy above; sessionStorage only for the sign-in note
     sys.exit('Stopped: the real app saves data in a new place. Give moka2 its own name for it, then update this script.')
 open(p, 'w', encoding='utf-8', newline='').write(s)
@@ -88,13 +88,13 @@ open(p, 'w', encoding='utf-8', newline='').write(s)
 p = os.path.join(HERE, 'manifest.webmanifest')
 s = open(p, encoding='utf-8', newline='').read()
 s = sub(s, '"id": "/moka/"', '"id": "/moka2/"')
-s = sub(s, '"name": "ShiCards"', '"name": "moka2 (ShiCards test)"')
-s = sub(s, '"short_name": "ShiCards"', '"short_name": "moka2"')
+s = sub(s, '"name": "ShiHanzi"', '"name": "moka2 (ShiHanzi test)"')
+s = sub(s, '"short_name": "ShiHanzi"', '"short_name": "moka2"')
 open(p, 'w', encoding='utf-8', newline='').write(s)
 
 p = os.path.join(HERE, 'version.json')
 ver = re.search(r'"version":\s*"([^"]+)"', open(p, encoding='utf-8').read()).group(1)
-open(p, 'w', encoding='utf-8', newline='\n').write(f'{{"version": "{ver}", "notes": "moka2: a test copy of ShiCards {ver} with its own saved progress"}}\n')
+open(p, 'w', encoding='utf-8', newline='\n').write(f'{{"version": "{ver}", "notes": "moka2: a test copy of ShiHanzi {ver} with its own saved progress"}}\n')
 
 # 3. a blue "2" badge on the home-screen icons
 magick = shutil.which('magick') or r'C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe'

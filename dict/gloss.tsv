@@ -49,7 +49,7 @@
 太	tài	too (too much)
 再	zài	again (next time)
 呢	ne	(particle: and you? what about…?)
-只	zhǐ	only
+只	zhī	(measure word: animals and birds, one of a pair)
 小	xiǎo	small
 事	shì	matter; thing to do
 它	tā	it
@@ -123,7 +123,7 @@
 读	dú	to read (aloud)
 冷	lěng	cold
 猫	māo	cat
-喂	wèi	hello (on the phone); to feed
+喂	wèi	hello (on the phone); hey
 八	bā	eight
 七	qī	seven
 菜	cài	dish (food); vegetable
@@ -144,7 +144,7 @@
 让	ràng	to let; to make (someone do)
 但	dàn	but
 得	de	(after a verb: how well it's done, as in "runs fast")
-过	guò	to pass; (have) ever done
+过	guò	to pass; to cross; to spend (time)
 从	cóng	from
 等	děng	to wait
 出	chū	to go out; out
@@ -152,7 +152,7 @@
 次	cì	time (once, twice…)
 走	zǒu	to walk; to leave
 时	shí	time; hour
-地	dì	ground; earth
+地	de	(after a describing word: -ly, as in "walk slowly")
 跟	gēn	with; to follow
 打	dǎ	to hit; to play (ball); to make (a call)
 快	kuài	fast
@@ -174,17 +174,17 @@
 笑	xiào	to laugh; to smile
 帮	bāng	to help
 完	wán	to finish
-站	zhàn	station; to stand
+站	zhàn	station; stop
 路	lù	road
 门	mén	door
-花	huā	flower; to spend
+花	huā	to spend (money or time)
 球	qiú	ball
 错	cuò	wrong
 间	jiān	room; between
 跑	pǎo	to run
 万	wàn	ten thousand
 动	dòng	to move
-面	miàn	noodles; face; side
+面	miàn	face; side; surface
 远	yuǎn	far
 懂	dǒng	to understand
 药	yào	medicine
@@ -257,7 +257,7 @@
 句	jù	sentence
 马	mǎ	horse
 换	huàn	to change; to swap
-子	zǐ	child; son
+子	zi	(noun ending, as in "chopsticks" or "plate")
 脸	liǎn	face
 双	shuāng	pair; double
 段	duàn	section; piece
@@ -359,7 +359,7 @@
 孩子	hái zi	child
 这里	zhè lǐ	here
 不要	bù yào	don't
-多少	duō shǎo	how many; how much
+多少	duō shao	how many; how much
 妈妈	mā ma	mum; mom
 先生	xiān sheng	Mr; sir
 哪里	nǎ lǐ	where
@@ -409,9 +409,9 @@
 这么	zhè me	so; like this
 起来	qi lai	to get up; to start (doing)
 一起	yī qǐ	together
-告诉	gào sù	to tell
+告诉	gào su	to tell
 准备	zhǔn bèi	to prepare; ready
-过去	guò qù	the past; to go over
+过去	guò qù	to go over; to pass by
 不错	bù cuò	not bad; pretty good
 过来	guò lái	to come over
 身体	shēn tǐ	body; health
@@ -419,7 +419,7 @@
 下去	xià qù	to go down; to keep going
 意思	yì si	meaning; idea
 运动	yùn dòng	sport; to exercise
-妻子	qī zǐ	wife
+妻子	qī zi	wife
 打开	dǎ kāi	to open; to turn on
 上面	shàng miàn	on top; above
 后面	hòu mian	behind; the back
@@ -480,7 +480,7 @@
 刚刚	gāng gang	just now
 愿意	yuàn yì	to be willing to
 坚持	jiān chí	to keep at it; to insist
-故事	gù shì	story
+故事	gù shi	story
 一般	yī bān	usually; ordinary
 发展	fā zhǎn	to develop; development
 只能	zhǐ néng	can only
@@ -773,13 +773,13 @@
 对于	duì yú	regarding; as for; about
 肯定	kěn dìng	definitely; sure; to affirm
 者	zhě	(suffix) person who; -er
-转	zhuàn	to turn round; to spin
+转	zhuǎn	to turn; to change; to pass on
 调查	diào chá	to investigate; survey
 部分	bù fen	part; section
 能力	néng lì	ability
 管	guǎn	to manage; to be in charge of
 支持	zhī chí	to support; support
-生	shēng	to be born; to give birth; raw
+生	shēng	to be born; to give birth
 片	piàn	slice; (measure word: slices)
 自	zì	self; from; since
 拍	pāi	to pat; to take (a photo)
@@ -811,7 +811,7 @@
 交	jiāo	to hand in; to pay
 正常	zhèng cháng	normal
 另外	lìng wài	in addition; besides; other
-血	xuè	blood
+血	xiě	blood
 克	kè	gram
 到底	dào dǐ	in the end; (what) on earth
 装	zhuāng	to pack; to install; to pretend
@@ -821,7 +821,7 @@
 停	tíng	to stop; to park (a car)
 气	qì	air; gas; to get angry
 性	xìng	nature; quality; gender; sex
-倒	dǎo	to fall over; to collapse
+倒	dào	to pour; upside down; (and yet) actually
 建议	jiàn yì	to suggest; suggestion; advice
 严重	yán zhòng	serious; severe
 各位	gè wèi	everyone; all of you
@@ -833,7 +833,7 @@
 项	xiàng	item; (measure word: tasks)
 证明	zhèng míng	to prove; proof; certificate
 底	dǐ	bottom; end (of a month or year)
-数	shǔ	to count
+数	shù	number; several
 不管	bù guǎn	no matter; regardless of
 谈	tán	to talk; to discuss
 至少	zhì shǎo	at least
@@ -864,7 +864,7 @@
 改	gǎi	to change; to correct
 紧张	jǐn zhāng	nervous; tense
 加油	jiā yóu	Come on! (cheer); to refuel
-省	shěng	province; to save (money, time)
+省	shěng	province
 仅	jǐn	only; merely
 十分	shí fēn	very; extremely
 挂	guà	to hang; to hang up (the phone)
@@ -894,7 +894,7 @@
 祝	zhù	to wish (someone well)
 管理	guǎn lǐ	to manage; management
 乱	luàn	messy; in disorder; randomly
-待	dài	to wait for; to treat (someone)
+待	dāi	to stay (somewhere)
 引起	yǐn qǐ	to cause; to lead to; to arouse
 从来	cóng lái	always; never (with a negative)
 共	gòng	altogether; in total; to share
@@ -920,14 +920,14 @@
 接着	jiē zhe	then; next; to carry on
 流	liú	to flow
 表	biǎo	form; table; watch
-空	kòng	free time; spare; vacant
+空	kōng	empty; sky; air
 左右	zuǒ yòu	about; roughly; left and right
 效果	xiào guǒ	effect; result
 女性	nǚ xìng	woman; female
 有效	yǒu xiào	effective; valid
 重点	zhòng diǎn	main point; focus; key
 作品	zuò pǐn	work (of art or writing)
-嗯	èn	mm; uh-huh; OK
+嗯	ǹg	mm; uh-huh; OK
 倍	bèi	times (as much); -fold
 准	zhǔn	accurate; exact; to allow
 讨厌	tǎo yàn	to hate; to dislike; annoying
@@ -960,7 +960,7 @@
 错过	cuò guò	to miss (a train, a chance)
 顿	dùn	(measure word: meals); to pause
 之中	zhī zhōng	among; in the midst of
-背	bèi	back; to learn by heart
+背	bēi	to carry on one's back
 共同	gòng tóng	common; shared; together
 一生	yī shēng	whole life; lifetime
 既然	jì rán	since; now that
@@ -1024,7 +1024,7 @@
 仅仅	jǐn jǐn	only; merely; just
 答应	dā ying	to agree; to promise; to answer
 基础	jī chǔ	foundation; basis; basic
-量	liàng	amount; quantity
+量	liáng	to measure
 适应	shì yìng	to adapt to; to get used to
 赚	zhuàn	to earn; to make money
 食品	shí pǐn	food; food products
@@ -1049,7 +1049,7 @@
 租	zū	to rent; to hire; rent
 吸	xī	to breathe in; to suck; to absorb
 单位	dān wèi	workplace; organisation; unit
-说法	shuō fa	way of saying something; view
+说法	shuō fǎ	way of saying something; view
 学院	xué yuàn	college; institute; school
 费用	fèi yòng	cost; expenses; fee
 能否	néng fǒu	whether one can; can ... or not
@@ -1353,10 +1353,10 @@
 干活儿	gàn huó r	to work; to do manual work
 所	suǒ	place; (measure word: buildings)
 以	yǐ	with; by means of; in order to
-哦	o	oh; (particle: friendly tone)
+哦	ò	oh! (now I see)
 如何	rú hé	how; in what way
 如	rú	like; as; such as
-呀	ya	(particle: surprise or emphasis)
+呀	yā	ah! oh! (surprise)
 同	tóng	same; together with
 处	chǔ	to be in (a state); to get along
 其	qí	its; his; her; their; that
@@ -1391,7 +1391,7 @@
 报道	bào dào	to report (news); news report
 造成	zào chéng	to cause; to bring about
 随	suí	to follow; along with
-支	zhī	(measure word: pens); to support
+支	zhī	(measure word: pens, songs, teams)
 度	dù	degree; to spend (time)
 白	bái	white; in vain; for free
 单	dān	single; only; list; bill
@@ -1405,7 +1405,7 @@
 属于	shǔ yú	to belong to
 亲	qīn	close; one's own; to kiss
 投	tóu	to throw; to cast; to put in
-称	chēng	to call; to name; to weigh
+称	chēng	to call; to name
 分析	fēn xī	to analyse; analysis
 享受	xiǎng shòu	to enjoy; enjoyment
 反应	fǎn yìng	to react; reaction
@@ -1427,7 +1427,7 @@
 冲	chōng	to rush; to rinse; to flush
 朝	cháo	towards; to face; dynasty
 一旦	yī dàn	once (something happens); in case
-副	fù	deputy; (measure word: pairs)
+副	fù	(measure word: pairs, sets)
 事业	shì yè	career; cause
 承认	chéng rèn	to admit; to recognize
 怪	guài	strange; to blame
@@ -1437,7 +1437,7 @@
 颗	kē	(measure word: small round things)
 充满	chōng mǎn	to be full of; to be filled with
 人物	rén wù	character (in a story); figure
-系	xì	department (at a university)
+系	jì	to tie; to fasten
 直	zhí	straight; continuously
 产品	chǎn pǐn	product; goods
 测试	cè shì	to test; test
@@ -1446,7 +1446,7 @@
 代	dài	generation; era; to replace
 理论	lǐ lùn	theory
 网络	wǎng luò	network; the internet
-调	diào	to transfer (staff); tune
+调	diào	to transfer (staff); to move
 队伍	duì wǔ	troops; team; queue
 安	ān	to install; calm; safe
 破坏	pò huài	to destroy; to damage
@@ -1490,7 +1490,7 @@
 最佳	zuì jiā	best
 记忆	jì yì	memory; to remember
 员工	yuán gōng	employee; staff
-升	shēng	to rise; to go up; litre
+升	shēng	to rise; to go up
 内部	nèi bù	inside; internal
 经营	jīng yíng	to run (a business)
 在于	zài yú	to lie in; to depend on
@@ -1586,7 +1586,7 @@
 恋爱	liàn ài	romantic love; to be in love
 模式	mó shì	model; pattern; mode
 细节	xì jié	detail
-唉	āi	oh dear! (a sigh)
+唉	ài	alas; oh dear! (a sigh)
 现代	xiàn dài	modern; modern times
 道理	dào li	reason; sense; principle
 似的	shì de	(particle: as if; just like)
@@ -1643,7 +1643,7 @@
 始终	shǐ zhōng	all along; from start to finish
 争	zhēng	to fight for; to argue
 贡献	gòng xiàn	to contribute; contribution
-划	huà	to draw (a line); to mark off
+划	huá	to row; to paddle; to scratch
 测	cè	to measure; to test
 剪	jiǎn	to cut (with scissors)
 临时	lín shí	temporary; at the last moment
@@ -1658,7 +1658,7 @@
 医学	yī xué	medical science; medicine
 作出	zuò chū	to make (a decision, a choice)
 搜索	sōu suǒ	to search; to search for
-炸	zhà	to explode; to blow up
+炸	zhá	to deep-fry
 把握	bǎ wò	to grasp; to seize; certainty
 成就	chéng jiù	achievement; success
 想念	xiǎng niàn	to miss (someone or something)
@@ -1746,10 +1746,10 @@
 计算机	jì suàn jī	computer
 纪录	jì lù	record (in sport); to record
 农民	nóng mín	farmer; peasant
-买卖	mǎi mài	buying and selling; business
+买卖	mǎi mai	business; trade
 形势	xíng shì	situation; circumstances
 总部	zǒng bù	headquarters
-扇	shàn	fan; (measure word: doors)
+扇	shān	to fan; to slap
 利润	lì rùn	profit
 堵	dǔ	to block up; jammed (traffic)
 传播	chuán bō	to spread; to broadcast
@@ -2208,7 +2208,7 @@
 线	xiàn	line; thread; wire
 因	yīn	because; reason
 特	tè	especially; very; special
-局	jú	bureau; office; round (of a game)
+局	jú	(measure word: round, set, game)
 神	shén	god; spirit
 则	zé	then; in that case (formal)
 轮	lún	wheel; round; to take turns
@@ -2301,12 +2301,12 @@
 凌晨	líng chén	early hours; before dawn
 害	hài	to harm; harm
 淘汰	táo tài	to eliminate; to phase out
-料	liào	material; to expect
+料	liào	material; stuff
 公众	gōng zhòng	the public
 斗争	dòu zhēng	to struggle; struggle; fight
 指挥	zhǐ huī	to command; to conduct; conductor
 突破	tū pò	to break through; breakthrough
-露	lù	to show; to reveal; dew
+露	lòu	to show; to reveal
 环	huán	ring; loop; link (in a chain)
 回头	huí tóu	to turn round; later
 法官	fǎ guān	judge (in court)
@@ -2328,7 +2328,7 @@
 引	yǐn	to lead; to draw; to attract
 闪	shǎn	to flash; to dodge
 频道	pín dào	(TV) channel
-散	sàn	to break up; to scatter
+散	sǎn	loose; scattered; to come apart
 警告	jǐng gào	to warn; warning
 晕	yūn	dizzy; to faint
 革命	gé mìng	revolution
@@ -2997,7 +2997,7 @@
 一口气	yī kǒu qì	in one breath; in one go
 方言	fāng yán	dialect
 优异	yōu yì	outstanding; excellent
-媳妇	xí fù	daughter-in-law; wife
+媳妇	xí fu	wife; daughter-in-law
 博览会	bó lǎn huì	expo; (international) fair
 儿科	ér kē	paediatrics (children's medicine)
 变质	biàn zhì	to go bad (of food); to degenerate
@@ -3047,7 +3047,7 @@
 后人	hòu rén	later generations; descendants
 遗址	yí zhǐ	ruins; historic site
 其间	qí jiān	during that time; in between
-播种	bō zhòng	to sow; to grow from seed
+播种	bō zhǒng	to sow; to grow from seed
 鲜艳	xiān yàn	brightly coloured
 报刊	bào kān	newspapers and magazines
 看不起	kàn bu qǐ	to look down on

@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>moka2 · ShiCards</title>
+<title>moka2 · ShiHanzi</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/favicon-64.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/favicon-64.png?v=462">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=462">
 <meta name="apple-mobile-web-app-title" content="moka2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
 <link href="https://api.fontshare.com/v2/css?f[]=chillax@500,600,700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.2/dist/hanzi-writer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
-<script src="course.js?v=332"></script>
+<script src="course.js?v=334"></script>
 <style>
 /* ǖ ǘ ǚ ǜ (lǜ, nǚ) from a system font: Satoshi has no ü with tone marks and would show the mark beside the letter */
 @font-face{font-family:"PyMarks";src:local("Segoe UI"),local("SegoeUI"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Arial");unicode-range:U+01D5-01DC}
@@ -93,16 +93,8 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
   .screen{min-height:100%}
 }
 
-/* ---------- pull to refresh: a red Chinese knot is lowered on its cord ---------- */
-html{overscroll-behavior-y:none}   /* Chrome's own pull-to-refresh is off; this one replaces it */
-#ptr{position:fixed;top:0;left:50%;width:0;height:0;z-index:4;pointer-events:none;transform-origin:0 0}
-.ptr-charm{position:absolute;top:0;left:-26px;width:52px;opacity:0;transform:translate3d(0,-120%,0);will-change:transform,opacity}
-.ptr-charm::before{content:"";position:absolute;bottom:calc(100% - 1px);left:calc(50% - .9px);width:1.8px;height:100vh;background:#B5161E}
-.ptr-charm svg{display:block;width:100%;height:auto;transform-origin:50% 0;transition:transform .34s cubic-bezier(.3,1.7,.5,1)}
-#ptr.armed svg{transform:scale(1.08)}
-#ptr.swing{animation:ptrSwing .9s ease-in-out infinite alternate}
-@keyframes ptrSwing{from{rotate:-6deg}to{rotate:6deg}}
-@media (prefers-reduced-motion:reduce){#ptr.swing{animation:none}.ptr-charm svg{transition:none}}
+/* no pull to refresh: pulling down at the top of a page never reloads the app (Chrome's own one is off too) */
+html{overscroll-behavior-y:none}
 
 /* ---------- top bar ---------- */
 .bar{display:flex;align-items:center;gap:12px;height:60px;position:sticky;top:0;z-index:5;
@@ -3180,7 +3172,6 @@ button.scene-tile:active svg{opacity:.92}
   <linearGradient id="flCore" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset="1" stop-color="#FFE066"/></linearGradient>
 </defs></svg>
 <div id="frame">
-  <div id="ptr" aria-hidden="true"></div>
   <main id="app"></main>
   <nav id="tabbar" aria-label="Main"></nav>
   <div id="fab-root"></div>
@@ -3193,7 +3184,7 @@ button.scene-tile:active svg{opacity:.92}
 
 <script>
 /* =========================================================
-   ShiCards — hanzi flashcards
+   ShiHanzi — learn Chinese characters
    ========================================================= */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -3280,7 +3271,7 @@ function seed() {
 function load() { try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.decks)) return d; } catch (e) {} return seed(); }
 let cloudHook = null, cloudLock = false;   // v4.47: the account (CLOUD, near the settings) hears about every save; locked while a download takes over
 function save() { if (cloudLock) return; let s; try { s = JSON.stringify(db); localStorage.setItem(KEY, s); } catch (e) {} if (s && cloudHook) cloudHook(s); }
-const FRESH = (() => { try { return !localStorage.getItem(KEY); } catch (e) { return false; } })();   // first time ShiCards opens on this phone: show the onboarding
+const FRESH = (() => { try { return !localStorage.getItem(KEY); } catch (e) { return false; } })();   // first time ShiHanzi opens on this phone: show the onboarding
 let db = load();
 db.prefs = Object.assign({ englishFirst: true, writeMode: 'free', outline: false }, db.prefs);
 db.prefs.writeN ??= 10;   // word bank writing: how many at a time (0 = all)
@@ -3474,10 +3465,10 @@ function logText() {
     day = ds;
     return `${head}${hms(e.t)}  ${e.k.padEnd(13)} ${(e.at || '').padEnd(8)} ${fmt(e.d)}`;
   });
-  return `ShiCards activity log · app ${APP_VERSION} · ${plural(ev.length, 'event')}\n`
+  return `ShiHanzi activity log · app ${APP_VERSION} · ${plural(ev.length, 'event')}\n`
     + `Columns: time · what happened · page · details. "tap-nothing" = a tap on something that does nothing.\n` + lines.join('\n') + '\n';
 }
-function logFileName() { const d = new Date(); return `shicards-log-${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}.txt`; }
+function logFileName() { const d = new Date(); return `shihanzi-log-${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}.txt`; }
 async function copyLog() {
   const text = logText();
   try { await navigator.clipboard.writeText(text); }
@@ -3492,8 +3483,8 @@ async function shareLog() {
   const text = logText(), name = logFileName();
   const file = new File([text], name, { type: 'text/plain' });
   try {
-    if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: 'ShiCards activity log' }); return; }
-    if (navigator.share) { await navigator.share({ title: 'ShiCards activity log', text }); return; }
+    if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: 'ShiHanzi activity log' }); return; }
+    if (navigator.share) { await navigator.share({ title: 'ShiHanzi activity log', text }); return; }
   } catch (e) { if (e.name === 'AbortError') return; }
   const a = document.createElement('a');   // no share menu here: save it as a file instead
   a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' })); a.download = name; a.click();
@@ -3558,7 +3549,7 @@ function syncSummary() {
   if (SYNC.err) return SYNC.err;
   return SYNC.sentAt ? `On · last sent ${clock(SYNC.sentAt)}${new Date(SYNC.sentAt).toDateString() === new Date().toDateString() ? '' : ', ' + new Date(SYNC.sentAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}` : 'On · sending…';
 }
-/* Connect your phone: the computer shows a QR code holding the key; the phone's camera opens ShiCards with it,
+/* Connect your phone: the computer shows a QR code holding the key; the phone's camera opens ShiHanzi with it,
    and the app saves it and starts sending. The key is removed from the address straight away. */
 const KEY_RE = /^(github_pat_|ghp_)\w{20,}$/;
 function takePairLink() {   // runs once at start-up, before the first page is shown
@@ -3573,7 +3564,7 @@ function loadQr() {
 }
 function pairSheet() {
   openSheet(`<h3>Connect your phone</h3>
-    <p class="muted" style="margin:-6px 0 14px">Point your phone’s camera at this code and open the link. ShiCards opens and starts sending that phone’s log too.</p>
+    <p class="muted" style="margin:-6px 0 14px">Point your phone’s camera at this code and open the link. ShiHanzi opens and starts sending that phone’s log too.</p>
     <div class="pair-qr" id="pairQr"><span class="spin"></span></div>
     <p class="muted" style="font-size:13px;margin-top:12px;text-align:center">The code holds your key. Don’t share a photo of it.</p>`,
     async sh => {
@@ -3584,7 +3575,7 @@ function pairSheet() {
 }
 function paintSync() { const e = $('#lSyncSub'); if (e) { e.textContent = syncSummary(); $('#lSync .switch')?.classList.toggle('on', SYNC.on); } }
 function syncSheet() {
-  const make = 'https://github.com/settings/personal-access-tokens/new?name=ShiCards%20log&description=Lets%20the%20ShiCards%20app%20upload%20its%20activity%20log&target_name=ilkegits&expires_in=365&contents=write';
+  const make = 'https://github.com/settings/personal-access-tokens/new?name=ShiHanzi%20log&description=Lets%20the%20ShiHanzi%20app%20upload%20its%20activity%20log&target_name=ilkegits&expires_in=365&contents=write';
   openSheet(`<h3>Send to Claude automatically</h3>
     <p class="muted" style="margin:-6px 0 12px">The log uploads to your private GitHub repo <b>shicards-log</b>, where Claude can read it. Set it up once:</p>
     <ol class="steps"><li>Tap <b>Make a key</b>. GitHub opens with the details filled in.</li>
@@ -3620,7 +3611,7 @@ function noteSheet() {
 }
 function logSheet() {
   openSheet(`<h3>Activity log</h3>
-    <p class="muted" style="margin:-6px 0 8px">While this is on, ShiCards writes down what you do: pages you open, what you tap, swipes, card flips and how your writing checks go. It stays on this phone unless you share it or turn on sending. Send it to Claude with what you want improved.</p>
+    <p class="muted" style="margin:-6px 0 8px">While this is on, ShiHanzi writes down what you do: pages you open, what you tap, swipes, card flips and how your writing checks go. It stays on this phone unless you share it or turn on sending. Send it to Claude with what you want improved.</p>
     <div class="list-group"><button class="list-btn" id="lOn"><span>Record my activity<br><small class="log-count" id="lSub">${logSummary()}</small></span><span class="switch ${LOG.on ? 'on' : ''}"></span></button>
     <button class="list-btn" id="lNote"><span>Add a note<br><small>Say what felt off, right where it happened</small></span><span class="side">${I.chev}</span></button>
     <button class="list-btn" id="lSync"><span>Send to Claude automatically<br><small id="lSyncSub">${syncSummary()}</small></span><span class="switch ${SYNC.on ? 'on' : ''}"></span></button>
@@ -4249,15 +4240,15 @@ function CourseView() {
 }
 
 /* ---------- HSK 1 lessons ----------
-   49 short lessons in 8 units cover all 294 HSK 1 words, one theme each, shown as a deck of hanzi cards. A lesson is hanzi
+   49 short lessons in 8 units cover all 300 HSK 1 words, one theme each, shown as a deck of hanzi cards. A lesson is hanzi
    cards and writing: meet each word on its card and trace its new character in the tianzige right after, then turn the
    cards (the character first: think of its meaning, turn it, say if you knew it; "Not yet" comes back at the end), with two
    characters to write from memory, one halfway through the cards and one at the end. Finishing a lesson puts its words into the word bank by
    itself, back in the daily review tomorrow, so the word bank fills as you learn; Quick add and the HSK lists still add
    words by hand. Lessons open one after another. db.lessons = { n: { done, last, best } }, n from 1. Route: #/course/1/lesson/n */
 const LES_UNITS = [
-  ['Hello', '你好', [['Hello', '你 好 我 您 再见 谢谢'], ['Polite words', '不客气 对不起 没关系 请 请问 喂'], ['Me, you, them', '我们 你们 他 她 他们 她们'],
-    ['Who is it?', '是 不 谁 人 叫 名字'], ['Asking questions', '吗 呢 什么 哪 哪儿 哪里'], ['One to five', '一 二 三 四 五 零']]],
+  ['Hello', '你好', [['Hello', '你 好 你好 我 您 再见 谢谢'], ['Polite words', '不客气 对不起 没关系 没事 请 请问 一下'], ['Me, you, them', '我们 你们 他 她 他们 她们'],
+    ['Who is it?', '是 不 谁 人 叫 名字'], ['Asking questions', '吗 呢 什么 哪 哪个 哪儿 哪里'], ['One to five', '一 二 三 四 五 零']]],
   ['Numbers and time', '时间', [['Six to ten', '六 七 八 九 十 两'], ['Big numbers', '百 千 几 多少 第 半 一半'], ['Days', '今天 明天 昨天 天 日 号'],
     ['Weeks and months', '星期 星期天 星期日 月 年 岁'], ['Times of day', '早上 上午 中午 下午 晚上 白天'], ['Telling the time', '点 分 分钟 小时 时候 时间']]],
   ['Family and people', '家人', [['Family', '爸爸 妈妈 家 家人 孩子 儿子 女儿'], ['Brothers and sisters', '哥哥 姐姐 弟弟 妹妹 们'], ['Friends', '朋友 男朋友 女朋友 同学 大家 小朋友'],
@@ -4266,12 +4257,12 @@ const LES_UNITS = [
     ['Fruit', '水果 苹果 好吃 杯子 口 一点儿'], ['Money', '买 卖 钱 块 元 贵 便宜'], ['Shops', '商店 超市 书店 店 东西 衣服 穿']]],
   ['School', '学校', [['School', '学校 小学 中学 大学 上学 课'], ['Students', '大学生 中学生 小学生 上课 下课'], ['Studying', '学 学习 读 读书 写 字'],
     ['Chinese', '中国 中文 汉语 汉字 国 书'], ['Talking', '说 说话 问 问题 听 知道'], ['See and hear', '看 看见 听见 见 认识 觉得']]],
-  ['Home and travel', '回家', [['My room', '房间 桌子 椅子 电脑 电视 手机'], ['Sleep and rest', '睡 睡觉 起床 休息 住 回'], ['Phones and films', '电话 打电话 电影 电影院 歌 唱'],
+  ['Home and travel', '回家', [['My room', '房间 桌子 椅子 电脑 电视 手机'], ['Sleep and rest', '睡 睡觉 起床 休息 住 回'], ['Phones and films', '喂 电话 打电话 电影 电影院 歌 唱'],
     ['Getting around', '车 开车 出租车 火车 飞机 坐'], ['Come and go', '去 来 到 开 找 给'], ['Here and there', '这里 那里 这儿 那儿 这边 那边']]],
   ['Describing things', '怎么样', [['Up and down', '上 下 里 外 外边 边'], ['Big and small', '大 小 多 少 很 太'], ['Likes', '爱 喜欢 想 要 高兴 忙'],
-    ['Weather', '天气 热 冷 雨 下雨 雪'], ['Nice!', '漂亮 好看 好听 好玩儿 新 真'], ['Feeling ill', '病 生病 看病 有点儿 非常'], ['Pets and play', '狗 猫 玩 做']]],
-  ['Little words', '小词', [['This and that', '这 那 这些 那些 哪些 些'], ['Counting words', '个 本 件 一些 有些 有的'], ['Have and be', '有 没有 在 正在 的 了'],
-    ['And, also, all', '和 也 都 还 再 只'], ['Can and may', '会 能 可以 不要 吧 对'], ['How', '怎么 怎么样 前 后 事 它 它们']]],
+    ['Weather', '天气 热 冷 雨 下雨 雪'], ['Nice!', '漂亮 好看 好听 好玩儿 新 真'], ['Feeling ill', '病 生病 看病 有点儿 非常'], ['Pets and play', '狗 猫 只 玩 做']]],
+  ['Little words', '小词', [['This and that', '这 那 这个 那个 这些 那些 哪些'], ['Counting words', '个 本 件 些 一些 有些 有的'], ['Have and be', '有 没有 在 正在 的 了'],
+    ['And, also, all', '和 也 都 还 再'], ['Can and may', '会 能 可以 不要 吧 对'], ['How', '怎么 怎么样 前 后 事 它 它们']]],
 ];
 /* v3.31: every HSK level has units. HSK 1's are written out above; HSK 2 and up come from course.js (window.SHI_COURSE:
    one text per level, a unit line "## English|中文" and under it its lessons "Title:word word word"). Numbers never
@@ -4287,7 +4278,10 @@ for (const [lv, txt] of Object.entries(window.SHI_COURSE || {})) { let k = 0; if
 const UNIT_BY = new Map(LES_UNITS.map(U => [U.un, U])), UNIT = un => UNIT_BY.get(+un);
 const LV_UNITS = {}; LES_UNITS.forEach(U => (LV_UNITS[U.lv] ||= []).push(U));
 const lvUnits = lv => LV_UNITS[lv] || [], lvHas = lv => !!LV_UNITS[lv];
-const LESSONS = LES_UNITS.flatMap(U => U[2].map(([title, w]) => ({ un: U.un, lv: U.lv, title, words: w.split(' ') })));
+/* v4.42: a word the HSK list has twice in one level is written 空#2 for its second line there (空 kōng, 空#2 kòng); a lesson
+   keeps the plain word in words and which line it means in sense (word -> 2). lesRow reads the line of the lesson's level */
+const LESSONS = LES_UNITS.flatMap(U => U[2].map(([title, w]) => { const sense = new Map(), words = w.split(' ').map(t => { const [h, k] = t.split('#'); if (+k > 1) sense.set(h, +k); return h; });
+  return { un: U.un, lv: U.lv, title, words, sense }; }));
 { const at = {}; LESSONS.forEach((L, i) => { L.i = i; L.k = at[L.lv] = (at[L.lv] || 0) + 1; L.n = (L.lv === 1 ? 0 : L.lv * 1000) + L.k; }); }
 const LES_BY = new Map(LESSONS.map(L => [L.n, L])), LES = n => LES_BY.get(+n);
 const LV_LES = {}; LESSONS.forEach(L => (LV_LES[L.lv] ||= []).push(L));
@@ -4296,11 +4290,19 @@ const unitLv = un => UNIT(un)?.lv || 1, unK = un => UNIT(un)?.k ?? un, unitLast 
 const unitUrl = un => `#/course/${unitLv(un)}/unit/${un}`, utUrl = un => `#/course/${unitLv(un)}/test/${un}`, lesUrl = n => `#/course/${LES(n)?.lv || 1}/lesson/${n}`;
 const lvDoneSay = lv => lv < 7 ? `finishes ${HSK_NAME(lv)} and opens ${HSK_NAME(lv + 1)}` : `finishes ${HSK_NAME(lv)}`;
 /* plain meanings for lessons where the dictionary's first one is odd or too long ("年: grain; harvest") */
-const LES_MEAN = Object.fromEntries(`的=of; 's|了=(action done; change)|是=to be; yes|在=at; in; to be at|不=no; not|个=(measure word)|和=and; with|好=good; well|也=also; too|会=can; will|还=still; also|给=to give; for|没有=not have; didn't|那=that|什么=what|吧=(let's…; …right?)|点=o'clock; a bit|里=in; inside|年=year|很=very|太=too; very|吗=(yes or no question)|呢=(and…? question)|时候=time; when|你们=you (more than one)|怎么=how|谁=who|找=to look for|今天=today|觉得=to feel; to think|几=how many|大家=everyone|开=to open; to drive|叫=to be called|请=please; to invite|钱=money|不要=don't|本=(measure word: books)|回=to go back|岁=years old|号=date; number|件=(measure word: clothes)|女=woman; female|分=minute; cent|日=day; date|正在=(doing right now)|早=early; morning|们=(more than one person)|块=yuan (money)|多少=how many; how much|哪=which|先生=Mr; sir|卖=to sell|些=some|歌=song|店=shop|元=yuan|唱=to sing|她们=they (women)|它们=they (things)|字=character; word|热=hot|第=(-th: 第一 first)|读=to read|猫=cat|休息=to rest|有的=some (of them)|喂=hello? (phone)|课=lesson; class|饭=rice; meal|家人=family|同学=classmate|雨=rain|雪=snow|百=hundred|那边=over there|哪些=which ones|一点儿=a little|好玩儿=fun|面条儿=noodles|包子=steamed bun|牛奶=milk|鸡蛋=egg|好听=nice to hear|请问=excuse me, may I ask|饺子=dumplings|想=to want; to think|上=up; on|下=down; under|天=day; sky|菜=dish; vegetables|小朋友=kid|起床=to get up|打电话=to phone|妈妈=mum|手机=mobile phone|电影=film|他=he; him|她=she; her|晚=late; evening|坐=to sit; to take (a bus)|认识=to know (someone)|怎么样=how is it?|上课=to have class|读书=to read; to study|没关系=it's OK|中文=Chinese (language)|汉语=Chinese (spoken)|东西=thing; stuff|两=two (of)|一些=a few; some|有些=somewhat; some|学=to learn|学习=to study|上班=to go to work|知道=to know|好看=good-looking|看见=to see|做=to do; to make|家=home; family|后=after; behind|前=before; in front|边=side|外=outside|事=thing; matter|有点儿=a bit|非常=very; really|星期日=Sunday (written)|星期天=Sunday|这里=here|这儿=here (spoken)|那里=there|那儿=there (spoken)|哪里=where|哪儿=where (spoken)|白天=daytime|做饭=to cook|好吃=tasty|下雨=to rain|一半=half|半=half (of)|您=you (polite)|再见=goodbye|谢谢=thank you|对不起=sorry|不客气=you're welcome`.split('|').map(s => s.split('=')));
+const LES_MEAN = Object.fromEntries(`的=of; 's|了=(action done; change)|是=to be; yes|在=at; in; to be at|不=no; not|个=(measure word)|和=and; with|好=good; well|也=also; too|会=can; will|还=still; also|给=to give; for|没有=not have; didn't|那=that|什么=what|吧=(let's…; …right?)|点=o'clock; a bit|里=in; inside|年=year|很=very|太=too; very|吗=(yes or no question)|呢=(and…? question)|时候=time; when|你们=you (more than one)|怎么=how|谁=who|找=to look for|今天=today|觉得=to feel; to think|几=how many|大家=everyone|开=to open; to drive|叫=to be called|请=please; to invite|钱=money|不要=don't|本=(measure word: books)|回=to go back|岁=years old|号=date; number|件=(measure word: clothes)|女=woman; female|分=minute; cent|日=day; date|正在=(doing right now)|早=early; morning|们=(more than one person)|块=yuan (money)|多少=how many; how much|哪=which|先生=Mr; sir|卖=to sell|些=some|歌=song|店=shop|元=yuan|唱=to sing|她们=they (women)|它们=they (things)|字=character; word|热=hot|第=(-th: 第一 first)|读=to read|猫=cat|休息=to rest|有的=some (of them)|喂=hello? (phone)|课=lesson; class|饭=rice; meal|家人=family|同学=classmate|雨=rain|雪=snow|百=hundred|那边=over there|哪些=which ones|一点儿=a little|好玩儿=fun|面条儿=noodles|包子=steamed bun|牛奶=milk|鸡蛋=egg|好听=nice to hear|请问=excuse me, may I ask|饺子=dumplings|想=to want; to think|上=up; on|下=down; under|天=day; sky|菜=dish; vegetables|小朋友=kid|起床=to get up|打电话=to phone|妈妈=mum|手机=mobile phone|电影=film|他=he; him|她=she; her|晚=late; evening|坐=to sit; to take (a bus)|认识=to know (someone)|怎么样=how is it?|上课=to have class|读书=to read; to study|没关系=it's OK|中文=Chinese (language)|汉语=Chinese (spoken)|东西=thing; stuff|两=two (of)|一些=a few; some|有些=somewhat; some|学=to learn|学习=to study|上班=to go to work|知道=to know|好看=good-looking|看见=to see|做=to do; to make|家=home; family|后=after; behind|前=before; in front|边=side|外=outside|事=thing; matter|有点儿=a bit|非常=very; really|星期日=Sunday (written)|星期天=Sunday|这里=here|这儿=here (spoken)|那里=there|那儿=there (spoken)|哪里=where|哪儿=where (spoken)|白天=daytime|做饭=to cook|好吃=tasty|下雨=to rain|一半=half|半=half (of)|您=you (polite)|再见=goodbye|谢谢=thank you|对不起=sorry|不客气=you're welcome|你好=hello|这个=this; this one|那个=that; that one|哪个=which; which one|一下=(do something) a bit; once|没事=it's nothing; never mind`.split('|').map(s => s.split('=')));
 const lesRows = new Map();
-function lesRow(h) {   // { h, p, en } for a lesson word
-  if (!lesRows.has(h) && S.H) { const r = S.H.byHz.get(h); lesRows.set(h, { h, p: S.H.gloss?.get(h)?.p || r?.p || autoPinyin(h), en: LES_MEAN[h] || (r ? meanOf(r) : '') }); }
-  return lesRows.get(h) || { h, p: autoPinyin(h), en: LES_MEAN[h] || '' };
+/* { h, p, en } for a lesson word. L: its lesson. v4.42: the official list gives some words more than once (点 HSK 1
+   "o'clock", HSK 2 "to order"; 只 zhī HSK 1, zhǐ HSK 3), so a lesson shows the line of its own level (the k-th one when the
+   word is there twice). The hand-written meanings (gloss, LES_MEAN) are for a word's first line only */
+function lesRow(h, L) {
+  const lv = L?.lv || 0, k = L?.sense?.get(h) || 1, key = `${lv}|${k}|${h}`;
+  if (!lesRows.has(key) && S.H) {
+    const first = S.H.byHz.get(h), here = (S.H.levels[lv] || []).filter(r => r.h === h), r = here[k - 1] || here[0] || first;
+    lesRows.set(key, r && r !== first ? { h, p: r.p, en: meanOf(r) }
+      : { h, p: S.H.gloss?.get(h)?.p || r?.p || autoPinyin(h), en: LES_MEAN[h] || (r ? meanOf(r) : '') });
+  }
+  return lesRows.get(key) || { h, p: autoPinyin(h), en: LES_MEAN[h] || '' };
 }
 const lesDone = n => !!db.lessons[n]?.done;
 const lvWon = lv => lvUnits(lv).every(U => utPassed(U.un));
@@ -6437,7 +6439,7 @@ const UT_PER = 3;   // words the final boss asks from each lesson
 function startUnitTest(un) {
   const ls = unitLessons(un), T = ['hz2en', 'en2hz', 'ear', 'py'];
   const proven = h => !!bankHas(h)?.pf?.at;
-  const words = ls.flatMap(L => shuffle(L.words).sort((a, b) => proven(a) - proven(b)).slice(0, UT_PER)).map(lesRow);
+  const words = ls.flatMap(L => shuffle(L.words).sort((a, b) => proven(a) - proven(b)).slice(0, UT_PER).map(h => lesRow(h, L)));
   const q = shuffle(shuffle(words).map((w, k) => ({ t: T[k % 4], w }))), nq = q.length, wt = lesWriteTasks(ls[0].n, words);
   if (wt[1]) q.splice(Math.round(nq * .66), 0, { t: 'write', mode: 'recall', ...wt[1] });
   if (wt[0]) q.splice(Math.round(nq * .33), 0, { t: 'write', mode: 'recall', ...wt[0] });
@@ -7265,7 +7267,7 @@ function StreakCal() {
    Sharing your streak sends a picture, not just a line of text: a 1080×1350 card (the 4:5 size feeds and chats show
    whole) painted on a canvas in the app, so it works offline. Red like the app's buttons, with the flame, your day count
    big with Shi Shi beside it, 连续N天, this week's days (practised days lit, freeze days blue), your proven words and level, and where
-   to get ShiCards. It opens in a sheet first so you see what you send; one red button shares it. */
+   to get ShiHanzi. It opens in a sheet first so you see what you send; one red button shares it. */
 const svgImg = svg => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no;
   im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.replace(/^<svg(?![^>]*xmlns=)/, '<svg xmlns="http://www.w3.org/2000/svg"')); });
 async function streakCard() {
@@ -7283,8 +7285,8 @@ async function streakCard() {
   c.strokeStyle = 'rgba(255,255,255,.09)'; c.lineWidth = 3; for (let x = 0; x <= W; x += 180) for (let y = 0; y <= H; y += 180) c.strokeRect(x + 15, y + 15, 150, 150);
   c.setLineDash([10, 12]); c.lineWidth = 2; c.beginPath(); for (let x = 0; x <= W; x += 180) for (let y = 0; y <= H; y += 180) { c.moveTo(x + 90, y + 15); c.lineTo(x + 90, y + 165); c.moveTo(x + 15, y + 90); c.lineTo(x + 165, y + 90); } c.stroke(); c.setLineDash([]);
   const glow = c.createRadialGradient(W / 2, 380, 40, W / 2, 380, 470); glow.addColorStop(0, 'rgba(255,214,90,.55)'); glow.addColorStop(1, 'rgba(255,214,90,0)'); c.fillStyle = glow; c.fillRect(0, 0, W, 900);
-  // ShiCards, top left
-  c.drawImage(logo, 64, 58, 92, 92); c.fillStyle = '#fff'; c.textBaseline = 'middle'; c.font = '700 46px Satoshi, sans-serif'; c.fillText('ShiCards', 170, 106);
+  // ShiHanzi, top left
+  c.drawImage(logo, 64, 58, 92, 92); c.fillStyle = '#fff'; c.textBaseline = 'middle'; c.font = '700 46px Satoshi, sans-serif'; c.fillText('ShiHanzi', 170, 106);
   if (name) { c.textAlign = 'right'; c.font = '500 38px Satoshi, sans-serif'; c.fillStyle = 'rgba(255,255,255,.85)'; c.fillText(name.slice(0, 18), W - 64, 106); c.textAlign = 'left'; }
   // the flame and the count
   c.drawImage(flame, W / 2 - 170, 175, 340, 340);
@@ -7312,7 +7314,7 @@ async function streakCard() {
 }
 async function shareStreak() {
   const { n } = practiceStreak(), url = 'https://ilkegits.github.io/moka/';
-  const text = n ? `I’m on a ${n} day streak learning Chinese with ShiCards 🔥` : 'I’m learning Chinese with ShiCards';
+  const text = n ? `I’m on a ${n} day streak learning Chinese with ShiHanzi 🔥` : 'I’m learning Chinese with ShiHanzi';
   LOG.add('streak-share', { n });
   if (n) {   // a streak to show: the picture card, previewed in a sheet
     let cv; try { cv = await streakCard(); } catch (e) { cv = null; }
@@ -7363,7 +7365,7 @@ function remindHelp() {   // the phone said no once, so the app can't ask again:
     <ol><li>Open the <b>Chrome</b> app, tap <b>⋮</b> at the top right, then <b>Settings › Site settings › Notifications</b>.</li>
       <li>Check the switch at the top is on. Under <b>Blocked</b>, tap <b>ilkegits.github.io</b> and choose <b>Allow</b>.</li>
       <li>Come back here and tap <b>Remind me</b>.</li></ol>
-    <p class="muted">Still blocked? Press and hold the ShiCards icon › App info › Notifications, and switch them on there too.</p></div>`;
+    <p class="muted">Still blocked? Press and hold the ShiHanzi icon › App info › Notifications, and switch them on there too.</p></div>`;
 }
 function showRemindHelp() {
   const h = $('#rHelp'); if (!h) return false;
@@ -7382,7 +7384,7 @@ async function remindSet(on, hour) {
     const reg = await navigator.serviceWorker?.getRegistration();
     if (!reg) { toast('Reminders work in the installed app'); return false; }
     const perm0 = Notification.permission, perm = await Notification.requestPermission();
-    if (perm !== 'granted') { LOG.add('reminder-refused', { before: perm0, after: perm }); if (!(notifBlocked() && showRemindHelp())) toast('Notifications are off for ShiCards. Allow them in the phone settings'); return false; }
+    if (perm !== 'granted') { LOG.add('reminder-refused', { before: perm0, after: perm }); if (!(notifBlocked() && showRemindHelp())) toast('Notifications are off for ShiHanzi. Allow them in the phone settings'); return false; }
     try {
       const sub = await reg.pushManager.getSubscription() || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uBytes(VAPID_PUBLIC) });
       r.sub = sub.toJSON();
@@ -7433,7 +7435,7 @@ function remindSheet() {
    open their own page, this week's proven words against last week's, and badges with the nearest one first.
    v2.91: the daily goal and reminder left Profile (ilkem); the goal is on the Streak page, the reminder in the menu. The
    month calendar lives on the Streak page. */
-function pfSince() {   // the first day ShiCards saw you practise or add a word
+function pfSince() {   // the first day ShiHanzi saw you practise or add a word
   let t = db.prefs.ob?.done || Infinity;
   for (const w of db.bank) if (w.added < t) t = w.added;
   for (const k of Object.keys(db.days)) { const [y, m, d] = k.split('-').map(Number), x = new Date(y, m, d).getTime(); if (x < t) t = x; }
@@ -7507,7 +7509,7 @@ function openDrawer() {
         <div class="dr-sep"></div>
         ${settingsRows(true)}
       </nav>
-      <div class="dr-foot">Decks are stored only in this browser. Typing pinyin needs internet.<br>ShiCards ${APP_VERSION}</div>
+      <div class="dr-foot">Decks are stored only in this browser. Typing pinyin needs internet.<br>ShiHanzi ${APP_VERSION}</div>
     </aside>`;
   root.offsetHeight; root.classList.add('open');
   LOG.add('drawer', 'open');
@@ -8096,7 +8098,7 @@ function hotdPick(fresh) {   // fresh: the Developer sheet's "Try another charac
   if (H?.day === today && H.h && !fresh) return H;
   if (!S.H) return null;
   const known = knownWords(), past = new Set(H?.past || []);
-  const ok = r => [...r.h].length === 1 && HAN.test(r.h) && r.e && r.e[0] !== '(' && !/^surname /.test(r.e);   // no particles, no surnames
+  const ok = r => [...r.h].length === 1 && HAN.test(r.h) && r.e && r.e[0] !== '(' && !/^surname /.test(r.e) && S.H.byHz.get(r.h) === r;   // no particles, no surnames; a character's first line
   let pool = [];
   for (const l of [1, 2, 3, 4, 5, 6, 7].filter(l => l >= (db.prefs.level || 1))) { pool = (S.H.levels[l] || []).filter(r => ok(r) && !known.has(r.h) && !past.has(r.h)); if (pool.length) break; }
   if (!pool.length) pool = (S.H.levels[1] || []).filter(ok);
@@ -11693,7 +11695,7 @@ function WriteSummary(d) {
 
 /* ---------- pinyin → hanzi (online IME) ---------- */
 const candCache = new Map(); let candCtl = null;
-const normPy = s => s.toLowerCase().replace(/ü|u:/g, 'v').replace(/[āáǎà]/g, 'a').replace(/[ēéěè]/g, 'e').replace(/[īíǐì]/g, 'i').replace(/[ōóǒò]/g, 'o').replace(/[ūúǔù]/g, 'u').replace(/[ǖǘǚǜ]/g, 'v').replace(/[^a-z']/g, '');
+const normPy = s => s.toLowerCase().replace(/ü|u:/g, 'v').replace(/[āáǎà]/g, 'a').replace(/[ēéěè]/g, 'e').replace(/[īíǐì]/g, 'i').replace(/[ōóǒò]/g, 'o').replace(/[ūúǔù]/g, 'u').replace(/[ǖǘǚǜ]/g, 'v').replace(/[ńňǹ]/g, 'n').replace(/[^a-z']/g, '');   // ǹg: 嗯
 async function fetchCands(py) {
   if (candCache.has(py)) return candCache.get(py);
   candCtl?.abort(); candCtl = new AbortController();
@@ -12556,11 +12558,14 @@ function wireSearch(inp, onClear) {
 }
 
 /* ---------- HSK lists ----------
-   dict/hsk.tsv: the HSK 3.0 word lists of the 2026 syllabus (levels 1-6, and 7 for the 7-9 band), from
-   complete-hsk-vocabulary (MIT) with CC-CEDICT meanings; rebuild with tools/build_hsk.py.
+   dict/hsk.tsv: the HSK 3.0 word lists of the official 2025 syllabus 《HSK 考试大纲》 (levels 1-6, and 7 for the 7-9 band):
+   every listing, so each level has the official number of entries (300, 200, 500, 1,000, 1,600, 1,800 and 5,600). A word
+   listed again (点 "o'clock" at HSK 1, "to order" at HSK 2) has a line for each; byHz holds its first line, the lowest
+   level. Readings are the official ones, meanings CC-CEDICT or written for that listing; rebuild with
+   tools/build_hsk.py. A line whose reading was corrected in v4.41 keeps its old pinyin and meanings in two more columns.
    One line per word: level <TAB> simplified <TAB> pinyin <TAB> meanings. */
 const HSK_NAME = l => l === 7 ? 'HSK 7–9' : 'HSK ' + l;
-const HSK_COUNT = { 1: 294, 2: 197, 3: 487, 4: 972, 5: 1547, 6: 1684, 7: 4876 };   // words per level, shown before the lists load
+const HSK_COUNT = { 1: 300, 2: 200, 3: 500, 4: 1000, 5: 1600, 6: 1800, 7: 5600 };   // words per level, shown before the lists load
 /* the shelf of HSK levels on the Decks page; rings fill in once the lists are loaded */
 function HskShelf() {
   const inBank = S.H && new Set(db.bank.map(w => w.hanzi));
@@ -12577,8 +12582,9 @@ function loadHsk() {
     const levels = {}, byHz = new Map(), gl = new Map();
     for (const l of t.split('\n')) {
       if (!l || l[0] === '#') continue;
-      const [lv, h, p, e] = l.split('\t'); if (!h) continue;
+      const [lv, h, p, e, op, oe] = l.split('\t'); if (!h) continue;
       const row = { lv: +lv, h, p, e: e || '' };
+      if (op !== undefined) row.was = { p: op, e: oe || '' };   // v4.41: the line before its reading was corrected (狮子 was "Leo (star sign)")
       (levels[row.lv] ||= []).push(row); if (!byHz.has(h)) byHz.set(h, row);
     }
     for (const l of g.split('\n')) { const [h, p, en] = l.replace(/\r$/, '').split('\t'); if (h && h[0] !== '#' && en) gl.set(h, { p, en }); }
@@ -12593,6 +12599,14 @@ function loadHsk() {
     }
     let fixed = false;
     for (const w of db.bank) { const r = byHz.get(w.hanzi); if (r && was.has(w.hanzi) && w.en === was.get(w.hanzi) && w.en !== meanOf(r)) { w.en = meanOf(r); fixed = true; } }
+    /* v4.41: the HSK lists now follow the official 2025 syllabus, whose pinyin picks the right reading of a word. A card made
+       from a line that had the wrong one (吗 "má: what?", 金子 "Kaneko", 趟 "to wade") takes the right reading and meaning;
+       a meaning or pinyin you typed yourself stays */
+    for (const c of [...db.bank, ...db.decks.flatMap(d => d.cards || [])]) {
+      const r = byHz.get(c.hanzi); if (!r?.was) continue;
+      if (c.en && c.en === shortMeaning(r.was.e) && c.en !== meanOf(r)) { c.en = meanOf(r); fixed = true; }
+      const py = gl.get(c.hanzi)?.p || r.p; if (c.pinyin && c.pinyin === r.was.p && c.pinyin !== py) { c.pinyin = py; fixed = true; }
+    }
     if (fixed) save();
     S.H = { levels, byHz, gloss: gl }; tagBank(); return S.H;
   }).catch(e => { hskP = null; throw e; });
@@ -12763,7 +12777,7 @@ function HskView() {
       return `<button class="row" data-act="hsk-level" data-lv="${l}" style="--sep:68px">${ring(l === 7 ? '7–9' : String(l), L.length ? k / L.length : 0)}
         <span class="row-main"><span class="row-t">${HSK_NAME(l)}</span><span class="row-s">${k ? `${k.toLocaleString('en')} of ${L.length.toLocaleString('en')} words known` : `${L.length.toLocaleString('en')} words`}</span></span><span class="chev">${I.chev}</span></button>`;
     }).join('')}</div>
-    <p class="group-foot">HSK 3.0, 2026 syllabus. Word lists from complete-hsk-vocabulary (MIT), meanings from CC-CEDICT (CC BY-SA 4.0).</p>
+    <p class="group-foot">HSK 3.0, the official 2025 syllabus (in force since July 2026). Words, levels and readings from the official word list, meanings from CC-CEDICT (CC BY-SA 4.0).</p>
   </div>`;
   const L = H.levels[lv] || [], k = L.filter(r => inBank.has(r.h)).length;
   return `<div class="screen fade-in">${head}
@@ -12861,7 +12875,7 @@ function mountHsk() {
   list.onclick = e => {
     const b = e.target.closest('.row[data-h]'); if (!b) return; const h = b.dataset.h;
     if (b.classList.contains('has')) { toast(`${h} is already in your word bank`); return; }
-    sel.has(h) ? sel.delete(h) : sel.add(h); b.classList.toggle('on', sel.has(h)); paint();
+    sel.has(h) ? sel.delete(h) : sel.add(h); list.querySelectorAll('.row[data-h]').forEach(x => x.dataset.h === h && x.classList.toggle('on', sel.has(h))); paint();
   };
   allB.onclick = () => {
     const f = fresh(), all = f.every(r => sel.has(r.h)); f.forEach(r => all ? sel.delete(r.h) : sel.add(r.h));
@@ -12869,7 +12883,8 @@ function mountHsk() {
   };
   addB.onclick = () => {
     const now = Date.now();
-    const words = L.filter(r => sel.has(r.h) && !inBank.has(r.h)).map((r, i) => ({ id: uid(), hanzi: r.h, pinyin: r.p, en: meanOf(r), added: now - i, hsk: r.lv }));
+    const one = new Set(), words = L.filter(r => sel.has(r.h) && !inBank.has(r.h) && !one.has(r.h) && one.add(r.h))   // 空 kōng and 空 kòng: one card
+      .map((r, i) => ({ id: uid(), hanzi: r.h, pinyin: r.p, en: meanOf(r), added: now - i, hsk: r.lv }));
     if (!words.length) return;
     db.bank = [...words, ...db.bank]; save();
     words.forEach(w => inBank.add(w.hanzi)); sel.clear();
@@ -12885,10 +12900,10 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.11';
+const APP_VERSION = '3.45.12';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
-addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
+addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
 const isInstalled = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const isNewer = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number);
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d > 0; } return false; };
@@ -12906,7 +12921,7 @@ function installHelp() {
   const steps = ios
     ? ['Tap the <b>Share</b> button (a square with an arrow). In Safari it’s at the bottom, in Chrome at the top right.', 'Scroll down and tap <b>Add to Home Screen</b>.', 'Tap <b>Add</b>.']
     : ['Open this page in <b>Chrome</b> itself, not in the camera’s or scanner’s preview window. Use <b>Copy</b> below and paste it into Chrome if needed.', 'Tap <b>⋮</b> at the top right of Chrome.', 'Tap <b>Install app</b> or <b>Add to Home screen</b>, then confirm.'];
-  openSheet(`<h3>Install ShiCards</h3><ol class="steps">${steps.map(s => `<li>${s}</li>`).join('')}</ol>
+  openSheet(`<h3>Install ShiHanzi</h3><ol class="steps">${steps.map(s => `<li>${s}</li>`).join('')}</ol>
     <div class="field"><span class="lbl">Address</span><div class="copy-row"><span>${esc(url)}</span><button class="btn btn-ghost" id="cpy">Copy</button></div></div>
     <button class="btn btn-primary wide" data-act="close-sheet">Got it</button>`,
     sh => { sh.querySelector('#cpy').onclick = async () => { try { await navigator.clipboard.writeText(url); toast('Link copied'); } catch (_) { toast(url); } }; });
@@ -13023,7 +13038,7 @@ function devSheet() {
     <p class="muted dev-now">Back to a fresh install on this device: word bank, lessons, streak, decks and settings. The activity log stays.</p>`, sh => {
     // wipe the saved data and restart, so the app opens like the first time (onboarding included); save() is switched off so nothing writes the old data back while the page reloads
     sh.querySelector('#devReset').onclick = () => confirmSheet('Reset all progress?',
-      'Everything you learned and made on this device is wiped, as if ShiCards was just installed, and the app restarts with the first-run pages. This can’t be undone. To keep a copy, use Export backup first.',
+      'Everything you learned and made on this device is wiped, as if ShiHanzi was just installed, and the app restarts with the first-run pages. This can’t be undone. To keep a copy, use Export backup first.',
       'Reset', () => { LOG.add('dev', 'reset progress'); save = () => {}; try { localStorage.removeItem(KEY); } catch (_) {} location.replace(location.pathname); });
     const play = f => () => { LOG.add('dev', f.name); closeSheet(); setTimeout(f, 320); };
     sh.querySelector('#devOb').onclick = play(function onboarding() { obStart(true); });
@@ -13233,7 +13248,7 @@ const CLOUD = (() => {
 })();
 const GOOGLE_G = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.2C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg>';
 /* The account pop-up. Signed out: Continue with Google (the one obvious button), email under it. Signed in: who you are,
-   when it last synced, Sign out; deleting the account sits small at the bottom. welcome = opened from "I've used ShiCards before". */
+   when it last synced, Sign out; deleting the account sits small at the bottom. welcome = opened from "I've used ShiHanzi before". */
 function acctSheet(welcome, viaEmail) {   // viaEmail: open on the email form, set to create an account
   const u = CLOUD.user;
   if (u) {
@@ -13344,7 +13359,7 @@ function settingsRows(dr) {
     row('sAcct', I.profile, `<span class="acct-t">${CLOUD.user ? 'Your account' : 'Sign in'}</span>`, `<small id="acctSub"${CLOUD.user ? '' : ' class="opt"'}>${esc(CLOUD.line())}</small>`),   // v4.47
     row('sName', I.pen, 'Your name', db.prefs.name ? `<small>${esc(db.prefs.name)}</small>` : '<small class="opt">Shown in the menu and on your profile</small>'),
     row('sRem', I.bell, 'Daily reminder', `<small id="remSub">${remindLine()}</small>`),   // v2.91: moved here from Profile
-    isInstalled() ? '' : row('sInst', I.install, 'Install app', '<small class="opt">Put ShiCards on your home screen</small>'),
+    isInstalled() ? '' : row('sInst', I.install, 'Install app', '<small class="opt">Put ShiHanzi on your home screen</small>'),
     row('sUpd', I.refresh, 'Check for updates', `<small id="sUpdSub">You have version ${APP_VERSION}</small>`, `<span class="side" id="sUpdR">${chev}</span>`),
     row('sExp', I.download, 'Export backup', '<small class="opt">Saves all decks and your word bank as a .json file</small>'),
     row('', I.upload, 'Import backup', '<small>Replaces everything on this device</small>', undefined, 'label', '<input type="file" id="sImp" accept="application/json,.json" hidden>'),
@@ -13383,12 +13398,12 @@ function bindSettings(sh, dr) {
   sh.querySelector('#sExp').onclick = () => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' }));
-    a.download = `shicards-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    a.download = `shihanzi-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
   sh.querySelector('#sImp').onchange = async e => {
     const f = e.target.files[0]; if (!f) return;
     try { const d = JSON.parse(await f.text()); if (!Array.isArray(d.decks)) throw 0; db = d; db.prefs = Object.assign({ englishFirst: true, writeMode: 'free', outline: false }, db.prefs); db.bank = Array.isArray(db.bank) ? db.bank : []; db.readDone = Array.isArray(db.readDone) ? db.readDone : []; db.lessons = db.lessons && typeof db.lessons === 'object' ? db.lessons : {}; db.utests = db.utests && typeof db.utests === 'object' ? db.utests : {}; S.les = null; db.days = d.days && typeof d.days === 'object' ? d.days : {}; db.freeze = Object.assign({ have: 1, days: [], run: null, given: 0 }, db.freeze); save(); done(); history.replaceState({ d: 0 }, '', '#/'); route(); toast('Backup restored'); }
-    catch (_) { toast('That file isn’t a ShiCards backup'); }
+    catch (_) { toast('That file isn’t a ShiHanzi backup'); }
   };
 }
 function settingsSheet() {
@@ -13471,7 +13486,7 @@ function goalSheet() {
   });
 }
 
-/* ---------- onboarding: shown once, on a phone that has never opened ShiCards ----------
+/* ---------- onboarding: shown once, on a phone that has never opened ShiHanzi ----------
    It finds where you start: why (pick any) → how much you think you know → which characters can you read (up to 4 short
    rounds that move up or down) → 4 word cards, each with 4 meanings to pick from (a right answer asks a harder level next,
    a wrong one an easier level) → a short story with one question → your level, from all of these together → daily minutes,
@@ -13583,7 +13598,7 @@ function obCharsAt(lv) {   // how many different characters each level brings in
 function obRound(lv) {
   const C = S.ob.chk, shown = new Set(C.rounds.flatMap(r => r.chars.map(x => x.h)));
   if (!S.obFirst) { S.obFirst = {}; for (const l of [1, 2, 3, 4, 5, 6, 7]) for (const r of S.H.levels[l] || []) for (const c of r.h) S.obFirst[c] ??= l; }   // the level that first uses each character
-  const pool = shuffle((S.H.levels[lv] || []).filter(r => obPoolOk(r) && S.obFirst[r.h] === lv && !shown.has(r.h)));
+  const pool = shuffle((S.H.levels[lv] || []).filter(r => obPoolOk(r) && S.obFirst[r.h] === lv && !shown.has(r.h) && S.H.byHz.get(r.h) === r));
   C.rounds.push({ lv, chars: pool.slice(0, OB_ROUND), on: new Set() });
 }
 function obPlace() {   // after each round: go up, go down, or stop
@@ -13617,9 +13632,9 @@ function obShow() {
   const inn = i => `class="ob2-in" style="--i:${i}"`;
   if (step === 'hi') html = (O.replay ? `<div class="ob-top"><button class="icon-btn" data-ob="quit" aria-label="Close">${I.close}</button></div>` : '') + `<div class="ob2-start">
       <div class="ob2-hero"><div class="ob2-tzg">${obGrid('rgba(178,58,44,.55)')}<div class="ob2-hw"></div></div><div class="ob2-shi ob2-pop" style="--d:1.9s">${shiFace('cheer')}</div></div>
-      <div class="ob2-wm ob2-in" style="--i:9">ShiCards</div><h1 class="ob2-h1 ob2-in" style="--i:10">Read Chinese in a few minutes a day</h1>
+      <div class="ob2-wm ob2-in" style="--i:9">ShiHanzi</div><h1 class="ob2-h1 ob2-in" style="--i:10">Read Chinese in a few minutes a day</h1>
       <p class="ob2-lead ob2-in" style="--i:11">Shi Shi brings each character back just before you forget it.</p></div>
-    <div class="ob-dock ob2-in" style="--i:13"><button class="btn btn-seal" data-ob="next">Get started</button>${O.replay ? '' : '<button class="ob-link" data-ob="skip">I’ve used ShiCards before</button>'}</div>`;
+    <div class="ob-dock ob2-in" style="--i:13"><button class="btn btn-seal" data-ob="next">Get started</button>${O.replay ? '' : '<button class="ob-link" data-ob="skip">I’ve used ShiHanzi before</button>'}</div>`;
   else if (step === 'hello') html = `<div class="ob-top"><button class="icon-btn" data-ob="back" aria-label="Back">${I.back}</button></div>
     <div class="ob2-stage"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-hello ob2-pop">${shiFace('happy')}</div></div>
     <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
@@ -13738,12 +13753,12 @@ function obShow() {
   }
   else if (step === 'habit') {
     if (canRemind() || O.replay) html = obTop() + `<h2 class="ob2-q ob2-in">Shi Shi reminds you before you forget</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">One message a day, only on days you haven’t practised.</p>
-        <div class="ob2-perm ob2-pop" style="--d:.35s" aria-hidden="true"><b>“ShiCards” wants to send you notifications</b><p>Alerts and sounds. You can change this in Settings.</p><div class="pb"><span>Don’t allow</span><span class="al">Allow</span></div></div>
+        <div class="ob2-perm ob2-pop" style="--d:.35s" aria-hidden="true"><b>“ShiHanzi” wants to send you notifications</b><p>Alerts and sounds. You can change this in Settings.</p><div class="pb"><span>Don’t allow</span><span class="al">Allow</span></div></div>
         <svg class="ob2-arrow ob2-in" style="--i:6" viewBox="0 0 34 44" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 42V4M5 16L17 4l12 12"/></svg>
         <div class="ob2-hours ob2-in" style="--i:7">${[8, 12, 19, 21].map(h => `<button data-h="${h}" aria-pressed="${O.hour === h}">${h}:00</button>`).join('')}</div>
         <div class="ob-dock ob2-in" style="--i:8"><button class="btn btn-seal" data-ob="remind">Remind me at ${O.hour}:00</button><button class="ob-link" data-ob="done">Not now</button></div>`;
     else html = obTop() + `<div class="ob-phone"><img src="icons/icon-192.png" alt=""></div>
-        <h2 class="mo-title">Keep Shi Shi on your home screen</h2><p class="mo-text">Then today’s round is one tap away, and ShiCards opens full screen like any other app.</p>
+        <h2 class="mo-title">Keep Shi Shi on your home screen</h2><p class="mo-text">Then today’s round is one tap away, and ShiHanzi opens full screen like any other app.</p>
         <div class="ob-dock"><button class="btn btn-seal" data-ob="install">Add to home screen</button><button class="ob-link" data-ob="done">Not now</button></div>`;
   }
   html = html.replace(/[–—]/g, '-');   // short dashes only on these pages (HSK 7-9, HSK 1-2)
@@ -14093,7 +14108,7 @@ function iconBadge() {
 }
 addEventListener('visibilitychange', () => { if (document.hidden) iconBadge(); });
 
-/* ---------- paywall layout (preview only: ShiCards sells nothing, no payment can happen) ----------
+/* ---------- paywall layout (preview only: ShiHanzi sells nothing, no payment can happen) ----------
    The tested parts: a "how your free trial works" timeline with a reminder before any charge, the yearly plan picked
    first with its monthly price, a headline about your own goal, a close button and "Not now" in plain sight. */
 const PW_HEAD = { travel: 'Read menus and signs on your trip', family: 'Talk with your family in Chinese', work: 'Chinese that works for you',
@@ -14103,7 +14118,7 @@ function paywall() {
   let plan = 'year', el = null;
   const paint = () => {
     const html = (`<div class="pw-top"><button class="icon-btn" data-act="mo-close" aria-label="Close">${I.close}</button><span class="pw-tag">Preview · nothing is sold</span><span style="width:42px"></span></div>
-      <div class="pw-head"><span class="ob-shi">${shiFace('cheer')}</span><h2>${esc(PW_HEAD[why] || 'Learn Chinese faster')} with <span>ShiCards Plus</span></h2></div>
+      <div class="pw-head"><span class="ob-shi">${shiFace('cheer')}</span><h2>${esc(PW_HEAD[why] || 'Learn Chinese faster')} with <span>ShiHanzi Plus</span></h2></div>
       ${plan === 'year' ? `<div class="pw-tl"><h3>How your free trial works</h3>
         <div class="pw-step now"><span class="pw-dot">${I.check}</span><div><b>Today</b><small>A new story every day, writing for every word and all HSK levels unlock.</small></div></div>
         <div class="pw-step"><span class="pw-dot">${I.bell}</span><div><b>Day 5</b><small>We remind you that the trial is ending.</small></div></div>
@@ -14379,95 +14394,6 @@ document.addEventListener('click', e => {
   app.addEventListener('touchmove', e => { if (g?.on && e.cancelable) e.preventDefault(); }, { passive: false });
   // a drag that ends over a button must not also press it
   document.addEventListener('click', e => { if (performance.now() < noClickUntil) { e.stopPropagation(); e.preventDefault(); LOG.blocked(); } }, true);
-})();
-
-/* ---------- pull to refresh ----------
-   At the very top of a page, pull down: the page slides down and a red Chinese knot is lowered on its cord into the gap.
-   Pull until the knot gives a little bounce, let go, and it swings while the app reloads (same as Chrome's refresh).
-   Let go earlier and everything slides back. */
-(() => {
-  const app = $('#app'), box = $('#ptr');
-  // a classic red knot kept simple: a woven diamond with six loops, a gold bead and a tassel
-  box.innerHTML = `<div class="ptr-charm"><svg viewBox="-6 0 76 132">
-    <defs>
-      <linearGradient id="ptrSheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#3a0606" stop-opacity=".25"/></linearGradient>
-      <linearGradient id="ptrGold" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F2CF7A"/><stop offset="1" stop-color="#B9852C"/></linearGradient>
-    </defs>
-    <path d="M32 0V22" stroke="#B5161E" stroke-width="2.2"/>
-    <circle cx="32" cy="10" r="4.2" fill="#C8202A" stroke="#7E0D13" stroke-width="1"/>
-    <g transform="translate(32 50) rotate(45)">
-      <g fill="none" stroke="#C8202A" stroke-width="3.6">
-        <circle cx="0" cy="-21.5" r="4.6"/><circle cx="21.5" cy="0" r="4.6"/><circle cx="0" cy="21.5" r="4.6"/><circle cx="-21.5" cy="0" r="4.6"/>
-        <circle cx="-21" cy="21" r="5"/><circle cx="21" cy="-21" r="5"/>
-      </g>
-      <g fill="none" stroke="#7E0D13" stroke-width=".8" opacity=".6">
-        <circle cx="0" cy="-21.5" r="6.4"/><circle cx="21.5" cy="0" r="6.4"/><circle cx="0" cy="21.5" r="6.4"/><circle cx="-21.5" cy="0" r="6.4"/>
-        <circle cx="-21" cy="21" r="6.8"/><circle cx="21" cy="-21" r="6.8"/>
-      </g>
-      <rect x="-17.5" y="-17.5" width="35" height="35" rx="3.5" fill="#C8202A"/>
-      <path d="M-17 0H17M0 -17V17" stroke="#7E0D13" stroke-width="1.2"/>
-      <path d="M-17 -1.5H17M-1.5 -17V17" stroke="#E8505A" stroke-width=".8" opacity=".9"/>
-      <rect x="-17.5" y="-17.5" width="35" height="35" rx="3.5" fill="url(#ptrSheen)" stroke="#7E0D13" stroke-width="1"/>
-    </g>
-    <path d="M32 74V84" stroke="#B5161E" stroke-width="2.2"/>
-    <circle cx="32" cy="84" r="4.6" fill="url(#ptrGold)" stroke="#8E6420" stroke-width=".8"/>
-    <path d="M27 91C26 104 21 116 19 128Q32 132 45 128C43 116 38 104 37 91Z" fill="#C8202A"/>
-    <path d="M30 93C29 106 26 118 25 129M34 93C35 106 38 118 39 129M32 93V130" stroke="#7E0D13" stroke-width=".7" fill="none"/>
-    <path d="M27 91C26 104 21 116 19 128Q32 132 45 128C43 116 38 104 37 91Z" fill="url(#ptrSheen)"/>
-    <rect x="26" y="89" width="12" height="6" rx="1.6" fill="url(#ptrGold)" stroke="#8E6420" stroke-width=".7"/>
-  </svg></div>`;
-  const charm = box.firstElementChild, EASE = 'cubic-bezier(.2,.8,.2,1)', reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  const ARM = 100, HOLD = 104;   // how far the page has to come down (px) before letting go reloads; where it rests while reloading
-  let t = null, busy = false, inset = 0, kh = 90;   // kh: the knot's height, measured once per pull
-  const atTop = () => (document.scrollingElement?.scrollTop || 0) <= 0 && app.scrollTop <= 0;
-  const blocked = el => $('#sheet-root').classList.contains('open') || el.closest?.('input,textarea,select,[contenteditable],.stage,.tm-stage,.tzg,canvas,.shelf,#tabbar,#rec,#drawer-root,.uc');   // the map: dragging it down looks north, never reloads
-  const topInset = () => { const d = document.createElement('div'); d.style.cssText = 'position:fixed;top:0;height:env(safe-area-inset-top);visibility:hidden'; document.body.append(d); const h = d.offsetHeight; d.remove(); return h; };
-  const pull = d => 200 * (1 - Math.exp(-Math.max(0, d) / 240));   // follows the finger at first, then gets heavier
-  const place = (p, dur, curve = EASE) => {
-    const tr = dur ? `transform ${dur}ms ${curve}, opacity ${dur}ms` : 'none';
-    app.style.transition = charm.style.transition = tr;
-    app.style.transform = p ? `translate3d(0,${p}px,0)` : '';
-    // the knot's bottom hangs just above the page, under the status bar area
-    charm.style.transform = `translate3d(0,${inset + p - 6 - kh}px,0)`;
-    charm.style.opacity = Math.min(1, p / 36);
-  };
-  const reset = () => { app.style.transition = app.style.transform = charm.style.transition = charm.style.transform = charm.style.opacity = box.style.rotate = ''; box.classList.remove('armed', 'swing'); };
-  const release = ok => {
-    const T = t; t = null; if (!T?.on) return;
-    if (ok && T.armed) {
-      busy = true; LOG.add('pull-refresh', {});
-      place(HOLD, 260);
-      box.style.transition = 'rotate .3s'; box.style.rotate = '';
-      if (!reduce.matches) setTimeout(() => box.classList.add('swing'), 200);
-      setTimeout(() => location.reload(), 750);
-      return;
-    }
-    place(0, reduce.matches ? 1 : 320);
-    box.style.transition = 'rotate .3s'; box.style.rotate = '';
-    setTimeout(() => { if (!t && !busy) reset(); }, 340);
-  };
-  document.addEventListener('touchstart', e => {
-    if (busy || t?.on || e.touches.length !== 1 || blocked(e.target) || !atTop()) { if (!t?.on) t = null; return; }
-    const q = e.touches[0]; t = { x: q.clientX, y: q.clientY, on: false, armed: false };
-  }, { passive: true });
-  document.addEventListener('touchmove', e => {
-    if (!t) return;
-    if (e.touches.length !== 1) { release(false); return; }
-    const q = e.touches[0], dx = q.clientX - t.x, dy = q.clientY - t.y;
-    if (!t.on) {
-      if (dy < -6 || (Math.abs(dx) > 10 && Math.abs(dx) > dy)) { t = null; return; }   // scrolling the page, or a sideways page swipe
-      if (dy < 10 || !atTop()) return;
-      t.on = true; t.y = q.clientY; inset = topInset(); kh = charm.offsetHeight || kh; box.style.transition = 'none';
-    }
-    if (e.cancelable) e.preventDefault();
-    const p = pull(q.clientY - t.y);
-    place(p, 0);
-    box.style.rotate = reduce.matches ? '' : Math.max(-7, Math.min(7, (q.clientX - t.x) * 0.05)) + 'deg';   // it sways with your finger
-    const armed = p >= ARM;
-    if (armed !== t.armed) { t.armed = armed; box.classList.toggle('armed', armed); if (armed) navigator.vibrate?.(8); }
-  }, { passive: false });
-  document.addEventListener('touchend', () => release(true));
-  document.addEventListener('touchcancel', () => release(false));
 })();
 
 /* top bar, Instagram style: going down, it scrolls off with the page; the moment you scroll back up, it slides back in.
