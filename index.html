@@ -901,6 +901,9 @@ html.kb-up .sheet{max-height:calc(100% - var(--kb) - 8px)}
 .acct-link{display:block;margin:6px auto 0;height:44px;padding:0 12px;font-weight:600;font-size:15px;color:var(--ink-2)}
 .acct-form{display:grid;gap:10px;margin-top:10px}
 .acct-link[hidden]{display:none}
+.acct-small{height:36px;margin-top:0;font-size:14px;font-weight:500;color:var(--muted)}
+.acct-code{text-align:center;font-size:22px;letter-spacing:.3em}
+.acct-code::placeholder{font-size:16px;letter-spacing:0}
 .acct-form[hidden]{display:none}
 .acct-err{min-height:18px;margin:-2px 4px 0;font-size:13.5px;color:var(--seal)}
 .acct-err:empty{min-height:0;margin:0}
@@ -13203,6 +13206,15 @@ const CLOUD = (() => {
       await signedIn(r.data.user, true);
       return 'ok';
     },
+    // Forgot password (v4.51): the email carries a 6-digit code, typed back into the app, so it works on any device and
+    // inside the installed app (a link would open the browser instead)
+    async sendReset(email) { await lib(); const { error } = await sb.auth.resetPasswordForEmail(email); if (error) throw error; LOG.add('cloud-reset-sent'); },
+    async reset(email, token, password) {
+      await lib();
+      const v = await sb.auth.verifyOtp({ email, token, type: 'recovery' }); if (v.error) throw v.error;
+      const u = await sb.auth.updateUser({ password }); if (u.error) throw u.error;
+      await signedIn(v.data.user, !st.user || st.user.id !== v.data.user.id);
+    },
     async signOut() {
       if (st.dirty) await sync().catch(() => {});
       await lib(); await sb.auth.signOut({ scope: 'local' }).catch(() => {});
@@ -13245,18 +13257,28 @@ function acctSheet(welcome) {
       <p class="acct-err" id="acErr" role="alert"></p>
       <button class="btn btn-primary wide" id="acGo" type="submit">Sign in</button>
       <button class="acct-link" id="acNew" type="button">New here? Create an account</button>
+      <button class="acct-link acct-small" id="acForgot" type="button">Forgot password?</button>
     </form>`, sh => {
     const f = sh.querySelector('#acForm'), err = sh.querySelector('#acErr'), go = sh.querySelector('#acGo'), pw = sh.querySelector('#acPw');
     let create = false;
     sh.querySelector('#acG').onclick = async e => {
-      e.currentTarget.disabled = true; save();
-      try { await CLOUD.google(); } catch (_) { e.currentTarget.disabled = false; toast('Couldn’t reach Google. Are you online?'); }
+      const btn = e.currentTarget; btn.disabled = true; save();
+      try { await CLOUD.google(); } catch (_) { btn.disabled = false; toast('Couldn’t reach Google. Are you online?'); }
     };
     sh.querySelector('#acMail').onclick = e => { e.currentTarget.hidden = true; f.hidden = false; setTimeout(() => sh.querySelector('#acEm').focus(), 50); };
     sh.querySelector('#acNew').onclick = e => {
       create = !create; go.textContent = create ? 'Create account' : 'Sign in';
       e.currentTarget.textContent = create ? 'Already have an account? Sign in' : 'New here? Create an account';
       pw.autocomplete = create ? 'new-password' : 'current-password'; err.textContent = '';
+      sh.querySelector('#acForgot').hidden = create;
+    };
+    sh.querySelector('#acForgot').onclick = async e => {
+      const em = sh.querySelector('#acEm').value.trim(), btn = e.currentTarget;
+      if (!/^\S+@\S+\.\S+$/.test(em)) { err.textContent = 'Type your email address first'; sh.querySelector('#acEm').focus(); return; }
+      btn.disabled = true; err.textContent = '';
+      try { await CLOUD.sendReset(em); resetSheet(em); }
+      catch (x) { err.textContent = /rate|seconds|security/i.test(String(x?.message)) ? 'An email was just sent. Wait a minute, then try again' : navigator.onLine ? 'Couldn’t send the email. Try again' : 'You’re offline. Connect and try again'; }
+      finally { btn.disabled = false; }
     };
     f.onsubmit = async e => {
       e.preventDefault();
@@ -13273,6 +13295,37 @@ function acctSheet(welcome) {
         err.textContent = /invalid login/i.test(m) ? 'That email and password don’t match' : /already registered|exists/i.test(m) ? 'This email has an account. Sign in instead'
           : /password/i.test(m) ? m : navigator.onLine ? 'Something went wrong. Try again' : 'You’re offline. Connect and try again';
       } finally { go.disabled = false; go.textContent = create ? 'Create account' : 'Sign in'; }
+    };
+  });
+}
+/* Forgot password, step 2: the 6-digit code from the email and a new password. Correct, you're signed in. */
+function resetSheet(email) {
+  openSheet(`<h3 class="acct-h">Check your email</h3>
+    <p class="muted acct-p">We sent a 6-digit code to <b>${esc(email)}</b>. It can take a minute, and it may land in spam.</p>
+    <form class="acct-form" id="rsForm" novalidate>
+      <input class="input acct-code" id="rsCode" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" enterkeyhint="next">
+      <input class="input" id="rsPw" type="password" placeholder="New password (8 or more letters)" autocomplete="new-password" minlength="8" enterkeyhint="go">
+      <p class="acct-err" id="rsErr" role="alert"></p>
+      <button class="btn btn-primary wide" id="rsGo" type="submit">Save new password</button>
+      <button class="acct-link acct-small" id="rsAgain" type="button">Send the code again</button>
+    </form>`, sh => {
+    const err = sh.querySelector('#rsErr'), go = sh.querySelector('#rsGo'), code = sh.querySelector('#rsCode');
+    setTimeout(() => code.focus(), 250);
+    sh.querySelector('#rsAgain').onclick = async e => {
+      const btn = e.currentTarget; btn.disabled = true;
+      try { await CLOUD.sendReset(email); err.textContent = ''; toast('A new code is on its way'); }
+      catch (_) { err.textContent = 'Wait a minute, then send it again'; }
+      finally { btn.disabled = false; }
+    };
+    sh.querySelector('#rsForm').onsubmit = async e => {
+      e.preventDefault();
+      const c = code.value.replace(/\D/g, ''), p = sh.querySelector('#rsPw').value;
+      if (c.length < 6) { err.textContent = 'Type the 6-digit code from the email'; return; }
+      if (p.length < 8) { err.textContent = 'The new password needs 8 or more letters'; return; }
+      err.textContent = ''; go.disabled = true; go.innerHTML = '<span class="spin"></span>';
+      try { await CLOUD.reset(email, c, p); closeSheet(); paintAcct(); toast('New password saved. You’re signed in'); }
+      catch (x) { err.textContent = /expired|invalid|token/i.test(String(x?.message)) ? 'That code is wrong or too old. Send a new one' : /password/i.test(String(x?.message)) ? String(x.message) : 'Something went wrong. Try again'; }
+      finally { go.disabled = false; go.textContent = 'Save new password'; }
     };
   });
 }
