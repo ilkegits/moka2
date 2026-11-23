@@ -631,6 +631,13 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .g-more{position:absolute;top:0;right:4px;width:48px;height:56px;display:grid;place-items:center;color:var(--muted);transition:opacity .2s}
 .g-more svg.i{width:20px;height:20px}
 .g-more:active{opacity:.4;transition:none}
+/* v4.32: decks have the same ··· (in a .dw wrapper, so lines between rows are drawn on the rows inside) */
+.dw{position:relative}
+.dw > .deck{width:100%;padding-right:52px}
+.dn{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:top}
+.deck-title .dn{overflow:visible}
+.dw + .dw > .deck::before,.gw + .dw > .deck::before,.dw + .gw > .grp::before{content:"";position:absolute;top:0;right:0;left:18px;height:1px;transform:scaleY(.5);transform-origin:top;background:var(--line-2)}
+.g-in .dw > .deck::before{left:46px}
 @media (prefers-reduced-motion:reduce){.g-tw,.g-body{transition:none}}
 .sh-n{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 #hskHave{font-variant-numeric:tabular-nums}   /* UX 16: counts that tick up keep their width */
@@ -2958,6 +2965,13 @@ button.scene-tile:active svg{opacity:.92}
 /* UX 9: page changes made with startViewTransition (a deck opening): quick, and taps go straight through to the new page */
 ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation-duration:.25s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
 ::view-transition{pointer-events:none}
+/* v4.32: the deck's name travels and grows (or shrinks back) over .42 s; the page under it fades out fast and the new one rises in */
+::view-transition-group(deck-name){animation-duration:.42s;animation-timing-function:cubic-bezier(.3,.85,.25,1)}
+::view-transition-old(deck-name),::view-transition-new(deck-name){height:100%;animation-duration:.42s}
+::view-transition-old(root){animation:vtOut .15s ease-out both}
+::view-transition-new(root){animation:vtIn .3s .07s cubic-bezier(.2,.8,.2,1) both}
+@keyframes vtOut{to{opacity:0}}
+@keyframes vtIn{from{opacity:0;transform:translateY(10px)}}
 </style>
 </head>
 <body>
@@ -3156,10 +3170,12 @@ function route() {
 }
 function nav(h) { const d = (history.state?.d || 0) + 1; history.pushState({ d }, '', h); route(); window.scrollTo(0, 0); $('#app').scrollTop = 0; }
 function goBack(fallback) { if ((history.state?.d || 0) > 0) history.back(); else { history.replaceState({ d: 0 }, '', fallback); route(); } }
-/* UX 9: opening a deck, its name glides from the tile up into the page title, and back down on Back (View Transitions,
-   about 250 ms). Only for the app's own buttons: the phone's back swipe keeps its own animation. Off with reduced motion */
+/* UX 9: opening a deck, its name glides from the tile up into the page title, and back down on Back (View Transitions).
+   Only for the app's own buttons: the phone's back swipe keeps its own animation. Off with reduced motion.
+   v4.32: only the words move (.dn hugs them, in the row and in the title), so they grow from 17 px to the 40 px
+   title in one clear move while the rest of the page fades under them, instead of two pages cross-fading */
 function deckGlide(id, update) {
-  const pick = () => document.querySelector(`.deck[data-id="${CSS.escape(id)}"] .deck-name`) || document.querySelector('#app .deck-title');
+  const pick = () => document.querySelector(`.deck[data-id="${CSS.escape(id)}"] .dn`) || document.querySelector('#app .deck-title .dn');
   const old = document.startViewTransition && !stillMotion() && pick();
   if (!old) return update();
   old.style.viewTransitionName = 'deck-name';
@@ -10017,10 +10033,12 @@ function LastTile() {
   return deck && db.decks.length > 3 ? DeckTile(deck) : '';   // every deck is already listed above; repeat one only in a long list
 }
 /* v4.16: a deck in a list is one plain line, its name on the left and its card count on the far right
-   (ilkem: no flash-card picture, no progress bar) */
+   (ilkem: no flash-card picture, no progress bar). v4.32: a quiet ··· at the end, as on a group's line, opens its
+   options panel (Rename, Add to group, Delete deck). The name sits in its own .dn so deckGlide can lift just the words */
 function DeckTile(d) {
-  return `<button class="deck dl" data-act="open-deck" data-id="${d.id}" style="--accent:${d.accent}">
-    <span class="deck-name">${esc(d.name)}</span><span class="dl-n">${plural(d.cards.length, 'card')}</span></button>`;
+  return `<div class="dw"><button class="deck dl" data-act="open-deck" data-id="${d.id}" style="--accent:${d.accent}">
+    <span class="deck-name"><span class="dn">${esc(d.name)}</span></span><span class="dl-n">${plural(d.cards.length, 'card')}</span></button>
+    <button class="g-more" data-act="deck-side" data-id="${d.id}" aria-label="${esc(d.name)} options">${I.more}</button></div>`;
 }
 function dots(c) {
   const h = (c.hist || []).slice(-4);
@@ -10033,7 +10051,7 @@ function DeckView(d) {
   return `<div class="screen fade-in has-fab" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title"></div>
       <button class="icon-btn" data-act="deck-menu" aria-label="Deck options">${I.more}</button></header>
-    <section class="deck-hero"><div class="eyebrow">${g ? esc(g.name) : 'Deck'}</div><h1 class="deck-title">${esc(d.name)}</h1><div class="muted">${plural(n, 'card')}</div></section>
+    <section class="deck-hero"><div class="eyebrow">${g ? esc(g.name) : 'Deck'}</div><h1 class="deck-title"><span class="dn">${esc(d.name)}</span></h1><div class="muted">${plural(n, 'card')}</div></section>
     <div class="modes">
       <button class="mode" data-act="study" ${n ? '' : 'disabled'}><div class="mode-ic">${I.flip}</div><div><div class="mode-t">Flip cards</div><div class="mode-s">Turn &amp; review</div></div></button>
       <button class="mode" data-act="write" ${n ? '' : 'disabled'}><div class="mode-ic tz">${miniTZG('写')}</div><div><div class="mode-t">Write</div><div class="mode-s">English → hanzi</div></div></button>
@@ -10141,7 +10159,8 @@ function deckSide(d) {
     if (k === 'rename') { closeDlg(true); nameDialog('deck', d); }
     else if (k === 'group') { closeDlg(true); deckGroupSheet(d); }
     else { closeDlg(true);   // UX 5: goes at once, Undo on the toast
-      const i = db.decks.indexOf(d); db.decks.splice(i, 1); save(); LOG.add('deck-delete', { name: d.name }); history.replaceState({ d: 0 }, '', '#/'); route();
+      const i = db.decks.indexOf(d); db.decks.splice(i, 1); save(); LOG.add('deck-delete', { name: d.name });
+      if (S.view === 'deck') { history.replaceState({ d: 0 }, '', '#/'); route(); } else render();   // v4.32: from a ··· in a list, stay on that list
       undoToast('Deck deleted', () => { if (!db.decks.includes(d)) db.decks.splice(Math.min(i, db.decks.length), 0, d); save(); render(); }); }
   };
   root.offsetHeight; root.classList.add('open');
@@ -13384,6 +13403,7 @@ const A = {
   'decks-sheet': () => decksSheet(),
   'bank-word': t => wordSheet(t.dataset.id),
   'deck-menu': () => deckSide(curDeck()),
+  'deck-side': t => deckSide(db.decks.find(d => d.id === t.dataset.id)),
   'add-card': () => cardSheet(null),
   'edit-card': t => cardSheet(t.dataset.id),
   'settings': () => settingsSheet(),
