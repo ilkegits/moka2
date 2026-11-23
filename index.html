@@ -1682,6 +1682,39 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bk::before{content:"";order:1;width:100%;height:8px;background:#C98E55;box-shadow:inset 0 2px 0 #E2B37E,0 2px 0 #8A5A2E}
 .bk:nth-child(4n+1)::before{border-radius:4px 0 0 4px}
 .bk:nth-child(4n)::before{border-radius:0 4px 4px 0}
+/* v4.51 the reading card (读书卡): a white ticket with a stamp for every story you finish and a 利是 in the tenth spot */
+.rc{position:relative;margin:0 0 12px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px rgba(120,95,60,.08),0 1px 1px rgba(70,45,20,.04),0 14px 26px -16px rgba(120,60,20,.42)}
+.rc-head{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 18px}
+.rc-head h2{margin:0;display:flex;align-items:baseline;gap:7px;font-size:18px;font-weight:700;letter-spacing:-.015em;color:var(--ink)}
+.rc-head h2 span{font:600 18px var(--hanzi);color:var(--seal);letter-spacing:.06em}
+.rc-no{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rc-tear{position:relative;height:0;margin:0 14px;border-top:1.6px dashed var(--line-2)}
+.rc-tear::before,.rc-tear::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--paper)}
+.rc-tear::before{left:-25px;clip-path:inset(0 0 0 50%)}
+.rc-tear::after{right:-25px;clip-path:inset(0 50% 0 0)}
+.rc-body{padding:22px 18px 14px}
+.rc-row{display:flex;align-items:center;justify-content:space-between}
+.rc-s{position:relative;flex:none;width:26px;height:26px}
+.rc-s svg{display:block;width:100%;height:100%;overflow:visible}
+.rc-free{position:absolute;left:50%;top:-15px;transform:translateX(-50%);padding:1px 5px;border-radius:5px;background:var(--jade);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.04em;line-height:1.35;white-space:nowrap}
+.rc-prize{position:relative;flex:none;width:44px;margin:-6px -3px -6px 3px;padding:3px}
+.rc-prize::before{content:"";position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:radial-gradient(circle,rgba(246,196,69,.55),rgba(246,196,69,0) 68%);pointer-events:none}
+.rc-prize svg{position:relative;display:block;width:100%;height:auto;transform:rotate(-6deg);filter:drop-shadow(0 3px 3px rgba(120,30,10,.25))}
+.rc-prize.hot::before{width:84px;height:84px;margin:-42px 0 0 -42px;background:radial-gradient(circle,rgba(246,196,69,.8),rgba(246,196,69,0) 66%)}
+.rc-prize.hot svg{transform:rotate(8deg) scale(1.08);animation:rcWig 2.6s ease-in-out 1s infinite}
+@keyframes rcWig{0%,82%,100%{transform:rotate(8deg) scale(1.08)}86%{transform:rotate(-4deg) scale(1.1)}90%{transform:rotate(10deg) scale(1.1)}94%{transform:rotate(2deg) scale(1.09)}}
+@media (prefers-reduced-motion:reduce){.rc-prize.hot svg{animation:none}}
+.rc-bub{position:absolute;right:-3px;top:-21px;padding:2px 7px;border-radius:7px;background:var(--seal);color:#fff;font-size:11px;font-weight:800;line-height:1.35;white-space:nowrap;box-shadow:0 2px 0 #7E1512}
+.rc-bub::after{content:"";position:absolute;right:16px;bottom:-4px;width:8px;height:8px;background:var(--seal);transform:rotate(45deg)}
+.rc-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:13.5px;line-height:1.35;color:var(--ink-2)}
+.rc-foot b{font-weight:700;color:var(--ink)}
+.rc-foot .hz,.rc-left .hz{font-family:var(--hanzi)}
+.rc-left{flex:none;font-weight:700;color:var(--seal)}
+.rc-all{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin:0 0 18px;padding:0 4px;font-size:14px;font-weight:600;color:var(--ink-2);text-align:left}
+.rc-all span{display:flex;align-items:center;gap:2px;color:var(--muted);font-weight:500}
+.rc-all svg{width:16px;height:16px}
+.rc-bk{flex:none;width:28px}
+.rc-bk svg{display:block;width:100%;height:auto}
 .bk-name{order:2;margin-top:8px;padding:0 4px;font-size:11.5px;line-height:1.25;color:var(--ink-2);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .bk.off .bk-name{color:var(--muted)}
 .bk.now .bk-name{color:var(--seal);font-weight:700}
@@ -7658,29 +7691,62 @@ function shelfState() {
   const total = RL.T.length, found = RL.T.filter(t => n[t[0]]).length, gold = RL.T.filter(t => n[t[0]] > 1).length;
   return { n, total, found, gold, full: found === total };
 }
-/* the shelf: one book for each of the stories there are. Finished ones stand in colour (tap to read again), the story
-   you are on is named, the rest stay a secret. Once every story is found the shelf goes on: a story read again, with
-   new words, turns its book gold, and the count becomes how many are gold */
-function ShelfHtml() {
-  const by = {}; for (const s of db.readDone) (by[s.zh] ||= []).push(s);
-  const cur = db.readCur, { total, found: got, gold, full } = shelfState();
-  const book = (t, i) => {
-    const L = by[t[0]], on = !!L, now = !on && cur?.zh === t[0];
-    return `<button class="bk${on ? '' : ' off'}${now ? ' now' : ''}"${on ? ` data-act="shelf-open" data-zh="${esc(t[0])}"` : now ? ' data-act="shelf-now"' : ' disabled'} aria-label="${on ? `${esc(t[1])}, read ${L.length === 1 ? 'once' : L.length === 2 ? 'twice, a gold book' : L.length + ' times, a gold book'}` : now ? `${esc(t[1])}, the story you are on` : 'A story you have not found yet'}">
-      <span class="bk-art">${bookArt(on || now ? t[0] : '', i, on, on && L.length > 1)}${on && L.length > 2 ? `<em>${L.length}</em>` : ''}</span>
-      <span class="bk-name">${on ? esc(t[1]) : now ? (cur.opened ? 'Reading now' : 'Up next') : ''}</span></button>`;
-  };
-  const other = db.readDone.filter(s => !RL.T.some(t => t[0] === s.zh));   // stories from before a title changed
-  return `<div class="section-head cal-head"><h2>Your shelf <span class="cal-zh">书架</span></h2><span class="sh-n">${full ? `${gold} of ${total} gold` : `${got} of ${total}`}</span></div>
-    <p class="read-note">${!got ? 'Every story you finish becomes a book on your shelf, to read again any time.'
-      : !full ? `${plural(total - got, 'story').replace('storys', 'stories')} still to find. Tap a book to read it again.`
-      : gold < total ? `All ${total} stories found. Read one again, with new words, and its book turns gold.`
-      : 'A golden shelf: every story read twice. Tap a book to read it again.'}</p>
-    <div class="rd-shelf">${RL.T.map(book).join('')}</div>
-    ${other.length ? `<div class="section-head"><h2>More finished stories</h2></div>
-      <div class="group" style="margin-bottom:26px">${other.map(s => `<button class="row" data-act="read-open" data-id="${s.id}">
+/* v4.51 the reading card (读书卡), in place of the shelf of 20 books, which filled up and then had nothing more to give.
+   Every story you finish stamps the card, a story read again in gold ink. A card has ten spots: the first stamp comes free
+   (a new card is never empty), nine stories fill the rest, and the tenth spot is a 利是 that the card's last story opens:
+   RC_PAY coins (db.rc.open = { card number: { t, n } }). Then the next card starts. Stories count from db.rc.from, the
+   first time the card was on screen, so everyone starts on card No. 1 */
+const RC_N = 10, RC_PAY = 50;
+function rcState() {
+  const rc = db.rc ||= {};
+  if (!rc.from) { rc.from = Date.now(); save(); }
+  const per = RC_N - 1, L = db.readDone.filter(s => s.done > rc.from).sort((a, b) => a.done - b.done);
+  const full = Math.floor(L.length / per), opened = Object.keys(rc.open || {}).length;
+  const ready = full > opened, card = ready ? opened : full;   // a full card stays on screen until its 利是 is opened
+  const mine = L.slice(card * per, card * per + per);
+  return { no: card + 1, n: mine.length, ready, gold: mine.map(s => db.readDone.some(o => o.zh === s.zh && o.done < s.done)) };
+}
+const RC_ROT = [-8, 6, -3, 9, -6, 4, -10, 7, -4], RC_OP = [.95, .9, .97, .92, .96, .89, .94, .93, .91];
+function ReadCard() {
+  const { no, n, ready, gold } = rcState(), cur = db.readCur, stamps = ready ? RC_N : 1 + n, left = RC_N - stamps;
+  const seal = k => { const c = k && gold[k - 1] ? '#C98A1E' : '#B5281E';   // the first, free stamp is never gold
+    return `<svg viewBox="0 0 40 40" style="transform:rotate(${RC_ROT[k]}deg);opacity:${RC_OP[k]}"><circle cx="20" cy="20" r="19.2" fill="${c}"/><circle cx="20" cy="20" r="15.6" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.3"/><text x="20" y="21" text-anchor="middle" dominant-baseline="central" font-family="'Noto Serif SC',serif" font-weight="900" font-size="18" fill="#fff">读</text></svg>`; };
+  const ch = coverChars(cur)[0] || '';   // the next spot shows, faintly, the stamp today's story will give
+  const next = `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18.4" fill="rgba(178,58,44,.07)" stroke="#B23A2C" stroke-width="1.8" stroke-dasharray="3.2 3"/>${ch ? `<text x="20" y="21" text-anchor="middle" dominant-baseline="central" font-family="'Noto Serif SC',serif" font-weight="900" font-size="17" fill="#B23A2C" fill-opacity=".32">${esc(ch)}</text>` : ''}</svg>`;
+  const empty = '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18.4" fill="none" stroke="#D9CDB9" stroke-width="1.6" stroke-dasharray="3.2 3"/></svg>';
+  const spots = Array.from({ length: RC_N - 1 }, (_, k) => `<span class="rc-s">${k < stamps ? seal(k) : k === stamps ? next : empty}${!k && !n && !ready ? '<span class="rc-free">FREE</span>' : ''}</span>`).join('');
+  const lsh = '<span class="hz" lang="zh">利是</span>', hot = ready || left === 1;
+  const say = ready ? `Your ${lsh} is ready. Tap it to open it` : !n ? 'Your first stamp is free'
+    : left === 1 ? `The next story opens your ${lsh}` : cur ? `Finish <b class="hz" lang="zh">${esc(cur.zh)}</b> for stamp ${stamps + 1}` : `Finish a story for stamp ${stamps + 1}`;
+  const all = new Set(db.readDone.map(s => s.zh)).size;
+  return `<section class="rc" aria-label="Reading card number ${no}: ${stamps} of ${RC_N} stamps${ready ? ', the red envelope is ready to open' : `, ${plural(left, 'story').replace('storys', 'stories')} to the red envelope`}">
+      <div class="rc-head"><h2>Reading card <span lang="zh">读书卡</span></h2><span class="rc-no">No. ${no}</span></div>
+      <div class="rc-tear"></div>
+      <div class="rc-body">
+        <div class="rc-row">${spots}<button class="rc-prize${hot ? ' hot' : ''}" data-act="rc-open" aria-label="${ready ? 'Open your red envelope' : `Red envelope, ${RC_PAY} coins. ${plural(left, 'more story').replace('storys', 'stories')} to open it`}">${lxFlat('fu')}${hot ? `<span class="rc-bub">${ready ? 'Open!' : '1 more!'}</span>` : ''}</button></div>
+        <div class="rc-foot"><span>${say}</span><span class="rc-left">${ready ? '' : left === 1 ? '1 to go' : `${left} to ${lsh}`}</span></div>
+      </div>
+    </section>
+    ${all ? `<button class="rc-all" data-act="rc-all">All your stories<span>${all} read${I.chev}</span></button>` : ''}`;
+}
+/* the 利是 of a full card: the full-screen opening, from the envelope on the card when it is on screen */
+function rcOpen(then) {
+  const st = rcState(); if (!st.ready || $('.lxo')) { then?.(); return; }
+  (db.rc.open ||= {})[st.no] = { t: Date.now(), n: RC_PAY };
+  if (db.coinShown != null) db.coinShown += RC_PAY;   // shown here, so not poured into the bag again at the next payoff
+  save(); LOG.add('lixi', { card: st.no, n: RC_PAY, bal: coinBal(), from: 'reading-card' });
+  const el = $('.rc-prize svg'), r = el?.getBoundingClientRect(), seen = r && r.bottom > 0 && r.top < innerHeight;
+  lxShow('fu', RC_PAY, seen ? el : null, () => { render(); then?.(); });
+}
+/* every story you finished, newest first, once each; tap one to read it again (or to pick which time, when you read it more often) */
+function storiesSheet() {
+  const by = new Map(); for (const s of db.readDone) { const e = by.get(s.zh); if (e) e.n++; else by.set(s.zh, { s, n: 1 }); }
+  openSheet(`<h3>All your stories <span class="cal-zh">书架</span></h3>
+    <p class="muted" style="margin:-8px 0 16px;text-align:center">${plural(by.size, 'story').replace('storys', 'stories')} read. Tap one to read it again.</p>
+    <div class="group">${[...by.values()].map(({ s, n }) => { const i = Math.max(0, RL.T.findIndex(t => t[0] === s.zh));
+      return `<button class="row" data-act="shelf-open" data-zh="${esc(s.zh)}"><span class="rc-bk">${bookArt(s.zh, i, true, n > 1)}</span>
         <span class="row-main"><span class="row-t"><span class="read-row-zh">${esc(s.zh)}</span> ${esc(s.en)}</span>
-        <span class="row-s">finished ${shortDate(s.done)}</span></span><span class="chev">${I.chev}</span></button>`).join('')}</div>` : ''}`;
+        <span class="row-s">${n > 1 ? `read ${n} times · last ` : ''}${shortDate(s.done)}</span></span><span class="chev">${I.chev}</span></button>`; }).join('')}</div>`);
 }
 function shelfOpen(zh) {   // a book on the shelf: the story, or the list of the times you read it (each time with other words)
   const L = db.readDone.filter(s => s.zh === zh); if (!L.length) return;
@@ -7710,7 +7776,7 @@ function ReadView() {
         ${db.bank.length ? '<p class="read-note">Tap a word to see what it means. <u>Underlined</u> words are new: not in your word bank yet.</p>' : empty}
         ${StoryCard(s, '<button class="btn btn-seal wide story-done" data-act="read-finish">I finished this story</button>')}`
       : StoryCover(s, st, readToday) + (db.bank.length ? '' : empty)}
-    ${ShelfHtml()}
+    ${ReadCard()}
   </div>`;
 }
 /* the cover picture: Shi Shi reading by lantern light; words of yours that are in the story float around him.
@@ -7874,7 +7940,7 @@ function momentRead(s, added, was, isNew, pay) {
       : isNew ? `${plural(total - got, 'story').replace('storys', 'stories')} still to find for your shelf.`
       : toGold ? `${en} turned gold.` : `${en} is back on your shelf.`}</p>
     ${kept ? weekDots(n) : ''}
-    <div class="ob-sigs">${chip('Word bank', added ? `+${plural(added, 'word')}` : 'No new words')}${chip('Your shelf', full ? `${gold} of ${total} gold` : `${got} of ${total}`)}</div>
+    <div class="ob-sigs">${chip('Word bank', added ? `+${plural(added, 'word')}` : 'No new words')}${chip('Reading card', (rc => `${rc.ready ? RC_N : 1 + rc.n} of ${RC_N}`)(rcState()))}</div>
     ${pay ? payRow(pay) : ''}
     ${moDock('Continue', 'read-done-ok')}`, 'mo');
   if (pay) setTimeout(() => coinRain($('#ob'), pay), 700);
@@ -8821,7 +8887,8 @@ function coinEarned() {
   const les = Object.values(db.lessons || {}).filter(r => r?.done > from).length, unit = Object.values(db.utests || {}).filter(r => r?.pass > from).length;
   const story = new Set((db.readDone || []).filter(x => x.done > from).map(x => x.zh)).size;
   const chest = (db.chests || []).reduce((a, c) => a + (c.t > from ? c.n : 0), 0);   // the daily chest (chestTap)
-  return pv.length * PAY.word + pv.filter(w => w.pf.m).length * PAY.mast + les * PAY.les + story * PAY.story + unit * PAY.unit + chest;
+  const lixi = Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.t > from ? x.n : 0), 0);   // v4.51: the reading card's 利是 (rcOpen)
+  return pv.length * PAY.word + pv.filter(w => w.pf.m).length * PAY.mast + les * PAY.les + story * PAY.story + unit * PAY.unit + chest + lixi;
 }
 const coinSpent = () => Object.keys(db.monOwn || {}).reduce((a, lv) => a + (TRAIL[lv - 1]?.price || 0), 0);
 const coinBal = () => Math.max(0, coinEarned() + (db.coinAdj || 0) - coinSpent());
@@ -13826,7 +13893,9 @@ const A = {
   'read-back': () => goBack('#/read'),
   'shelf-open': t => shelfOpen(t.dataset.zh),
   'shelf-now': () => { $('#app').scrollTo({ top: 0, behavior: 'smooth' }); window.scrollTo({ top: 0, behavior: 'smooth' }); },
-  'read-done-ok': () => closeLayer(() => { riffleBook(S.readFrom); S.readFrom = null; moments(); }),
+  'read-done-ok': () => closeLayer(() => { riffleBook(S.readFrom); S.readFrom = null; if (rcState().ready) setTimeout(() => rcOpen(moments), stillMotion() ? 0 : 700); else moments(); }),
+  'rc-open': () => { const st = rcState(); if (st.ready) rcOpen(moments); else { const left = RC_N - 1 - st.n; toast(`${plural(left, 'more story').replace('storys', 'stories')} to open your 利是`); } },
+  'rc-all': () => storiesSheet(),
   'rec-note': () => noteSheet(),
   'close-sheet': () => closeSheet(),
   'tab': t => { haptic(8); if (location.hash === t.dataset.h || (t.dataset.h === '#/' && S.view === 'home')) { $('#app').scrollTo({ top: 0, behavior: 'smooth' }); window.scrollTo({ top: 0, behavior: 'smooth' }); return; } S.instant = true; nav(t.dataset.h); },
