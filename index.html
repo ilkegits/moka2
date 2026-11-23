@@ -2423,6 +2423,49 @@ button.st-d:active{transform:scale(.9);transition:none}
 .les-end-box{width:100%;margin-top:22px;padding:16px;border-radius:18px;background:var(--card);box-shadow:var(--ring);text-align:left}
 .les-end-box > b{display:block;margin-bottom:12px;font-size:16.5px;color:var(--jade)}
 .les-end-box > small{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
+/* moka2: the mahjong tiles from the real app (v4.15-v4.30), used by the end of a deck round */
+.le2-burst{position:absolute;z-index:-1;left:50%;top:-30px;width:820px;height:820px;margin-left:-410px;pointer-events:none;background:repeating-conic-gradient(from 0deg,#FFDC8C 0deg 9deg,transparent 9deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 10%,transparent 46%);mask-image:radial-gradient(circle,#000 10%,transparent 46%);opacity:.9}
+.lt-row{display:flex;gap:18px;justify-content:center;margin:40px 0 0}
+.lt{position:relative;width:96px;height:128px;--rx:20deg}
+.lt0{transform:rotate(-4deg);--ry:-30deg} .lt1{transform:translateY(-10px);--ry:0deg} .lt2{transform:rotate(4deg);--ry:30deg}
+.lt-sh{position:absolute;left:6px;right:6px;bottom:-26px;height:22px;border-radius:50%;background:rgba(110,60,0,.26);filter:blur(7px)}
+.lt-deal{position:relative;width:100%;height:100%;perspective:520px;animation:ltDeal .5s cubic-bezier(.3,.7,.3,1) calc(.25s + var(--i) * .12s) backwards}
+.lt-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(var(--rx)) rotateY(var(--ry));animation:ltFlip .75s cubic-bezier(.3,.7,.3,1) calc(1.05s + var(--i) * .32s) backwards}   /* v4.30 backwards, not both: a held last frame kept the low-detail picture Chrome drew while the tile was edge-on, so tiles came out pixely; once the animation lets go Chrome redraws them sharp */
+.lt-in > i{position:absolute;inset:0;border-radius:13px;background:#DCCBA6}
+.lt-in > i.g{background:#075E48}
+/* v4.30 the faces are drawn three times as big and shrunk back down, so their text and edges stay sharp: with 3D depth on, Chrome can draw a turned tile at low detail and the face came out pixely */
+.lt-f{position:absolute;left:-96px;top:-128px;width:288px;height:384px;scale:calc(1/3) calc(1/3);border-radius:39px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.lt-front{transform:translateZ(19px);background:linear-gradient(#FFFDF6,#F3EAD5);box-shadow:inset 0 0 0 4.5px #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.lt-front b{font:900 126px/144px var(--hanzi)}
+.lt-front strong{font-size:75px;line-height:81px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.lt-front small{font-size:30px;line-height:36px;font-weight:800;letter-spacing:.1em;color:#6B5A45}
+.lt-back{transform:rotateY(180deg) translateZ(19px);background:#0B7F62;box-shadow:inset 0 0 0 18px #0B7F62,inset 0 0 0 24px #5FBF9C}
+.lt-caps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;max-width:340px;margin:30px auto 0;font-size:12.5px;line-height:16px;font-weight:600;color:#6B5A45}
+.lt-caps span{animation:ltCap .4s ease-out calc(1.6s + var(--i) * .32s) both}
+.le2-notes{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:26px}
+.le2-note{display:flex;align-items:center;gap:8px;margin:0;font-size:15px;font-weight:600;color:var(--ink-2)}
+.le2-note .le-new{width:26px;height:26px;border-radius:7px;font-size:14px}
+.le2-hrt svg.hrt{width:24px;height:24px}
+.le2-fl{display:flex;width:20px;height:20px}
+.le2-fl .flame{width:100%;height:100%}
+/* v4.28 the end of a flip round wears the same sunburst and tiles */
+body:has(.fe2){background:#FFF1D0}
+.fe2{position:relative;isolation:isolate;overflow-x:clip;margin:0 -20px;padding-left:20px;padding-right:20px}
+.fe2 .done-hero{isolation:isolate}
+.fe2 .le2-burst{top:-90px}
+.fe2 .done-shi{margin-top:6px}
+.fe2-deck{margin:6px 0 0;font-size:14px;font-weight:600;color:#6B5A45}
+.fe2 .lt-row{margin-top:34px}
+.fe2 .lt-caps{max-width:350px;gap:8px;text-align:center}
+.fe2 > .bar{background:transparent;box-shadow:none}
+.fe2 .le2-notes{margin-bottom:8px}
+.fe2-ok{display:flex;width:20px;height:20px;border-radius:50%;background:var(--jade);color:#fff;align-items:center;justify-content:center}
+.fe2-ok svg{width:13px;height:13px}
+.fe2-tmr{color:#6B5A45!important;font-weight:500!important}
+.fe2 .dock{background:linear-gradient(transparent,#FFF1D0 32%)}
+@keyframes ltDeal{from{opacity:0;transform:translateY(-40px) scale(.9)}}
+@keyframes ltFlip{0%{transform:rotateX(var(--rx)) rotateY(calc(180deg + var(--ry)))}70%{transform:rotateX(var(--rx)) rotateY(calc(var(--ry) - 14deg)) translateZ(16px)}100%{transform:rotateX(var(--rx)) rotateY(var(--ry))}}
+@keyframes ltCap{from{opacity:0;transform:translateY(6px)}}
 /* 3 or more in a row: a flame and the run count beside the points */
 .les-fire{flex:none;display:inline-flex;align-items:center;gap:1px;height:32px;padding:0 9px 0 4px;border-radius:9px;background:color-mix(in srgb,#FF7A1A 15%,var(--card));color:#D9480F;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
 .les-fire .flame{width:24px;height:24px;transform-origin:50% 92%;animation:fireFlick 1.2s ease-in-out infinite}
@@ -10333,8 +10376,8 @@ function dueBy(t) {   // how many different words are waiting by time t
 function startStudy() {
   const d = curDeck();
   const ids = d.cards.map(c => c.id), base = ids.join();
-  if (!S.study || S.study.deckId !== d.id || S.study.base !== base || S.study.done)
-    S.study = { deckId: d.id, base, order: ids, i: 0, shuffled: false, angle: 0, hinted: false, flipped: false, graded: {}, fresh: [], done: false };
+  // v4.10: opening the cards always starts from the first one, never where you left off
+  S.study = { deckId: d.id, base, order: ids, i: 0, shuffled: false, angle: 0, hinted: false, flipped: false, graded: {}, fresh: [], done: false, t0: Date.now() };
 }
 const startAngle = () => db.prefs.englishFirst ? 180 : 0;
 function hzSize(n) { return [0, 96, 92, 84, 68][n] || Math.max(34, Math.min(60, Math.floor(280 / n))); }   // close to one size; shrinks only where a long word wouldn't fit
@@ -10397,31 +10440,43 @@ function gradeFlip(g) {
 function finishFlip() {
   const st = S.study, ids = Object.keys(st.graded);
   st.done = true; noteRound(curDeck());
+  { // v4.28: how long this round took, kept per deck: the total, the rounds, and time per card for the last 20 rounds
+    const steps = Math.max(1, st.order.length), ms = Math.min(Date.now() - (st.t0 || Date.now()), steps * 6e4), pace = ms / steps;
+    const T = (db.deckTime ||= {})[st.deckId] ||= { ms: 0, n: 0, pace: [] }, past = T.pace;
+    st.tm = { ms, avg: past.length ? past.reduce((a, b) => a + b, 0) / past.length * steps : 0, best: past.length >= 3 && pace < Math.min(...past), all: T.ms + ms };
+    T.ms += Math.round(ms); T.n++; T.pace = [...past, Math.round(pace)].slice(-20); save(); }
   LOG.add('flip-round', { remembered: ids.filter(id => st.graded[id] > 0).length, of: ids.length, new: st.fresh.length });
   render(); window.scrollTo(0, 0); $('#app').scrollTop = 0;
   try { navigator.vibrate?.([10, 70, 16]); } catch (_) {}
 }
-/* the end of a flip round: Shi Shi cheers, what you remembered, the new words and what is waiting tomorrow */
+const lesClock = ms => { const t = Math.round(ms / 1e3); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+function lesTile(i, ch, col, val, lab) {   // a tile 38px deep: 1px slices, ivory at the front and jade at the back, so its sides show and stay solid as it turns
+  let sl = ''; for (let k = 1; k < 38; k++) sl += `<i${k < 16 ? ' class="g"' : ''} style="transform:translateZ(${k - 19}px)"></i>`;
+  return `<div class="lt lt${i}" style="--i:${i}"><span class="lt-sh"></span><div class="lt-deal"><div class="lt-in">${sl}
+    <div class="lt-f lt-front"><b lang="zh" style="color:${col}">${ch}</b><strong>${val}</strong><small>${lab}</small></div><div class="lt-f lt-back"></div></div></div></div>`;
+}
 function StudySummary(d) {
   const st = S.study, ids = Object.keys(st.graded), n = ids.length, ok = ids.filter(id => st.graded[id] > 0).length;
   const fresh = st.fresh.map(id => cardById(d, id)).filter(c => c && st.graded[c.id] > 0);
-  const pct = n ? ok / n : 0, { n: streak } = practiceStreak(), tmr = dueBy(dayStart(Date.now(), 2));
+  const pct = n ? Math.round(ok / n * 100) : 0, { n: streak } = practiceStreak(), tmr = dueBy(dayStart(Date.now(), 2));
   if (!('pay' in st)) st.pay = takePay(); const P = st.pay;   // words proven in this round: their coins, once
-  const [hz, py, en] = pct === 1 ? ['太棒了！', 'tài bàng le', 'Great job!'] : pct >= .7 ? ['很好！', 'hěn hǎo', 'Well done!'] : ['加油！', 'jiā yóu', 'Keep going!'];
-  const tm = new Date(dayStart(Date.now(), 1));
-  const bits = Array.from({ length: 22 }, (_, i) => `<i style="--x:${(i % 2 ? 1 : -1) * (40 + (i * 37) % 120)}px;--y:${-(60 + (i * 53) % 110)}px;--r:${(i * 97) % 360}deg;--d:${(i % 7) * 40}ms;background:${['#E5483F', '#FFD15C', '#3F7A5F', '#E8742C', '#B23A2C'][i % 5]}"></i>`).join('');
-  return `<div class="screen fade-in" style="--accent:${d.accent}">
+  const [hz, py, en] = pct === 100 ? ['太棒了！', 'tài bàng le', 'Great job!'] : pct >= 70 ? ['很好！', 'hěn hǎo', 'Well done!'] : ['加油！', 'jiā yóu', 'Keep going!'];
+  const g = pct >= 100 ? ['完', 'PERFECT'] : pct >= 90 ? ['好', 'GREAT'] : pct >= 75 ? ['行', 'NICE'] : ['加', 'KEEP GOING'];
+  const T = st.tm || { ms: Date.now() - (st.t0 || Date.now()) }, r = T.avg ? T.ms / T.avg : 0;
+  const t = !T.avg ? ['时', 'TIME'] : r <= .75 ? ['飞', 'BLAZING'] : r <= 1 ? ['快', 'QUICK'] : ['稳', 'STEADY'];
+  const nf = fresh.length, tiles = lesTile(0, '新', '#C8241E', nf, nf === 1 ? 'NEW WORD' : 'NEW WORDS') + lesTile(1, g[0], '#0B7F62', `${pct}%`, g[1]) + lesTile(2, t[0], '#6A33CC', lesClock(T.ms), t[1]);
+  const caps = [nf ? 'First time seen' : 'All reviews', `${ok} of ${n} remembered`, !T.avg ? 'Your first timed round' : T.best ? 'New best!' : `Your avg ${lesClock(T.avg)}`]
+    .map((c, i) => `<span style="--i:${i}">${c}</span>`).join('');
+  const { min, goal } = goalToday(), tm = new Date(dayStart(Date.now(), 1)), day = tm.toLocaleDateString('en-GB', { weekday: 'long' });
+  const notes = [streak && `<p class="le2-note"><span class="le2-fl on">${FLAME}</span>${streak}-day streak</p>`,
+    goal && min >= goal && `<p class="le2-note"><span class="fe2-ok">${I.check}</span>Daily goal reached</p>`,
+    `<p class="le2-note fe2-tmr">${tmr ? `${day}: ${plural(tmr, 'card')} waiting` : 'Nothing due tomorrow'}</p>`].filter(Boolean).join('');
+  return `<div class="screen fade-in fe2" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="study-done" aria-label="Close">${I.close}</button><div class="bar-title"></div><span style="width:42px"></span></header>
-    <section class="done-hero"><div class="done-burst" aria-hidden="true">${bits}</div><div class="done-shi${P ? ' bag' : ''}">${P ? bagShi('cheer') : shiFace('cheer')}</div>
-      <h2>${hz}</h2><div class="done-py">${py} · ${en}</div>${P ? payLine(P) : ''}</section>
-    <div class="done-stats">
-      <div><b>${ok}/${n}</b><span>remembered</span></div>
-      <div><b>${fresh.length}</b><span>${fresh.length === 1 ? 'new word' : 'new words'}</span></div>
-      <div class="fl"><b>${streak}</b><span>day streak</span></div></div>
-    ${db.prefs.goalMin ? `<div class="done-goal">${GoalRow()}</div>` : ''}
-    ${fresh.length ? `<div class="done-words">${fresh.slice(0, 8).map(c => `<span>${esc(c.hanzi)}</span>`).join('')}</div>` : ''}
-    <div class="done-next"><span class="done-cal"><small>${tm.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase()}</small>${tm.getDate()}</span>
-      <span><b>${tmr ? `Tomorrow: ${plural(tmr, 'card')}` : 'Nothing due tomorrow'}</b><small>${tmr ? 'Shi Shi will be waiting' : 'Add new words to keep growing'}</small></span></div>
+    <section class="done-hero"><span class="le2-burst" aria-hidden="true"></span><div class="done-shi${P ? ' bag' : ''}">${P ? bagShi('cheer') : shiFace('cheer')}</div>
+      <h2>${hz}</h2><div class="done-py">${py} · ${en}</div>${P ? payLine(P) : ''}<p class="fe2-deck">${esc(d.name)}</p></section>
+    <div class="lt-row" role="img" aria-label="${plural(nf, 'new word')}, ${ok} of ${n} remembered, time ${lesClock(T.ms)}">${tiles}</div><div class="lt-caps">${caps}</div>
+    <div class="le2-notes">${notes}</div>
     <div class="dock row-btns"><button class="btn btn-ghost" data-act="study-again">Again</button><button class="btn btn-primary" data-act="study-done">Done</button></div>
   </div>`;
 }
