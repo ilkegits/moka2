@@ -543,13 +543,9 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .fl input:focus{border-color:var(--seal);box-shadow:0 0 0 4px var(--seal-soft)}
 .fl input:focus + span,.fl input:not(:placeholder-shown) + span{transform:translateY(-10px) scale(.74);color:var(--seal)}
 .fl input:not(:focus):not(:placeholder-shown) + span{color:var(--muted)}
-.dlg-sw{display:flex;gap:12px;margin:16px 4px 4px}
-.dlg-sw .sw{width:24px;height:24px}
-.dlg-sw .sw.on{box-shadow:0 0 0 2.5px var(--paper),0 0 0 4.5px var(--c)}
 .dlg-act{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:16px}
 .dlg-act button{height:44px;padding:0 15px;border-radius:12px;font:600 16px/1 var(--display)}
 .dlg-x{color:var(--ink-2)}
-.dlg-del{margin-right:auto;color:var(--seal);padding-left:4px!important}
 .dlg-ok{min-width:96px;background:var(--ink);color:var(--paper);transition:background .2s,color .2s}
 .dlg-ok:disabled{opacity:1;background:var(--fill);color:var(--muted)}
 .dlg-ok:not(:disabled):active{opacity:.75}
@@ -623,7 +619,12 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .g-in .deck.dl{padding-left:46px}
 .g-in .deck::before,.g-in .deck + .deck::before{content:"";position:absolute;top:0;right:0;left:46px;height:1px;transform:scaleY(.5);transform-origin:top;background:var(--line-2)}
 .g-none{margin:0;padding:14px 18px 2px 46px;font-size:15px;color:var(--muted)}
-.g-edit{align-self:flex-start;margin:2px 0 8px 36px;padding:10px;font-size:15px;font-weight:600;color:var(--seal)}
+/* v4.23: no Edit group button; a quiet ··· at the end of the group's line opens its options panel */
+.gw{position:relative}
+.gw > .grp{padding-right:52px}
+.g-more{position:absolute;top:0;right:4px;width:48px;height:56px;display:grid;place-items:center;color:var(--muted);transition:opacity .2s}
+.g-more svg.i{width:20px;height:20px}
+.g-more:active{opacity:.4;transition:none}
 @media (prefers-reduced-motion:reduce){.g-tw,.g-body{transition:none}}
 .sh-n{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 #hskHave{font-variant-numeric:tabular-nums}   /* UX 16: counts that tick up keep their width */
@@ -10040,15 +10041,15 @@ const groupById = id => id ? (db.groups || []).find(g => g.id === id) : null;
 const curGroup = () => groupById(S.groupId);
 const groupDecks = g => db.decks.filter(d => d.group === g.id);
 /* v4.18: on Decks a group folds open in place: tap its line and its decks unfold under it, tap again and they fold
-   away. Which groups are open is kept in db.grpOpen, so one stays open when you come back from a deck. Edit group,
-   last in the open list, goes to the group's own page (add decks, rename, delete). */
+   away. Which groups are open is kept in db.grpOpen, so one stays open when you come back from a deck.
+   v4.23: the ··· at the end of the group's line opens its options panel (Add decks, New deck, Rename, Delete group). */
 function GroupTile(g) {
   const ds = groupDecks(g), open = !!db.grpOpen?.[g.id];
   return `<div class="gw${open ? ' open' : ''}" data-gid="${g.id}">
     <button class="deck grp dl" data-act="toggle-group" data-id="${g.id}" aria-expanded="${open}" style="--accent:${g.accent}">
       <span class="g-tw" aria-hidden="true">${I.chev}</span><span class="deck-name">${esc(g.name)}</span><span class="dl-n">${plural(ds.length, 'deck')}</span></button>
-    <div class="g-body"${open ? '' : ' inert'}><div class="g-in">${ds.map(DeckTile).join('') || '<p class="g-none">No decks in this group yet</p>'}
-      <button class="g-edit" data-act="open-group" data-id="${g.id}">Edit group</button></div></div></div>`;
+    <button class="g-more" data-act="group-side" data-id="${g.id}" aria-label="${esc(g.name)} options">${I.more}</button>
+    <div class="g-body"${open ? '' : ' inert'}><div class="g-in">${ds.map(DeckTile).join('') || '<p class="g-none">No decks in this group yet</p>'}</div></div></div>`;
 }
 function groupToggle(id) {
   const w = document.querySelector(`.gw[data-gid="${CSS.escape(id)}"]`); if (!w) return;
@@ -10087,42 +10088,30 @@ function closeDlg(instant) {
   root.classList.remove('open');
   if (instant) root.innerHTML = ''; else setTimeout(() => { if (!root.classList.contains('open')) root.innerHTML = ''; }, 280);
 }
-/* Create deck / Create group (and Edit group): a card in the middle, like Anki's, with the keyboard up at once.
+/* Create deck / Create group (and Rename): a card in the middle, like Anki's, with the keyboard up at once.
    Create stays grey until there is a name. A new deck opens straight away, with Add in the corner; a new group opens empty */
-function nameDialog(kind, it, forDeck) {   // v4.20: it = a deck to rename (no colours); forDeck = put that deck in the new group
+function nameDialog(kind, it, forDeck, inGroup) {   // it = a deck or group to rename (no colours); forDeck = put that deck in the new group; inGroup = make the new deck there
   const grp = kind === 'group', list = grp ? db.groups || [] : db.decks;
-  let accent = it?.accent || ACCENTS[list.length % ACCENTS.length];
-  const title = it ? grp ? 'Edit group' : 'Rename deck' : grp ? 'Create group' : 'Create deck', root = $('#dlg-root'), eg = it && grp;
+  const accent = it?.accent || ACCENTS[list.length % ACCENTS.length];
+  const title = it ? grp ? 'Rename group' : 'Rename deck' : grp ? 'Create group' : 'Create deck', root = $('#dlg-root');
   root.innerHTML = `<div class="dlg-scrim"></div><div class="dlg-wrap"><form class="dlg" role="dialog" aria-modal="true" aria-label="${title}" novalidate>
     <div class="dlg-top"><h3>${title}</h3></div>
     <label class="fl"><input id="dlgName" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder=" " value="${esc(it?.name || '')}"><span>Name</span></label>
-    ${eg ? `<div class="dlg-sw">${ACCENTS.map(c => `<button type="button" class="sw ${c === accent ? 'on' : ''}" style="--c:${c}" data-c="${c}" aria-label="Colour"></button>`).join('')}</div>` : ''}
-    <div class="dlg-act">${eg ? '<button type="button" class="dlg-del">Delete</button>' : ''}<button type="button" class="dlg-x">Cancel</button><button type="submit" class="dlg-ok">${it ? 'Save' : 'Create'}</button></div>
+    <div class="dlg-act"><button type="button" class="dlg-x">Cancel</button><button type="submit" class="dlg-ok">${it ? 'Save' : 'Create'}</button></div>
   </form></div>`;
-  const f = root.querySelector('.dlg'), inp = f.querySelector('#dlgName'), ok = f.querySelector('.dlg-ok');   // v3.63: the colour is picked later (Edit), not while naming
+  const f = root.querySelector('.dlg'), inp = f.querySelector('#dlgName'), ok = f.querySelector('.dlg-ok');
   const paint = () => { ok.disabled = !inp.value.trim(); };
-  f.querySelectorAll('.sw').forEach(b => {
-    b.addEventListener('pointerdown', e => e.preventDefault());   // picking a colour keeps the keyboard up
-    b.onclick = () => { accent = b.dataset.c; f.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
-  });
   ok.addEventListener('pointerdown', e => e.preventDefault());
   inp.oninput = paint; paint();
   f.querySelector('.dlg-x').onclick = () => closeDlg(); root.querySelector('.dlg-scrim').onclick = () => closeDlg();
-  f.querySelector('.dlg-del')?.addEventListener('click', () => { closeDlg();   // UX 5: goes at once (its decks move back to Your decks), Undo on the toast
-    const gi = db.groups.indexOf(it), moved = db.decks.filter(d => d.group === it.id);
-    moved.forEach(d => delete d.group); db.groups.splice(gi, 1); save();
-    LOG.add('group-delete', { name: it.name }); history.replaceState({ d: 0 }, '', '#/'); route();
-    undoToast('Group deleted', () => {
-      db.groups ||= []; if (!db.groups.includes(it)) db.groups.splice(Math.min(gi, db.groups.length), 0, it);
-      moved.forEach(d => { if (db.decks.includes(d) && !d.group) d.group = it.id; }); save(); render(); }); });
   f.onsubmit = e => {
     e.preventDefault(); const name = inp.value.trim(); if (!name) { inp.focus(); return; }
-    if (it) { it.name = name; if (grp) it.accent = accent; save(); closeDlg(); render(); return; }
+    if (it) { it.name = name; save(); closeDlg(); render(); return; }
     closeDlg(true);
     if (grp && forDeck) { const g = { id: uid(), name, accent, created: Date.now() }; (db.groups ||= []).push(g); forDeck.group = g.id; save();
       LOG.add('group-new', { name, from: 'deck' }); render(); toast(`${forDeck.name} is in ${name}`); return; }
     if (grp) { const g = { id: uid(), name, accent, created: Date.now() }; (db.groups ||= []).push(g); save(); LOG.add('group-new', { name }); nav('#/group/' + g.id); }
-    else { const g = S.view === 'group' ? curGroup() : null, nd = { id: uid(), name, accent, created: Date.now(), cards: [] }; if (g) nd.group = g.id;
+    else { const g = inGroup || (S.view === 'group' ? curGroup() : null), nd = { id: uid(), name, accent, created: Date.now(), cards: [] }; if (g) nd.group = g.id;
       db.decks.push(nd); save(); LOG.add('deck-new', { name, from: g ? 'group' : 'decks' }); nav('#/deck/' + nd.id); }
   };
   root.offsetHeight; root.classList.add('open');
@@ -10149,6 +10138,35 @@ function deckSide(d) {
   root.offsetHeight; root.classList.add('open');
   root.querySelector('.side-row').focus({ preventScroll: true });
   LOG.add('dialog-open', 'Deck options');
+}
+/* v4.23: a group's options in the same side panel, from the ··· on its line in Your decks or on its own page */
+function groupSide(g) {
+  if (!g) return; const root = $('#dlg-root');
+  root.innerHTML = `<div class="dlg-scrim"></div><aside class="side" role="dialog" aria-modal="true" aria-label="Group options">
+    <div class="side-top"><b>${esc(g.name)}</b><small>${plural(groupDecks(g).length, 'deck')}</small></div>
+    <button class="side-row" data-side="add">${I.folder}<span>Add decks</span></button>
+    <button class="side-row" data-side="new">${I.plus}<span>New deck here</span></button>
+    <button class="side-row" data-side="rename">${I.pen}<span>Rename</span></button>
+    <button class="side-row side-del" data-side="del">${I.trash}<span>Delete group</span></button></aside>`;
+  root.querySelector('.dlg-scrim').onclick = () => closeDlg();
+  root.querySelector('.side').onclick = e => {
+    const b = e.target.closest('[data-side]'); if (!b) return; const k = b.dataset.side;
+    closeDlg(true);
+    if (k === 'add') groupPicker(g);
+    else if (k === 'new') nameDialog('deck', null, null, g);
+    else if (k === 'rename') nameDialog('group', g);
+    else {   // UX 5: goes at once (its decks move back to Your decks), Undo on the toast
+      const gi = db.groups.indexOf(g), moved = db.decks.filter(d => d.group === g.id);
+      moved.forEach(d => delete d.group); db.groups.splice(gi, 1); save();
+      LOG.add('group-delete', { name: g.name }); history.replaceState({ d: 0 }, '', '#/'); route();
+      undoToast('Group deleted', () => {
+        db.groups ||= []; if (!db.groups.includes(g)) db.groups.splice(Math.min(gi, db.groups.length), 0, g);
+        moved.forEach(d => { if (db.decks.includes(d) && !d.group) d.group = g.id; }); save(); render(); });
+    }
+  };
+  root.offsetHeight; root.classList.add('open');
+  root.querySelector('.side-row').focus({ preventScroll: true });
+  LOG.add('dialog-open', 'Group options');
 }
 function deckGroupSheet(d) {   // pick the group this deck is in; tapping one moves it there at once
   const gs = db.groups || [];
@@ -13262,9 +13280,9 @@ const A = {
   'new-deck': () => { fabShut(); nameDialog('deck'); },
   'new-group': () => { fabShut(); nameDialog('group'); },
   'group-add': () => { fabShut(); groupPicker(curGroup()); },
-  'open-group': t => nav('#/group/' + t.dataset.id),
   'toggle-group': t => groupToggle(t.dataset.id),
-  'group-menu': () => nameDialog('group', curGroup()),
+  'group-menu': () => groupSide(curGroup()),
+  'group-side': t => groupSide(groupById(t.dataset.id)),
   'fab': () => { const r = $('#fab-root'); if (fabShut()) return; r.classList.add('open'); $('.fab', r)?.setAttribute('aria-expanded', 'true'); LOG.add('fab-open', S.view); },
   'fab-close': () => fabShut(),
   'quick-add': () => quickAddSheet(),
