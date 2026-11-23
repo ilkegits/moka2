@@ -597,6 +597,20 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .deck.dl + .deck::before,.deck + .deck.dl::before{left:18px}
 .deck.dl .deck-name{flex:1;min-width:0}
 .dl-n{flex:none;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gw + .deck::before,.gw + .gw > .grp::before,.deck + .gw > .grp::before{content:"";position:absolute;top:0;right:0;left:18px;height:1px;transform:scaleY(.5);transform-origin:top;background:var(--line-2)}
+/* v4.18: a group folds open on Decks; its decks sit under its name, indented past the turning arrow */
+.g-tw{flex:none;display:grid;place-items:center;width:18px;margin-right:-6px;color:var(--muted);transition:transform .28s cubic-bezier(.3,.7,.3,1)}
+.g-tw svg.i{width:16px;height:16px;stroke-width:2.4}
+.gw.open .g-tw{transform:rotate(90deg)}
+.gw > .grp{width:100%}
+.g-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s cubic-bezier(.3,.7,.3,1)}
+.gw.open .g-body{grid-template-rows:1fr}
+.g-in{min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.g-in .deck.dl{padding-left:46px}
+.g-in .deck::before,.g-in .deck + .deck::before{content:"";position:absolute;top:0;right:0;left:46px;height:1px;transform:scaleY(.5);transform-origin:top;background:var(--line-2)}
+.g-none{margin:0;padding:14px 18px 2px 46px;font-size:15px;color:var(--muted)}
+.g-edit{align-self:flex-start;margin:2px 0 8px 36px;padding:10px;font-size:15px;font-weight:600;color:var(--seal)}
+@media (prefers-reduced-motion:reduce){.g-tw,.g-body{transition:none}}
 .sh-n{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 #hskHave{font-variant-numeric:tabular-nums}   /* UX 16: counts that tick up keep their width */
 .deck-meta{flex:1;min-width:0}
@@ -10017,10 +10031,22 @@ function DeckView(d) {
 const groupById = id => id ? (db.groups || []).find(g => g.id === id) : null;
 const curGroup = () => groupById(S.groupId);
 const groupDecks = g => db.decks.filter(d => d.group === g.id);
+/* v4.18: on Decks a group folds open in place: tap its line and its decks unfold under it, tap again and they fold
+   away. Which groups are open is kept in db.grpOpen, so one stays open when you come back from a deck. Edit group,
+   last in the open list, goes to the group's own page (add decks, rename, delete). */
 function GroupTile(g) {
-  const ds = groupDecks(g);   // v4.16: one plain line like a deck, with how many decks it holds on the right
-  return `<button class="deck grp dl" data-act="open-group" data-id="${g.id}" style="--accent:${g.accent}">
-    <span class="deck-name">${esc(g.name)}</span><span class="dl-n">${plural(ds.length, 'deck')}</span></button>`;
+  const ds = groupDecks(g), open = !!db.grpOpen?.[g.id];
+  return `<div class="gw${open ? ' open' : ''}" data-gid="${g.id}">
+    <button class="deck grp dl" data-act="toggle-group" data-id="${g.id}" aria-expanded="${open}" style="--accent:${g.accent}">
+      <span class="g-tw" aria-hidden="true">${I.chev}</span><span class="deck-name">${esc(g.name)}</span><span class="dl-n">${plural(ds.length, 'deck')}</span></button>
+    <div class="g-body"${open ? '' : ' inert'}><div class="g-in">${ds.map(DeckTile).join('') || '<p class="g-none">No decks in this group yet</p>'}
+      <button class="g-edit" data-act="open-group" data-id="${g.id}">Edit group</button></div></div></div>`;
+}
+function groupToggle(id) {
+  const w = document.querySelector(`.gw[data-gid="${CSS.escape(id)}"]`); if (!w) return;
+  const open = !w.classList.contains('open'); w.classList.toggle('open', open);
+  w.querySelector('.grp').setAttribute('aria-expanded', open); w.querySelector('.g-body').inert = !open;
+  db.grpOpen ||= {}; if (open) db.grpOpen[id] = 1; else delete db.grpOpen[id]; save();
 }
 function GroupView(g) {
   const ds = groupDecks(g);
@@ -13188,6 +13214,7 @@ const A = {
   'new-group': () => { fabShut(); nameDialog('group'); },
   'group-add': () => { fabShut(); groupPicker(curGroup()); },
   'open-group': t => nav('#/group/' + t.dataset.id),
+  'toggle-group': t => groupToggle(t.dataset.id),
   'group-menu': () => nameDialog('group', curGroup()),
   'fab': () => { const r = $('#fab-root'); if (fabShut()) return; r.classList.add('open'); $('.fab', r)?.setAttribute('aria-expanded', 'true'); LOG.add('fab-open', S.view); },
   'fab-close': () => fabShut(),
