@@ -13075,7 +13075,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.16';
+const APP_VERSION = '3.45.17';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13742,20 +13742,24 @@ const obRight = c => c.pick != null && c.pick >= 0 && c.opts[c.pick].ok;
 const OB_KNOW = (l, L) => l < L - 1 ? .95 : l === L - 1 ? .85 : l === L ? .45 : l === L + 1 ? .12 : .03;   // share of level l you know if you start at L
 const OB_SELF = { 1: 1, 2: 2.5, 4: 4.5, 5: 6 };   // Beginner, Intermediate, Advanced, Pro: the level each points to
 const OB_TAP_W = .5, OB_GUESS = .15, OB_ADAPT = [4, 8], OB_SURE = .8;   // adaptive word cards: at least 4, at most 8
-function obFA() {   // how often you tapped a character you don't know, from the spot-checks (0: every check right)
-  const O = S.ob, C = (O.q?.cards || []).filter(c => c.spot && c.pick != null); if (!C.length) return 0;
-  const rho = (C.filter(obRight).length + 2) / (C.length + 2), u = Math.max(0, (.95 - rho) / (.95 - OB_GUESS));   // share of the checked taps that weren't really known
-  const R = O.chk.rounds.find(x => x.lv === C[0].lv), c = R?.on.size || 0, real = c * (1 - u);
-  return Math.min(.8, c * u / ((R?.chars.length || 0) - real + 2));   // +2: one miss on a small check doesn't condemn every tap
+/* moka2 v3.45.17: how far your taps can be trusted, from the spot-checks. Before, the false taps were taken out as a share of
+   the characters you left alone, so tapping every character left nothing to take them from: an "Advanced" who tapped all 48
+   and missed every check still landed on HSK 7-9. Now a tap counts only as much as the checks held up (two of three right:
+   about 7 in 10 taps count), and the taps as a whole weigh less as trust drops (trust squared), so the word cards decide.
+   On 1,500 simulated learners (60% honest, 30% over-tapping, 10% tapping everything): the right level 84.5% of the time (before
+   77.6%), too high 6.7% (before 15.8%); of those who tap everything, 67% placed right (before 9%) */
+function obTrust() {   // 1: no checks yet, or every check right
+  const C = (S.ob.q?.cards || []).filter(c => c.spot && c.pick != null); if (!C.length) return 1;
+  return Math.min(1, (C.filter(obRight).length + 1) / (C.length + 1) / .95);   // +1: one miss on a small check doesn't condemn every tap
 }
-const obKnownAt = (R, fa = obFA()) => R.chars.length ? Math.min(1, Math.max(0, (R.on.size / R.chars.length - fa) / (1 - fa))) : 0;   // taps with the false ones taken out
-const obKnownFix = (fa = obFA()) => Math.round(S.ob.chk ? S.ob.chk.rounds.reduce((a, R) => a + obKnownAt(R, fa) * R.chars.length, 0) : 0);
+const obKnownAt = (R, t = obTrust()) => R.chars.length ? Math.min(1, R.on.size * t / R.chars.length) : 0;   // taps, as far as they can be trusted
+const obKnownFix = (t = obTrust()) => Math.round(S.ob.chk ? S.ob.chk.rounds.reduce((a, R) => a + obKnownAt(R, t) * R.chars.length, 0) : 0);
 function obPost() {   // the odds of each start level 1-7 (index = level), from everything answered so far
-  const O = S.ob, lp = [-Infinity], c = OB_SELF[O.level], fa = obFA();
+  const O = S.ob, lp = [-Infinity], c = OB_SELF[O.level], t = obTrust(), tw = OB_TAP_W * t * t;
   for (let L = 1; L <= 7; L++) lp[L] = c ? -.5 * ((L - c) / 1.6) ** 2 : 0;
   const ans = (k, right, g) => { const p = k + (1 - k) * g; return Math.log(right ? p : 1 - p); };
-  for (const R of O.chk?.rounds || []) { const n = R.chars.length, x = obKnownAt(R, fa) * n; if (!n) continue;
-    for (let L = 1; L <= 7; L++) { const p = .02 + .96 * OB_KNOW(R.lv, L); lp[L] += OB_TAP_W * (x * Math.log(p) + (n - x) * Math.log(1 - p)); } }
+  for (const R of O.chk?.rounds || []) { const n = R.chars.length, x = obKnownAt(R, t) * n; if (!n) continue;
+    for (let L = 1; L <= 7; L++) { const p = .02 + .96 * OB_KNOW(R.lv, L); lp[L] += tw * (x * Math.log(p) + (n - x) * Math.log(1 - p)); } }
   for (const q of O.q?.cards || []) if (q.pick != null && !q.spot) for (let L = 1; L <= 7; L++) lp[L] += ans(OB_KNOW(q.lv, L), obRight(q), OB_GUESS);
   if (O.st?.pick != null) for (let L = 1; L <= 7; L++) lp[L] += ans(O.st.lv < L - 1 ? .95 : O.st.lv === L - 1 ? .8 : O.st.lv === L ? .4 : .05, O.st.pick === O.st.ok, OB_GUESS);
   const m = Math.max(...lp.slice(1)), P = lp.map(x => Math.exp(x - m)), s = P.reduce((a, b) => a + b, 0);
@@ -13793,15 +13797,16 @@ function obSignals() {   // for the activity log: what each part said
   const O = S.ob, sig = {}, C = O.q?.cards.filter(c => c.pick != null) || [];
   if (O.level) sig.self = O.level;
   if (O.chk?.est) sig.check = O.chk.est.lv;
-  if (C.length) { sig.cards = C.filter(obRight).length + '/' + C.length; sig.fa = +obFA().toFixed(2); }
+  if (C.length) { sig.cards = C.filter(obRight).length + '/' + C.length; sig.trust = +obTrust().toFixed(2); }
   if (O.st?.pick != null) sig.story = O.st.lv + (O.st.pick === O.st.ok ? ' ok' : ' no');
   sig.odds = obPost().slice(1).map(p => +p.toFixed(2));
   return sig;
 }
 function obCharsEst(P = obPost()) {   // about how many characters you can read: tested levels as checked, the rest from the odds
   const C = S.ob.chk; if (!C || !obKnownN()) return 0;
-  const fa = obFA(); let n = 0;
-  for (let l = 1; l <= 7; l++) n += obCharsAt(l) * (C.res[l] !== undefined ? obKnownAt(C.rounds.find(R => R.lv === l), fa) : P.reduce((s, p, L) => s + (l < L ? p * OB_KNOW(l, L) : 0), 0));
+  const t = obTrust(); let n = 0;
+  for (let l = 1; l <= 7; l++) { const odds = P.reduce((s, p, L) => s + (l < L ? p * OB_KNOW(l, L) : 0), 0);   // moka2: a tested level leans on the odds as far as the taps can't be trusted
+    n += obCharsAt(l) * (C.res[l] !== undefined ? t * obKnownAt(C.rounds.find(R => R.lv === l), t) + (1 - t) * odds : odds); }
   return Math.round(n / 10) * 10;
 }
 function obStoryStart() {   // a passage one level below where you look like starting: you should be able to read it

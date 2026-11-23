@@ -1,1 +1,1 @@
-{"version": "3.45.16", "notes": "Hanzi of the day stays in sync with the word bank: once today's character gets into your word bank another way, a new character takes its place"}
+{"version": "3.45.17", "notes": "The level check no longer places you too high if you tap every character: taps count only as far as the spot-checks hold up, so the word cards decide"}
