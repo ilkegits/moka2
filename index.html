@@ -2505,6 +2505,7 @@ button.st-d:active{transform:scale(.9);transition:none}
 .lxo.on .lxo-pill{opacity:1}
 .lxo-pill .coin{width:22px;height:22px;flex:none}
 .lxo-pill b{font:900 16px/1 var(--ui);color:#A86A0C;font-variant-numeric:tabular-nums}
+.lxo-pill.xp b{color:#0B7F62}   /* moka2: the XP count */
 .lxo-h{position:absolute;left:0;right:0;top:calc(var(--cy) + var(--W)*5/7 + 22px);display:flex;align-items:baseline;justify-content:center;gap:8px;opacity:0;transform:translateY(8px)}
 .lxo-h i{font:normal 700 15px/1 var(--hanzi);color:#F6C445;letter-spacing:.25em;padding-left:.25em}
 .lxo-h b{font:800 20px/1.1 var(--ui);color:#FFF4E2}
@@ -7694,9 +7695,15 @@ function shelfState() {
 /* v4.51 the reading card (读书卡), in place of the shelf of 20 books, which filled up and then had nothing more to give.
    Every story you finish stamps the card, a story read again in gold ink. A card has ten spots: the first stamp comes free
    (a new card is never empty), nine stories fill the rest, and the tenth spot is a 利是 that the card's last story opens:
-   RC_PAY coins (db.rc.open = { card number: { t, n } }). Then the next card starts. Stories count from db.rc.from, the
+   RC_XP experience points (moka2: XP, not coins; db.rc.open = { card number: { t, xp } }, older ones { t, n } were coins). Then the next card starts. Stories count from db.rc.from, the
    first time the card was on screen, so everyone starts on card No. 1 */
-const RC_N = 10, RC_PAY = 50;
+const RC_N = 10, RC_XP = 50;
+/* moka2: XP. Your total is everything the reading card's 利是 have given; the 利是 moment counts it up as it opens */
+const xpTotal = () => Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.xp || 0), 0);
+function xpSvg(big) {   // an XP token: a jade disc with a gold ring and XP on it
+  return `<svg class="coin xp" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.3" fill="#12A07C" stroke="#075E48" stroke-width="${big ? 1 : 1.7}"/>`
+    + `<circle cx="12" cy="12" r="7.6" fill="none" stroke="#F6C445" stroke-width="1.2"/><text x="12" y="12.6" text-anchor="middle" dominant-baseline="central" font-family="'Baloo 2',sans-serif" font-weight="800" font-size="8.2" fill="#FFF7E0">XP</text></svg>`;
+}
 function rcState() {
   const rc = db.rc ||= {};
   if (!rc.from) { rc.from = Date.now(); save(); }
@@ -7723,7 +7730,7 @@ function ReadCard() {
       <div class="rc-head"><h2>Reading card <span lang="zh">读书卡</span></h2><span class="rc-no">No. ${no}</span></div>
       <div class="rc-tear"></div>
       <div class="rc-body">
-        <div class="rc-row">${spots}<button class="rc-prize${hot ? ' hot' : ''}" data-act="rc-open" aria-label="${ready ? 'Open your red envelope' : `Red envelope, ${RC_PAY} coins. ${plural(left, 'more story').replace('storys', 'stories')} to open it`}">${lxFlat('fu')}${hot ? `<span class="rc-bub">${ready ? 'Open!' : '1 more!'}</span>` : ''}</button></div>
+        <div class="rc-row">${spots}<button class="rc-prize${hot ? ' hot' : ''}" data-act="rc-open" aria-label="${ready ? 'Open your red envelope' : `Red envelope, ${RC_XP} XP. ${plural(left, 'more story').replace('storys', 'stories')} to open it`}">${lxFlat('fu')}${hot ? `<span class="rc-bub">${ready ? 'Open!' : '1 more!'}</span>` : ''}</button></div>
         <div class="rc-foot"><span>${say}</span><span class="rc-left">${ready ? '' : left === 1 ? '1 to go' : `${left} to ${lsh}`}</span></div>
       </div>
     </section>
@@ -7732,11 +7739,10 @@ function ReadCard() {
 /* the 利是 of a full card: the full-screen opening, from the envelope on the card when it is on screen */
 function rcOpen(then) {
   const st = rcState(); if (!st.ready || $('.lxo')) { then?.(); return; }
-  (db.rc.open ||= {})[st.no] = { t: Date.now(), n: RC_PAY };
-  if (db.coinShown != null) db.coinShown += RC_PAY;   // shown here, so not poured into the bag again at the next payoff
-  save(); LOG.add('lixi', { card: st.no, n: RC_PAY, bal: coinBal(), from: 'reading-card' });
+  (db.rc.open ||= {})[st.no] = { t: Date.now(), xp: RC_XP };   // moka2: XP, not coins
+  save(); LOG.add('lixi', { card: st.no, xp: RC_XP, total: xpTotal(), from: 'reading-card' });
   const el = $('.rc-prize svg'), r = el?.getBoundingClientRect(), seen = r && r.bottom > 0 && r.top < innerHeight;
-  lxShow('fu', RC_PAY, seen ? el : null, () => { render(); then?.(); });
+  lxShow('fu', RC_XP, seen ? el : null, () => { render(); then?.(); }, true);
 }
 /* every story you finished, newest first, once each; tap one to read it again (or to pick which time, when you read it more often) */
 function storiesSheet() {
@@ -8887,7 +8893,7 @@ function coinEarned() {
   const les = Object.values(db.lessons || {}).filter(r => r?.done > from).length, unit = Object.values(db.utests || {}).filter(r => r?.pass > from).length;
   const story = new Set((db.readDone || []).filter(x => x.done > from).map(x => x.zh)).size;
   const chest = (db.chests || []).reduce((a, c) => a + (c.t > from ? c.n : 0), 0);   // the daily chest (chestTap)
-  const lixi = Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.t > from ? x.n : 0), 0);   // v4.51: the reading card's 利是 (rcOpen)
+  const lixi = Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.t > from ? x.n || 0 : 0), 0);   // v4.51: the reading card's 利是 (rcOpen); moka2: only the first ones gave coins, now they give XP
   return pv.length * PAY.word + pv.filter(w => w.pf.m).length * PAY.mast + les * PAY.les + story * PAY.story + unit * PAY.unit + chest + lixi;
 }
 const coinSpent = () => Object.keys(db.monOwn || {}).reduce((a, lv) => a + (TRAIL[lv - 1]?.price || 0), 0);
@@ -10665,27 +10671,28 @@ function lx3(look) {
     + `<span class="in"><svg viewBox="50 70 140 ${(140 * fh).toFixed(1)}"><path d="${a.inner}" fill="${ins}" stroke="rgba(0,0,0,.35)" stroke-width="3" stroke-linejoin="round"/></svg></span></span></span></span>`;
 }
 const lxFlat = look => { const a = lxArt(look); return `<svg viewBox="46 66 148 208" aria-hidden="true"><defs>${a.defs}</defs>${a.body}${a.flap}</svg>`; };   // a small flat one, for a list
-function lxShow(look, n, from, done) {
+function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives XP (the reading card), drawn as jade XP tokens
   const fr = $('#frame') || document.body, still = stillMotion(), fh = fr.clientHeight || innerHeight, fw = fr.clientWidth || innerWidth, f0 = fr.getBoundingClientRect();
   const W = Math.round(Math.min(140, fh * .19, fw * .34)), H = W * 10 / 7, cy = Math.round(fh * .44), top = Math.round(cy - H / 2), cz = Math.round(W * .21), th = cz * .2;
-  const real = $('.uc-coins'), shown = real && real.offsetParent ? parseInt((real.querySelector('b')?.textContent || '').replace(/\D/g, '')) : NaN, bal0 = isFinite(shown) ? shown : coinBal();
-  const o = document.createElement('div'); o.className = 'lxo'; o.tabIndex = -1; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', `Red envelope, ${n} coins`);
+  const real = xp ? null : $('.uc-coins'), shown = real && real.offsetParent ? parseInt((real.querySelector('b')?.textContent || '').replace(/\D/g, '')) : NaN, bal0 = isFinite(shown) ? shown : xp ? Math.max(0, xpTotal() - n) : coinBal();
+  const o = document.createElement('div'); o.className = 'lxo'; o.tabIndex = -1; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', `Red envelope, ${n} ${xp ? 'XP' : 'coins'}`);
   o.style.cssText = `--W:${W}px;--cy:${cy}px;--top:${top}px;--cz:${cz}px`;
   o.innerHTML = `<div class="lxo-bg"></div><div class="lxo-fly">${lx3(look)}</div><div class="lxo-flash"></div>
     <p class="lxo-tap" aria-live="polite"></p>
-    <div class="lxo-h"><i lang="zh">利是</i><b>Lucky money</b></div>
-    <p class="lxo-sum" role="status"><b>+0</b><small>coins</small></p>
-    <div class="lxo-pill" aria-hidden="true">${coinSvg()}<b>${coinFmt(bal0)}</b></div>
+    <div class="lxo-h"><i lang="zh">利是</i><b>${xp ? 'Reading bonus' : 'Lucky money'}</b></div>
+    <p class="lxo-sum" role="status"><b>+0</b><small>${xp ? 'XP' : 'coins'}</small></p>
+    <div class="lxo-pill${xp ? ' xp' : ''}" aria-hidden="true">${xp ? xpSvg() : coinSvg()}<b>${coinFmt(bal0)}${xp ? ' XP' : ''}</b></div>
     <div class="lxo-dock"><button class="btn btn-seal" data-lxo="go">Collect</button></div>`;
   fr.append(o);
   // the envelope and its coins share one 3D space, so the ring passes in front of it and behind it
   const p3 = o.querySelector('.lx3p'), env = o.querySelector('.lx3'), fly = o.querySelector('.lxo-fly'), sc = document.createElement('div'), glow = env.querySelector('.lx3-glow');
   sc.className = 'lxo-sc'; p3.append(sc); sc.append(env); env.style.animation = 'none';
-  const rim = '<svg viewBox="0 0 24 24"><path d="M1.7 12a10.3 10.3 0 1 0 20.6 0a10.3 10.3 0 1 0-20.6 0ZM9.5 9.5h5v5h-5Z" fill-rule="evenodd" fill="#C98A0A" stroke="#8A4A06" stroke-width="1"/></svg>';
+  const rim = xp ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.3" fill="#0B7F62" stroke="#075E48" stroke-width="1"/></svg>'
+    : '<svg viewBox="0 0 24 24"><path d="M1.7 12a10.3 10.3 0 1 0 20.6 0a10.3 10.3 0 1 0-20.6 0ZM9.5 9.5h5v5h-5Z" fill-rule="evenodd" fill="#C98A0A" stroke="#8A4A06" stroke-width="1"/></svg>';
   const k = Math.max(8, Math.min(14, Math.round(n / 4)));
   const coins = Array.from({ length: k }, () => {   // thick coins: a face on each side and four rim discs between
     const c = document.createElement('span'); c.className = 'lxo-c';
-    c.innerHTML = Array.from({ length: 6 }, (_, j) => `<i style="transform:translateZ(${(-th / 2 + th * j / 5).toFixed(2)}px)${j === 0 ? ' rotateY(180deg)' : ''}">${j === 0 || j === 5 ? coinSvg(1) : rim}</i>`).join('');
+    c.innerHTML = Array.from({ length: 6 }, (_, j) => `<i style="transform:translateZ(${(-th / 2 + th * j / 5).toFixed(2)}px)${j === 0 ? ' rotateY(180deg)' : ''}">${j === 0 || j === 5 ? xp ? xpSvg(1) : coinSvg(1) : rim}</i>`).join('');
     sc.append(c); return c;
   });
   // your coin count, drawn over the red at the height of the real one and kept inside the screen (it grows to the left)
@@ -10709,7 +10716,7 @@ function lxShow(look, n, from, done) {
     if (from) from.style.visibility = ''; done?.(); setTimeout(() => o.remove(), still ? 0 : 320);
   };
   o.querySelector('[data-lxo="go"]').onclick = e => { e.stopPropagation(); haptic(10); close(); };
-  const show = m => { pillN.textContent = coinFmt(bal0 + Math.round(n * m / k)); sumN.textContent = '+' + coinFmt(Math.round(n * m / k)); };
+  const show = m => { pillN.textContent = coinFmt(bal0 + Math.round(n * m / k)) + (xp ? ' XP' : ''); sumN.textContent = '+' + coinFmt(Math.round(n * m / k)); };
   const finish = () => {
     st = 'done'; cancelAnimationFrame(raf); buzzStop(); tap.classList.remove('on');
     coins.forEach(c => { c.style.opacity = 0; if (c.parentNode === env) sc.append(c); }); env.classList.add('open'); o.classList.add('lit', 'done'); show(k);
@@ -12844,7 +12851,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.8';
+const APP_VERSION = '3.45.9';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiCards is on your home screen'); });
