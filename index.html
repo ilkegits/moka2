@@ -7825,7 +7825,7 @@ function ProfileView() {
   const { lv, left } = goalLevel(), total = S.H?.levels[lv]?.length || HSK_COUNT[lv], known = Math.max(0, total - left), f = total ? known / total : 0;
   const since = pfSince(), go = 'Go through a deck';
   const tile = (act, icon, big, label, sub, aria, ic = '') => `<button class="pf-stat" data-act="${act}" aria-label="${aria}"><span class="pf-st-ic${ic}">${icon}</span><b>${big}</b><span>${label}</span><small>${sub}</small></button>`;
-  return `<div class="screen fade-in pf">
+  return `<div class="screen fade-in pf-pg">   <!-- not "pf": that class is the Add card typing line (40px lines, no wrapping, scrolls sideways) -->
     <div class="section-head cal-head pg-head"><h2>Profile <span class="cal-zh">我的</span></h2>
       <span class="pg-tr"><button class="icon-btn" data-act="settings" aria-label="App settings">${I.menu}</button></span></div>
     <section class="pf-card pf-hero">
@@ -13363,7 +13363,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.28';
+const APP_VERSION = '3.45.29';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });

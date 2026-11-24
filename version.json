@@ -1,1 +1,1 @@
-{"version": "3.45.28", "notes": "Developer menu cleaned up: the options for things moka2 no longer has are gone (Shi Shi eats a baozi, the course playing by itself, the unit comics, max or reset levels, set my coins, restore my real levels)"}
+{"version": "3.45.29", "notes": "Profile no longer slides side to side, and its text wraps with normal line spacing: the page carried the class of the Add card typing line, which made it scroll sideways"}
