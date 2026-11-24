@@ -1035,6 +1035,13 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .handle{width:40px;height:5px;border-radius:5px;background:var(--line-2);margin:0 auto 14px;position:relative;cursor:grab}
 /* v4.23: with the keyboard up, a pop-up reaches nearer the top so more of it fits above the keyboard */
 html.kb-up .sheet{max-height:calc(100% - var(--kb) - 8px)}
+/* 3.45.56: while you type or draw in Add card, the pop-up keeps one height (as tall as it may be), so picks coming and
+   going no longer bounce its top edge up and down; what does not fit scrolls inside it */
+@media (max-width:899px){
+  html.kb-up .sheet.ac-sheet{height:calc(100% - var(--kb) - 8px)}
+  .sheet.ac-sheet:has(.ac-pad:not([hidden])){height:calc(100% - var(--kb) - 30px)}
+  html.kb-up .sheet.ac-sheet:has(.ac-pad:not([hidden])){height:calc(100% - var(--kb) - 8px)}
+}
 .handle::after{content:"";position:absolute;inset:-14px -40px}  /* bigger grab area */
 /* UX 10: the close button in a pop-up's corner (drawn 30 px, takes taps over 44 px) */
 .sheet-x{position:absolute;top:12px;right:14px;z-index:1;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--fill);color:var(--ink-2)}
@@ -12906,6 +12913,7 @@ function cardSheet(cardId) {
       <button class="btn btn-primary" id="csave">Save</button></div>`
       : '<div class="ac-done"><span class="ac-last" id="acLast"></span></div>'}`,
     sh => {
+      sh.classList.add('ac-sheet');
       const $q = q => sh.querySelector(q);
       const fen = plainBox($q('#fen')), fhz = $q('#fhz'), fpy = plainBox($q('#fpy')), pyOut = $q('#fpyout'), cands = $q('#cands'), reads = $q('#reads'), means = $q('#means'), sugs = $q('#sugs'), btn = $q('#csave');
       const rows = () => (E.D && E.hanzi && E.D.byHz.get(E.hanzi)) || [];
@@ -12934,7 +12942,11 @@ function cardSheet(cardId) {
         reads.innerHTML = R.length > 1 ? R.map((r, i) => `<button class="mean ${i === E.reading && !E.pyDirty ? 'on' : ''}" data-r="${i}">${esc(r.p)}</button>`).join('') : '';
         paintMeans(); paintBtn();
       };
-      const setHz = hz => { E.hanzi = zhS(hz); E.pyDirty = false; E.reading = 0; if (!hz) E.enFirst = false; paintHz(); };
+      const setHz = hz => {
+        /* 3.45.56: your own English was there before the Chinese: no meanings to swap it for (they popped in above the pen's
+           square and pushed it down) */
+        if (hz && !E.hanzi && E.enDirty && fen.value.trim()) E.enFirst = true;
+        E.hanzi = zhS(hz); E.pyDirty = false; E.reading = 0; if (!hz) E.enFirst = false; paintHz(); };
       const paintCands = list => {
         if (!fpy.value) { cands.innerHTML = ''; cands._list = []; return; }
         cands.innerHTML = list.length ? list.map((x, i) => `<button class="cand" data-i="${i}">${esc(x.h)}</button>`).join('') : '<span class="msg">No match yet…</span>';
@@ -13108,11 +13120,15 @@ function cardSheet(cardId) {
       const head = $q('.ac-head');
       const inView = () => {
         if (!sh.isConnected) { ro.disconnect(); visualViewport?.removeEventListener('resize', soon); return; }
-        const a = document.activeElement, blk = a === fpy ? zhB : a === fen ? enB : null; if (!blk) return;
-        const s = sh.getBoundingClientRect(), r = blk.getBoundingClientRect();
+        /* 3.45.56: what has to stay in view is the box you work in plus the picks that answer it: typing English, the Chinese
+           matches (they sit in the other side's block); with the pen up, the drawing square and its matches */
+        const a = document.activeElement, padUp = !$q('#acPad').hidden;
+        const blk = a === fen ? enB : a === fpy || padUp ? zhB : null; if (!blk) return;
+        const s = sh.getBoundingClientRect(), b = blk.getBoundingClientRect(), x = a === fen && sugs.childElementCount ? sugs.getBoundingClientRect() : b;
+        const r = { top: Math.min(b.top, x.top), bottom: Math.max(b.bottom, x.bottom) };
         const lo = s.top + head.offsetHeight + 6, hi = s.bottom - 10;
         let dy = r.bottom > hi ? r.bottom - hi : 0;
-        if (r.top - dy < lo) dy = r.top - lo;   // too tall to show all of it: its label and box win
+        if (r.top - dy < lo) dy = (a === fen ? b : r).top - lo;   // too tall to show all of it: the box you type in wins
         if (Math.abs(dy) > 1) sh.scrollTop += dy;
       };
       let raf = 0; const soon = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(inView); };
@@ -13961,7 +13977,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.55';
+const APP_VERSION = '3.45.56';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
