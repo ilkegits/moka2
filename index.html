@@ -2663,9 +2663,26 @@ button.st-d:active{transform:scale(.9);transition:none}
 .pf-xpw-h{display:flex;align-items:center;gap:7px} .pf-xpw-ic{width:24px;height:24px;display:flex} .pf-xpw-ic .coin{width:100%;height:100%}
 .pf-xpw-h b{font:600 20px/1 var(--display);font-variant-numeric:lining-nums tabular-nums} .pf-xpw-h span{font-size:13.5px;color:var(--muted)}
 .pf-xpw-s{margin:4px 0 4px;font-size:13px;color:var(--ink-2)}
-.pf-xpw .pf-col i{background:linear-gradient(180deg,#FFF1D6,#F2C98A 55%,#D9A04E)} .pf-xpw .pf-day.later .pf-col i{background:var(--fill)}
-.pf-xpw .pf-col i em{opacity:0;transition:opacity .15s} .pf-xpw .pf-day.lab .pf-col i em,.pf-xpw .pf-day:focus .pf-col i em,.pf-xpw .pf-day:hover .pf-col i em{opacity:1}
-.pf-xpw .pf-day{background:none;border:0;padding:0;font:inherit;color:inherit}
+/* 3.45.57: the XP week is a line graph. The lines are drawn in a stretched SVG (strokes kept even); the dots, numbers and
+   day names sit in seven equal columns over it, so every dot is a round button over its day */
+.pf-xpw-h .pf-xl-key{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.pf-xl-key i{width:16px;border-top:2px dashed var(--line-2)}
+.pf-xl{position:relative;display:grid;grid-template-columns:repeat(7,1fr);height:142px;margin-top:6px}
+.pf-xl-plot{position:absolute;left:0;right:0;top:24px;bottom:30px;pointer-events:none}
+.pf-xl-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pf-xl-svg *{vector-effect:non-scaling-stroke;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.pf-xl-base{stroke:var(--line);stroke-width:1.5}
+.pf-xl-last{stroke:var(--line-2);stroke-width:2;stroke-dasharray:5 5}
+.pf-xl-now{stroke:#D9A04E;stroke-width:3}
+.pf-xl-svg .pf-xl-area{fill:rgba(242,201,138,.28);stroke:none}
+.pf-xd{position:relative;background:none;border:0;padding:0;font:inherit;color:inherit;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.pf-xd small{height:20px;font:600 12px/22px var(--hanzi);color:var(--muted)}
+.pf-xd.today small{color:var(--seal);font-weight:700}
+.pf-xd-dot{position:absolute;left:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 2.5px #D9A04E;
+  top:calc(24px + (100% - 54px) * var(--y) / 100)}   /* inside the plot area, which starts 24px down and is 54px shorter */
+.pf-xd.today .pf-xd-dot{background:#D9A04E;box-shadow:0 0 0 3px var(--card),0 0 0 4.5px #D9A04E}
+.pf-xd-dot em{position:absolute;left:50%;bottom:100%;translate:-50% -5px;font:700 12px var(--ui);font-style:normal;color:#9A6412;white-space:nowrap;opacity:0;transition:opacity .15s}
+.pf-xd.lab em,.pf-xd:focus em,.pf-xd:hover em{opacity:1}
 .les-body{display:flex;flex-direction:column;padding:6px 0 20px}
 .les-ask{margin:6px 0 16px;font-size:21px;font-weight:800;letter-spacing:-.01em}
 .les-ask span{margin-left:8px;font-size:14px;font-weight:700;color:var(--muted)}
@@ -8170,19 +8187,31 @@ function pfSince() {   // the first day ShiHanzi saw you practise or add a word
   for (const k of Object.keys(db.days)) { const [y, m, d] = k.split('-').map(Number), x = new Date(y, m, d).getTime(); if (x < t) t = x; }
   return t < Infinity ? new Date(t).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : '';
 }
-/* 3.45.27: XP this week, Monday to Sunday, one jade bar a day; today's bar and the best day carry their number,
-   tap any bar for its own. The total and last week's sit above it */
+/* 3.45.57: XP this week as a line graph, Monday to Sunday (ilkem: "the xp should be a line graph"). The gold line runs
+   up to today, last week is a faint dashed line behind it; today and the best day carry their number, tap any day for
+   its own. The total and last week's sit above it */
 function pfXpWeek() {
   const now = new Date(), lead = (now.getDay() + 6) % 7;
   const D = [...'一二三四五六日'].map((zh, i) => { const d = new Date(now); d.setDate(now.getDate() - lead + i); const p = new Date(d); p.setDate(d.getDate() - 7);
     return { zh, en: d.toLocaleDateString('en-GB', { weekday: 'long' }), x: xpOn(dayKey(d)), last: xpOn(dayKey(p)), today: i === lead, later: i > lead }; });
-  const tw = D.reduce((a, d) => a + d.x, 0), lw = D.reduce((a, d) => a + d.last, 0), top = Math.max(...D.map(d => d.x), 30), best = Math.max(...D.map(d => d.x));
+  const tw = D.reduce((a, d) => a + d.x, 0), lw = D.reduce((a, d) => a + d.last, 0), best = Math.max(...D.map(d => d.x));
+  const top = Math.max(...D.map(d => Math.max(d.x, d.last)), 30);
   const line = lw ? (tw >= lw ? `${tw - lw} more than last week (${lw})` : `${lw - tw} to beat last week (${lw})`) : tw ? 'Your first week of XP' : 'Go through a deck to earn XP';
-  const bars = D.map(d => { const h = d.x ? Math.max(6, Math.round(d.x / top * 100)) : 0, lab = d.x && (d.today || d.x === best);
-    return `<button class="pf-day${d.today ? ' today' : ''}${d.later ? ' later' : ''}${lab ? ' lab' : ''}" aria-label="${d.en}: ${d.x} XP"><span class="pf-col"><i style="height:${h}%">${d.x ? `<em>${d.x}</em>` : ''}</i></span><small>${d.zh}</small></button>`; }).join('');
+  const X = i => (i + .5) / 7 * 700, Y = v => +(100 - v / top * 100).toFixed(1);
+  const pts = A => A.map((v, i) => `${X(i)},${Y(v)}`).join(' ');
+  const now7 = D.filter(d => !d.later).map(d => d.x), lastW = D.map(d => d.last);
+  const area = `M${X(0)},100 L${pts(now7).replace(/ /g, ' L')} L${X(now7.length - 1)},100 Z`;
+  const svg = `<svg class="pf-xl-svg" viewBox="0 0 700 100" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="0" y1="100" x2="700" y2="100" class="pf-xl-base"/>
+      ${lw ? `<polyline points="${pts(lastW)}" class="pf-xl-last"/>` : ''}
+      <path d="${area}" class="pf-xl-area"/><polyline points="${pts(now7)}" class="pf-xl-now"/></svg>`;
+  const days = D.map((d, i) => { const lab = !d.later && (d.today || (d.x && d.x === best));
+    return `<button class="pf-xd${d.today ? ' today' : ''}${d.later ? ' later' : ''}${lab ? ' lab' : ''}" aria-label="${d.en}: ${d.later ? 'to come' : `${d.x} XP`}${d.last ? `, last week ${d.last}` : ''}">
+      ${d.later ? '' : `<span class="pf-xd-dot" style="--y:${Y(d.x)}"><em>${d.x}</em></span>`}<small>${d.zh}</small></button>`; }).join('');
   return `<section class="pf-card pf-week pf-xpw" aria-label="XP this week: ${tw}">
-    <div class="pf-xpw-h"><span class="pf-xpw-ic">${xpSvg()}</span><b>${tw.toLocaleString('en')} XP</b><span>this week</span></div>
-    <p class="pf-xpw-s">${line}</p><div class="pf-bars">${bars}</div></section>`;
+    <div class="pf-xpw-h"><span class="pf-xpw-ic">${xpSvg()}</span><b>${tw.toLocaleString('en')} XP</b><span>this week</span>
+      ${lw ? '<span class="pf-xl-key"><i></i>last week</span>' : ''}</div>
+    <p class="pf-xpw-s">${line}</p><div class="pf-xl"><div class="pf-xl-plot">${svg}</div>${days}</div></section>`;
 }
 function pfWeek() {   // this week, Monday to Sunday: the words you proved each day, and the week's total against last week's. Never time spent in the app (ilkem: nobody should be told how long they spent)
   const now = new Date(), lead = (now.getDay() + 6) % 7, act = practiceDays(), per = {};
@@ -8223,7 +8252,6 @@ function ProfileView() {
     <div class="section-head"><h2>This week <span class="cal-zh">本周</span></h2></div>
     ${pfWeek()}
     ${pfXpWeek()}
-    ${Badges()}
   </div>`;
 }
 
@@ -13977,7 +14005,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.56';
+const APP_VERSION = '3.45.57';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
