@@ -3005,10 +3005,21 @@ button.scene-tile:active svg{opacity:.92}
 .ob2-proof b{display:block;font-size:15px;line-height:1.3}
 .ob2-proof p{margin:4px 0 6px;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
 .ob2-proof small{font-size:11.5px;color:var(--muted)}
-.ob2-pile{position:relative;height:350px;margin:30px 14px 0}
+.ob2-pile{position:relative;height:350px;margin:30px 14px 0;perspective:1400px}
 .ob2-pile .pc{position:absolute;left:0;right:0;top:0;height:320px;background:var(--card);border-radius:22px;box-shadow:var(--shadow);corner-shape:squircle}
-.ob2-pile .p3{transform:translateY(26px) scale(.9);background:#EFE7D9} .ob2-pile .p2{transform:translateY(13px) scale(.95);background:#F6F0E6}
-.ob2-pile .p1{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.ob2-pile .p3{transform:translateY(26px) scale(.9);background:#EFE7D9;animation:ob2Deal .5s cubic-bezier(.2,.8,.3,1) .12s both}
+.ob2-pile .p2{transform:translateY(13px) scale(.95);background:#F6F0E6;animation:ob2Deal .5s cubic-bezier(.2,.8,.3,1) .22s both}
+@keyframes ob2Deal{from{opacity:0;transform:translateY(90px) scale(.9)}}
+/* 3.45.25: the top card lands face down on the pile, rests a moment, then turns over (the app's own flip) */
+.ob2-pile .p1{background:none;box-shadow:none;transform-style:preserve-3d;animation:ob2Turn 1.35s .34s both}
+@keyframes ob2Turn{0%{transform:translateY(-70px) rotateY(180deg) rotateZ(5deg);animation-timing-function:cubic-bezier(.25,.8,.35,1)}
+  36%{transform:translateY(0) rotateY(180deg) rotateZ(0)} 50%{transform:translateY(0) rotateY(180deg);animation-timing-function:cubic-bezier(.45,0,.2,1)}
+  100%{transform:translateY(0) rotateY(0)}}
+.ob2-pile .p1>.f{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border-radius:22px;background:var(--card);box-shadow:var(--shadow);corner-shape:squircle;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.ob2-pile .p1>.f.b{transform:rotateY(180deg)}
+.ob2-pile .p1>.f{animation:ob2Show .14s linear .34s both} @keyframes ob2Show{from{opacity:0}}   /* the fade sits on the faces: opacity on the turning card would flatten it (no back face) */
+.ob2-seal{width:72px;height:72px;border-radius:16px;display:grid;place-items:center;background:var(--seal);color:#FFF8F2;font:600 44px/1 var(--hanzi);corner-shape:squircle}
+@media (prefers-reduced-motion:reduce){.ob2-pile .pc,.ob2-pile .p1>.f{animation:none!important}}
 .ob2-ftz{position:relative;display:grid;place-items:center;height:124px;max-width:100%} .ob2-ftz svg{position:absolute;inset:0;width:100%;height:100%}
 .ob2-ftz span{position:relative;font:400 76px/1 var(--hanzi);letter-spacing:.08em;margin-right:-.08em}
 .ob2-pile .py{margin-top:18px;font:500 20px var(--ui);color:var(--ink-2)} .ob2-pile .en{color:var(--muted);font-size:15px;text-align:center;padding:0 20px}
@@ -13214,7 +13225,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.24';
+const APP_VERSION = '3.45.25';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -14030,10 +14041,11 @@ function obShow() {
   else if (step === 'plan') {   // moka2 3.45.24: "Your deck is ready", a real card of your level as the hero (option B of plan-screen-options)
     const lv = obLv(), c = obFirst(), n = (S.H?.levels[lv]?.length || HSK_COUNT[lv]).toLocaleString('en'), k = [...c.h].length;
     html = obTop() + `<h2 class="ob2-q ob2-c ob2-in">Your deck is ready</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">${HSK_NAME(lv)} · ${n} words, like this one</p>
-      <div class="ob2-pile ob2-in" style="--i:2"><div class="pc p3"></div><div class="pc p2"></div><div class="pc p1">
-        <div class="ob2-ftz" style="width:${k * 120}px">${obFtz()}<span lang="zh">${esc(c.h)}</span></div><div class="py">${esc(c.p)}</div><div class="en">${esc(c.e)}</div></div></div>
-      <p class="ob2-note ob2-c ob2-in" style="--i:3">Turn a card, say how well you knew it, and ShiHanzi picks the day it comes back.</p>
-      <div class="ob-dock ob2-in" style="--i:4"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
+      <div class="ob2-pile"><div class="pc p3"></div><div class="pc p2"></div><div class="pc p1">
+        <div class="f"><div class="ob2-ftz" style="width:${k * 120}px">${obFtz()}<span lang="zh">${esc(c.h)}</span></div><div class="py">${esc(c.p)}</div><div class="en">${esc(c.e)}</div></div>
+        <div class="f b" aria-hidden="true"><span class="ob2-seal">学</span></div></div></div>
+      <p class="ob2-note ob2-c ob2-in" style="animation-delay:1.75s">Turn a card, say how well you knew it, and ShiHanzi picks the day it comes back.</p>
+      <div class="ob-dock ob2-in" style="animation-delay:1.9s"><button class="btn btn-primary" data-ob="next">Next</button></div>`;   // 3.45.25: dealt, then turned over
   }
   else if (step === 'how1') {
     const W = obTeach(), w = W.wall, rows = [[w[0], W.easy.h, W.hard.h, w[1], w[2]], [w[3], w[4], w[5], w[6], w[7]], [w[8], w[9], w[10], w[11], w[12]]];
@@ -14219,6 +14231,7 @@ function obAnim(el, step) {
   const O = S.ob;
   if (step === 'hi') obDraw(el, '学');
   if (step === 'hello') obType(el, el.querySelector('#ob2Bub'), 'Thousands of characters, not much time? | I’ll help you keep every one.');
+  if (step === 'plan') obLater(el, 1650, () => haptic(14));   // 3.45.25: the card lands face up
   if (step === 'plan-old') {   // 3.45.24: the stamped deck is gone (the new page has no animation)
     obType(el, el.querySelector('#ob2Bub'), 'Got it! | Building your plan now', 90);
     const deck = el.querySelector('#ob2Deck');
