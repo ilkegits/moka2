@@ -11771,12 +11771,12 @@ function strokeCheck(userStrokes, ref, s) {
   const gap = (a, b) => a.reduce((t, q, i) => t + Math.hypot(q.x - b[i].x, q.y - b[i].y), 0) / n;
   const pairs = []; Us.forEach((u, i) => Rs.forEach((r, j) => { if (r) pairs.push([Math.min(gap(u, r), gap([...u].reverse(), r)), i, j]); }));
   pairs.sort((a, b) => a[0] - b[0]);
-  const coverWithout = skip => {
+  const coverWithout = (skip, tol = JUDGE.looseTol) => {
     const mine = R.map(() => []), mate = R.map(() => null), usedU = new Set();
     U.forEach((l, i) => { if (i !== skip) l.forEach((q, k) => mine[owner[i][k]].push(q)); });
     for (const [, i, j] of pairs) if (i !== skip && !usedU.has(i) && !mate[j]) { usedU.add(i); mate[j] = U[i]; }
     // a stroke with no partner gets no extra room: your other ink must cover it as closely as the normal check asks
-    return R.map((l, j) => mate[j] ? Math.max(frac(l, mine[j], JUDGE.looseTol), frac(l, mate[j], JUDGE.looseTol)) : frac(l, mine[j], JUDGE.tol));
+    return R.map((l, j) => mate[j] ? Math.max(frac(l, mine[j], tol), frac(l, mate[j], tol)) : frac(l, mine[j], JUDGE.tol));
   };
   const refL = coverWithout(-1), onL = U.map(l => frac(l, Ra, JUDGE.looseTol));
   // an extra stroke: you drew more strokes than the character has, and it is fully covered without one of the longer ones
@@ -11832,9 +11832,13 @@ function strokeCheck(userStrokes, ref, s) {
       return Rp.every((l, j) => frac(l, mine[j], P.tol) >= JUDGE.strokeCov) && V.every(l => frac(l, Rpa, P.tol) >= JUDGE.inkOn);
     });
   }
-  const strong = ok && Math.min(...refCov) >= JUDGE.strong.stroke && Math.min(...parts.map(pt => pt.cov)) >= JUDGE.strong.part && total >= JUDGE.strong.total;
+  // Each stroke of the character must be covered by YOUR stroke for it, at the normal distance: ink that belongs to a
+  // neighbour can't stand in for it. Without this a 酒 with 酉's 儿 drawn under the box, not inside it, passed: the
+  // lines nearby covered the empty spot. Needed whenever the handwriting reader isn't sure on its own (see verdict).
+  const own = coverWithout(-1, JUDGE.tol), owned = own.every(c => c >= JUDGE.strokeCov);
+  const strong = ok && !extra && own.every(c => c >= JUDGE.strong.stroke) && Math.min(...refCov) >= JUDGE.strong.stroke && Math.min(...parts.map(pt => pt.cov)) >= JUDGE.strong.part && total >= JUDGE.strong.total;
   const avg = (A, B) => A.reduce((a, p) => a + nearest(p, B), 0) / A.length;
-  return { ok, strong, looseOk, twinOk, partOk, extra, missing, stray, total, badPart: badPart && { pos: badPart.pos, radical: !!badPart.radical }, fit: (avg(Ua, Ra) + avg(Ra, Ua)) / 2 };
+  return { ok, owned, misplaced: own.filter(c => c < JUDGE.strokeCov).length, strong, looseOk, twinOk, partOk, extra, missing, stray, total, badPart: badPart && { pos: badPart.pos, radical: !!badPart.radical }, fit: (avg(Ua, Ra) + avg(Ra, Ua)) / 2 };
 }
 async function recognize(strokes, s, lang = 'zh_CN') {
   const t0 = strokes[0]?.[0]?.t || 0;
@@ -11890,11 +11894,11 @@ async function judgeChar(ch, strokes, s) {
 function verdict(shape, rank) {
   if (!shape && rank === null) return null;                    // offline and no stroke data: the learner decides
   if (!shape) return rank === 0;
-  if (rank === null) return shape.ok;                          // offline: stroke placement only
+  if (rank === null) return shape.ok && shape.owned;                          // offline: stroke placement only
   if (rank === 0 && shape.looseOk) return true;               // the reader is sure and every stroke is roughly in place
   if (rank === 0 && shape.twinOk) return true;                // ...or the strokes off their spot are plainly yours, only shifted
   if (rank === 0 && shape.partOk) return true;                // ...or each part, drawn at its own size, has all its strokes
-  return shape.ok && ((rank >= 0 && rank <= JUDGE.maxRank) || shape.strong);   // a clean stroke match is enough on its own
+  return shape.ok && ((rank >= 0 && rank <= JUDGE.maxRank && shape.owned) || shape.strong);   // a clean stroke match is enough on its own
 }
 
 /* HanziWriter draws your ink in the character's own 1024-unit grid, not in screen pixels: the old 4-5 came out about 1px wide.
@@ -11914,6 +11918,7 @@ function judgeNote(chars) {
     : sh && sh.missing ? `${where}: ${sh.missing === 1 ? 'a stroke is' : sh.missing + ' strokes are'} missing or in the wrong place`
     : sh && sh.stray ? `${where}: ${sh.stray === 1 ? 'there’s an extra stroke' : sh.stray + ' extra strokes'}`
     : sh && !sh.ok ? `${where}: some ink is off the character`
+    : sh?.misplaced ? `${where}: ${sh.misplaced === 1 ? 'a stroke is' : sh.misplaced + ' strokes are'} missing or in the wrong place`
     // a whole extra line lying close to the real strokes (平's top line under 伞's roof): only named, never turns a right answer red,
     // since one stroke drawn in two pieces can look the same
     : sh?.extra ? `${where}: there’s one stroke too many`
@@ -13369,7 +13374,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.30';
+const APP_VERSION = '3.45.31';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
