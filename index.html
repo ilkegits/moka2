@@ -2163,7 +2163,7 @@ button.st-d:active{transform:scale(.9);transition:none}
 .pf-stat small{grid-column:1 / -1;font-size:12px;line-height:1.3;color:var(--muted)}
 .pf-stat.pf-xp{grid-column:1 / -1;grid-template-columns:auto auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:2px}   /* moka2: the XP tile, one row across: icon, number, then the label over the line */
 .pf-stat.pf-xp .pf-st-ic{grid-column:1;grid-row:1 / 3}
-.pf-stat.pf-xp b{grid-column:2;grid-row:1 / 3;color:#06736C}
+.pf-stat.pf-xp b{grid-column:2;grid-row:1 / 3;color:#9A6412}
 .pf-stat.pf-xp>span:not(.pf-st-ic){grid-column:3;grid-row:1;margin-top:0;align-self:end}
 .pf-stat.pf-xp small{grid-column:3;grid-row:2;align-self:start}
 .pf-week{padding:14px 14px 10px;margin-bottom:6px}
@@ -2576,21 +2576,20 @@ button.st-d:active{transform:scale(.9);transition:none}
 @keyframes lbOut{0%{filter:grayscale(1) brightness(.85)}100%{filter:none}}
 @media (prefers-reduced-motion:reduce){.les-bar i,.lb-tip .flame,.lb-tag,.lb-sparks span,.les-bar::before{animation:none!important}}
 /* the round's XP, right of the bar (ShiHanzi2's coin count): it bumps on every answer */
-.les-xp{display:flex;align-items:center;gap:4px;flex:none;min-width:58px;font:800 17px/1 var(--ui);font-variant-numeric:tabular-nums;color:#06736C}
-.les-xp b,.xp-gain b{text-shadow:0 0 10px rgba(24,198,186,.45)}
+.les-xp{display:flex;align-items:center;gap:4px;flex:none;min-width:58px;font:800 17px/1 var(--ui);font-variant-numeric:tabular-nums;color:#9A6412}
+.les-xp b,.xp-gain b{text-shadow:0 0 10px rgba(255,200,90,.35)}
 .coin.xp{overflow:visible}
 .les-xp .coin{width:24px;height:24px;flex:none}
 .les-xp.up b{animation:lcUp .5s cubic-bezier(.2,.9,.3,1.5)}
-.les-xp.up .coin{animation:xpFlick .7s steps(1,end),xpZap .6s cubic-bezier(.2,.9,.3,1.5)}   /* 3.45.41: the bolt flickers and jumps when XP comes in */
-@keyframes xpZap{0%{transform:scale(.6) rotate(-12deg)}55%{transform:scale(1.25) rotate(6deg)}100%{transform:none}}
-@keyframes xpFlick{0%{opacity:1}10%{opacity:.25}20%{opacity:1}32%{opacity:.4}44%{opacity:1}}
+.les-xp.up .coin{animation:xpGleam .6s cubic-bezier(.2,.9,.3,1.5)}   /* 3.45.45: the pearl swells and gleams when XP comes in */
+@keyframes xpGleam{0%{transform:scale(.6)}50%{transform:scale(1.25);filter:brightness(1.25) drop-shadow(0 0 5px rgba(255,200,90,.9))}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.les-xp.up .coin,.xp-gain .xp-ic{animation:none!important}}
 @keyframes lcUp{0%{transform:translateY(5px) scale(.7);opacity:.3}55%{transform:translateY(-3px) scale(1.25);opacity:1}100%{transform:none}}
 @keyframes lcSpin{0%{transform:scaleX(1)}40%{transform:scaleX(.15) translateY(-3px)}100%{transform:none}}
 .bar:has(.les-bar.sb) .count{min-width:0;padding-right:0}
 /* the round's XP on the end page */
-.xp-gain{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px auto 2px;color:#06736C;font-weight:700}
-.xp-gain .xp-ic{width:28px;height:28px;animation:ob2Pop .55s cubic-bezier(.3,1.6,.5,1) .2s both,xpFlick .7s steps(1,end) .75s}
+.xp-gain{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px auto 2px;color:#9A6412;font-weight:700}
+.xp-gain .xp-ic{width:28px;height:28px;animation:ob2Pop .55s cubic-bezier(.3,1.6,.5,1) .2s both,xpGleam .6s ease-out .75s}
 .xp-gain .xp-ic .coin{width:100%;height:100%}
 .xp-gain b{font:800 24px/1 var(--display);font-variant-numeric:tabular-nums;animation:lcUp .6s cubic-bezier(.2,.9,.3,1.5) .3s both}
 /* words you keep missing */
@@ -2603,7 +2602,7 @@ button.st-d:active{transform:scale(.9);transition:none}
 .pf-xpw-h{display:flex;align-items:center;gap:7px} .pf-xpw-ic{width:24px;height:24px;display:flex} .pf-xpw-ic .coin{width:100%;height:100%}
 .pf-xpw-h b{font:600 20px/1 var(--display);font-variant-numeric:lining-nums tabular-nums} .pf-xpw-h span{font-size:13.5px;color:var(--muted)}
 .pf-xpw-s{margin:4px 0 4px;font-size:13px;color:var(--ink-2)}
-.pf-xpw .pf-col i{background:linear-gradient(180deg,#9AFBF0,#18C6BA 45%,#0FA99F);box-shadow:0 0 10px rgba(24,198,186,.45)} .pf-xpw .pf-day.later .pf-col i{background:var(--fill)}
+.pf-xpw .pf-col i{background:linear-gradient(180deg,#FFF1D6,#F2C98A 55%,#D9A04E)} .pf-xpw .pf-day.later .pf-col i{background:var(--fill)}
 .pf-xpw .pf-col i em{opacity:0;transition:opacity .15s} .pf-xpw .pf-day.lab .pf-col i em,.pf-xpw .pf-day:focus .pf-col i em,.pf-xpw .pf-day:hover .pf-col i em{opacity:1}
 .pf-xpw .pf-day{background:none;border:0;padding:0;font:inherit;color:inherit}
 .les-body{display:flex;flex-direction:column;padding:6px 0 20px}
@@ -2771,7 +2770,7 @@ button.st-d:active{transform:scale(.9);transition:none}
 .lxo.on .lxo-pill{opacity:1}
 .lxo-pill .coin{width:22px;height:22px;flex:none}
 .lxo-pill b{font:900 16px/1 var(--ui);color:#A86A0C;font-variant-numeric:tabular-nums}
-.lxo-pill.xp b{color:#06736C}   /* moka2: the XP count */
+.lxo-pill.xp b{color:#9A6412}   /* moka2: the XP count */
 .lxo-h{position:absolute;left:0;right:0;top:calc(var(--cy) + var(--W)*5/7 + 22px);display:flex;align-items:baseline;justify-content:center;gap:8px;opacity:0;transform:translateY(8px)}
 .lxo-h i{font:normal 700 15px/1 var(--hanzi);color:#F6C445;letter-spacing:.25em;padding-left:.25em}
 .lxo-h b{font:800 20px/1.1 var(--ui);color:#FFF4E2}
@@ -3537,8 +3536,9 @@ button.scene-tile:active svg{opacity:.92}
   <linearGradient id="flOut" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2442B"/><stop offset=".55" stop-color="#FF6A1F"/><stop offset="1" stop-color="#FF8A1A"/></linearGradient>
   <linearGradient id="flMid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9A1F"/><stop offset="1" stop-color="#FFC233"/></linearGradient>
   <linearGradient id="flCore" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset="1" stop-color="#FFE066"/></linearGradient>
-  <linearGradient id="xpBolt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9FFFC"/><stop offset=".35" stop-color="#7FF3E6"/><stop offset="1" stop-color="#18C6BA"/></linearGradient>
-  <filter id="xpGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="1.6" result="b"/><feFlood flood-color="#18C6BA" flood-opacity=".75"/><feComposite in2="b" operator="in" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <radialGradient id="xpPearl" cx=".36" cy=".32" r=".75"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#FFF1D6"/><stop offset=".85" stop-color="#F2C98A"/><stop offset="1" stop-color="#D9A04E"/></radialGradient>
+  <radialGradient id="xpPearlBall" cx=".5" cy=".34" r=".7"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".4" stop-color="#FFF1D6"/><stop offset=".82" stop-color="#F2C98A"/><stop offset="1" stop-color="#C98A3A"/></radialGradient>
+  <linearGradient id="xpFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF7A1A"/><stop offset="1" stop-color="#FFD15C"/></linearGradient>
 </defs></svg>
 <div id="frame">
   <nav id="side-nav" aria-label="Menu"></nav>
@@ -8430,16 +8430,17 @@ function xpAdd(n, R) {   // R: the round (S.study or S.write), which keeps its o
   if (R) { R.xp = (R.xp || 0) + n; R.xpUp = true; } save();
 }
 const xpOn = k => (db.days[k]?.xp || 0) + Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.t && dayKey(x.t) === k ? x.xp || 0 : 0), 0);   // one day's XP, the 利是 included
-/* 3.45.41: XP is a turquoise bolt ("Live wire"): a bright bolt with a turquoise glow and two sparks, and it flickers when XP
-   comes in. big: the plain bolt for the 利是's 3D coins (stacked with XP_RIM between, so it has real thickness) */
-const XP_BOLT = 'M14.3 1.9 L5.4 13.3 H11 L9.5 22.1 L18.7 10.3 H13.1 Z';
-const XP_RIM = `<svg viewBox="0 0 24 24"><path d="${XP_BOLT}" fill="#0FA99F" stroke="#087A73" stroke-width="1.1" stroke-linejoin="round"/></svg>`;
+/* 3.45.45: XP is a dragon pearl 龙珠, the pearl of wisdom dragons chase: a gold-white pearl with a swirl and a little flame
+   on top, and it gleams when XP comes in. big: the plain ball for the 利是. A ball looks the same however it turns, so
+   there it flies without spinning, lit from above, and never turns thin like a coin */
 function xpSvg(big) {
+  if (big) return `<svg class="coin xp" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="url(#xpPearlBall)"/><ellipse cx="12" cy="7.4" rx="2.6" ry="1.4" fill="#fff" opacity=".85"/></svg>`;
   return `<svg class="coin xp" viewBox="0 0 24 24" aria-hidden="true">`
-    + (big ? `<path d="${XP_BOLT}" fill="url(#xpBolt)" stroke="#0FA99F" stroke-width="1.1" stroke-linejoin="round"/>`
-      : `<g filter="url(#xpGlow)"><path d="${XP_BOLT}" fill="url(#xpBolt)" stroke="#0FA99F" stroke-width="1.1" stroke-linejoin="round"/></g>`
-        + `<path class="xp-sp" d="M3.2 6.2 L5.6 7.4 M20.2 16.6 L22.4 17.2 M19.6 4.4 L18.4 6.6" stroke="#18C6BA" stroke-width="1.3" stroke-linecap="round"/>`) + `</svg>`;
+    + `<path d="M12 1.6 C13.6 3.4 13.4 4.6 15.2 4.4 C14.4 3.2 16.6 2.6 17.6 4.6 C18.6 6.6 17.2 7.4 18.4 8.6 L5.6 8.6 C6.8 7.4 5.4 6.6 6.4 4.6 C7.4 2.6 9.6 3.2 8.8 4.4 C10.6 4.6 10.4 3.4 12 1.6Z" fill="url(#xpFlame)"/>`
+    + `<circle cx="12" cy="13.6" r="8.4" fill="url(#xpPearl)" stroke="#B8812C" stroke-width="1"/><path d="M12 10.6 a3 3 0 1 1 -2.8 4" fill="none" stroke="#C9923A" stroke-width="1.1" stroke-linecap="round"/>`
+    + `<ellipse cx="9.4" cy="10.2" rx="2" ry="1.2" fill="#fff" opacity=".9"/></svg>`;
 }
+const XP_BALL = () => `<i>${xpSvg(1)}</i>`;
 function rcState() {
   const rc = db.rc ||= {};
   if (!rc.from) { rc.from = Date.now(); save(); }
@@ -11593,12 +11594,12 @@ function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives X
   // the envelope and its coins share one 3D space, so the ring passes in front of it and behind it
   const p3 = o.querySelector('.lx3p'), env = o.querySelector('.lx3'), fly = o.querySelector('.lxo-fly'), sc = document.createElement('div'), glow = env.querySelector('.lx3-glow');
   sc.className = 'lxo-sc'; p3.append(sc); sc.append(env); env.style.animation = 'none';
-  const rim = xp ? XP_RIM
-    : '<svg viewBox="0 0 24 24"><path d="M1.7 12a10.3 10.3 0 1 0 20.6 0a10.3 10.3 0 1 0-20.6 0ZM9.5 9.5h5v5h-5Z" fill-rule="evenodd" fill="#C98A0A" stroke="#8A4A06" stroke-width="1"/></svg>';
+  const rim = '<svg viewBox="0 0 24 24"><path d="M1.7 12a10.3 10.3 0 1 0 20.6 0a10.3 10.3 0 1 0-20.6 0ZM9.5 9.5h5v5h-5Z" fill-rule="evenodd" fill="#C98A0A" stroke="#8A4A06" stroke-width="1"/></svg>';
   const k = Math.max(8, Math.min(14, Math.round(n / 4)));
   const coins = Array.from({ length: k }, () => {   // thick coins: a face on each side and four rim discs between
     const c = document.createElement('span'); c.className = 'lxo-c';
-    c.innerHTML = Array.from({ length: 6 }, (_, j) => `<i style="transform:translateZ(${(-th / 2 + th * j / 5).toFixed(2)}px)${j === 0 ? ' rotateY(180deg)' : ''}">${j === 0 || j === 5 ? xp ? xpSvg(1) : coinSvg(1) : rim}</i>`).join('');
+    c.innerHTML = xp ? XP_BALL()   // 3.45.45: XP pearls are balls, not coins
+      : Array.from({ length: 6 }, (_, j) => `<i style="transform:translateZ(${(-th / 2 + th * j / 5).toFixed(2)}px)${j === 0 ? ' rotateY(180deg)' : ''}">${j === 0 || j === 5 ? coinSvg(1) : rim}</i>`).join('');
     sc.append(c); return c;
   });
   // your coin count, drawn over the red at the height of the real one and kept inside the screen (it grows to the left)
@@ -11703,7 +11704,7 @@ function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives X
         let x = lerp(S.x, Math.cos(a) * R, out), z = lerp(S.z, Math.sin(a) * R, out), y = lerp(S.y, ringY + Math.sin(a) * R * .3, down), s1 = 1, rr = lerp(S.r, ra, out);
         const g = eio(seg(t, go, go + 600));
         if (g > 0) { x = lerp(x, pc.x, g); y = lerp(y, pc.y, g) - Math.sin(g * Math.PI) * 40; z = lerp(z, 0, g); s1 = lerp(1, 22 / cz, g); }
-        c.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateX(${(8 * (1 - out)).toFixed(2)}deg) rotateY(${rr.toFixed(1)}deg) scale(${s1.toFixed(3)})`;
+        c.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) ${xp ? '' : `rotateX(${(8 * (1 - out)).toFixed(2)}deg) rotateY(${rr.toFixed(1)}deg) `}scale(${s1.toFixed(3)})`;   // 3.45.45: a pearl is a ball, it looks the same however it turns
       });
       if (t >= tEnd) { finish(); return; }
     }
@@ -13819,7 +13820,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.44';
+const APP_VERSION = '3.45.45';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
