@@ -13199,7 +13199,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.20';
+const APP_VERSION = '3.45.21';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13799,12 +13799,14 @@ function goalSheet() {
    below into your word bank as known, since stories and texts at your level use them all the time. */
 const OB_WHY = [['travel', '旅', 'Travel'], ['family', '家', 'Family and heritage'], ['work', '工', 'Work or school'],
   ['exam', '考', 'The HSK exam'], ['culture', '文', 'Films, books and culture'], ['fun', '趣', 'Just for fun']];
-const OB_LEVEL = [[1, '初', 'Beginner'], [2, '中', 'Intermediate'], [4, '高', 'Advanced'], [5, '专', 'Pro']];   // value: the HSK level the character check starts at
+const OB_LEVEL = [[1, '初', 'Beginner', 'New to Chinese · start at HSK 1'], [2, '中', 'Intermediate', 'Start at HSK 2'], [4, '高', 'Advanced', 'Start at HSK 4'], [5, '专', 'Pro', 'Start at HSK 5']];   // value: the HSK level the character check starts at
 /* v2 (moka2 3.45.7): every question is used later. What you learn for picks the exam date page and the plan's flag;
    the level check fills the plan; how it works uses words at your level; the chart shows your own pace; a paywall preview ends it */
 const OB_FOR = [['exam', '考', 'The HSK exam', 'Words from the exam lists, planned up to your exam day'], ['read', '读', 'Reading Chinese day to day', 'Signs, menus, messages and short stories']];
-const OB_STEPS = ['hi', 'hello', 'why', 'level', 'check', 'words', 'read', 'plan', 'how1', 'how2', 'how3', 'how4', 'date', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
-const OB_PROG = { why: .1, level: .17, check: .25, words: .33, read: .4, plan: .46, how1: .52, how2: .57, how3: .62, how4: .67, date: .74, goal: .81, chart: .88, habit: .95, save: 1 };   // jumps early, then slows (progress bars that start fast keep more people going)
+/* moka2 3.45.21: a self-study app, so no level test (character check, word cards, story); the one level question sets where you start.
+   The test's code (check, words, read) is still in the file, unused */
+const OB_STEPS = ['hi', 'hello', 'why', 'level', 'plan', 'how1', 'how2', 'how3', 'how4', 'date', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
+const OB_PROG = { why: .12, level: .24, plan: .34, how1: .44, how2: .52, how3: .6, how4: .67, date: .74, goal: .81, chart: .88, habit: .95, save: 1 };   // jumps early, then slows (progress bars that start fast keep more people going)
 const OB_ROUND = 12, OB_ROUNDS = 4;
 /* the short reading test: hand-written passages per HSK level (two each, one picked at random), each with one question */
 const OB_READ = {
@@ -14010,7 +14012,7 @@ function obShow() {
     html = obTop() + `<div class="ob2-plan"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-pop" style="--d:.1s">${shiFace('wow')}</div>
       <div class="ob2-deck" id="ob2Deck"><div class="c"></div><div class="c"></div><div class="c front"><span class="zh">学</span><div class="ob2-stamps">
         <span class="ob2-stamp" style="--r:-4deg">${O.for === 'exam' ? 'HSK exam' : 'Everyday reading'}</span><span class="ob2-stamp j" style="--r:3deg">Start at ${HSK_NAME(lv)}</span>
-        <span class="ob2-stamp g" style="--r:-2deg">${chars ? `~${chars.toLocaleString('en')} characters known` : 'Starting from zero'}</span></div></div></div></div>
+        <span class="ob2-stamp g" style="--r:-2deg">${O.chk ? chars ? `~${chars.toLocaleString('en')} characters known` : 'Starting from zero' : 'Reviews timed for you'}</span></div></div></div></div>
       <div class="ob-dock ob2-in" style="--i:14"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
   }
   else if (step === 'how1') {
@@ -14067,8 +14069,8 @@ function obShow() {
       <div class="ob2-trial ob2-in" style="--i:5"${O.plan === 'year' ? '' : ' hidden'}><span>Remind me 2 days before the trial ends</span><button class="ob2-sw" data-trial aria-pressed="${O.trial}" aria-label="Trial reminder"></button></div>
       <div class="ob-dock ob2-in" style="--i:6"><button class="btn btn-white" data-ob="buy">${O.plan === 'year' ? 'Start my free week' : 'Continue with Monthly'}</button>
         <p class="ob2-fine">${O.plan === 'year' ? 'Nothing is charged during the free week' : 'Cancel any time'}</p><button class="ob-link" data-ob="done">Not now</button></div>`;
-  else if (step === 'level') html = obTop() + obSay('focus', 'How much Chinese do you know?', 'Next, a quick check to find your level.')
-    + `<div class="ob-opts" data-pick="level">${OB_LEVEL.map(([v, g, t]) => obOpt(v, `<span class="ob-glyph">${g}</span>`, t, '', O.level === v)).join('')}</div>
+  else if (step === 'level') html = obTop() + obSay('focus', 'How much Chinese do you know?', 'Your new words start at that level.')
+    + `<div class="ob-opts" data-pick="level">${OB_LEVEL.map(([v, g, t, sub]) => obOpt(v, `<span class="ob-glyph">${g}</span>`, t, sub, O.level === v)).join('')}</div>
     <div class="ob-dock"><button class="btn btn-primary" data-ob="next"${O.level ? '' : ' disabled'}>Continue</button></div>`;
   else if (step === 'check') html = obCheckHTML();
   else if (step === 'words') {
@@ -14135,7 +14137,7 @@ function obShow() {
 }
 /* ---------- onboarding v2 helpers ---------- */
 const obGrid = c => `<svg class="g" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="${c}" stroke-width=".5" stroke-dasharray="2.2 2" fill="none"><path d="M50 0V100M0 50H100M0 0L100 100M100 0L0 100"/></g></svg>`;
-const obLv = () => obLevel() || S.ob.level || 1;
+const obLv = () => S.ob.chk ? obLevel() : S.ob.level || 1;   // no test: the level you picked
 function obLeft(lv) { const R = S.ob.chk?.rounds.find(x => x.lv === lv), f = R ? obKnownAt(R) : 0; return Math.max(10, Math.round((S.H?.levels[lv]?.length || HSK_COUNT[lv]) * (1 - f))); }
 function obDay(add) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + add); return d; }
 const obExamDays = () => S.ob.for === 'exam' && S.ob.exam ? Math.round((S.ob.exam - obDay(0)) / 864e5) : 0;
@@ -14245,7 +14247,7 @@ function obFinish(how) {
     LOG.add('onboarding-done', { how, demo: true, for: S.ob.for, exam_days: obExamDays() || null, goal: S.ob.goal });
     S.ob = null; closeLayer(() => { S.instant = true; render(); }); return;
   }
-  const O = S.ob, sig = O.chk ? obSignals() : {}, lv = O.chk ? obLevel() : how === 'skipped' ? null : O.level ? Math.min(O.level, 2) : null;
+  const O = S.ob, sig = O.chk ? obSignals() : {}, lv = O.chk ? obLevel() : how === 'skipped' ? null : O.level || null;
   if (!O.replay && O.chk) {   // what you showed you know goes into the word bank as known (back for a light review over the next weeks)
     const now = Date.now(), have = new Set(db.bank.map(w => w.hanzi));
     const miss = new Set(O.q?.cards.filter(c => c.spot && c.pick != null && !obRight(c)).map(c => c.w.h));
