@@ -2414,8 +2414,76 @@ button.st-d:active{transform:scale(.9);transition:none}
 .w-src{margin-top:6px;font-size:13px}
 /* inside a lesson */
 .les-top{display:flex;align-items:center;gap:12px;height:60px}
-.les-bar{flex:1;height:12px;border-radius:7px;background:var(--fill);overflow:hidden}
-.les-bar i{display:block;height:100%;border-radius:7px;background:var(--c1);transition:width .35s}
+/* 3.45.27: ShiHanzi2's bar (its v3.74-v3.77 CSS), used on deck and writing rounds */
+.bar:has(.les-bar.sb){height:80px;padding-top:20px}   /* room above the bar for "3 in a row" */
+.les-bar{position:relative;flex:1;height:18px;border-radius:10px;background:var(--fill);--c1:var(--seal)}
+.les-bar i{position:relative;display:block;height:100%;border-radius:10px;background:var(--c1);transition:width .35s}
+.les-bar i::after{content:"";position:absolute;left:9px;right:9px;top:4px;height:4px;border-radius:4px;background:rgba(255,255,255,.32)}
+.les-bar.lb-t1 i{background:linear-gradient(90deg,#FFC23A,#FF9F1C)}
+.les-bar.lb-t2{background:color-mix(in srgb,#FF7A1A 12%,var(--fill))}
+.les-bar.lb-t2 i{background:linear-gradient(90deg,#FFB020,#FF5A1F);box-shadow:0 0 12px rgba(255,106,31,.5)}
+.les-bar.lb-t3{background:color-mix(in srgb,#FF3040 13%,var(--fill))}
+.les-bar.lb-t3 i{background:linear-gradient(90deg,#FFD15C,#FF7A1A 25%,#FF3040 50%,#FF7A1A 75%,#FFD15C) 0 0/200% 100%;box-shadow:0 0 16px rgba(255,64,48,.6),0 0 4px rgba(255,190,60,.8);animation:lbBlaze 1.6s linear infinite}
+@keyframes lbBlaze{to{background-position:-200% 0}}
+.les-bar.lb-t4{background:color-mix(in srgb,#3D8BFF 14%,var(--fill))}
+.les-bar.lb-t4 i{background:linear-gradient(90deg,#B8F0FF,#3D8BFF 25%,#7A5CFF 50%,#3D8BFF 75%,#B8F0FF) 0 0/200% 100%;box-shadow:0 0 18px rgba(80,140,255,.7),0 0 5px rgba(200,240,255,.9);animation:lbBlaze 1.1s linear infinite}
+.lb-t4 .lb-tip{width:34px;height:34px;margin-top:-22px;right:-15px}
+.lb-t4 .lb-tip .flame,.lb-t4 .lb-tag .flame{filter:hue-rotate(195deg) saturate(1.4) brightness(1.1)}
+.lb-t4 .lb-tag{color:#2F5BFF}
+.lb-sparks{position:absolute;top:50%;width:0;height:0;z-index:2;pointer-events:none}
+.lb-sparks span{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#FFD15C;box-shadow:0 0 7px #FF7A1A;opacity:0;animation:lbSpark .8s cubic-bezier(.15,.8,.3,1) forwards}
+.lb-t4 .lb-sparks span{background:#CFF4FF;box-shadow:0 0 8px #3D8BFF}
+.lb-sparks span:nth-child(odd){width:6px;height:6px;animation-duration:.95s}
+@keyframes lbSpark{0%{transform:rotate(var(--a)) translateX(4px) scale(1.2);opacity:1}70%{opacity:1}100%{transform:rotate(var(--a)) translateX(var(--d)) scale(.2);opacity:0}}
+.les-bar.ms::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;animation:lbBurst .9s ease-out forwards}
+@keyframes lbBurst{0%{box-shadow:0 0 0 0 rgba(255,200,60,.95),0 0 30px 6px rgba(255,120,30,.8)}100%{box-shadow:0 0 0 16px rgba(255,140,30,0),0 0 30px 6px rgba(255,120,30,0)}}
+.lb-t4.ms::before{animation-name:lbBurstB}
+@keyframes lbBurstB{0%{box-shadow:0 0 0 0 rgba(180,230,255,.95),0 0 30px 6px rgba(61,139,255,.8)}100%{box-shadow:0 0 0 16px rgba(61,139,255,0),0 0 30px 6px rgba(61,139,255,0)}}
+.ms .lb-tip{animation:lbTipBig .7s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes lbTipBig{0%{transform:scale(.6)}45%{transform:scale(1.8) translateY(-4px)}100%{transform:none}}
+.lb-tag.big{transform-origin:50% 100%;animation:lbBig 1.2s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes lbBig{0%{transform:translateY(6px) scale(.6);opacity:0}25%{transform:translateY(-2px) scale(1.4);opacity:1}70%{transform:scale(1.32)}100%{transform:none}}
+.lb-tip{position:absolute;right:-11px;top:50%;width:26px;height:26px;margin-top:-17px;z-index:1;pointer-events:none}
+.lb-tip .flame{width:100%;height:100%;transform-origin:50% 92%;animation:fireFlick 1.2s ease-in-out infinite;filter:drop-shadow(0 1px 1px rgba(126,29,25,.35))}
+.lb-t3 .lb-tip{width:32px;height:32px;margin-top:-21px;right:-14px}
+.lb-tag{position:absolute;bottom:calc(100% + 12px);translate:-50% 0;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;font-size:13px;font-weight:800;letter-spacing:.01em;font-variant-numeric:tabular-nums;color:#D98200;transition:left .35s}
+.lb-tag .flame{width:16px;height:16px}
+.lb-t2 .lb-tag{color:#E8590C}
+.lb-t3 .lb-tag{color:#E03131}
+.lb-tag.bump{animation:lbTag .45s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes lbTag{0%{transform:translateY(5px) scale(.7);opacity:0}60%{transform:translateY(-2px) scale(1.12);opacity:1}100%{transform:none}}
+.les-bar.up::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;animation:lbIgnite .7s ease-out forwards}
+@keyframes lbIgnite{0%{box-shadow:0 0 0 0 rgba(255,140,30,.75)}100%{box-shadow:0 0 0 9px rgba(255,140,30,0)}}
+.les-bar.up .lb-tip{animation:firePop .55s cubic-bezier(.2,.9,.3,1.45)}
+.les-bar.out i{animation:lbOut .7s ease-out}
+@keyframes lbOut{0%{filter:grayscale(1) brightness(.85)}100%{filter:none}}
+@media (prefers-reduced-motion:reduce){.les-bar i,.lb-tip .flame,.lb-tag,.lb-sparks span,.les-bar::before{animation:none!important}}
+/* the round's XP, right of the bar (ShiHanzi2's coin count): it bumps on every answer */
+.les-xp{display:flex;align-items:center;gap:4px;flex:none;min-width:58px;font:800 17px/1 var(--ui);font-variant-numeric:tabular-nums;color:#0B7A5E}
+.les-xp .coin{width:24px;height:24px;flex:none}
+.les-xp.up b{animation:lcUp .5s cubic-bezier(.2,.9,.3,1.5)}
+.les-xp.up .coin{animation:lcSpin .5s cubic-bezier(.3,.7,.4,1)}
+@keyframes lcUp{0%{transform:translateY(5px) scale(.7);opacity:.3}55%{transform:translateY(-3px) scale(1.25);opacity:1}100%{transform:none}}
+@keyframes lcSpin{0%{transform:scaleX(1)}40%{transform:scaleX(.15) translateY(-3px)}100%{transform:none}}
+.bar:has(.les-bar.sb) .count{min-width:0;padding-right:0}
+/* the round's XP on the end page */
+.xp-gain{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px auto 2px;color:#0B7A5E;font-weight:700}
+.xp-gain .xp-ic{width:28px;height:28px;animation:ob2Pop .55s cubic-bezier(.3,1.6,.5,1) .2s both}
+.xp-gain .xp-ic .coin{width:100%;height:100%}
+.xp-gain b{font:800 24px/1 var(--display);font-variant-numeric:tabular-nums;animation:lcUp .6s cubic-bezier(.2,.9,.3,1.5) .3s both}
+/* words you keep missing */
+.tk-card{margin:14px 0 4px;padding:14px 16px;border-radius:18px;background:var(--card);box-shadow:var(--ring);text-align:left}
+.tk-t b{display:block;font-size:16px} .tk-t small{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+.tk-w{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px} .tk-w span{padding:4px 9px;border-radius:9px;background:var(--seal-soft);color:var(--seal);font:600 18px/1.2 var(--hanzi)}
+.tk-w em{align-self:center;font-style:normal;font-size:13px;color:var(--muted)}
+.tk-b{display:flex;align-items:center;gap:12px} .tk-b .btn{flex:1}
+/* XP this week on Profile */
+.pf-xpw-h{display:flex;align-items:center;gap:7px} .pf-xpw-ic{width:24px;height:24px;display:flex} .pf-xpw-ic .coin{width:100%;height:100%}
+.pf-xpw-h b{font:600 20px/1 var(--display);font-variant-numeric:lining-nums tabular-nums} .pf-xpw-h span{font-size:13.5px;color:var(--muted)}
+.pf-xpw-s{margin:4px 0 4px;font-size:13px;color:var(--ink-2)}
+.pf-xpw .pf-col i{background:#12A07C} .pf-xpw .pf-day.later .pf-col i{background:var(--fill)}
+.pf-xpw .pf-col i em{opacity:0;transition:opacity .15s} .pf-xpw .pf-day.lab .pf-col i em,.pf-xpw .pf-day:focus .pf-col i em,.pf-xpw .pf-day:hover .pf-col i em{opacity:1}
+.pf-xpw .pf-day{background:none;border:0;padding:0;font:inherit;color:inherit}
 .les-body{display:flex;flex-direction:column;padding:6px 0 20px}
 .les-ask{margin:6px 0 16px;font-size:21px;font-weight:800;letter-spacing:-.01em}
 .les-ask span{margin-left:8px;font-size:14px;font-weight:700;color:var(--muted)}
@@ -3341,7 +3409,7 @@ button.scene-tile:active svg{opacity:.92}
 </style>
 </head>
 <body>
-<div class="m2-tag" aria-hidden="true">moka2 · test copy</div>
+
 <!-- colours for the streak flame (see .flame in the styles); kept out of view but not display:none, which would break the gradients -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <linearGradient id="flOut" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2442B"/><stop offset=".55" stop-color="#FF6A1F"/><stop offset="1" stop-color="#FF8A1A"/></linearGradient>
@@ -3836,7 +3904,7 @@ function paintSide(on) {
   rl.innerHTML = sideAcct() + (on === 2 ? '' : `<section class="sr-stats" aria-label="Your progress">
     ${stat('streak', FLAME, n + ' day streak', n && !today ? 'Finish a deck today to keep it' : n ? 'Done for today' : 'Finish a deck to start one')}
     ${stat('open-bank', '<span class="pf-zh">字</span>', plural(pv, 'word') + ' proven', db.bank.length ? `${plural(db.bank.length, 'word')} in your bank` : 'Learn words to prove them')}
-    ${stat('pf-xp', xpSvg(), xp + ' XP', 'From your reading card')}</section>`);   // Profile shows these itself
+    ${stat('pf-xp', xpSvg(), xp + ' XP', `${xpOn(dayKey(Date.now()))} today`)}</section>`);   // Profile shows these itself
 }
 matchMedia('(min-width:900px)').addEventListener('change', () => paintSide());
 /* desktop keys in a flip round: Space or Enter turns the card, 1 2 3 answer, the arrow keys go back and on */
@@ -7723,6 +7791,20 @@ function pfSince() {   // the first day ShiHanzi saw you practise or add a word
   for (const k of Object.keys(db.days)) { const [y, m, d] = k.split('-').map(Number), x = new Date(y, m, d).getTime(); if (x < t) t = x; }
   return t < Infinity ? new Date(t).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : '';
 }
+/* 3.45.27: XP this week, Monday to Sunday, one jade bar a day; today's bar and the best day carry their number,
+   tap any bar for its own. The total and last week's sit above it */
+function pfXpWeek() {
+  const now = new Date(), lead = (now.getDay() + 6) % 7;
+  const D = [...'一二三四五六日'].map((zh, i) => { const d = new Date(now); d.setDate(now.getDate() - lead + i); const p = new Date(d); p.setDate(d.getDate() - 7);
+    return { zh, en: d.toLocaleDateString('en-GB', { weekday: 'long' }), x: xpOn(dayKey(d)), last: xpOn(dayKey(p)), today: i === lead, later: i > lead }; });
+  const tw = D.reduce((a, d) => a + d.x, 0), lw = D.reduce((a, d) => a + d.last, 0), top = Math.max(...D.map(d => d.x), 30), best = Math.max(...D.map(d => d.x));
+  const line = lw ? (tw >= lw ? `${tw - lw} more than last week (${lw})` : `${lw - tw} to beat last week (${lw})`) : tw ? 'Your first week of XP' : 'Go through a deck to earn XP';
+  const bars = D.map(d => { const h = d.x ? Math.max(6, Math.round(d.x / top * 100)) : 0, lab = d.x && (d.today || d.x === best);
+    return `<button class="pf-day${d.today ? ' today' : ''}${d.later ? ' later' : ''}${lab ? ' lab' : ''}" aria-label="${d.en}: ${d.x} XP"><span class="pf-col"><i style="height:${h}%">${d.x ? `<em>${d.x}</em>` : ''}</i></span><small>${d.zh}</small></button>`; }).join('');
+  return `<section class="pf-card pf-week pf-xpw" aria-label="XP this week: ${tw}">
+    <div class="pf-xpw-h"><span class="pf-xpw-ic">${xpSvg()}</span><b>${tw.toLocaleString('en')} XP</b><span>this week</span></div>
+    <p class="pf-xpw-s">${line}</p><div class="pf-bars">${bars}</div></section>`;
+}
 function pfWeek() {   // this week, Monday to Sunday: the words you proved each day, and the week's total against last week's. Never time spent in the app (ilkem: nobody should be told how long they spent)
   const now = new Date(), lead = (now.getDay() + 6) % 7, act = practiceDays(), per = {};
   for (const w of db.bank) if (w.pf?.at) { const k = dayKey(w.pf.at); per[k] = (per[k] || 0) + 1; }
@@ -7761,6 +7843,7 @@ function ProfileView() {
     </div>
     <div class="section-head"><h2>This week <span class="cal-zh">本周</span></h2></div>
     ${pfWeek()}
+    ${pfXpWeek()}
     ${Badges()}
   </div>`;
 }
@@ -7771,7 +7854,7 @@ function PfXp() {
   const xp = xpTotal(), rc = rcState(), left = rc.ready ? 0 : RC_N - 1 - rc.n, lsh = '<span lang="zh">利是</span>';
   const sub = rc.ready ? `Your ${lsh} is ready on Read` : `${plural(left, 'story').replace('storys', 'stories')} to the next ${lsh} · +${RC_XP} XP`;
   return `<button class="pf-stat pf-xp" data-act="pf-xp" aria-label="${xp} XP. ${rc.ready ? 'Your red envelope is ready' : `${plural(left, 'story').replace('storys', 'stories')} to the next red envelope`}. Open Read">
-    <span class="pf-st-ic">${xpSvg()}</span><b>${xp.toLocaleString('en')}</b><span>XP from reading</span><small>${sub}</small></button>`;
+    <span class="pf-st-ic">${xpSvg()}</span><b>${xp.toLocaleString('en')}</b><span>XP</span><small>${xpOn(dayKey(Date.now()))} today · ${sub}</small></button>`;
 }
 /* the flame in the top-right corner of the Decks page: your streak, tap it to open the Streak page */
 const StreakBtn = () => { const { n, today } = practiceStreak();
@@ -8017,7 +8100,16 @@ function shelfState() {
    first time the card was on screen, so everyone starts on card No. 1 */
 const RC_N = 10, RC_XP = 50;
 /* moka2: XP. Your total is everything the reading card's 利是 have given; the 利是 moment counts it up as it opens */
-const xpTotal = () => Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.xp || 0), 0);
+/* 3.45.27: decks and writing earn XP too, kept per day in db.days[day].xp: a card you go through earns 1 (Forgot), 2 (Almost)
+   or 3 (Knew it; writing: right first time 3, wrong 1), and going through to the end of a round earns 10 more */
+const XP_G = [1, 2, 3], XP_ROUND = 10;
+const xpRc = () => Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.xp || 0), 0);
+const xpTotal = () => xpRc() + Object.values(db.days || {}).reduce((a, x) => a + (x?.xp || 0), 0);
+function xpAdd(n, R) {   // R: the round (S.study or S.write), which keeps its own count for the bar and the end page
+  if (!n) return; const day = db.days[dayKey(Date.now())] ||= { decks: {} }; day.xp = (day.xp || 0) + n;
+  if (R) { R.xp = (R.xp || 0) + n; R.xpUp = true; } save();
+}
+const xpOn = k => (db.days[k]?.xp || 0) + Object.values(db.rc?.open || {}).reduce((a, x) => a + (x.t && dayKey(x.t) === k ? x.xp || 0 : 0), 0);   // one day's XP, the 利是 included
 function xpSvg(big) {   // an XP token: a jade disc with a gold ring and XP on it
   return `<svg class="coin xp" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.3" fill="#12A07C" stroke="#075E48" stroke-width="${big ? 1 : 1.7}"/>`
     + `<circle cx="12" cy="12" r="7.6" fill="none" stroke="#F6C445" stroke-width="1.2"/><text x="12" y="12.6" text-anchor="middle" dominant-baseline="central" font-family="'Baloo 2',sans-serif" font-weight="800" font-size="8.2" fill="#FFF7E0">XP</text></svg>`;
@@ -9299,6 +9391,7 @@ function bagShi(mood = 'cheer') {
     + `</g>${paw(148)}</svg>`;
   return `<span class="cp-shi">${back}<span class="cp-rain"></span>${front}</span>`;
 }
+const xpLine = n => `<p class="xp-gain" role="status"><span class="xp-ic">${xpSvg()}</span><b>+${n || 0}</b><span>XP</span></p>`;   // 3.45.27
 const payLine = P => `<p class="cp-gain${P.played ? ' done' : ''}" role="status"><span class="cp-ic">${coinSvg()}</span><b>+${coinFmt(P.played ? P.n : 0)}</b><span>coins</span>
   <small>${coinFmt(P.bal)} in Shi Shi's bag</small></p>`;
 const payRow = P => `<div class="cp-row">${bagShi('cheer')}${payLine(P)}</div>`;   // the small one, beside a page's own picture
@@ -10823,6 +10916,27 @@ function whenLabel(due, now = Date.now()) {
   return days === 1 ? 'tomorrow' : days < 45 ? `in ${days} days` : days < 365 ? `in ${Math.round(days / 30)} months` : 'in a year';
 }
 const gradeLabel = (c, g) => { const p = srsPlan(c, g); return whenLabel(p ? p.due : c.srs.due); };
+/* 3.45.27, the bar from ShiHanzi2 (its v3.74-v3.77 lesson bar) on deck and writing rounds: 2 right in a row warms it to amber,
+   from 3 it burns orange with a flame at its tip, from 5 it is a moving blaze, from 10 blue-hot; a miss puts it out.
+   Right of it, the XP this round has earned so far (where ShiHanzi2 showed its coins) */
+const sbTier = c => c >= 10 ? 4 : c >= 5 ? 3 : c >= 3 ? 2 : c >= 2 ? 1 : 0;
+function sbHtml(R, f) {   // R: S.study or S.write (combo, barT, flash, xp); f: how far through the round, 0-1
+  const w = gBar(f), c = R.combo || 0, t = sbTier(c), was = R.barT || 0; R.barT = t;
+  const ms = R.flash && c >= 5 && c % 5 === 0, fx = (t > was ? ' up' : t < was ? ' out' : '') + (ms ? ' ms' : '');
+  const sparks = ms ? `<span class="lb-sparks" style="left:${w}%">${Array.from({ length: 12 }, (_, k) => `<span style="--a:${k * 30 + (k % 2 ? 12 : 0)}deg;--d:${k % 2 ? 26 : 40}px;animation-delay:${k % 3 * 25}ms"></span>`).join('')}</span>` : '';
+  if (ms) haptic(25);
+  const ph = t >= 3 ? `;animation-delay:-${Math.round(performance.now() % 1600)}ms` : '';
+  const tag = t ? `<span class="lb-tag${ms ? ' big' : R.flash ? ' bump' : ''}${t >= 2 ? ' on' : ''}" style="left:clamp(60px,${w / 2}%,calc(100% - 60px))">${t >= 2 ? FLAME : ''}${c} in a row${ms ? '!' : ''}</span>` : '';
+  const up = R.xpUp; R.flash = false; R.xpUp = false;
+  return `<span class="les-bar sb lb-t${t}${fx}" id="sbar"${t ? ` aria-label="${c} in a row"` : ''}><i style="width:${w}%${ph}">${t >= 2 ? `<b class="lb-tip on">${FLAME}</b>` : ''}</i>${sparks}${tag}</span>
+    <span class="les-xp${up ? ' up' : ''}" id="sxp" role="status" aria-label="${R.xp || 0} XP earned in this round">${xpSvg()}<b>+${R.xp || 0}</b></span>`;
+}
+function sbPaint(R, f) {   // after an answer: the bar and the XP count drawn again (so their flare plays)
+  const a = $('#sbar'), x = $('#sxp'); if (!a || !x) return;
+  const tmp = document.createElement('div'); tmp.innerHTML = sbHtml(R, f);
+  a.replaceWith(tmp.children[0]); x.replaceWith(tmp.children[0]);
+}
+function sbHit(R, ok) { R.combo = ok ? (R.combo || 0) + 1 : 0; R.flash = ok; }
 function srsGrade(c, g) {
   const now = Date.now();
   c.srs = Object.assign(c.srs || { first: now }, srsPlan(c, g, now) || {}, { seen: now });
@@ -10896,7 +11010,7 @@ function StudyView(d) {
   const c = cardById(d, st.order[st.i]), n = st.order.length;
   return `<div class="screen fade-in" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="back-deck" aria-label="Close">${I.close}</button>
-      <div class="progress"><div class="progress-fill" id="pfill" style="width:${(st.i + 1) / n * 100}%"></div></div>
+      ${sbHtml(st, (st.i + 1) / n)}
       <div class="count" id="pcount">${st.i + 1} / ${n}</div></header>
     <div class="stage" id="stage"><div class="stage-shadow" id="sshadow"></div>
       <div class="wrap" id="wrap"><div class="card3d" id="card3d">${Faces(c, d)}</div></div></div>
@@ -10927,6 +11041,7 @@ function gradeFlip(g) {
   const st = S.study, d = curDeck(), c = cardById(d, st.order[st.i]); if (!c) return;
   if (!c.srs && !st.fresh.includes(c.id)) st.fresh.push(c.id);
   srsGrade(c, g); st.graded[c.id] = g; noteDeck(d, c.id);
+  sbHit(st, g > 0); xpAdd(XP_G[g], st); sbPaint(st, (st.i + 1) / st.order.length);   // 3.45.27
   LOG.add('card-grade', { hz: c.hanzi, said: ['forgot', 'almost', 'knew it'][g], back: whenLabel(c.srs.due) });
   if (g === 0 && st.order.filter(id => id === c.id).length < 2) st.order.push(c.id);   // forgotten: asked once more at the end
   if (st.i + 1 >= st.order.length) return finishFlip();
@@ -10934,7 +11049,7 @@ function gradeFlip(g) {
 }
 function finishFlip() {
   const st = S.study, ids = Object.keys(st.graded);
-  st.done = true; noteRound(curDeck());
+  st.done = true; noteRound(curDeck()); xpAdd(XP_ROUND, st);
   { // v4.28: how long this round took, kept per deck: the total, the rounds, and time per card for the last 20 rounds
     const steps = Math.max(1, st.order.length), ms = Math.min(Date.now() - (st.t0 || Date.now()), steps * 6e4), pace = ms / steps;
     const T = (db.deckTime ||= {})[st.deckId] ||= { ms: 0, n: 0, pace: [] }, past = T.pace;
@@ -11193,9 +11308,9 @@ function StudySummary(d) {
   return `<div class="screen fade-in fe2" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="study-done" aria-label="Close">${I.close}</button><div class="bar-title"></div><span style="width:42px"></span></header>
     <section class="done-hero"><span class="le2-burst" aria-hidden="true"></span><div class="done-shi${P ? ' bag' : ''}">${P ? bagShi('cheer') : shiFace('cheer')}</div>
-      <h2>${hz}</h2><div class="done-py">${py} · ${en}</div>${P ? payLine(P) : ''}<p class="fe2-deck">${esc(d.name)}</p></section>
+      <h2>${hz}</h2><div class="done-py">${py} · ${en}</div>${P ? payLine(P) : xpLine(st.xp)}<p class="fe2-deck">${esc(d.name)}</p></section>
     <div class="lt-row" role="img" aria-label="${plural(nf, 'new word')}, ${ok} of ${n} remembered, time ${lesClock(T.ms)}">${tiles}</div><div class="lt-caps">${caps}</div>
-    <div class="le2-notes">${notes}</div>
+    <div class="le2-notes">${notes}</div>${trickyCard()}
     <div class="dock row-btns"><button class="btn btn-ghost" data-act="study-again">Again</button><button class="btn btn-primary" data-act="study-done">Done</button></div>
   </div>`;
 }
@@ -11265,7 +11380,7 @@ function stepCard(dir) {
     st.i = ni;
     $('#card3d').innerHTML = Faces(cardById(d, st.order[st.i]), d);
     st.angle = startAngle(); setAngle(false);
-    $('#pfill').style.width = `${(st.i + 1) / n * 100}%`; $('#pcount').textContent = `${st.i + 1} / ${n}`;
+    { const b = $('#sbar i'); if (b) b.style.width = gBar((st.i + 1) / n) + '%'; } $('#pcount').textContent = `${st.i + 1} / ${n}`;
     out.cancel();
     wrap.animate([{ transform: `translateX(${dir * 55}%) rotate(${dir * 7}deg)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.85,.25,1)' });
   };
@@ -11304,7 +11419,7 @@ function WriteView(d) {
   const c = cardById(d, W.order[W.i]);
   return `<div class="screen fade-in" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="back-deck" aria-label="Close">${I.close}</button>
-      <div class="progress"><div class="progress-fill" style="width:${W.i / n * 100}%"></div></div>
+      ${sbHtml(W, W.i / n)}
       ${writeSeg()}</header>
     ${writeBody(c)}
     <div class="dock" id="wdock">${writeDock()}</div></div>`;
@@ -11979,13 +12094,14 @@ function gradeWrite(ok) {
   if (S.write?.les) return lesWriteGraded(ok);
   const W = S.write, d = curDeck(), id = W.order[W.i], c = cardById(d, id), first = !(id in W.results);
   if (!W.sounded) ok ? chime() : buzz();                              // graded by you (offline, or Show me): the sound now
-  if (first) { W.results[id] = ok; c.hist = [...(c.hist || []), ok ? 1 : 0].slice(-12); proveWord(c.hanzi, ok); }   // the score and the memory count first tries
+  if (first) { W.results[id] = ok; c.hist = [...(c.hist || []), ok ? 1 : 0].slice(-12); proveWord(c.hanzi, ok); xpAdd(ok ? 3 : 1, W); }   // the score and the memory count first tries
+  sbHit(W, ok);   // 3.45.27: the bar's run
   save(); noteDeck(d, c.id);
   W.tries[id] = (W.tries[id] || 0) + 1; W.last[id] = ok;
   if (!ok && W.tries[id] < 3) W.order.push(id);                       // missed: it comes back after the round's new words
   LOG.add('write-grade', { hz: c.hanzi, counted: ok ? 'right' : 'wrong', mode: db.prefs.writeMode, checker: W.judge ? W.judge.ok : undefined, again: first ? undefined : true, hints: W.hints || undefined });
   W.i++;
-  if (W.i >= W.order.length) { W.done = true; noteRound(d); LOG.add('write-round', { right: W.order.slice(0, W.main).filter(id => W.results[id]).length, of: W.main, fixed: W.order.slice(0, W.main).filter(id => !W.results[id] && W.last[id]).length }); }
+  if (W.i >= W.order.length) { W.done = true; noteRound(d); xpAdd(XP_ROUND, W); LOG.add('write-round', { right: W.order.slice(0, W.main).filter(id => W.results[id]).length, of: W.main, fixed: W.order.slice(0, W.main).filter(id => !W.results[id] && W.last[id]).length }); }
   resetCardState();
   const scr = $('#app > .screen'), dock = $('#wdock');
   if (W.done || S.view !== 'write' || !dock) return render();
@@ -11993,10 +12109,31 @@ function gradeWrite(ok) {
   iconBadge();
   qSlide(scr, '#wprompt, #grid, #note, #tools', () => {   // the next word slides in; the bar, the mode switch and the button row stay
     dock.insertAdjacentHTML('beforebegin', writeBody(cardById(d, W.order[W.i])));
-    $('.progress-fill', scr).style.width = `${W.i / W.order.length * 100}%`;
+    sbPaint(W, W.i / W.order.length);
     dock.innerHTML = writeDock(); dock.firstElementChild?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: 'ease-out' });
     mountWrite();
   });
+}
+/* 3.45.27 (ilkem: "keep track of words that u missed or got wrong multiple times, and ask u to make a deck out of those").
+   A miss is a Forgot in a flip round (the card's srs.miss) or a wrong first try in writing (a 0 in its hist). Words missed twice
+   or more, across all your decks, that are not yet in Tricky words, are offered at the end of a round once there are 3 of them.
+   Not now waits 3 rounds before asking again */
+const roundsDone = () => Object.values(db.days || {}).reduce((a, x) => a + (x?.round || 0), 0);
+function trickyWords() {
+  const T = db.decks.find(d => d.tricky), have = new Set(T ? T.cards.map(c => c.hanzi) : []), m = new Map();
+  for (const d of db.decks) if (!d.tricky) for (const c of d.cards) {
+    const n = (c.srs?.miss || 0) + (c.hist || []).filter(x => x === 0).length; if (!n || have.has(c.hanzi)) continue;
+    const o = m.get(c.hanzi) || { n: 0, c }; o.n += n; m.set(c.hanzi, o); }
+  return [...m.values()].filter(o => o.n >= 2).sort((a, b) => b.n - a.n).map(o => o.c);
+}
+function trickyCard() {
+  if (db.trickyNo != null && roundsDone() < db.trickyNo + 3) return '';
+  const W = trickyWords(); if (W.length < 3) return '';
+  const T = db.decks.find(d => d.tricky), show = W.slice(0, 6).map(c => `<span lang="zh">${esc(c.hanzi)}</span>`).join('');
+  return `<section class="tk-card" aria-label="${plural(W.length, 'word')} you keep missing">
+    <div class="tk-t"><b>${plural(W.length, 'word')} keep${W.length === 1 ? 's' : ''} slipping</b><small>You missed each of these more than once</small></div>
+    <div class="tk-w">${show}${W.length > 6 ? `<em>+${W.length - 6}</em>` : ''}</div>
+    <div class="tk-b"><button class="btn btn-seal" data-act="tricky-make">${T ? `Add them to ${esc(T.name)}` : 'Make a deck of them'}</button><button class="ob-link" data-act="tricky-no">Not now</button></div></section>`;
 }
 function WriteSummary(d) {
   const W = S.write, ids = W.order.slice(0, W.main), ok = ids.filter(id => W.results[id]).length, n = ids.length, pct = Math.round(ok / n * 100);
@@ -12011,7 +12148,7 @@ function WriteSummary(d) {
         <img class="ws-lion" src="mascots/shi-shi.svg" alt="Shi Shi the lion cheering"></div>
       <div class="ws-score"><b>${ok}</b>of ${n} right first time</div>
       ${fixed ? `<div class="sub">${fixed} right when ${fixed === 1 ? 'it' : 'they'} came back</div>` : ''}
-      ${missed.length ? `<div class="missed">${missed.map(c => `<span>${esc(c.hanzi)}</span>`).join('')}</div>` : ''}${P ? payRow(P) : ''}</section>
+      ${missed.length ? `<div class="missed">${missed.map(c => `<span>${esc(c.hanzi)}</span>`).join('')}</div>` : ''}${P ? payRow(P) : xpLine(W.xp)}${trickyCard()}</section>
     <div class="dock" style="display:flex;flex-direction:column;gap:10px">
       ${missed.length ? `<button class="btn btn-seal wide" data-act="retry-missed">Practise the ${missed.length} missed</button>` : ''}
       <div class="row-btns"><button class="btn btn-ghost" data-act="write-again">Again</button>${more
@@ -13268,26 +13405,9 @@ function nameSheet() {
 /* ---------- Developer ----------
    Things that normally happen once a day, on demand: put the gold foil back, pick another character, watch the
    card grow into the pop-up or fly away. Only today's Hanzi of the day and story card change, on this device. */
-/* Levels for testing: max them all out or put them back to the start, on this device. The first time either is used, your
-   real levels are kept in db.devLv (lessons, unit bosses, comics, the open HSK levels and the Map), and Restore puts them
-   back. Words, streak and decks are never touched: the Map is maxed with db.mapMax and reset with db.mapFrom (only words
-   proven after the reset count), not by changing words. Coins: max owns every monument, reset owns none and starts the
-   bag at nothing; neither pours a payoff for what it changed (db.coinShown). Set my coins (devCoinSet) puts any number in the
-   bag by moving db.coinAdj, also kept first so Restore gives your own coins back. */
+/* Kept test levels (db.devLv): used only by the old unit autoplay, which moka2 no longer reaches (no Lessons, no Map). */
 const DEV_LV = ['lessons', 'utests', 'comic', 'unitAt', 'monOpen', 'mapKeep', 'mapMax', 'mapFrom', 'monOwn', 'coinAdj', 'coinShown', 'monWish'];
 function devLvKeep() { if (!db.devLv) db.devLv = { ...JSON.parse(JSON.stringify(Object.fromEntries(DEV_LV.map(k => [k, db[k] ?? null])))), unlocked: db.prefs.unlocked ?? null }; }
-function devLvMax() {
-  devLvKeep(); const now = Date.now();
-  LESSONS.forEach(L => { const r = db.lessons[L.n] ||= {}; r.done ||= now; r.last ||= now; r.best = Math.max(r.best || 0, 100); });
-  LES_UNITS.forEach(U => { const r = db.utests[U.un] ||= {}; r.pass ||= now; r.last ||= now; r.best = Math.max(r.best || 0, 100); const c = (db.comic ||= {})[U.un] ||= {}; c.p1 ||= now; c.p2 ||= now; });
-  db.unitAt = {}; db.prefs.unlocked = 7; db.mapMax = 1; delete db.mapFrom; db.monOpen = Object.fromEntries(TRAIL.map(c => [c.lv, 1]));
-  db.monOwn = Object.fromEntries(TRAIL.map(c => [c.lv, db.monOwn?.[c.lv] || now])); delete db.monWish; db.coinShown = coinEarned();
-}
-function devLvZero() {
-  devLvKeep();
-  db.lessons = {}; db.utests = {}; db.comic = {}; db.unitAt = {}; db.monOpen = {}; db.mapKeep = {}; delete db.mapMax; db.mapFrom = Date.now(); db.prefs.unlocked = 1;
-  db.monOwn = {}; db.coinAdj = 0; delete db.monWish; db.coinShown = coinEarned();
-}
 function devLvRestore() {
   const K = db.devLv; if (!K) return;
   DEV_LV.forEach(k => { if (K[k] == null) delete db[k]; else db[k] = K[k]; });   // kept before coins (no monOwn): worked out again from the words, as on the first start
@@ -13295,34 +13415,6 @@ function devLvRestore() {
   monMigrate();
   if (K.unlocked == null) delete db.prefs.unlocked; else db.prefs.unlocked = K.unlocked;
   delete db.devLv;
-}
-function devCoinSet(n) {   // the bag holds exactly n coins: db.coinAdj makes up the difference, so later earnings and spending still count from there
-  devLvKeep(); const e = coinEarned();
-  db.coinAdj = n - e + coinSpent(); db.coinShown = e;
-}
-function devCoinSheet() {
-  const PRE = [0, 100, 500, 1000, 5000, 10000, 100000];
-  openSheet(`<h3>Set my coins</h3>
-    <p class="muted" style="margin:-6px 0 14px">You have ${coinFmt(coinBal())} now. Earning and spending go on from the number you set. Restore my real levels puts your own back.</p>
-    <label class="field"><span class="lbl">Coins</span><input class="input" id="dcN" type="number" inputmode="numeric" min="0" max="9999999" step="1" value="${coinBal()}" autocomplete="off"></label>
-    <div class="chips" style="margin:-4px 0 16px">${PRE.map(n => `<button class="chip" data-n="${n}">${coinFmt(n)}</button>`).join('')}</div>
-    <button class="btn btn-primary wide" id="dcGo">Set coins</button>`, sh => {
-    const inp = sh.querySelector('#dcN');
-    sh.querySelectorAll('[data-n]').forEach(b => { b.onclick = () => { inp.value = b.dataset.n; inp.focus(); }; });
-    const go = () => {
-      const n = Math.round(+inp.value);
-      if (inp.value === '' || !Number.isFinite(n) || n < 0) { inp.focus(); return; }
-      const v = Math.min(n, 9999999);
-      LOG.add('dev', `coins ${v}`); devCoinSet(v); save(); closeSheet();
-      setTimeout(() => { S.instant = true; render(); toast(`You have ${coinFmt(coinBal())} ${coinBal() === 1 ? 'coin' : 'coins'}`); }, 300);
-    };
-    sh.querySelector('#dcGo').onclick = go;
-    inp.onkeydown = e => { if (e.key === 'Enter') go(); };
-  });
-}
-function devLvNow() {
-  const lv = playLv() || 1, un = lvUnits(lv).find(U => !utPassed(U.un)), mons = trailStates().filter(t => t.done).length;
-  return `Now: ${un ? `${HSK_NAME(lv)}, Unit ${un.k} of ${lvUnits(lv).length}` : `every unit beaten`} · ${mons} of ${TRAIL.length} monuments${db.devLv ? ' · test levels (your real ones are kept)' : ''}`;
 }
 function devSheet() {
   const H = hotdPick();
@@ -14706,6 +14798,13 @@ const A = {
   'today-start': () => { const P = todayPile(); if (!P.cards.length) return render(); S.today = { id: 'today', name: 'Today', accent: ACCENTS[0], cards: P.cards }; S.study = null;
     LOG.add('today-start', { review: P.due.length, new: P.fresh.length }); nav('#/deck/today/study'); },
   'sgrade': t => gradeFlip(+t.dataset.g),
+  'tricky-make': () => {   // 3.45.27: the words you keep missing become (or join) the Tricky words deck, and it opens
+    const W = trickyWords(); if (!W.length) return;
+    let T = db.decks.find(d => d.tricky); if (!T) { T = newDeckNamed('Tricky words'); T.tricky = true; }
+    const n = W.filter(c => addCardTo(T, c)).length; save(); LOG.add('tricky-deck', { added: n, total: T.cards.length });
+    S.study = null; S.write = null; S.today = null; toast(`${plural(n, 'word')} in ${T.name}`); nav('#/deck/' + T.id);
+  },
+  'tricky-no': () => { db.trickyNo = roundsDone(); save(); LOG.add('tricky-not-now', {}); $('.tk-card')?.remove(); },
   'study-done': () => { const today = S.deckId === 'today'; S.study = null; S.today = null; goBack(today ? '#/' : '#/deck/' + S.deckId); },
   'study-again': () => {
     if (S.deckId === 'today') { const P = todayPile(); if (!P.cards.length) { toast('All done for today'); return A['study-done'](); } S.today = { id: 'today', name: 'Today', accent: ACCENTS[0], cards: P.cards }; }
@@ -14717,7 +14816,7 @@ const A = {
     st.order = st.shuffled ? shuffle(d.cards.map(c => c.id)) : d.cards.map(c => c.id); st.i = 0;
     t.classList.toggle('on', st.shuffled);
     $('#card3d').innerHTML = Faces(cardById(d, st.order[0]), d); st.angle = startAngle(); setAngle(false);
-    $('#pfill').style.width = `${100 / st.order.length}%`; $('#pcount').textContent = `1 / ${st.order.length}`;
+    { const b = $('#sbar i'); if (b) b.style.width = gBar(1 / st.order.length) + '%'; } $('#pcount').textContent = `1 / ${st.order.length}`;
     $('#wrap').animate([{ transform: 'scale(.92) rotate(-3deg)', opacity: .4 }, { transform: 'none', opacity: 1 }], { duration: 350, easing: 'cubic-bezier(.2,.85,.25,1)' });
     toast(st.shuffled ? 'Shuffled' : 'Original order');
   },
