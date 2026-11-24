@@ -3167,7 +3167,7 @@ button.scene-tile:active svg{opacity:.92}
 .ob2-ftz span{position:relative;font:400 76px/1 var(--hanzi);letter-spacing:.08em;margin-right:-.08em}
 .ob2-pile .py{margin-top:18px;font:500 20px var(--ui);color:var(--ink-2)} .ob2-pile .en{color:var(--muted);font-size:15px;text-align:center;padding:0 20px}
 .ob2-note{color:var(--muted);font-size:14px;line-height:1.45;margin:18px 4px 0;text-wrap:pretty}
-#ob.obs-how1,#ob.obs-how2,#ob.obs-how3,#ob.obs-how4{--obbg:#E4EFE5} #ob.obs-chart{--obbg:#FCF0D2} #ob.obs-habit{--obbg:#E3EDF2}
+#ob.obs-how1,#ob.obs-how2,#ob.obs-how3,#ob.obs-how4{--obbg:#F8E8E0;--jade:#B23A2C} #ob.obs-chart{--obbg:#FCF0D2} #ob.obs-habit{--obbg:#E3EDF2}
 #ob.obs-pay{background:linear-gradient(170deg,#FF5C69,#E0283A 55%,#B8202F);color:#fff}
 #ob.obs-pay .ob-dock{background:none}
 #ob .ob2-in{opacity:0;transform:translateY(12px);animation:ob2Up .5s cubic-bezier(.2,.8,.3,1) forwards;animation-delay:calc(var(--i,0) * 70ms + 60ms)}
@@ -3187,7 +3187,7 @@ button.scene-tile:active svg{opacity:.92}
 .ob2-start{flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px 0 0}
 .ob2-hero{position:relative;width:min(230px,58vw);aspect-ratio:1;margin:0 auto}
 .ob2-tzg{position:absolute;inset:0;border-radius:18px;background:#FFFDF8;box-shadow:0 0 0 3px var(--seal),0 18px 30px -18px rgba(120,40,20,.5);overflow:hidden}
-.ob2-tzg.jade{box-shadow:0 0 0 3px var(--jade),0 18px 30px -18px rgba(20,80,50,.5)}
+.ob2-tzg.jade{box-shadow:0 0 0 3px var(--jade),0 18px 30px -18px rgba(120,35,25,.45)}
 .ob2-tzg svg.g{position:absolute;inset:0;width:100%;height:100%}
 .ob2-hw{position:absolute;inset:0}
 .ob2-fb{position:absolute;inset:0;display:grid;place-items:center;font:600 150px/1 var(--hanzi);color:var(--ink)}
@@ -3228,13 +3228,13 @@ button.scene-tile:active svg{opacity:.92}
 .ob2-tile{width:92px;height:92px;flex:none;border-radius:18px;background:#fff;display:grid;place-items:center;font:600 24px/1 var(--hanzi);box-shadow:var(--ring);transition:opacity .5s,box-shadow .4s,transform .4s}
 .ob2-tile.one{font-size:32px}
 .ob2-wall.pick .ob2-tile{opacity:.28}
-.ob2-wall.pick .ob2-tile.hit{opacity:1;box-shadow:0 0 0 3px var(--jade),0 10px 18px -10px rgba(20,80,50,.5);transform:translateY(-3px)}
+.ob2-wall.pick .ob2-tile.hit{opacity:1;box-shadow:0 0 0 3px var(--jade),0 10px 18px -10px rgba(120,35,25,.45);transform:translateY(-3px)}
 .ob2-late{opacity:0;transition:opacity .5s}
 .ob2-late.on{opacity:1}
 .ob2-tl{position:relative;margin:28px 10px 0;height:84px}
 .ob2-tl .ln{position:absolute;left:12px;right:12px;top:50px;height:4px;border-radius:2px;background:#E7A79D}
 .ob2-tl .st{position:absolute;top:41px;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #E2685A;transition:box-shadow .3s,background .3s}
-.ob2-tl .st.on{box-shadow:0 0 0 4px var(--jade);background:#DDF0E4}
+.ob2-tl .st.on{box-shadow:0 0 0 4px var(--jade);background:#FBE3DC}
 .ob2-tl .st span{position:absolute;top:30px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12.5px;font-weight:600;color:var(--ink-2)}
 .ob2-tl .st em{position:absolute;top:47px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-style:normal;font-weight:700;color:var(--jade);opacity:0;transition:opacity .3s}
 .ob2-tl .st.on em{opacity:1}
@@ -13706,7 +13706,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.35';
+const APP_VERSION = '3.45.36';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -14480,7 +14480,7 @@ function obShow() {
       <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
   }
   else if (step === 'how4') html = obTop() + `<h2 class="ob2-q ob2-in">Writing it helps it stick</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">Draw a character once and you’ll spot it faster. Every word has writing practice.</p>
-      <div class="ob2-wr ob2-in" style="--i:2"><div class="ob2-tzg jade">${obGrid('rgba(63,122,95,.55)')}<div class="ob2-hw"></div></div></div>
+      <div class="ob2-wr ob2-in" style="--i:2"><div class="ob2-tzg jade">${obGrid('rgba(178,58,44,.45)')}<div class="ob2-hw"></div></div></div>
       <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Sounds good</button></div>`;
   else if (step === 'date') {
     const y0 = new Date().getFullYear();
