@@ -1,1 +1,1 @@
-{"version": "3.45.39", "notes": "The Story time card on Decks is scaled down to match the Word of the day ticket: a Read now button the size of Learn now, a smaller title and a smaller Shi Shi with his book"}
+{"version":"3.45.40","notes":"Writing: a word bank round is exactly 10 words (missed ones come back first next time, not at the end), Next 10 brings words you have not had today, and Hint starts at the box you are on, skipping parts you already drew"}

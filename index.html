@@ -11734,10 +11734,12 @@ function startWrite(ids) {
   resetCardState();
   if (!S.H) loadHsk().then(() => { const W = S.write; if (S.view === 'write' && W && !W.done && $('#wprompt')) $('#wprompt').innerHTML = promptHtml(cardById(curDeck(), W.order[W.i])); }, () => {});
 }
-function writePick(d) {   // word bank: N words, the ones you missed last time and the ones never practised first
+function writePick(d) {   // word bank: N words, the ones you missed before today and the ones never practised first
   const ids = shuffle(d.cards.map(c => c.id)), n = db.prefs.writeN ?? 10;
   if (d.id !== 'bank' || !n || n >= ids.length) return ids;
-  const rank = c => { const h = c.hist || []; return !h.length ? 1 : h[h.length - 1] ? 2 : 0; };
+  // 3.45.40: a word you already had today waits for another day, so "Next 10" brings new words, not the ones just missed
+  const today = new Set(db.days[dayKey(Date.now())]?.decks?.bank?.cards || []);
+  const rank = c => { const h = c.hist || []; return (today.has(c.id) ? 3 : 0) + (!h.length ? 1 : h[h.length - 1] ? 2 : 0); };
   return shuffle(ids.map(id => cardById(d, id)).sort((a, b) => rank(a) - rank(b)).slice(0, n).map(c => c.id));
 }
 function resetCardState() { Object.assign(S.write, { revealed: false, pyShown: false, history: [], mistakes: 0, guidedDone: false, active: 0, writers: [], judge: null, checking: false, hints: 0, gNext: [], hg: [], miss: null, sounded: false, shownAt: Date.now() }); }
@@ -11788,19 +11790,34 @@ async function writeHint() {
   if (guided) {   // the first part not shown yet that still has strokes left to write
     i = W.active; const H = W.hg[i], next = W.gNext[i] || 0;
     k = H.groups.findIndex((g, q) => !H.shown.has(q) && g.ix.some(s => s >= next));
-  } else {
-    i = W.hg.findIndex(H => H && H.shown.size < H.groups.length);
-    k = i < 0 ? -1 : W.hg[i].groups.findIndex((_, q) => !W.hg[i].shown.has(q));
-  }
+  } else [i, k] = freeHintNext(W, boxes, refs);
   if (i < 0 || k < 0) { toast('That’s the whole character'); return; }
   const H = W.hg[i], g = H.groups[k]; H.shown.add(k); W.hints++;
   hintPart(boxes[i], refs[i], g.ix, k);
   const where = chars.length > 1 ? ` (box ${i + 1})` : '';
   $('#note').innerHTML = g.stroke ? `Hint: stroke ${g.ix[0] + 1} of ${refs[i].strokes.length}${where}`
     : g.n ? `Hint: ${partLabel(g.n)}${g.bit ? ', a few strokes' : ''}${where}` : `Hint: the next part${where}`;
-  const left = W.hg.some(x => x && x.shown.size < x.groups.length);
+  const left = guided ? W.hg.some(x => x && x.shown.size < x.groups.length) : freeHintNext(W, boxes, refs)[0] >= 0;
   const btn = $('#whint'); if (btn) btn.innerHTML = `${I.bulb}${left ? (g.stroke ? 'Next stroke' : 'Next part') : 'All shown'}`;
   LOG.add('write-hint', { hz: c.hanzi, box: i + 1, part: g.n || undefined, strokes: g.ix.length, mode: guided ? 'guided' : undefined });
+}
+/* Free: the next hint goes to the box you are on. A box counts as finished once you have written in a later box, so its
+   remaining parts are skipped (3.45.40: in 足球, Hint kept showing 足 stroke by stroke while you were writing 球). Parts your
+   ink already covers are skipped too, and a box you jumped over still gets its hints. */
+function freeHintNext(W, boxes, refs) {
+  const inked = boxes.map(b => !!b._strokes?.length), last = inked.lastIndexOf(true);
+  for (let i = 0; i < boxes.length; i++) {
+    const H = W.hg[i]; if (!H || (inked[i] && i < last)) continue;
+    const k = H.groups.findIndex((g, q) => !H.shown.has(q) && !inkCovers(boxes[i], refs[i], g.ix));
+    if (k >= 0) return [i, k];
+  }
+  return [-1, -1];
+}
+function inkCovers(box, ref, ix) {   // your ink in this box runs along these strokes (70% of their centre lines)
+  if (!ref || !box._strokes?.length) return false;
+  const s = box._s, p = Math.round(s * .09), k = (s - 2 * p) / 1024, tol = s * .085, ink = box._strokes.flat();
+  const pts = ix.flatMap(j => alongLine(ref.medians[j].map(([x, y]) => ({ x: p + x * k, y: p + (900 - y) * k })), 12));
+  return pts.filter(a => ink.some(b => Math.abs(a.x - b.x) <= tol && Math.hypot(a.x - b.x, a.y - b.y) <= tol)).length >= .7 * pts.length;
 }
 function hintPart(box, ref, ix, k) {   // the strokes of one part, drawn in one after another, each along its own direction
   const s = box._s || box.offsetWidth;
@@ -11824,12 +11841,7 @@ function hintGone(box, k) {   // you wrote this part: its hint fades away
 }
 function hintCheck(box) {   // Free: after each stroke, has your ink covered a hinted part? (70% of its strokes' centre lines)
   const W = S.write, H = W.hg?.[+box.dataset.i], ref = box._hintRef; if (!H || !ref || !box._strokes?.length) return;
-  const s = box._s, p = Math.round(s * .09), k = (s - 2 * p) / 1024, tol = s * .085, ink = box._strokes.flat();
-  for (const q of H.shown) {
-    if (H.done.has(q)) continue;
-    const pts = H.groups[q].ix.flatMap(j => alongLine(ref.medians[j].map(([x, y]) => ({ x: p + x * k, y: p + (900 - y) * k })), 12));
-    if (pts.filter(a => ink.some(b => Math.abs(a.x - b.x) <= tol && Math.hypot(a.x - b.x, a.y - b.y) <= tol)).length >= .7 * pts.length) { H.done.add(q); hintGone(box, q); }
-  }
+  for (const q of H.shown) if (!H.done.has(q) && inkCovers(box, ref, H.groups[q].ix)) { H.done.add(q); hintGone(box, q); }
 }
 function writeDock() {
   const W = S.write, guided = db.prefs.writeMode === 'guided';
@@ -12440,7 +12452,7 @@ function gradeWrite(ok) {
   sbHit(W, ok);   // 3.45.27: the bar's run
   save(); noteDeck(d, c.id);
   W.tries[id] = (W.tries[id] || 0) + 1; W.last[id] = ok;
-  if (!ok && W.tries[id] < 3) W.order.push(id);                       // missed: it comes back after the round's new words
+  if (!ok && W.tries[id] < 3 && d.id !== 'bank') W.order.push(id);   // missed: it comes back after the round's new words (word bank: another day, 3.45.40)
   LOG.add('write-grade', { hz: c.hanzi, counted: ok ? 'right' : 'wrong', mode: db.prefs.writeMode, checker: W.judge ? W.judge.ok : undefined, again: first ? undefined : true, hints: W.hints || undefined });
   W.i++;
   if (W.i >= W.order.length) { W.done = true; noteRound(d); xpAdd(XP_ROUND, W); LOG.add('write-round', { right: W.order.slice(0, W.main).filter(id => W.results[id]).length, of: W.main, fixed: W.order.slice(0, W.main).filter(id => !W.results[id] && W.last[id]).length }); }
@@ -12492,9 +12504,10 @@ function WriteSummary(d) {
       ${fixed ? `<div class="sub">${fixed} right when ${fixed === 1 ? 'it' : 'they'} came back</div>` : ''}
       ${missed.length ? `<div class="missed">${missed.map(c => `<span>${esc(c.hanzi)}</span>`).join('')}</div>` : ''}${P ? payRow(P) : xpLine(W.xp)}${trickyCard()}</section>
     <div class="dock" style="display:flex;flex-direction:column;gap:10px">
-      ${missed.length ? `<button class="btn btn-seal wide" data-act="retry-missed">Practise the ${missed.length} missed</button>` : ''}
+      ${more ? `<button class="btn btn-seal wide" data-act="write-next">Next ${db.prefs.writeN ?? 10}</button>` : ''}
+      ${missed.length ? `<button class="btn ${more ? 'btn-ghost' : 'btn-seal'} wide" data-act="retry-missed">Practise the ${missed.length} missed</button>` : ''}
       <div class="row-btns"><button class="btn btn-ghost" data-act="write-again">Again</button>${more
-        ? `<button class="btn ${missed.length ? 'btn-ghost' : 'btn-primary'}" data-act="write-next">Next ${db.prefs.writeN ?? 10}</button>` : `<button class="btn ${missed.length ? 'btn-ghost' : 'btn-primary'}" data-act="back-deck">Done</button>`}</div>
+        ? '' : `<button class="btn ${missed.length ? 'btn-ghost' : 'btn-primary'}" data-act="back-deck">Done</button>`}</div>
     </div></div>`;
 }
 
@@ -13545,7 +13558,7 @@ function practiseSheet() {
     <div class="group" id="pLv" style="margin-bottom:24px"><div class="row"><span class="row-s">Loading levels…</span></div></div>
     <p class="group-foot" id="pSum">&nbsp;</p>
     <div class="pick-n"><span>Write, at a time</span><div class="seg" id="pN">${[5, 10, 15, 20, 0].map(k => `<button data-n="${k}" class="${(db.prefs.writeN ?? 10) === k ? 'on' : ''}">${k || 'All'}</button>`).join('')}</div></div>
-    <p class="group-foot" style="margin-top:0">Ones you get wrong come back at the end of the round.</p>
+    <p class="group-foot" style="margin-top:0">Ones you get wrong come back first next time.</p>
     <div class="row-btns"><button class="btn btn-ghost" id="pFlip">${I.flip}Flip cards</button><button class="btn btn-seal" id="pWrite">${I.pen}Write</button></div>`,
   sh => {
     const box = sh.querySelector('#pLv'), sum = sh.querySelector('#pSum'), bF = sh.querySelector('#pFlip'), bW = sh.querySelector('#pWrite');
@@ -13714,7 +13727,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.39';
+const APP_VERSION = '3.45.40';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
