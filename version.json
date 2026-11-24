@@ -1,1 +1,1 @@
-{"version": "3.45.54", "notes": "An Aa button on the flashcards (top right, while you revise) makes the words on the card smaller or bigger: Small, Normal, Large or Largest. The size is kept for every deck"}
+{"version": "3.45.55", "notes": "One tap on Aa makes the card text the next size up, and after the biggest it goes back to the smallest; four dots under Aa show the size. Sizes: Smallest, Small (the default), Medium, Large. The card count (1 / 8) moved from the top corner to just above the card, so the progress bar is longer"}

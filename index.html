@@ -834,19 +834,16 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .fc-py .icon-btn{flex:none;width:38px;height:38px;color:var(--seal);background:var(--seal-soft)}
 .fc-en{font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--ink)}
 .fc-q{font-weight:800;letter-spacing:-.015em;line-height:1.15;color:var(--ink)}
-/* 3.45.54: the Aa button in the cards' top bar sets how big the card's words are (db.prefs.cardScale) */
-.fs-wrap{position:relative;flex:none}
-.bar .fs-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;font:800 17px/1 var(--ui);letter-spacing:-.02em;color:var(--ink-2);background:var(--fill)}
-.bar .fs-btn small{font-size:12.5px;font-weight:800;margin-top:3px}
-.bar .fs-btn[aria-expanded="true"]{color:var(--seal);background:var(--seal-soft)}
-.fs-pop{position:absolute;top:calc(100% + 8px);right:-6px;z-index:20;padding:10px 10px 8px;border-radius:16px;background:var(--card);box-shadow:var(--ring),0 12px 28px -10px rgba(60,35,15,.35);animation:fsIn .16s ease-out}
-.fs-pop p{margin:0 4px 8px;font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
-.fs-row{display:flex;align-items:flex-end;gap:4px}
-.fs-row button{width:46px;height:50px;border-radius:11px;display:grid;place-items:center;font-family:var(--ui);font-weight:800;color:var(--ink-2);line-height:1}
-.fs-row button.on{background:var(--seal-soft);color:var(--seal);box-shadow:inset 0 0 0 1.5px var(--seal)}
-.fs-row button:active{opacity:.5}
-@keyframes fsIn{from{opacity:0;transform:translateY(-4px) scale(.97)}}
-@media (prefers-reduced-motion:reduce){.fs-pop{animation:none}}
+/* 3.45.55: the Aa button in the cards' top bar: each tap makes the card's words the next size up, and after the biggest
+   back to the smallest (db.prefs.cardScale); the four dots under Aa show which size it is on */
+.bar .fs-btn{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:40px;height:40px;border-radius:12px;color:var(--ink-2);background:var(--fill)}
+.fs-btn>span{font:800 17px/1 var(--ui);letter-spacing:-.02em}
+.fs-btn>span small{font-size:12.5px;font-weight:800}
+.fs-dots{display:flex;gap:2.5px}
+.fs-dots b{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.25;transition:opacity .15s,background .15s}
+.fs-dots b.on{opacity:1;background:var(--seal)}
+/* 3.45.55: the card counter sits above the card, so the progress bar gets the room in the top bar */
+.st-count{position:absolute;top:2px;left:0;right:0;margin:0;text-align:center;font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;pointer-events:none}
 .face .foot{position:absolute;bottom:14px;left:0;right:0;font-size:12.5px;color:var(--muted)}
 .hz{font-family:var(--hanzi);line-height:1.12;letter-spacing:.02em;word-break:break-all}
 .py{font-size:17px;color:var(--seal);margin-top:14px;letter-spacing:.03em}
@@ -11554,27 +11551,14 @@ function startStudy() {
   S.study = { deckId: d.id, base, order: ids, i: 0, shuffled: false, angle: 0, hinted: false, flipped: false, graded: {}, fresh: [], done: false, t0: Date.now() };
 }
 const startAngle = () => db.prefs.englishFirst ? 180 : 0;
-/* 3.45.54: Aa, how big the words on the cards are; kept in db.prefs.cardScale, the same for every deck */
-const FS_STEPS = [[.85, 'Small'], [1, 'Normal'], [1.2, 'Large'], [1.4, 'Largest']];
-const cardScale = () => FS_STEPS.some(([v]) => v === db.prefs.cardScale) ? db.prefs.cardScale : 1;
-function fsPop(open) {
-  const w = $('.fs-wrap'), b = w && $('.fs-btn', w), pop = w && $('.fs-pop', w);
-  if (open === undefined) open = !pop;
-  if (!open || !w) { removeEventListener('pointerdown', fsOff, true); removeEventListener('keydown', fsEsc, true);
-    if (pop) pop.remove(); if (b) b.setAttribute('aria-expanded', 'false'); return; }
-  if (pop) return;
-  const cur = cardScale();
-  w.insertAdjacentHTML('beforeend', `<div class="fs-pop" role="group" aria-label="Card text size"><p>Card text size</p><div class="fs-row">${FS_STEPS.map(([v, t], i) =>
-    `<button class="${v === cur ? 'on' : ''}" data-act="fsize-set" data-v="${v}" aria-label="${t}" aria-pressed="${v === cur}" style="font-size:${14 + i * 5}px">A</button>`).join('')}</div></div>`);
-  b.setAttribute('aria-expanded', 'true');
-  addEventListener('pointerdown', fsOff, true); addEventListener('keydown', fsEsc, true);
+/* 3.45.55: Aa, how big the words on the cards are; kept in db.prefs.cardScale, the same for every deck. Small is the
+   default (ilkem). An old choice that is no longer offered falls back to it */
+const FS_STEPS = [[.7, 'Smallest'], [.85, 'Small'], [1, 'Medium'], [1.2, 'Large']], FS_DEF = .85;
+const cardScale = () => FS_STEPS.some(([v]) => v === db.prefs.cardScale) ? db.prefs.cardScale : FS_DEF;
+function fsBtn() {
+  const v = cardScale(), k = FS_STEPS.findIndex(([x]) => x === v);
+  return `<button class="icon-btn fs-btn" data-act="fsize" aria-label="Card text size: ${FS_STEPS[k][1]}. Tap for the next size"><span aria-hidden="true">A<small>a</small></span><i class="fs-dots" aria-hidden="true">${FS_STEPS.map((_, i) => `<b class="${i <= k ? 'on' : ''}"></b>`).join('')}</i></button>`;
 }
-function fsOff(e) {   // a touch anywhere else closes it; a touch on the card only closes it, it does not also turn the card
-  if (e.target.closest?.('.fs-wrap')) return;
-  if (e.target.closest?.('#wrap')) e.stopPropagation();
-  fsPop(false);
-}
-function fsEsc(e) { if (e.key === 'Escape') { e.stopPropagation(); fsPop(false); } }
 function hzSize(n) { return [0, 96, 92, 84, 68][n] || Math.max(34, Math.min(60, Math.floor(280 / n))); }   // close to one size; shrinks only where a long word wouldn't fit
 function enSize(s) { const l = s.length; return l < 9 ? 46 : l < 16 ? 38 : l < 28 ? 30 : l < 50 ? 24 : 20; }
 function Faces(c, d) {   // English on one side; the character and its pinyin (tap to hear) on the other
@@ -11598,9 +11582,8 @@ function StudyView(d) {
   return `<div class="screen fade-in" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="back-deck" aria-label="Close">${I.close}</button>
       ${sbHtml(st, (st.i + 1) / n)}
-      <span class="fs-wrap"><button class="icon-btn fs-btn" data-act="fsize" aria-label="Card text size" aria-expanded="false">A<small>a</small></button></span>
-      <div class="count" id="pcount">${st.i + 1} / ${n}</div></header>
-    <div class="stage" id="stage" style="--fcs:${cardScale()}"><div class="stage-shadow" id="sshadow"></div>
+      ${fsBtn()}</header>
+    <div class="stage" id="stage" style="--fcs:${cardScale()}"><p class="st-count" id="pcount">${st.i + 1} / ${n}</p><div class="stage-shadow" id="sshadow"></div>
       <div class="wrap" id="wrap"><div class="card3d" id="card3d">${Faces(c, d)}</div></div></div>
     <p class="hint" id="hint" style="opacity:${st.hinted ? 0 : 1}"><span class="touch">Tap to flip · drag sideways to turn it</span><span class="kb">Click or press Space to flip · ← → for the other cards</span></p>
     <div class="controls" id="ctrls">
@@ -13978,7 +13961,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.54';
+const APP_VERSION = '3.45.55';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -15410,12 +15393,12 @@ const A = {
     if (S.deckId === 'today') { const P = todayPile(), rv = S.today?.review, L = rv ? P.due : P.cards; if (!L.length) { toast('All done for today'); return A['study-done'](); }
       S.today = rv ? { id: 'today', name: 'Review', accent: ACCENTS[0], cards: L, review: true } : { id: 'today', name: 'Today', accent: ACCENTS[0], cards: L }; }
     S.study = null; startStudy(); render(); },
-  'fsize': () => fsPop(),
-  'fsize-set': t => {
-    const v = +t.dataset.v; db.prefs.cardScale = v; save();
+  'fsize': t => {   // 3.45.55: one tap, the next size; after the biggest, the smallest again
+    const k = FS_STEPS.findIndex(([x]) => x === cardScale()), v = FS_STEPS[(k + 1) % FS_STEPS.length][0];
+    db.prefs.cardScale = v; save();
     $('#stage')?.style.setProperty('--fcs', v);
-    $$('.fs-row button').forEach(b => { const on = +b.dataset.v === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
-    LOG.add('card-size', { size: FS_STEPS.find(([x]) => x === v)?.[1] });
+    t.outerHTML = fsBtn(); $('.fs-btn')?.focus({ preventScroll: true });
+    LOG.add('card-size', { size: FS_STEPS.find(([x]) => x === v)[1] });
   },
   'next': () => stepCard(1),
   'prev': () => stepCard(-1),
