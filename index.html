@@ -846,13 +846,18 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .hint.ask{font-size:14px;font-weight:600;color:var(--ink-2)}
 /* "Did you know it?" answers after a card is turned */
 .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 0 calc(20px + env(safe-area-inset-bottom));animation:gradesIn .28s cubic-bezier(.2,.85,.25,1) both}
-.gbtn{height:62px;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:opacity .2s}
-.gbtn:active{opacity:.6;transition:none}
-.gbtn b{font-size:15.5px;font-weight:700}
-.gbtn small{font-size:12px;opacity:.75}
-.g-no{background:var(--seal-soft);color:var(--seal)}
-.g-mid{background:var(--fill);color:var(--ink)}
-.g-yes{background:var(--jade);color:#fff}
+/* 3.45.51: three solid keys in Chinese pigments, cinnabar 朱砂, gamboge 藤黄 and malachite 石绿, each standing on a darker
+   edge that it presses down into when tapped */
+.gbtn{--lip:5px;height:66px;margin-bottom:var(--lip);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  background:var(--g);color:var(--gt);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.28),0 var(--lip) 0 var(--gl);transition:transform .08s,box-shadow .08s,filter .15s}
+.gbtn:active{transform:translateY(var(--lip));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),0 0 0 var(--gl);transition:none}
+.gbtn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+@media (hover:hover){.gbtn:hover{filter:brightness(1.06)}}
+.gbtn b{font-family:var(--display);font-size:17.5px;font-weight:700;letter-spacing:.01em;line-height:1}
+.gbtn small{font-size:12.5px;font-weight:600;opacity:.88;line-height:1}
+.g-no{--g:#D2361F;--gl:#97200F;--gt:#fff}
+.g-mid{--g:#F2B21C;--gl:#B97F06;--gt:#3B2500}
+.g-yes{--g:#14865A;--gl:#0B5C3D;--gt:#fff}
 @keyframes gradesIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 /* end of a flip round */
 .done-hero{position:relative;text-align:center;padding:8px 0 0}
@@ -7229,7 +7234,7 @@ function lesDropWrites(quiet) {   // "Can't write now", or no internet: no more 
 function lesDropEars() {   // "Can't listen now": the listening questions left ask "Which one means…" instead (same four answers), and nothing is said aloud by itself any more
   const E = S.les; let left = 0;
   for (const x of E.q.slice(E.qi)) if (x.t === 'ear') { x.t = 'en2hz'; left++; }
-  E.quiet = true; try { speechSynthesis.cancel(); } catch (_) {}
+  E.quiet = true; sayStop();
   toast(`No more listening in this ${E.test ? 'test' : 'lesson'}`);
   LOG.add('lesson-listen-skip', { n: E.n, test: E.test || undefined, left });
   lesPaint(true);
@@ -8754,7 +8759,7 @@ function readPop(t) {
   const parts = hanChars(w.h).length > 1 && chars.length ? `<div class="rpop-parts">${chars.map(([c, m]) => `<span><b>${esc(c)}</b>${esc(m)}</span>`).join('')}</div>` : '';
   const pop = document.createElement('div'); pop.className = 'rpop';
   pop.innerHTML = `<div class="rpop-top"><div><div class="rpop-hz">${esc(w.h)}</div><div class="rpop-py">${esc(PY(w.h, w.p))}</div></div>
-      ${'speechSynthesis' in window ? `<button class="rpop-say" data-act="say" data-h="${esc(w.h)}" aria-label="Say it">${I.sound}</button>` : ''}</div>
+      <button class="rpop-say" data-act="say" data-h="${esc(w.h)}" data-p="${esc(w.p || '')}" aria-label="Say it">${I.sound}</button></div>
     <div class="rpop-en">${esc(en) || '<span class="muted">No meaning found</span>'}</div>${parts}
     ${b ? '<div class="rpop-tag">In your word bank</div>' : HAN.test(w.h) ? `<button class="rpop-add" data-act="rpop-add" data-k="${t.dataset.k}">${I.plus}Add to my words</button>` : ''}`;
   story.appendChild(pop);
@@ -8781,16 +8786,76 @@ document.addEventListener('click', e => {
   }
   closeReadPop();
 });
-function sayZh(text) {
+/* 3.45.51: the sound button always says something. Many Android phones have no Chinese voice, so the phone's speech stayed
+   silent. Now a Mandarin word in the recorded set (dict/audio-words.txt: about 8,600 HSK words spoken by Chen Wang, audio-cmn,
+   CC BY-SA) plays that recording. Anything else goes to the phone's Chinese voice, and when the phone has none, it fails or it
+   stays silent, the word is pieced together from the recorded syllables (the same set the pinyin page uses). */
+const AW_AUDIO = PY_AUDIO.replace('/syllabs/cmn-', '/hsk/cmn-');
+let awP = null, AWS = null, sayN = 0, saySrc = [];
+const loadAw = () => awP ||= fetch('dict/audio-words.txt').then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then(t => AWS = new Set(t.split('\n').map(s => s.trim()).filter(Boolean)), e => { awP = null; throw e; });
+loadAw().catch(() => {});
+const acBuf = new Map();
+function acLoad(url) {
+  const ctx = acx();
+  if (!acBuf.has(url)) acBuf.set(url, fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .then(b => new Promise((res, rej) => ctx.decodeAudioData(b, res, rej))).catch(e => { acBuf.delete(url); throw e; }));
+  return acBuf.get(url);
+}
+function acTrim(b) {   // the sound inside a recording, without the quiet before and after it
+  const d = b.getChannelData(0), th = .012; let a = 0, z = d.length - 1;
+  while (a < z && Math.abs(d[a]) < th) a++; while (z > a && Math.abs(d[z]) < th) z--;
+  const o = Math.max(0, a / b.sampleRate - .02); return [o, Math.min(b.duration - o, (z - a) / b.sampleRate + .06)];
+}
+function acPlay(bufs, gap) {   // one recording, or syllables one after another
+  const ctx = acx(); let t = ctx.currentTime + .03;
+  saySrc = bufs.map(b => { const [o, d] = acTrim(b), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(t, o, d); t += d + gap; return s; });
+}
+function sayStop() {
+  sayN++; saySrc.forEach(s => { try { s.stop(); } catch (_) {} }); saySrc = [];
+  try { speechSynthesis.cancel(); } catch (_) {}
+}
+const PY_TONE = { '̄': 1, '́': 2, '̌': 3, '̀': 4 };
+const pySyls = p => (p || '').toLowerCase().normalize('NFD').split(/[^a-z̀-ͯ]+/).filter(Boolean).map(x => {
+  let t = 0; for (const ch of x) if (PY_TONE[ch]) t = PY_TONE[ch];
+  return [x.replace(/[̀́̄̌]/g, '').normalize('NFC').replace(/ü/g, 'v').replace(/ü/g, 'v'), t];
+}).filter(([s]) => /^[a-z]+$/.test(s));
+function sylBuf(s, t) {   // the neutral tone has no recording of its own: the first tone, else any that exists
+  const ts = t ? [t] : [1, 4, 2, 3], one = i => { let k = s + ts[i]; if (k === 'ju4') k = 'jv4';
+    return acLoad(PY_AUDIO + k + '.mp3').catch(e => i + 1 < ts.length ? one(i + 1) : Promise.reject(e)); };
+  return one(0);
+}
+const pyFor = h => S.H?.byHz.get(h)?.p || autoPinyin(h);   // the pinyin of any Chinese text: an HSK word, else pinyin-pro
+function sylSay(text, p, n) {
+  Promise.resolve(p || pyFor(text)).then(p => {
+    const sy = pySyls(p); if (!sy.length) throw new Error('no pinyin');
+    return Promise.all(sy.map(([s, t]) => sylBuf(s, t)));
+  }).then(bufs => { if (n === sayN) acPlay(bufs, .02); }, () => { if (n === sayN) toast('The sounds need the internet the first time'); });
+}
+function ttsSay(text, k, n, fail) {   // the phone's own voice; fail() when it has no Chinese voice, errors or stays silent
+  if (!('speechSynthesis' in window)) return fail();
   try {
-    const k = ZH.t ? ZH.k : 'cn', u = new SpeechSynthesisUtterance(zhT(text)); u.lang = SYS[k].lang; u.rate = .85;   // v4.68: a Taiwan or Cantonese voice when you learn those
+    const u = new SpeechSynthesisUtterance(zhT(text)); u.lang = SYS[k].lang; u.rate = .85;   // v4.68: a Taiwan or Cantonese voice when you learn those
     // standard Mandarin: never a regional voice that also says zh-CN (Edge's Xiaobei, Northeastern, is zh-CN-liaoning; Xiaoni
     // zh-CN-shaanxi), and the clear standard voices first
     const vs = speechSynthesis.getVoices(), std = v => /^zh[-_](CN|Hans)$/i.test(v.lang) && !/liaoning|shaanxi|northeast|dialect|sichuan|东北|陕西/i.test(v.name);
     const cn = () => vs.find(v => std(v) && /xiaoxiao|yunxi|xiaoyi|yunyang|tingting|huihui|普通话/i.test(v.name)) || vs.find(std) || vs.find(v => /^zh[-_](CN|Hans)/i.test(v.lang));
-    const v = k === 'hk' ? vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) : k === 'tw' ? vs.find(v => /^zh[-_](TW|Hant)/i.test(v.lang)) || cn() : cn(); if (v) u.voice = v;
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
-  } catch (_) {}
+    const v = k === 'hk' ? vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) : k === 'tw' ? vs.find(v => /^zh[-_](TW|Hant)/i.test(v.lang)) || cn() : cn();
+    if (!v && vs.length) return fail();   // the phone lists its voices and none speaks Chinese
+    if (v) u.voice = v;
+    let on = false, out = false; const no = () => { if (!out) { out = true; fail(); } }; u.onstart = () => { on = true; };
+    u.onerror = e => { if (!on && n === sayN && !/interrupted|canceled/.test(e.error || '')) no(); };
+    speechSynthesis.speak(u);
+    setTimeout(() => { if (!on && n === sayN && !speechSynthesis.speaking) { speechSynthesis.cancel(); no(); } }, 1600);
+  } catch (_) { fail(); }
+}
+function sayZh(text, p) {
+  if (!text) return; sayStop(); const n = sayN, k = ZH.t ? ZH.k : 'cn';
+  if (k === 'hk') return ttsSay(text, k, n, () => toast('Your phone has no Cantonese voice'));
+  const tts = () => ttsSay(text, k, n, () => sylSay(text, p, n));
+  if (!AWS) loadAw().catch(() => {});
+  if (!AWS?.has(text)) return tts();
+  acLoad(AW_AUDIO + encodeURIComponent(text) + '.mp3').then(b => { if (n === sayN) acPlay([b], 0); }, () => { if (n === sayN) tts(); });
 }
 function addReadWord(t) {   // "Add to my words" in the word bubble
   const [li, wi] = t.dataset.k.split('.').map(Number), s = readStory(), w = s && storyTokens(s)[li]?.[wi]; if (!w || bankHas(w.h)) return;
@@ -9083,7 +9148,7 @@ function hotdMeanings(H) {
   return [...new Set(H.e.split('; ').map(m => plainMeaning(m)).filter(m => m && !/^(CL|surname|variant of|old variant)/i.test(m)))].slice(0, 4);
 }
 function HdxId(H) {   // page 1, once uncovered: the sound and the meaning above the box
-  return `<div class="hdx-py">${esc(PY(H.h, H.p))}${'speechSynthesis' in window ? `<button class="hs-say" data-act="say" data-h="${esc(H.h)}" aria-label="Say it">${I.sound}</button>` : ''}</div>
+  return `<div class="hdx-py">${esc(PY(H.h, H.p))}<button class="hs-say" data-act="say" data-h="${esc(H.h)}" data-p="${esc(H.p || '')}" aria-label="Say it">${I.sound}</button></div>
     <div class="hdx-en">${hotdMeanings(H).map(esc).join(' <span>·</span> ')}</div>`;
 }
 function hdxParts(H) {
@@ -11487,7 +11552,7 @@ function Faces(c, d) {   // English on one side; the character and its pinyin (t
   if (d.id === 'today') d = db.decks.find(x => x.cards.includes(c)) || { name: 'Word bank' };   // today's cards: the deck each one is from
   const hz = `<div class="fc-ch" style="font-size:${hzSize(n)}px">${esc(c.hanzi)}</div>`;   // the plain character, no writing grid
   const q = enF ? `<div class="fc-q" style="font-size:${enSize(c.en)}px">${esc(c.en)}</div>` : hz;
-  const py = `<span class="fc-py">${esc(PY(c.hanzi, c.pinyin))}<button class="icon-btn" data-act="say" data-h="${esc(c.hanzi)}" aria-label="Hear it">${I.sound}</button></span>`, foot = `<span class="foot">${esc(d.name)}</span>`;
+  const py = `<span class="fc-py">${esc(PY(c.hanzi, c.pinyin))}<button class="icon-btn" data-act="say" data-h="${esc(c.hanzi)}" data-p="${esc(c.pinyin || '')}" aria-label="Hear it">${I.sound}</button></span>`, foot = `<span class="foot">${esc(d.name)}</span>`;
   const ans = enF ? `${hz}${py}${foot}`   // English first: the answer is the character and its pinyin
     : `<div class="fc-ch" style="font-size:${Math.round(hzSize(n) * .8)}px">${esc(c.hanzi)}</div>${py}
       <span class="fc-en" style="font-size:${Math.max(17, Math.min(22, Math.round(enSize(c.en) * .6)))}px">${esc(c.en)}</span>${foot}`;
@@ -13881,7 +13946,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.50';
+const APP_VERSION = '3.45.51';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -15269,7 +15334,7 @@ const A = {
   'pf-go': () => { LOG.add('profile-go', { to: 'decks' }); nav('#/'); },
   'pf-map': () => nav('#/map'),
   'pf-shop': () => shopSheet(),
-  'say': t => sayZh(t.dataset.h),
+  'say': t => sayZh(t.dataset.h, t.dataset.p),
   'hotd-open': () => hotdOpen(),
   'rpop-add': t => addReadWord(t),
   'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-pressed', db.prefs.readPy); $('.story')?.classList.toggle('py', db.prefs.readPy); },
