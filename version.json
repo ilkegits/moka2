@@ -1,1 +1,1 @@
-{"version": "3.45.36", "notes": "The four \"how it works\" pages in the welcome are warm blush instead of mint green, with seal-red rings on the picked words, the timeline and the writing grid"}
+{"version": "3.45.37", "notes": "The strip beside the bottom menu no longer takes taps: the page fades out there, so a row next to Decks or Profile cannot be opened by mistake, and a near miss beside the menu still lands on the nearest tab"}
