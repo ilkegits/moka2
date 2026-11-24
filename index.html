@@ -562,6 +562,24 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 #fab-root.open .fab svg.i{transform:rotate(135deg);filter:none}
 .fab.fab-add{display:flex;gap:7px;width:auto;height:58px;border-radius:20px;padding:0 26px 3px 19px;font:600 18px/1 var(--display);text-shadow:0 1.5px 0 rgba(90,10,5,.45)}
 .fab.fab-add svg.i{width:24px;height:24px}
+.dk-add{position:absolute;right:0;bottom:calc(100% - 6px);display:flex;align-items:center;gap:6px;height:46px;padding:0 18px 3px 13px;border-radius:15px;
+  font:600 16px/1 var(--display);background:linear-gradient(#3a302b,var(--ink) 60%);color:var(--paper);
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 14px 24px -10px rgba(30,20,10,.6),0 3px 8px -3px rgba(30,20,10,.3);transition:transform .08s,box-shadow .08s}
+.dk-add:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 6px 12px -8px rgba(30,20,10,.6)}
+.dk-add svg.i{width:20px;height:20px;stroke-width:2.4}
+/* 3.45.43 the deck page's bottom bar: Write (white, with a 写 square) and Flip (red, the main button) */
+.dk-dock{display:flex;gap:10px}
+#frame.tabs .dock.dk-dock{background:linear-gradient(rgba(244,238,227,0),var(--paper) 22px)}   /* rows scrolling under the bar fade out instead of showing between the buttons */
+.dk-dock .btn{height:62px;border-radius:18px}
+.dk-write{flex:0 0 auto;gap:9px;padding:0 16px 4px 9px}
+.dk-tz{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--tzg) center/100% 100% no-repeat,var(--card);font:400 24px/1 var(--hanzi);color:var(--seal);box-shadow:0 0 0 1px rgba(120,95,60,.12)}
+.dk-flip{flex:1;flex-direction:column;gap:3px;min-width:0}
+.dk-ft{display:flex;align-items:center;gap:8px;font-size:18px}
+.dk-ft svg.i{width:22px;height:22px}
+.dk-flip small{font:500 12.5px/1 var(--ui);opacity:.88;text-shadow:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.dk-left{font-weight:600;color:var(--accent,var(--seal))}
+.dk-done{font-weight:600;color:var(--jade);display:inline-flex;align-items:center;gap:3px}
+.dk-done svg.i{width:15px;height:15px}
 .fab.fab-ink{width:56px;height:56px;bottom:calc(12px + var(--tabh) + 16px + 62px + env(safe-area-inset-bottom));background:linear-gradient(#3a302b,var(--ink) 60%);color:var(--paper);
   box-shadow:inset 0 -4px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 14px 24px -10px rgba(30,20,10,.6),0 3px 8px -3px rgba(30,20,10,.3)}
 .fab.fab-ink:active{box-shadow:inset 0 -2px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 6px 12px -8px rgba(30,20,10,.6)}
@@ -11059,22 +11077,32 @@ function dots(c) {
   if (!h.length) return '';
   return `<span class="dots">${h.map(x => `<i class="${x ? 'ok' : 'no'}"></i>`).join('')}</span>`;
 }
+/* 3.45.43: the deck page, built for one thumb. The two round buttons sat at the top, out of reach; now they sit in a
+   bar at the bottom: one big red Flip (the main thing to do here), Write beside it in white, and Add as a small black
+   button above them. Under the title, how many cards are left for today ("2 to go today"), and the red button says
+   what a round costs and what it keeps (your streak). An empty deck has one button only: Add your first card */
+function deckToday(d) {   // cards of this deck you already went over today
+  const seen = new Set(db.days[dayKey(Date.now())]?.decks?.[d.id]?.cards || []);
+  return d.cards.filter(c => seen.has(c.id)).length;
+}
 function DeckView(d) {
-  const n = d.cards.length;
-  const g = groupById(d.group);
-  return `<div class="screen fade-in has-fab" style="--accent:${d.accent}">
+  const n = d.cards.length, g = groupById(d.group), had = n ? deckToday(d) : 0, left = n - had;
+  const { n: streak, today } = practiceStreak(), mins = Math.max(1, Math.round(n * 7 / 60));
+  const sub = !today ? (streak ? `Keeps your ${streak}-day streak` : 'Starts your streak') : !left ? 'Done today' : `About ${plural(mins, 'minute')}`;
+  const state = !n ? '' : !had ? '' : left ? ` · <b class="dk-left">${left} to go today</b>` : ` · <b class="dk-done">${I.check || ''}Done today</b>`;
+  return `<div class="screen fade-in dk-page" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title"></div>
       <button class="icon-btn" data-act="deck-menu" aria-label="Deck options">${I.more}</button></header>
-    <section class="deck-hero"><div class="eyebrow">${g ? esc(g.name) : 'Deck'}</div><h1 class="deck-title"><span class="dn">${esc(d.name)}</span></h1><div class="muted">${plural(n, 'card')}</div></section>
-    <div class="modes">
-      <button class="mode" data-act="study" ${n ? '' : 'disabled'}><div class="mode-ic">${I.flip}</div><div><div class="mode-t">Flip cards</div><div class="mode-s">Turn &amp; review</div></div></button>
-      <button class="mode" data-act="write" ${n ? '' : 'disabled'}><div class="mode-ic tz">${miniTZG('写')}</div><div><div class="mode-t">Write</div><div class="mode-s">English → hanzi</div></div></button>
-    </div>
-    <div class="section-head"><h2>Cards</h2></div>
-    ${n ? `<ul class="cards">${d.cards.map(c => `<li><button class="crow" data-act="edit-card" data-id="${c.id}">
+    <section class="deck-hero"><div class="eyebrow">${g ? esc(g.name) : 'Deck'}</div><h1 class="deck-title"><span class="dn">${esc(d.name)}</span></h1><div class="muted">${plural(n, 'card')}${state}</div></section>
+    ${n ? `<div class="section-head"><h2>Cards</h2></div><ul class="cards">${d.cards.map(c => `<li><button class="crow" data-act="edit-card" data-id="${c.id}">
         <span class="crow-hz">${esc(c.hanzi)}</span>
-        <span class="crow-txt"><span class="crow-py">${esc(PY(c.hanzi, c.pinyin))}</span><span class="crow-en">${esc(c.en)}</span></span>${dots(c)}</button></li>`).join('')}</ul>`
-      : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Tap Add to put in your first word.</p></div>`}
+        <span class="crow-txt"><span class="crow-py">${esc(PY(c.hanzi, c.pinyin))}</span><span class="crow-en">${esc(c.en)}</span></span>${dots(c)}</button></li>`).join('')}</ul><div class="bk-fabgap"></div>`
+      : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Put in your first word to start.</p></div>`}
+    <div class="dock dk-dock">${n
+      ? `<button class="dk-add" data-act="add-card">${I.plus}Add</button>
+        <button class="btn btn-ghost dk-write" data-act="write" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
+        <button class="btn btn-seal dk-flip" data-act="study"><span class="dk-ft">${I.flip}Flip ${plural(n, 'card')}</span><small>${sub}</small></button>`
+      : `<button class="btn btn-seal wide" data-act="add-card">${I.plus}Add your first card</button>`}</div>
   </div>`;
 }
 /* v3.62 groups: a folder of decks. db.groups = [{ id, name, accent, created }]; a deck in one has d.group = its id */
@@ -11114,7 +11142,7 @@ function renderFab() {
   const v = S.view, d = v === 'deck' && curDeck(), deck = d && db.decks.includes(d);
   const opt = (act, hz, t, sub) => `<button class="fab-opt" data-act="${act}"><span class="fab-lab"><b>${t}</b><small>${sub}</small></span><span class="fab-tile" aria-hidden="true">${hz}</span></button>`;
   let html = '';
-  if (deck) html = `<button class="fab fab-add" data-act="add-card">${I.plus}Add</button>`;
+  if (deck) html = '';   // 3.45.43: a deck's Add sits in its bottom bar (DeckView), just above Flip and Write
   else if (v === 'bank') html = `<button class="fab fab-ink" data-act="quick-add" aria-label="Add a word">${I.plus}</button>`;   // v4.20: just above Practise
   else if (v === 'home' || (v === 'group' && curGroup())) html = `<div class="fab-veil" data-act="fab-close"></div><div class="fab-menu">${v === 'home'
       ? opt('new-group', '组', 'Create group', 'A folder for decks') + opt('new-deck', '卡', 'Create deck', 'Cards for your words')
@@ -13743,7 +13771,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.42';
+const APP_VERSION = '3.45.43';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
