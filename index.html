@@ -406,15 +406,15 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hs-btns{display:flex;flex-direction:column;gap:10px}
 .hs-add.done{background:var(--jade-soft);color:var(--jade);animation:pop .35s cubic-bezier(.2,.9,.3,1.4) both}
 .hs-off{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 18px}
-/* the Hanzi of the day pop-up: the card grows into a red pop-up over the page, three pages side by side; swipe anywhere */
+/* the Hanzi of the day pop-up: the card grows into a white pop-up over the page, the pages side by side; swipe anywhere */
 html.hdx-on,html.hdx-on body{overflow:hidden}
 .hdx{position:fixed;inset:0;z-index:48;display:grid;place-items:center;padding:calc(14px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom))}
 .hdx-scrim{position:absolute;inset:0;background:rgba(26,10,6,.52)}
-.hdx-box{--hd:#C4432E;position:relative;width:min(100%,440px);height:min(100%,700px);border-radius:28px;background:var(--hd);color:var(--seal-ink);overflow:hidden;
+.hdx-box{--hd:#fff;position:relative;width:min(100%,440px);height:min(100%,700px);border-radius:28px;background:var(--hd);color:var(--ink);overflow:hidden;
   display:flex;flex-direction:column;transform-origin:0 0;box-shadow:0 30px 60px -24px rgba(40,6,4,.7)}
 .hdx-bar{position:relative;flex:none;display:flex;align-items:center;padding:12px 10px 0 20px}
-.hdx-bar .hd-lbl{flex:1}
-.hdx .hd-x{position:static;flex:none;width:38px;height:38px}
+.hdx-bar .hd-lbl{flex:1;color:var(--seal);font-weight:700;opacity:1}
+.hdx .hd-x{position:static;flex:none;width:38px;height:38px;background:var(--fill);color:var(--ink)}
 .hdx .hd-x svg.i{width:18px;height:18px}
 .hdx-pager{position:relative;flex:1;min-height:0;display:flex;overflow:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior:contain}
 .hdx-pager.free{overflow-x:auto}
@@ -426,24 +426,24 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .hdx-dots{position:relative;flex:none;display:flex;justify-content:center;padding:0 0 8px}
 .hdx-dots button{width:22px;height:30px;display:grid;place-items:center}
 .hdx-dots button::before{content:"";width:7px;height:7px;border-radius:4px;background:currentColor;opacity:.35;transition:width .25s,opacity .25s}
-.hdx-dots button.on::before{width:20px;opacity:1}
+.hdx-dots button.on::before{width:20px;opacity:1;background:var(--seal)}
 /* page 1: scratch */
 .hdx-head{min-height:78px;margin-bottom:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .hdx-head.new>*{animation:hdRise .45s cubic-bezier(.2,.8,.3,1) both}.hdx-head.new>*+*{animation-delay:.08s}
 .hdx-t{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
 .hdx-s{margin-top:6px;font-size:15px;opacity:.88}
 .hdx-py{display:flex;align-items:center;gap:10px;font-size:34px;font-weight:800;letter-spacing:-.01em;line-height:1.1}
-.hdx .hs-say{width:38px;height:38px;background:rgba(255,248,242,.18);color:var(--seal-ink)}
+.hdx .hs-say{width:38px;height:38px;background:var(--seal-soft);color:var(--seal)}
 .hdx-en{margin-top:6px;font-size:15.5px;font-weight:600;line-height:1.35}
 .hdx-en span{opacity:.6;margin:0 3px}
 .hdx-tile{--t:min(calc(100vw - 72px),290px,38vh);position:relative;width:var(--t);height:var(--t);border-radius:16px;overflow:hidden;background:var(--card);color:var(--grid);
-  box-shadow:0 22px 34px -18px rgba(60,10,5,.75),0 0 0 4px rgba(255,248,242,.16);touch-action:none}
+  box-shadow:0 0 0 1px var(--line),0 18px 30px -20px rgba(70,45,20,.45);touch-action:none}
 .hdx-tile.pop,.hdx-tile.shown{touch-action:pan-x pan-y}
 .hdx-ch{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hanzi);font-weight:600;font-size:calc(var(--t) * .68);line-height:1;color:var(--ink);padding-bottom:calc(var(--t) * .03)}
 .hdx-tile.two .hdx-ch{font-size:calc(var(--t) * .37);letter-spacing:.06em}   /* a two-character word side by side in the box */
 .hs-tabs{display:flex;justify-content:center;gap:8px;margin:-4px 0 12px}   /* a two-character word: which character the film shows */
-.hs-tabs button{min-width:48px;height:44px;padding:0 10px;border-radius:12px;font:600 24px/1 var(--hanzi);background:rgba(255,248,242,.16);color:var(--seal-ink);transition:background .2s}
-.hs-tabs button.on{background:var(--seal-ink);color:var(--hd,#C4432E)}
+.hs-tabs button{min-width:48px;height:44px;padding:0 10px;border-radius:12px;font:600 24px/1 var(--hanzi);background:var(--fill);color:var(--ink);transition:background .2s}
+.hs-tabs button.on{background:var(--seal);color:#fff}
 .hdx-foil,.hdx-tile canvas{position:absolute;inset:0;width:100%;height:100%}
 .hdx-foil{background:linear-gradient(135deg,#E2AE3E,#FFE7A0 45%,#E9B949 60%,#C98F24)}
 .hdx-tile.live .hdx-foil{visibility:hidden}
@@ -451,30 +451,28 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .hdx-tile.going .hd-sheen{display:none}
 .hdx-tile.pop canvas{transition:opacity .4s ease,transform .45s cubic-bezier(.3,.6,.4,1);opacity:0;transform:scale(1.25)}
 .hdx-tile.pop .hdx-ch{animation:hdStamp .5s cubic-bezier(.3,1.6,.5,1) both}
-.hdx-tile:focus-visible{outline:3px solid #FFE08A;outline-offset:4px}
+.hdx-tile:focus-visible{outline:3px solid var(--seal);outline-offset:4px}
 .hdx-after{min-height:40px;margin-top:16px;display:flex;justify-content:center;align-items:flex-start}
 .hdx-after>*{animation:hdRise .45s cubic-bezier(.2,.8,.3,1) .12s both}
 .hdx-after .hd-meta{margin:0}
 .hdx-say{margin-top:auto;align-self:stretch;display:flex;align-items:flex-end;gap:8px;padding-top:12px}
 .hdx .hs-shi{flex:none;width:54px;height:54px;transform-origin:50% 100%}
 .hdx .hs-shi.hop{animation:shiHop 1.2s ease-in-out 1}
-.hdx .hs-bub{box-shadow:none}
+.hdx .hs-bub{background:var(--card-2);box-shadow:0 0 0 1px var(--line)}
+.hdx .hd-meta span{background:var(--fill);color:var(--ink-2)}
 /* page 2: the stroke order as one quick animation */
 .hdx .hs-h{align-self:stretch;margin:2px 2px 14px;font-size:20px}
-.hdx .hs-h span{color:inherit;opacity:.75}
 .hdx .hs-tzg,.hdx .hs-tzg *{touch-action:pan-x pan-y}   /* the film box swipes like the rest; only the Write it box takes the finger for drawing */
 .hdx .hs-tzg{cursor:pointer}
-.hdx-trace{border-radius:10px;box-shadow:0 22px 34px -18px rgba(60,10,5,.75),0 0 0 4px rgba(255,248,242,.16)}
+.hdx-trace{border-radius:10px;box-shadow:0 0 0 1px var(--line),0 18px 30px -20px rgba(70,45,20,.45)}
 .hdx-pw .hs-cap{margin-top:12px}
 .hdx .hs-ctl{margin-top:16px}
-.hdx .hs-ctl .hs-play{background:var(--seal-ink);color:var(--hd)}
-.hdx .hs-cap{color:inherit;opacity:.85}
 .hdx .hs-say-row{align-self:stretch;margin:16px 0 14px}
-.hdx-btn{background:var(--seal-ink);color:var(--hd);font-weight:700}
+.hdx-btn{background:var(--fill);color:var(--ink);font-weight:700}
 .hdx-btn svg.i{width:19px;height:19px}
 /* page 3: words that use it, and sentences with the pinyin over each character */
 .hdx-lbl{align-self:stretch;margin:0 4px 8px;font-size:13.5px;font-weight:700;opacity:.82}
-.hdx-words{align-self:stretch;margin-bottom:20px;border-radius:16px;background:var(--card);color:var(--ink);overflow:hidden}
+.hdx-words{align-self:stretch;margin-bottom:20px;border-radius:16px;background:var(--card);color:var(--ink);overflow:hidden;box-shadow:0 0 0 1px var(--line)}
 .hdx-word{position:relative;width:100%;display:flex;align-items:center;gap:14px;padding:11px 14px 11px 16px;text-align:left;transition:background .25s}
 .hdx-word+.hdx-word::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
 .hdx-word:active,.hdx-sent:active{background:var(--paper-deep);transition:none}
@@ -485,7 +483,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .hdx-word small{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hdx-word svg.i,.hdx-sent svg.i{flex:none;width:19px;height:19px;color:var(--seal);opacity:.8}
 .hdx-sents{align-self:stretch;display:flex;flex-direction:column;gap:10px}
-.hdx-sent{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px 44px 13px 16px;border-radius:16px;background:var(--card);color:var(--ink);text-align:left;transition:background .25s}
+.hdx-sent{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px 44px 13px 16px;border-radius:16px;background:var(--card);color:var(--ink);text-align:left;transition:background .25s;box-shadow:0 0 0 1px var(--line)}
 .hdx-sent svg.i{position:absolute;right:14px;top:22px}
 .hdx-zh{font-family:var(--hanzi);font-weight:600;font-size:21px;line-height:1.9}
 .hdx-zh ruby{ruby-position:over}
@@ -496,13 +494,13 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .hdx-none{text-align:center;font-size:14.5px;opacity:.85;margin:8px 0}
 .hdx-src{font-size:12px;opacity:.7;margin:12px 0 0}
 .hdx-dock{position:sticky;bottom:-12px;margin:auto -20px -12px;align-self:stretch;padding:22px 20px 12px;background:linear-gradient(to bottom,transparent,var(--hd) 34%)}
-.hdx .hs-add{height:58px;padding:0 14px;font-size:17px;font-weight:800;white-space:nowrap;color:#7A1E10;background:linear-gradient(#FFE79A,#F6C445 55%,#E9AE2C);
-  --edge:rgba(140,80,0,.45);--drop:rgba(60,10,5,.8);padding-bottom:4px;box-shadow:inset 0 -4px 0 var(--edge),inset 0 2px 0 rgba(255,255,255,.55),0 0 0 3px rgba(255,231,154,.35),0 14px 24px -12px var(--drop);
-  transition:transform .08s,box-shadow .08s}   /* the page's one main action: gold like the foil, so it reads as the thing to tap */
+.hdx .hs-add{height:58px;padding:0 14px;font-size:17px;font-weight:800;white-space:nowrap;color:var(--seal-ink);background:linear-gradient(var(--seal-btn-top),var(--seal-btn) 55%);text-shadow:0 1.5px 0 rgba(90,10,5,.45);
+  --edge:rgba(60,10,5,.3);--drop:rgba(120,30,20,.7);padding-bottom:4px;box-shadow:inset 0 -4px 0 var(--edge),inset 0 2px 0 rgba(255,255,255,.22),0 12px 22px -12px var(--drop);
+  transition:transform .08s,box-shadow .08s}   /* the page's one main action: the red of the other red buttons (.btn-seal) */
 .hdx .hs-add svg.i{width:22px;height:22px;stroke-width:2.8;flex:none}
-.hdx .hs-add:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 var(--edge),inset 0 2px 0 rgba(255,255,255,.55),0 0 0 3px rgba(255,231,154,.35),0 6px 12px -10px var(--drop)}
-.hdx .hs-add.done{background:var(--seal-ink);color:var(--jade);opacity:1;box-shadow:none;transform:none}
-.hdx :focus-visible{outline:3px solid #FFE08A;outline-offset:3px}
+.hdx .hs-add:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 var(--edge),inset 0 2px 0 rgba(255,255,255,.22),0 6px 12px -10px var(--drop)}
+.hdx .hs-add.done{background:color-mix(in srgb,var(--jade) 12%,#fff);color:var(--jade);text-shadow:none;opacity:1;box-shadow:none;transform:none}
+.hdx :focus-visible{outline:3px solid var(--seal);outline-offset:3px}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:4px 2px 10px}
 .section-head h2{margin:0;font-size:21px;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
 .decks{display:flex;flex-direction:column;margin-bottom:22px;background:var(--card);border-radius:14px;box-shadow:var(--ring);overflow:hidden}
@@ -13716,7 +13714,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.37';
+const APP_VERSION = '3.45.38';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });

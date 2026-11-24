@@ -1,1 +1,1 @@
-{"version": "3.45.37", "notes": "The strip beside the bottom menu no longer takes taps: the page fades out there, so a row next to Decks or Profile cannot be opened by mistake, and a near miss beside the menu still lands on the nearest tab"}
+{"version": "3.45.38", "notes": "The Word of the day pages are white instead of red, and Add to my word bank is the red of the other red buttons"}
