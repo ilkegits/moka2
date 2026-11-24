@@ -846,22 +846,14 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .hint.ask{font-size:14px;font-weight:600;color:var(--ink-2)}
 /* "Did you know it?" answers after a card is turned */
 .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 0 calc(20px + env(safe-area-inset-bottom));animation:gradesIn .28s cubic-bezier(.2,.85,.25,1) both}
-/* 3.45.51: three solid keys in Chinese pigments, cinnabar 朱砂, gamboge 藤黄 and malachite 石绿. 3.45.52: built like a mahjong
-   tile (the round-end tiles): the coloured face with a carved rim and a rounded bevel, on a bone layer, on a darker back,
-   with its shadow on the table; a tap pushes the tile down into its own thickness */
-.gbtn{--bone:5px;--back:11px;height:64px;margin-bottom:calc(var(--back) + 4px);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%,rgba(0,0,0,0) 70%,rgba(0,0,0,.1)),var(--g);color:var(--gt);
-  box-shadow:inset 0 0 0 3px var(--g),inset 0 0 0 4.5px rgba(255,255,255,.2),inset 0 2px 1px 3px rgba(255,255,255,.18),
-    0 var(--bone) 0 #EDE6D6,0 calc(var(--bone) + 1px) 0 #CFC6B2,0 var(--back) 0 var(--gl),0 calc(var(--back) + 6px) 12px -4px rgba(40,30,15,.32);
-  transition:transform .08s,box-shadow .08s,filter .15s}
-.gbtn:active{--bone:2px;--back:4px;transform:translateY(7px);transition:none}
-.gbtn:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
-@media (hover:hover){.gbtn:hover{filter:brightness(1.05)}}
-.gbtn b{font-family:var(--display);font-size:17.5px;font-weight:700;letter-spacing:.01em;line-height:1;text-shadow:0 1px 0 var(--ts)}
-.gbtn small{font-size:12.5px;font-weight:600;opacity:.88;line-height:1}
-.g-no{--g:#D2361F;--gl:#97200F;--gt:#fff;--ts:rgba(90,15,5,.35)}
-.g-mid{--g:#F2B21C;--gl:#B97F06;--gt:#3B2500;--ts:rgba(255,240,200,.6)}
-.g-yes{--g:#14865A;--gl:#0B5C3D;--gt:#fff;--ts:rgba(5,50,30,.4)}
+.gbtn{height:62px;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:opacity .2s}
+.gbtn:active{opacity:.6;transition:none}
+.gbtn b{font-size:15.5px;font-weight:700}
+.gbtn small{font-size:12px;opacity:.75}
+/* 3.45.53: the calm look of 3.45.50 again (ilkem), with Forgot's red and Knew it's green a little stronger; Almost stays grey */
+.g-no{background:rgba(178,58,44,.17);color:#A42D1E}
+.g-mid{background:var(--fill);color:var(--ink)}
+.g-yes{background:#2B7752;color:#fff}
 @keyframes gradesIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 /* end of a flip round */
 .done-hero{position:relative;text-align:center;padding:8px 0 0}
@@ -13950,7 +13942,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.52';
+const APP_VERSION = '3.45.53';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
