@@ -13225,7 +13225,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.25';
+const APP_VERSION = '3.45.26';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -14042,7 +14042,7 @@ function obShow() {
     const lv = obLv(), c = obFirst(), n = (S.H?.levels[lv]?.length || HSK_COUNT[lv]).toLocaleString('en'), k = [...c.h].length;
     html = obTop() + `<h2 class="ob2-q ob2-c ob2-in">Your deck is ready</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">${HSK_NAME(lv)} · ${n} words, like this one</p>
       <div class="ob2-pile"><div class="pc p3"></div><div class="pc p2"></div><div class="pc p1">
-        <div class="f"><div class="ob2-ftz" style="width:${k * 120}px">${obFtz()}<span lang="zh">${esc(c.h)}</span></div><div class="py">${esc(c.p)}</div><div class="en">${esc(c.e)}</div></div>
+        <div class="f"><div class="ob2-ftz" style="width:${k * 120}px"><span lang="zh">${esc(c.h)}</span></div><div class="py">${esc(c.p)}</div><div class="en">${esc(c.e)}</div></div>
         <div class="f b" aria-hidden="true"><span class="ob2-seal">学</span></div></div></div>
       <p class="ob2-note ob2-c ob2-in" style="animation-delay:1.75s">Turn a card, say how well you knew it, and ShiHanzi picks the day it comes back.</p>
       <div class="ob-dock ob2-in" style="animation-delay:1.9s"><button class="btn btn-primary" data-ob="next">Next</button></div>`;   // 3.45.25: dealt, then turned over
