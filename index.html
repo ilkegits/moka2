@@ -297,31 +297,44 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hd-shi{position:absolute;right:-8px;bottom:-30px;width:88px;height:88px;transform-origin:50% 100%;animation:hdPeek 4.5s ease-in-out infinite;pointer-events:none}
 .hd-shi .shi-face{width:100%;height:100%;display:block}
 @keyframes hdPeek{0%,100%{transform:translateY(8px) rotate(4deg)}45%,70%{transform:translateY(-6px) rotate(-7deg)}}
-/* the card: Shi Shi holds up today's character on a little gold-foil tile; one Learn now bubble */
-.hd-day{min-height:0}
-.hd-day .hd-txt{margin-top:6px;padding-right:112px}
-.hd-day .hd-big{font-size:19px}   /* "A new character is waiting" on two lines, so the card matches the story card */
-.hd-day .hd-meta{margin-top:7px}
-.hd-day .hd-en{font-size:14.5px;-webkit-line-clamp:1}
-.hd-day .hd-py{font-size:23px}
-.hd-bub{position:relative;display:inline-flex;align-items:center;gap:4px;margin-top:10px;height:40px;padding:0 12px 0 18px;border-radius:20px 20px 6px 20px;
-  background:var(--seal-ink);color:var(--hd);font-size:16px;font-weight:800;letter-spacing:-.01em;box-shadow:0 10px 18px -12px rgba(60,10,5,.75);transition:transform .2s}
-.hd-bub:active{transform:scale(.95);transition:none}
-.hd-bub svg.i{width:18px;height:18px;stroke-width:2.8}
-.hd-bub::after{content:"";position:absolute;right:-10px;bottom:5px;width:16px;height:13px;background:inherit;clip-path:polygon(0 0,100% 72%,0 100%)}   /* the tail points at Shi Shi */
-.hd-pic{position:absolute;right:0;bottom:0;width:124px;height:112px;padding:0;background:none;border:0;cursor:pointer}
-.hd-tag{position:absolute;left:8px;top:0;width:68px;height:68px;border-radius:12px;overflow:hidden;display:grid;place-items:center;rotate:-7deg;
-  background:linear-gradient(135deg,#E2AE3E,#FFE7A0 45%,#E9B949 60%,#C98F24);box-shadow:0 14px 20px -12px rgba(60,10,5,.75),0 0 0 3px rgba(255,248,242,.18)}
-.hd-tag i{font:800 40px/1 "Baloo 2",var(--ui);font-style:normal;color:#F4C14E;text-shadow:1.5px 1.5px 0 #A86A0C,-1px -1px 0 rgba(255,255,255,.6)}
-.hd-tag.open{background:var(--card);color:var(--grid)}
-.hd-tag b{position:relative;font-family:var(--hanzi);font-weight:600;font-size:46px;line-height:1;color:var(--ink);margin-top:-2px}
-.hd-day .hd-shi{right:-4px;bottom:-14px;width:84px;height:84px}
-.hd-day.rev .hd-shi{animation:none}
-.hd-card.just .hd-tag{animation:hdStamp .55s cubic-bezier(.3,1.6,.5,1) .1s both}
+/* the Word of the day card: a ticket. The tear-off stub on the left holds the word and its pinyin (gold foil until you
+   uncover it); the paper side holds the meaning and the red Learn now button. A faint motif on the stub changes every day */
+.hd-tk{--s:118px;padding:0;overflow:visible;background:none;box-shadow:none;color:var(--ink);border-radius:18px}
+.hd-stack>.hd-tk.front{box-shadow:none;filter:drop-shadow(0 14px 14px rgba(110,45,20,.24)) drop-shadow(0 1px 1px rgba(70,45,20,.18))}
+.hd-tk.back{background:linear-gradient(90deg,#C4432E var(--s),#FCF8EF var(--s))}   /* under the story card it shows as a plain ticket */
+.tk-in{position:relative;display:flex;min-height:154px;border-radius:18px;overflow:hidden;background:#FCF8EF;
+  -webkit-mask:radial-gradient(circle 10px at var(--s) 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at var(--s) 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+  mask:radial-gradient(circle 10px at var(--s) 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 10px at var(--s) 100%,#0000 98%,#000) bottom/100% 51% no-repeat}   /* a round notch top and bottom of the tear line */
+.tk-stub{position:relative;overflow:hidden;flex:none;width:var(--s);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px 8px;background:#C4432E;color:#FFF8F2}
+.tk-word{position:relative;z-index:1;font-family:var(--hanzi);font-weight:600;font-size:56px;line-height:1;text-shadow:0 0 10px #C4432E,0 0 3px #C4432E}   /* a red halo keeps the word clear of the motif */
+.tk-two .tk-word{font-size:42px}
+.tk-py{position:relative;z-index:1;max-width:100%;font:700 15px/1.1 var(--ui);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 6px #C4432E,0 0 2px #C4432E}
+.tk-stub.foil{background:linear-gradient(135deg,#E2AE3E,#FFE7A0 45%,#E9B949 60%,#C98F24)}
+.tk-q{position:relative;z-index:1;font:800 60px/1 "Baloo 2",var(--ui);color:#F4C14E;text-shadow:1.5px 1.5px 0 #A86A0C,-1px -1px 0 rgba(255,255,255,.6)}
+.tk-stub.foil small{position:absolute;bottom:10px;z-index:1;font-size:12px;font-weight:700;color:#7A4A00}
+.tk-motif{position:absolute;pointer-events:none;color:#FFE9DE}
+.tk-motif svg{display:block;width:100%;height:100%}
+.tk-tear{position:absolute;top:12px;bottom:12px;left:var(--s);border-left:2px dashed rgba(120,95,60,.35);pointer-events:none}
+.tk-main{position:relative;flex:1;min-width:0;padding:14px 16px 15px;display:flex;flex-direction:column;
+  background:repeating-linear-gradient(83deg,rgba(150,120,80,.035) 0 1px,transparent 1px 9px),repeating-linear-gradient(-71deg,rgba(150,120,80,.03) 0 1px,transparent 1px 13px)}   /* a faint rice-paper grain */
+.hd-tk .hd-lbl{color:var(--seal);font-size:13.5px;font-weight:700;opacity:1}
+.hd-tk .hd-zh{font-size:12.5px;opacity:.75}
+.tk-mean{margin-top:6px;font:600 17px/1.2 var(--display);letter-spacing:-.01em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hd-tk .hd-meta{margin-top:7px}
+.hd-tk .hd-meta span{font-weight:700;background:rgba(178,58,44,.09);color:var(--seal)}
+.tk-gap{flex:1;min-height:10px}
+.tk-go{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px 3px;border-radius:13px;font:700 16px/1 var(--display);color:#FFF8F2;
+  background:linear-gradient(var(--seal-btn-top),var(--seal-btn) 55%);box-shadow:inset 0 -3px 0 rgba(60,10,5,.28),inset 0 2px 0 rgba(255,255,255,.25),0 10px 16px -10px rgba(150,20,30,.7);transition:transform .08s,box-shadow .08s}
+.tk-go:active{transform:translateY(2px);box-shadow:inset 0 -1px 0 rgba(60,10,5,.28),inset 0 2px 0 rgba(255,255,255,.25),0 6px 10px -8px rgba(150,20,30,.7)}
+.tk-go svg.i{width:16px;height:16px;stroke-width:2.8}
+.hd-tk .hd-shi{right:-6px;bottom:-14px;width:64px;height:64px;z-index:2}
+.hd-tk.rev .hd-shi{animation:none}
+@media (max-width:359px){.hd-tk{--s:100px}.tk-word{font-size:48px}.tk-two .tk-word{font-size:36px}.tk-main{padding:12px 12px 13px}}
+.hd-card.just .tk-word{animation:hdStamp .55s cubic-bezier(.3,1.6,.5,1) .1s both}
 .hd-card.just .hd-shi{animation:hdUp .7s cubic-bezier(.3,1.5,.5,1) both,shiHop 1.4s ease-in-out .7s 1}
 @keyframes hdUp{from{transform:translateY(70px) scale(.7)}to{transform:none}}
-.hd-card.just .hd-py,.hd-card.just .hd-en,.hd-card.just .hd-meta,.hd-card.just .hd-bub,.hd-card.just .hd-go{animation:hdRise .5s cubic-bezier(.2,.8,.3,1) both}
-.hd-card.just .hd-en{animation-delay:.08s}.hd-card.just .hd-meta{animation-delay:.16s}.hd-card.just .hd-bub,.hd-card.just .hd-go{animation-delay:.26s}
+.hd-card.just .tk-py,.hd-card.just .tk-mean,.hd-card.just .hd-meta,.hd-card.just .tk-go,.hd-card.just .hd-go{animation:hdRise .5s cubic-bezier(.2,.8,.3,1) both}
+.hd-card.just .tk-mean{animation-delay:.08s}.hd-card.just .hd-meta{animation-delay:.16s}.hd-card.just .tk-go,.hd-card.just .hd-go{animation-delay:.26s}
 @keyframes hdRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .hd-fx{position:absolute;inset:0;pointer-events:none}
 .hd-flake{position:absolute;width:7px;height:5px;border-radius:1.5px;background:#FFD15C;box-shadow:0 0 0 .5px rgba(168,106,12,.5)}
@@ -342,7 +355,7 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hd-card.rev.hd-story .hd-shi{right:-4px;bottom:-6px;width:124px;height:124px;pointer-events:auto;padding:0;background:none;border:0;cursor:pointer}
 .hd-story .shi-read{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 14px rgba(40,6,4,.45))}
 @media (max-width:359px){.hd-card.rev.hd-story .hd-shi{width:104px;height:104px}.hd-card.rev.hd-story .hd-txt{padding-right:88px}.hd-story .hd-go{padding:0 14px;font-size:15px}}   /* small phones: the button keeps one line and stays clear of the book */
-@media (prefers-reduced-motion:reduce){.hd-shi,.hd-sheen,.hd-card.just *,.hdx-tile.pop *,.hdx-head.new>*,.hdx-after>*,.hd-tag,.hd-card.back.up *{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){.hd-shi,.hd-sheen,.hd-card.just *,.hdx-tile.pop *,.hdx-head.new>*,.hdx-after>*,.tk-word,.hd-card.back.up *{animation:none!important;transition:none!important}}
 /* the Hanzi of the day pop-up: meaning, stroke order step by step, write it yourself, add to the word bank */
 .hs-top{display:flex;align-items:center;gap:16px;margin:-4px 2px 14px}
 .hs-hz{font-family:var(--hanzi);font-weight:600;font-size:74px;line-height:1;color:var(--ink)}
@@ -427,6 +440,10 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
   box-shadow:0 22px 34px -18px rgba(60,10,5,.75),0 0 0 4px rgba(255,248,242,.16);touch-action:none}
 .hdx-tile.pop,.hdx-tile.shown{touch-action:pan-x pan-y}
 .hdx-ch{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hanzi);font-weight:600;font-size:calc(var(--t) * .68);line-height:1;color:var(--ink);padding-bottom:calc(var(--t) * .03)}
+.hdx-tile.two .hdx-ch{font-size:calc(var(--t) * .37);letter-spacing:.06em}   /* a two-character word side by side in the box */
+.hs-tabs{display:flex;justify-content:center;gap:8px;margin:-4px 0 12px}   /* a two-character word: which character the film shows */
+.hs-tabs button{min-width:48px;height:44px;padding:0 10px;border-radius:12px;font:600 24px/1 var(--hanzi);background:rgba(255,248,242,.16);color:var(--seal-ink);transition:background .2s}
+.hs-tabs button.on{background:var(--seal-ink);color:var(--hd,#C4432E)}
 .hdx-foil,.hdx-tile canvas{position:absolute;inset:0;width:100%;height:100%}
 .hdx-foil{background:linear-gradient(135deg,#E2AE3E,#FFE7A0 45%,#E9B949 60%,#C98F24)}
 .hdx-tile.live .hdx-foil{visibility:hidden}
@@ -8718,13 +8735,13 @@ function BankPile() {
       <span class="wbp-foot"><span class="wbp-n">${n.toLocaleString('en')}</span><span class="wbp-l">${n === 1 ? 'word' : 'words'}</span>${today || week ? `<span class="wbp-new">+${today || week} ${today ? 'today' : 'this week'}</span>` : ''}</span></span>
     ${Array.from({ length: e }, (_, i) => `<span class="wbp-edge" style="bottom:${(e - 1 - i) * 4}px;z-index:${4 - i}"></span>`).join('')}</button>`;
 }
-/* ---------- Hanzi of the day ----------
-   One single character a day from the HSK lists at your level, one you don't know yet. It hides under gold foil on
-   Home: rub the foil off (or tap it) and the character stamps in. Tap it for its meaning, the stroke order step by step,
-   a go at writing it, and Add to my word bank.
-   db.hotd = { day, h, p, e, lv, n (strokes), rev (foil is off), past: the last 60 characters, so none comes back soon } */
+/* ---------- Word of the day (was Hanzi of the day) ----------
+   One word a day, a single character or a two-character word, from the HSK lists at your level, one you don't know yet.
+   It hides under gold foil on Decks: rub the foil off (or tap it) and the word stamps in. Tap it for its meaning, the
+   stroke order step by step, a go at writing it, and Add to my word bank.
+   db.hotd = { day, h, p, e, lv, n (strokes, all characters), rev (foil is off), past: the last 60 words, so none comes back soon } */
 const strHash = s => [...s].reduce((a, c) => Math.imul(a ^ c.codePointAt(0), 16777619) >>> 0, 2166136261);
-function hotdPick(fresh) {   // fresh: the Developer sheet's "Try another character", a random one instead of today's
+function hotdPick(fresh) {   // fresh: the Developer sheet's "Try another word", a random one instead of today's
   const today = dayKey(Date.now()), H = db.hotd, known = knownWords();
   /* in sync with the word bank: once today's character is in it some other way (Quick add, a lesson, an HSK list),
      it can't be the Hanzi of the day any more and a new one takes its place. Added from this card (H.mine) it stays, as done */
@@ -8732,7 +8749,7 @@ function hotdPick(fresh) {   // fresh: the Developer sheet's "Try another charac
   if (!S.H) return null;
   if (H?.day === today && H.h && !fresh) LOG.add('hotd-swap', { hz: H.h });
   const past = new Set(H?.past || []);
-  const ok = r => [...r.h].length === 1 && HAN.test(r.h) && r.e && r.e[0] !== '(' && !/^surname /.test(r.e) && S.H.byHz.get(r.h) === r;   // no particles, no surnames; a character's first line
+  const ok = r => [...r.h].length <= 2 && [...r.h].every(c => HAN.test(c)) && r.e && r.e[0] !== '(' && !/^surname /.test(r.e) && S.H.byHz.get(r.h) === r;   // one or two characters; no particles, no surnames; a word's first line
   let pool = [];
   for (const l of [1, 2, 3, 4, 5, 6, 7].filter(l => l >= (db.prefs.level || 1))) { pool = (S.H.levels[l] || []).filter(r => ok(r) && !known.has(r.h) && !past.has(r.h)); if (pool.length) break; }
   if (!pool.length) pool = (S.H.levels[1] || []).filter(ok);
@@ -8742,19 +8759,43 @@ function hotdPick(fresh) {   // fresh: the Developer sheet's "Try another charac
   return db.hotd;
 }
 const hdDone = H => !!(H?.done || H?.off === 'done');   // today's character is in your word bank (off: older saves)
-function HotdCard(just) {   // the card on Decks: Shi Shi holds up today's character on a little gold-foil tile; one Learn now bubble
-  const H = hotdPick(), rev = !!H?.rev, mine = H && bankHas(H.h), back = H?.top === 'story';
+/* the faint picture on the stub, one a day in turn: clouds, bamboo, a plum branch, distant mountains, lanterns */
+const TK_CLOUD = `<svg viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 50H104C114 50 116 38 108 34C112 24 100 16 90 22C86 10 70 8 62 18C56 8 38 10 36 24C26 20 16 28 20 38C10 38 6 50 14 50Z"/>
+  <path d="M62 40c-8 0-10-10-3-12c5-1 8 4 4 7"/><path d="M38 40c-7 0-8-9-2-10c4 0 6 4 3 6"/><path d="M88 40c-7 0-8-9-2-10c4 0 6 4 3 6"/><path d="M104 50c8 0 12 6 6 9"/><path d="M14 50c-8 0-10 6-4 9"/></svg>`;
+const TK_FLOWER = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><circle cx="0" cy="-6" r="5"/><circle cx="5.7" cy="-1.9" r="5"/><circle cx="3.5" cy="4.9" r="5"/><circle cx="-3.5" cy="4.9" r="5"/><circle cx="-5.7" cy="-1.9" r="5"/></g>`;
+const TK_LANTERN = `<svg viewBox="0 0 40 80"><g fill="currentColor"><rect x="19" y="0" width="2" height="14"/><rect x="12" y="13" width="16" height="5" rx="1.5"/><ellipse cx="20" cy="38" rx="17" ry="20"/>
+  <rect x="12" y="56" width="16" height="5" rx="1.5"/><path d="M16 61h8l1 14h-2l-1-9h-4l-1 9h-2z"/></g><g fill="none" stroke="#C4432E" stroke-width="1.2" opacity=".7"><path d="M20 18v40M12 20c-5 10-5 26 0 36M28 20c5 10 5 26 0 36"/></g></svg>`;
+const TK_MOTIFS = [
+  ['clouds', () => `<span class="tk-motif" style="left:-34px;top:4px;width:130px;height:65px;opacity:.28">${TK_CLOUD}</span><span class="tk-motif" style="left:12px;bottom:-6px;width:130px;height:65px;opacity:.24">${TK_CLOUD}</span>`],
+  ['bamboo', () => `<span class="tk-motif" style="left:-30px;top:-14px;width:96px;height:182px;opacity:.2"><svg viewBox="0 0 90 160"><g fill="currentColor">
+    <path d="M40 0h7v38h-7zM40 41h7v42h-7zM40 86h7v44h-7zM40 133h7v27h-7z"/><path d="M47 40C60 30 76 28 88 30C76 36 62 40 47 40Z"/><path d="M47 44C58 48 70 58 76 70C64 62 54 54 47 44Z"/>
+    <path d="M40 86C28 76 14 74 2 76C14 82 28 86 40 86Z"/><path d="M47 86C62 80 76 84 86 92C72 92 58 90 47 86Z"/><path d="M40 132C30 124 18 122 6 126C18 130 30 132 40 132Z"/></g></svg></span>`],
+  ['plum', () => `<span class="tk-motif" style="right:-30px;top:-10px;width:150px;height:113px;opacity:.24"><svg viewBox="0 0 160 120"><g fill="none" stroke="currentColor" stroke-linecap="round">
+    <path d="M160 4C130 10 112 22 98 40C88 54 70 60 52 66" stroke-width="5"/><path d="M112 26C118 40 116 54 108 66" stroke-width="3.5"/><path d="M78 52C70 44 58 40 46 40" stroke-width="3"/><path d="M98 40C104 34 112 32 120 34" stroke-width="2.5"/></g>
+    <g fill="#FFC9BD">${TK_FLOWER(52, 66, 1)}${TK_FLOWER(108, 66, .8)}${TK_FLOWER(46, 40, .7)}${TK_FLOWER(120, 34, .6)}<circle cx="86" cy="48" r="2.5"/><circle cx="130" cy="18" r="2.5"/></g></svg></span>`],
+  ['mountains', () => `<span class="tk-motif" style="left:0;right:0;bottom:0;height:84px;opacity:.2"><svg viewBox="0 0 240 90" preserveAspectRatio="none">
+    <circle cx="196" cy="16" r="12" fill="#F3CF6A"/><path d="M0 70C30 40 50 36 76 58C100 30 126 22 160 54C180 40 210 36 240 52V90H0Z" fill="currentColor" opacity=".55"/>
+    <path d="M0 82C40 60 70 62 100 76C130 56 170 52 240 74V90H0Z" fill="currentColor"/></svg></span>`],
+  ['lanterns', () => `<span class="tk-motif" style="left:8px;top:-12px;width:28px;height:56px;opacity:.22">${TK_LANTERN}</span><span class="tk-motif" style="right:6px;top:-20px;width:34px;height:68px;opacity:.24">${TK_LANTERN}</span>`],
+];
+const tkMotif = day => {   // day: a dayKey ('2026-10-24', month from 0); the days count on, so the pictures take turns
+  const [y, m, d] = String(day).split('-').map(Number), n = Math.round(Date.UTC(y, m, d) / 864e5);
+  return TK_MOTIFS[((n % TK_MOTIFS.length) + TK_MOTIFS.length) % TK_MOTIFS.length] || TK_MOTIFS[0];
+};
+function HotdCard(just) {   // the card on Decks: a ticket, today's word on the tear-off stub (gold foil until uncovered), one red Learn now button
+  const H = hotdPick(), rev = !!H?.rev, mine = H && bankHas(H.h), back = H?.top === 'story', two = H && [...H.h].length > 1;
   const meta = H ? `<div class="hd-meta"><span>${HSK_NAME(H.lv)}</span>${mine ? '<span>In your word bank ✓</span>' : ''}</div>` : '';
-  const txt = !H ? '<div class="hd-big">A new character</div><div class="hd-sub">Getting it ready…</div>'
-    : rev ? `<div class="hd-py">${esc(PY(H.h, H.p))}</div><div class="hd-en">${esc(meanOf(H))}</div>${meta}`
-    : `<div class="hd-big">A new character is waiting</div>${meta}`;
-  return `<section class="hd-card hd-day${rev ? ' rev' : ''}${just ? ' just' : ''}${back ? ' back' : ' front'}" id="hotd" aria-label="Hanzi of the day"${H ? '' : ' data-wait="1"'}${back ? ' inert aria-hidden="true"' : ''}>
-    <div class="hd-lbl">Hanzi of the day</div>
-    <div class="hd-txt">${txt}</div>
-    ${H ? `<button class="hd-bub" data-act="hotd-open">Learn now${I.chev}</button>` : ''}
-    <button class="hd-pic" data-act="hotd-open" tabindex="-1" aria-hidden="true"${H ? '' : ' disabled'}>
-      <span class="hd-tag${rev ? ' open' : ''}">${rev ? `${TZG}<b>${esc(H.h)}</b>` : '<i>?</i>'}</span>
-      <span class="hd-shi">${shiFace(rev ? 'cheer' : 'peek')}</span></button></section>`;
+  const [mName, mArt] = H ? tkMotif(H.day) : TK_MOTIFS[0];
+  const stub = !H ? '<span class="tk-stub foil" aria-hidden="true"><span class="tk-q">?</span></span>'
+    : rev ? `<button class="tk-stub${two ? ' tk-two' : ''}" data-act="hotd-open" data-motif="${mName}" tabindex="-1" aria-hidden="true">${mArt()}<span class="tk-word">${esc(H.h)}</span><span class="tk-py">${esc(PY(H.h, H.p))}</span></button>`
+    : '<button class="tk-stub foil" data-act="hotd-open" tabindex="-1" aria-hidden="true"><span class="hd-sheen"></span><span class="tk-q">?</span><small>Scratch me</small></button>';
+  const txt = !H ? '<div class="tk-mean">Getting today’s word ready…</div>'
+    : rev ? `<div class="tk-mean">${esc(meanOf(H))}</div>${meta}` : `<div class="tk-mean">A new word is waiting</div>${meta}`;
+  return `<section class="hd-card hd-tk${rev ? ' rev' : ''}${just ? ' just' : ''}${back ? ' back' : ' front'}" id="hotd" aria-label="Word of the day"${H ? '' : ' data-wait="1"'}${back ? ' inert aria-hidden="true"' : ''}>
+    <div class="tk-in">${stub}<div class="tk-main"><div class="hd-lbl">Word of the day <span class="hd-zh">今日词</span></div>${txt}<div class="tk-gap"></div>
+      ${H ? `<button class="tk-go" data-act="hotd-open">Learn now${I.chev}</button>` : ''}</div></div>
+    <span class="tk-tear" aria-hidden="true"></span><span class="hd-shi">${shiFace(rev ? 'cheer' : 'peek')}</span></section>`;
 }
 /* Hanzi of the day and the story card lie in a little deck (db.hotd.top: 'story' when the story card is on top).
    Swipe the top card away to either side: it flies off and slides in at the bottom, the card under it comes up.
@@ -8769,7 +8810,7 @@ function HotdStoryCard() {
   return `<section class="hd-card rev hd-story${back ? ' back' : ' front'}" id="hdStory" aria-label="Story time"${back ? ' inert aria-hidden="true"' : ''}>
     <div class="hd-lbl">Story time <span class="hd-zh">读故事</span></div>
     <div class="hd-row"><div class="hd-txt"><div class="hd-st">${s ? esc(s.zh) : '狮狮的故事'}</div><div class="hd-en">${s ? esc(s.en) : 'A short story with your words'}</div>
-        ${hdDone(H) ? `<div class="hd-meta"><span>Today’s hanzi ${esc(H.h)} ✓</span></div>` : ''}</div></div>
+        ${hdDone(H) ? `<div class="hd-meta"><span>Today’s word ${esc(H.h)} ✓</span></div>` : ''}</div></div>
     <button class="btn hd-go" data-act="tab" data-h="#/read">${I.read}${go}</button>
     <button class="hd-shi" data-act="tab" data-h="#/read" tabindex="-1" aria-hidden="true">${shiReads(ch)}</button></section>`;
 }
@@ -8859,13 +8900,15 @@ function paintFoil(ctx, w, h) {
   ctx.fillStyle = '#F4C14E'; ctx.fillText('?', w / 2, h * .44);
   ctx.font = `600 ${Math.round(w * .1)}px "Noto Serif SC",serif`; ctx.fillStyle = '#A86A0C'; ctx.fillText('刮 一 刮', w / 2, h * .82);
 }
+const hdRefs = H => Promise.all([...H.h].map(c => loadRef(zhT(c))));   // the stroke data of each character of today's word
+const hdCount = rs => rs.reduce((a, r) => a + r.strokes.length, 0);
 function mountHotd() {   // note today's stroke count for the pop-up once the stroke data is at hand
   const H = db.hotd; if (!H || H.n || !window.HanziWriter || mountHotd.busy) return;
   mountHotd.busy = true;
-  loadRef(zhT(H.h)).then(ref => { H.n = ref.strokes.length; save(); }, () => {})
+  hdRefs(H).then(rs => { H.n = hdCount(rs); save(); }, () => {})
     .finally(() => { mountHotd.busy = false; });
 }
-/* ---------- the Hanzi of the day pop-up ----------
+/* ---------- the Word of the day pop-up ----------
    Tap Learn on the card and the card grows into a full-screen red page. Three pages, swipe left between them:
    1. a big tianzige under gold foil: rub until the character shows (then its sound and meaning)
    2. the stroke order, step by step, and a go at writing it
@@ -8883,7 +8926,7 @@ function loadSentences() {   // dict/sentences.tsv: character, sentence, English
     return m;
   }).catch(e => { sentP = null; throw e; });
 }
-const HDX_PAGES = ['The character', 'Stroke order', 'Write it', 'Use it'];
+const HDX_PAGES = ['The word', 'Stroke order', 'Write it', 'Use it'];
 function hotdMeanings(H) {
   return [...new Set(H.e.split('; ').map(m => plainMeaning(m)).filter(m => m && !/^(CL|surname|variant of|old variant)/i.test(m)))].slice(0, 4);
 }
@@ -8891,23 +8934,30 @@ function HdxId(H) {   // page 1, once uncovered: the sound and the meaning above
   return `<div class="hdx-py">${esc(PY(H.h, H.p))}${'speechSynthesis' in window ? `<button class="hs-say" data-act="say" data-h="${esc(H.h)}" aria-label="Say it">${I.sound}</button>` : ''}</div>
     <div class="hdx-en">${hotdMeanings(H).map(esc).join(' <span>·</span> ')}</div>`;
 }
+function hdxParts(H) {
+  const cs = [...H.h], sy = String(H.p || '').trim().split(/\s+/);
+  return cs.map((c, i) => { const r = S.H?.byHz.get(c);
+    return { h: c, p: r?.p || (sy.length === cs.length ? sy[i] : ''), s: (r ? meanOf(r) : readMeaning(c)) || '' }; }).filter(r => r.p || r.s);
+}
 const HdxAfter = H => `<div class="hd-meta"><span>${HSK_NAME(H.lv)}</span><span id="hsN">${H.n ? plural(H.n, 'stroke') : '…'}</span></div>`;
 function HdxHTML(H, S2, S3) {
-  const rev = !!H.rev, mine = bankHas(H.h);
+  const rev = !!H.rev, mine = bankHas(H.h), cs = [...H.h], two = cs.length > 1;
   const mark = h => { const T = zhChars(h); return [...h].map((c, i) => c === H.h ? `<i>${esc(T[i])}</i>` : esc(T[i])).join(''); };
-  const words = S.H ? [...S.H.byHz.values()].filter(r => r.h !== H.h && r.h.includes(H.h) && [...r.h].length <= 3).sort((a, b) => a.lv - b.lv || a.h.length - b.h.length).slice(0, 3) : [];
+  const words = !S.H ? [] : two ? hdxParts(H)
+    : [...S.H.byHz.values()].filter(r => r.h !== H.h && r.h.includes(H.h) && [...r.h].length <= 3).sort((a, b) => a.lv - b.lv || a.h.length - b.h.length).slice(0, 3);
   return `<div class="hdx-scrim"></div>
-  <div class="hdx-box" role="dialog" aria-modal="true" aria-label="Hanzi of the day">
-    <header class="hdx-bar"><div class="hd-lbl">Hanzi of the day</div><button class="hd-x hdx-close" aria-label="Close">${I.close}</button></header>
+  <div class="hdx-box" role="dialog" aria-modal="true" aria-label="Word of the day">
+    <header class="hdx-bar"><div class="hd-lbl">Word of the day <span class="hd-zh">今日词</span></div><button class="hd-x hdx-close" aria-label="Close">${I.close}</button></header>
     <div class="hdx-pager${rev ? ' free' : ''}">
       <section class="hdx-pg hdx-p1" aria-label="${HDX_PAGES[0]}">
-        <div class="hdx-head" id="hdxHead">${rev ? HdxId(H) : '<div class="hdx-t">Scratch the gold</div><div class="hdx-s">Rub until today’s character shows</div>'}</div>
-        <div class="hdx-tile${rev ? ' shown' : ''}" id="hdxTile"${rev ? '' : ' role="button" tabindex="0" aria-label="Scratch the gold to see today’s character"'}>${TZG}<span class="hdx-ch">${rev ? esc(H.h) : ''}</span>${rev ? '' : '<div class="hdx-foil"></div><canvas></canvas><div class="hd-sheen"></div>'}</div>
+        <div class="hdx-head" id="hdxHead">${rev ? HdxId(H) : '<div class="hdx-t">Scratch the gold</div><div class="hdx-s">Rub until today’s word shows</div>'}</div>
+        <div class="hdx-tile${rev ? ' shown' : ''}${two ? ' two' : ''}" id="hdxTile"${rev ? '' : ' role="button" tabindex="0" aria-label="Scratch the gold to see today’s word"'}>${TZG}<span class="hdx-ch">${rev ? esc(H.h) : ''}</span>${rev ? '' : '<div class="hdx-foil"></div><canvas></canvas><div class="hd-sheen"></div>'}</div>
         <div class="hdx-after" id="hdxAfter">${rev ? HdxAfter(H) : ''}</div>
         <div class="hdx-say"><div class="hs-shi" id="hdxShi">${shiFace(rev ? 'cheer' : 'peek')}</div><div class="hs-bub" id="hdxBub">${rev ? `Swipe left to see how to write ${esc(H.h)}.` : 'Rub the gold off with your finger!'}</div></div>
       </section>
       <section class="hdx-pg hdx-p2" aria-label="${HDX_PAGES[1]}">
         <h4 class="hs-h">How to write it <span>笔顺</span></h4>
+        ${two ? `<div class="hs-tabs" id="hsTabs" role="tablist">${cs.map((c, i) => `<button role="tab" data-ci="${i}"${i ? '' : ' class="on" aria-selected="true"'}>${esc(zhChars(c).join(''))}</button>`).join('')}</div>` : ''}
         <div class="hs-stage"><div class="tzg hs-tzg" id="hsBox" style="--s:${S2}px">${TZG}<svg class="hs-svg" viewBox="-70 -70 1164 1164" aria-hidden="true"></svg><div class="quiz"></div></div></div>
         <div class="hs-ctl"><button class="icon-btn hs-play" id="hsPlay" aria-label="Play the strokes">${I.play}</button></div>
         <div class="hs-cap" id="hsCap">Loading the strokes…</div>
@@ -8916,14 +8966,14 @@ function HdxHTML(H, S2, S3) {
       <section class="hdx-pg hdx-pw" aria-label="${HDX_PAGES[2]}">
         <h4 class="hs-h">Write it yourself <span>写一写</span></h4>
         <div class="hs-stage"><div class="tzg hdx-trace" id="trBox" style="--s:${S3}px">${TZG}<div class="quiz"></div></div></div>
-        <div class="hs-cap" id="trCap">Trace the light character, stroke by stroke</div>
+        <div class="hs-cap" id="trCap">Trace the light ${two ? 'characters' : 'character'}, stroke by stroke</div>
         <div class="hs-say-row"><div class="hs-shi" id="trShi">${shiFace('happy')}</div><div class="hs-bub" id="trBub">Follow the light lines. After two slips Shi Shi shows you the stroke.</div></div>
         <button class="btn wide hdx-btn" id="trAgain">${I.refresh}Write it again</button>
       </section>
       <section class="hdx-pg hdx-p3" aria-label="${HDX_PAGES[3]}">
         <h4 class="hs-h">Use it <span>例句</span></h4>
-        ${words.length ? `<div class="hdx-lbl">Words with ${esc(H.h)}</div>
-        <div class="hdx-words">${words.map(r => `<button class="hdx-word" data-act="say" data-h="${esc(r.h)}"><b>${mark(r.h)}</b><span><span class="hdx-wpy">${esc(PY(r.h, r.p))}</span><small>${esc(meanOf(r))}</small></span>${I.sound}</button>`).join('')}</div>` : ''}
+        ${words.length ? `<div class="hdx-lbl">${two ? `The characters in ${esc(H.h)}` : `Words with ${esc(H.h)}`}</div>
+        <div class="hdx-words">${words.map(r => `<button class="hdx-word" data-act="say" data-h="${esc(r.h)}"><b>${two ? esc(zhChars(r.h).join('')) : mark(r.h)}</b><span><span class="hdx-wpy">${esc(PY(r.h, r.p))}</span><small>${esc(meanOf(r))}</small></span>${I.sound}</button>`).join('')}</div>` : ''}
         <div class="hdx-lbl">In a sentence</div>
         <div class="hdx-sents" id="hdxSents"><p class="hdx-none">Loading sentences…</p></div>
         <p class="hdx-src">Sentences from Tatoeba (tatoeba.org)</p>
@@ -9010,17 +9060,19 @@ function mountHdx(el, H) {
 }
 function hdxRuby(zh, h) {   // a sentence with its pinyin over each character, read in context (so 一, 不 and 了 come out right)
   if (ZH.jp) { let l = null; try { l = ToJyutping.getJyutpingList(zh); } catch (_) {}   // v4.68 Cantonese: Jyutping over each character
-    if (l?.length) return l.map(([c, j]) => j && ZH_HAN.test(c) ? `<ruby${c === h ? ' class="hz-me"' : ''}>${esc(c)}<rt>${esc(j)}</rt></ruby>` : esc(c)).join(''); }
+    if (l?.length) return l.map(([c, j]) => j && ZH_HAN.test(c) ? `<ruby${h.includes(c) ? ' class="hz-me"' : ''}>${esc(c)}<rt>${esc(j)}</rt></ruby>` : esc(c)).join(''); }
   let a = null; try { a = window.pinyinPro && pinyinPro.pinyin(zh, { type: 'all' }); } catch (_) {}
   if (!Array.isArray(a) || !a.length) return esc(zh);
-  return a.map(o => o.isZh ? `<ruby${o.origin === h ? ' class="hz-me"' : ''}>${esc(o.origin)}<rt>${esc(o.pinyin)}</rt></ruby>` : esc(o.origin)).join('');
+  return a.map(o => o.isZh ? `<ruby${h.includes(o.origin) ? ' class="hz-me"' : ''}>${esc(o.origin)}<rt>${esc(o.pinyin)}</rt></ruby>` : esc(o.origin)).join('');
 }
 function hdxPages(el, H) {   // the other pages fill in once the character is out
   mountHotdSheet(el, H); hdxTrace(el, H);
   const box = el.querySelector('#hdxSents');
   loadSentences().then(m => {
     if (!el.isConnected) return;
-    const L = m.get(H.h) || [];
+    const cs = [...H.h], per = cs.length > 1 ? cs.map(c => m.get(c) || []) : [], seen = new Set();
+    const mix = []; for (let i = 0; per.some(l => i < l.length); i++) per.forEach(l => l[i] && mix.push(l[i]));   // a word's characters take turns
+    const L = [...(m.get(H.h) || []), ...mix].filter(x => !seen.has(x.zh) && seen.add(x.zh)).sort((a, b) => b.zh.includes(H.h) - a.zh.includes(H.h)).slice(0, cs.length > 1 ? 4 : 99);
     box.innerHTML = L.length ? L.map(s => `<button class="hdx-sent" data-act="say" data-h="${esc(s.zh)}"><span class="hdx-zh">${hdxRuby(s.zh, H.h)}</span><span class="hdx-tr">${esc(s.en)}</span>${I.sound}</button>`).join('')
       : `<p class="hdx-none">No example sentences for ${esc(H.h)} yet. The words above use it.</p>`;
   }, () => { box.innerHTML = '<p class="hdx-none">The sentences need the internet. Try again when you are online.</p>'; });
@@ -9028,7 +9080,7 @@ function hdxPages(el, H) {   // the other pages fill in once the character is ou
 function hdxScratch(el, H) {   // page 1: rub the gold off the big tianzige
   const box = el.querySelector('#hdxTile'), cv = box.querySelector('canvas'), fx = el.querySelector('.hd-fx');
   const w = box.offsetWidth, h = box.offsetHeight; if (!w) return;
-  if (window.HanziWriter && !H.n) loadRef(zhT(H.h)).then(ref => { H.n = ref.strokes.length; save(); }, () => {});
+  if (window.HanziWriter && !H.n) hdRefs(H).then(rs => { H.n = hdCount(rs); save(); }, () => {});
   const dpr = Math.min(2, devicePixelRatio || 1), ctx = cv.getContext('2d', { willReadFrequently: true });
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.scale(dpr, dpr);
   paintFoil(ctx, w, h); box.classList.add('live');
@@ -9092,23 +9144,26 @@ function hdxTrace(el, H) {
     if (mood) { shi.innerHTML = shiFace(mood); shi.classList.remove('hop'); void shi.offsetWidth; if (mood === 'cheer') shi.classList.add('hop'); } };
   if (!window.HanziWriter) { cap.textContent = 'Writing needs the internet. Try again when you are online.'; again.hidden = true;
     q.innerHTML = `<span class="ans-fallback" style="--s:${S3}px">${esc(H.h)}</span>`; return; }
-  let writer = null, round = 0;
-  const start = () => {
-    writer?.cancelQuiz?.(); q.innerHTML = ''; round++;
-    let miss = 0; cap.textContent = 'Trace the light character, stroke by stroke';
-    writer = HanziWriter.create(q, zhT(H.h), writerOpts(S3, {
+  const cs = [...H.h], two = cs.length > 1, of = i => two ? `${cs[i]} (${i + 1} of ${cs.length}): ` : '';
+  let writer = null, round = 0, miss = 0;
+  const start = (ci = 0) => {
+    writer?.cancelQuiz?.(); q.innerHTML = ''; if (!ci) { round++; miss = 0; }
+    const me = round; cap.textContent = two ? `${of(ci)}trace it stroke by stroke` : 'Trace the light character, stroke by stroke';
+    writer = HanziWriter.create(q, zhT(cs[ci]), writerOpts(S3, {
       showCharacter: false, showOutline: true, strokeColor: css('--ink'), outlineColor: css('--line'), drawingColor: css('--ink'), highlightColor: css('--seal'),
       drawingWidth: LES_INK, showHintAfterMisses: 2, highlightOnComplete: true, highlightCompleteColor: css('--jade'),
       charDataLoader: (ch, ok, err) => loadRef(ch).then(ok, err) }));
     writer.quiz({
-      onMistake: () => { miss++; },
-      onCorrectStroke: d => { cap.textContent = d.strokesRemaining ? `Stroke ${d.strokeNum + 1} of ${d.strokeNum + 1 + d.strokesRemaining} ✓` : 'Done ✓'; },
-      onComplete: () => { LOG.add('hotd-trace', { hz: H.h, mistakes: miss, round });
+      onMistake: () => { if (me === round) miss++; },
+      onCorrectStroke: d => { cap.textContent = of(ci) + (d.strokesRemaining ? `Stroke ${d.strokeNum + 1} of ${d.strokeNum + 1 + d.strokesRemaining} ✓` : 'Done ✓'); },
+      onComplete: () => {
+        if (ci < cs.length - 1) { say(`Now ${cs[ci + 1]}!`, 'happy'); setTimeout(() => { if (me === round && q.isConnected) start(ci + 1); }, 650); return; }
+        LOG.add('hotd-trace', { hz: H.h, mistakes: miss, round });
         cap.textContent = miss ? `Done, ${plural(miss, 'slip')}` : 'Flawless ✓';
         say(miss ? `很好! You wrote ${H.h}. ${plural(miss, 'slip')}, so once more?` : `太棒了! Every stroke of ${H.h} right.`, 'cheer'); },
     });
   };
-  again.onclick = () => { start(); say('Once more! Follow the light lines.', 'happy'); };
+  again.onclick = () => { start(0); say('Once more! Follow the light lines.', 'happy'); };
   start();
 }
 /* the stroke order page (one quick animation) and the word bank button */
@@ -9128,45 +9183,61 @@ function mountHotdSheet(sh, H) {
   const fail = () => { cap.textContent = 'The strokes need the internet. Try again when you are online.'; sh.querySelector('.hs-ctl').hidden = true;
     box.querySelector('.quiz').innerHTML = `<span class="ans-fallback" style="--s:${S2}px">${esc(H.h)}</span>`; };
   if (!window.HanziWriter) return fail();
-  loadRef(zhT(H.h)).then(ref => {
+  const cs = [...H.h], two = cs.length > 1, tabs = [...sh.querySelectorAll('#hsTabs button')];
+  hdRefs(H).then(refs => {
     if (!sh.isConnected) return;
-    const N = ref.strokes.length, id = 'hs' + uid().slice(0, 6);
-    if (H.n !== N) { H.n = N; save(); }
-    const nEl = sh.querySelector('#hsN'); if (nEl) nEl.textContent = plural(N, 'stroke');
-    say(N <= 4 ? `Only ${N} strokes. Watch it, then swipe on and write it!` : `${N} strokes. Top to bottom, left to right. Tap play to watch again.`);
-    const FLIP = 'translate(0 900) scale(1 -1)', med = i => ref.medians[i];
-    svg.innerHTML = `<defs>${ref.strokes.map((d, i) => `<clipPath id="${id}c${i}"><path d="${d}"/></clipPath>`).join('')}</defs>
-      <g transform="${FLIP}">${ref.strokes.map(d => `<path class="s-todo" d="${d}"/>`).join('')}<path class="s-ink" fill="none" stroke-width="190" stroke-linecap="round" stroke-linejoin="round"/></g><g class="s-num"></g>`;
-    const P = [...svg.querySelectorAll('g path.s-todo')], ink = svg.querySelector('.s-ink'), num = svg.querySelector('.s-num');
-    let run = 0, anim = null;
-    const badge = i => { if (i < 0 || i >= N) { num.innerHTML = ''; return; } const [x, y] = med(i)[0];
+    const total = hdCount(refs);
+    if (H.n !== total) { H.n = total; save(); }
+    const nEl = sh.querySelector('#hsN'); if (nEl) nEl.textContent = plural(total, 'stroke');
+    say(two ? `${cs.length} characters, ${total} strokes. Watch them, then swipe on and write them!`
+      : total <= 4 ? `Only ${total} strokes. Watch it, then swipe on and write it!` : `${total} strokes. Top to bottom, left to right. Tap play to watch again.`);
+    const FLIP = 'translate(0 900) scale(1 -1)';
+    let run = 0, anim = null, ci = 0, ref, N, P, ink, num;
+    const pre = () => two ? `${cs[ci]} · ` : '';
+    const pick = k => {   // draw character k's strokes, all still to do
+      ci = k; ref = refs[k]; N = ref.strokes.length; const id = 'hs' + uid().slice(0, 6);
+      tabs.forEach((b, j) => { b.classList.toggle('on', j === k); b.setAttribute('aria-selected', j === k); });
+      svg.innerHTML = `<defs>${ref.strokes.map((d, i) => `<clipPath id="${id}c${i}"><path d="${d}"/></clipPath>`).join('')}</defs>
+        <g transform="${FLIP}">${ref.strokes.map(d => `<path class="s-todo" d="${d}"/>`).join('')}<path class="s-ink" fill="none" stroke-width="190" stroke-linecap="round" stroke-linejoin="round"/></g><g class="s-num"></g>`;
+      P = [...svg.querySelectorAll('g path.s-todo')]; ink = svg.querySelector('.s-ink'); num = svg.querySelector('.s-num');
+      ink.dataset.id = id;
+    };
+    const badge = i => { if (i < 0 || i >= N) { num.innerHTML = ''; return; } const [x, y] = ref.medians[i][0];
       num.innerHTML = `<circle class="s-badge" cx="${x}" cy="${900 - y}" r="50"/><text x="${x}" y="${900 - y + 3}" text-anchor="middle" dominant-baseline="central">${i + 1}</text>`; };
     const show = (k, all) => {   // the first k strokes in place; the last of them red, unless it is the finished character
       P.forEach((p, i) => p.setAttribute('class', i < k - 1 || (all && i < k) ? 's-done' : i === k - 1 ? 's-cur' : 's-todo'));
       badge(all ? -1 : k - 1);
-      cap.textContent = k === 0 ? `${plural(N, 'stroke')} · press play` : all ? `All ${N} strokes ✓` : `Stroke ${k} of ${N}`;
+      cap.textContent = pre() + (k === 0 ? `${plural(N, 'stroke')} · press play` : all ? `All ${N} strokes ✓` : `Stroke ${k} of ${N}`);
     };
-    const stop = () => { run++; anim?.cancel(); anim = null; ink.removeAttribute('d'); };
+    const stop = () => { run++; anim?.cancel(); anim = null; ink?.removeAttribute('d'); };
     const draw = i => new Promise(res => {   // stroke i draws itself in red with the brush, the way it is written
       P.forEach((p, j) => p.setAttribute('class', j < i ? 's-done' : 's-todo')); badge(i);
-      cap.textContent = `Stroke ${i + 1} of ${N}`;
-      const m = med(i), len = m.reduce((a, q, j) => j ? a + Math.hypot(q[0] - m[j - 1][0], q[1] - m[j - 1][1]) : 0, 0) + 220;
-      ink.setAttribute('d', 'M' + m.map(q => q.join(' ')).join('L')); ink.setAttribute('clip-path', `url(#${id}c${i})`);
+      cap.textContent = pre() + `Stroke ${i + 1} of ${N}`;
+      const m = ref.medians[i], len = m.reduce((a, q, j) => j ? a + Math.hypot(q[0] - m[j - 1][0], q[1] - m[j - 1][1]) : 0, 0) + 220;
+      ink.setAttribute('d', 'M' + m.map(q => q.join(' ')).join('L')); ink.setAttribute('clip-path', `url(#${ink.dataset.id}c${i})`);
       ink.style.strokeDasharray = `${len} ${len}`;
       anim = ink.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: stillMotion() ? 1 : 170 + len * .34, easing: 'cubic-bezier(.4,.1,.45,1)', fill: 'both' });
       anim.onfinish = () => { anim = null; ink.removeAttribute('d'); show(i + 1); res(true); };
       anim.oncancel = () => res(false);
     });
-    const play = async () => {   // the quick film: every stroke in order, then the whole character
-      stop(); const me = run; show(0);
-      for (let i = 0; i < N; i++) { if (!(await draw(i)) || me !== run) return; await new Promise(r => setTimeout(r, 70)); if (me !== run) return; }
-      show(N, true); LOG.add('hotd-play', { hz: H.h });
+    const wait = (ms, me) => new Promise(r => setTimeout(() => r(me === run), ms));
+    const play = async (from = ci, chain = false) => {   // the quick film: every stroke in order, then the whole character (and on to the next one)
+      stop(); const me = run; if (from !== ci) pick(from); show(0);
+      for (let k = from; ; ) {
+        for (let i = 0; i < N; i++) { if (!(await draw(i)) || me !== run) return; if (!(await wait(70, me))) return; }
+        show(N, true);
+        if (!chain || k >= cs.length - 1) break;
+        if (!(await wait(650, me))) return;
+        pick(++k); show(0);
+      }
+      LOG.add('hotd-play', { hz: H.h });
     };
-    sh.querySelector('#hsPlay').onclick = play;
-    box.addEventListener('click', play);   // tap the box to watch it again
-    show(0);   // plays by itself the first time the box is on screen
+    sh.querySelector('#hsPlay').onclick = () => play(0, true);   // play: the whole word from the start
+    box.onclick = () => play(ci);   // tap the box to watch this character again
+    tabs.forEach((b, k) => { b.onclick = () => play(k); });
+    pick(0); show(0);   // plays by itself the first time the box is on screen
     if (!stillMotion() && 'IntersectionObserver' in window) { const io = new IntersectionObserver(es => {
-      if (es.some(x => x.isIntersecting)) { io.disconnect(); setTimeout(() => sh.isConnected && play(), 250); } }, { threshold: .7 });
+      if (es.some(x => x.isIntersecting)) { io.disconnect(); setTimeout(() => sh.isConnected && play(0, true), 250); } }, { threshold: .7 });
       io.observe(box); }
   }, fail);
 }
@@ -13635,7 +13706,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.34';
+const APP_VERSION = '3.45.35';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13698,7 +13769,7 @@ function devSheet() {
     <p class="muted" style="margin:-6px 0 14px">Replay what normally happens once a day. Only today’s cards change, on this device.</p>
     <div class="list-group">
       ${b('devCover', 'Cover the character again', 'Gold foil back on, both cards back on Decks')}
-      ${b('devNew', 'Try another character', 'A random one you don’t know yet, under foil')}
+      ${b('devNew', 'Try another word', 'A random one you don’t know yet, under foil')}
       ${b('devOpen', 'Play: card opens', 'Decks, then the card grows into the pop-up')}
       ${b('devToss', 'Play: card swipes away', 'The top card flies off and goes under, the story card rises')}
     </div>
@@ -13740,7 +13811,7 @@ function devSheet() {
       }, 300);
     };
     sh.querySelector('#devCover').onclick = go('cover', () => { back(); db.hotd.rev = false; }, () => toast(`${db.hotd.h} is under the foil again`));
-    sh.querySelector('#devNew').onclick = go('new', () => { hotdPick(true); }, () => toast('A new character is waiting'));
+    sh.querySelector('#devNew').onclick = go('new', () => { hotdPick(true); }, () => toast('A new word is waiting'));
     sh.querySelector('#devOpen').onclick = go('open', back, () => hotdOpen());
     sh.querySelector('#devToss').onclick = go('toss', back, () => hdRotate(1));
   });
@@ -14484,7 +14555,7 @@ function obShow() {
         ${chars ? `<small class="ob-chars">You can read about ${chars.toLocaleString('en')} characters</small>` : ''}</div>
       ${sigs.length > 1 ? `<div class="ob-sigs">${sigs.join('')}</div>` : ''}
       ${add}
-      <p class="ob-next">${lv > 1 || chars ? 'Hanzi of the day and your new words start here.' : 'Perfect, everyone starts here. Hanzi of the day and your new words start with the basics.'}</p>
+      <p class="ob-next">${lv > 1 || chars ? 'Word of the day and your new words start here.' : 'Perfect, everyone starts here. Word of the day and your new words start with the basics.'}</p>
       <div class="ob-dock"><button class="btn btn-primary" data-ob="next">Continue</button></div>`;
   }
   else if (step === 'goal') {
