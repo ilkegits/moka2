@@ -356,24 +356,29 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hd-story .hd-go svg.i{width:16px;height:16px;flex:none}
 .hd-card.rev.hd-story .hd-shi{right:-2px;bottom:-4px;width:100px;height:100px;pointer-events:auto;padding:0;background:none;border:0;cursor:pointer}
 .hd-story .shi-read{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 14px rgba(40,6,4,.45))}
-/* the Review card (3.45.44): jade, laid out like the story card; the words waiting are fanned out as little cards on the right */
-.hd-review{--hd:#2E6A55}
-.hd-card.rev.hd-review .hd-txt{padding-right:96px}
+/* the Review card (3.45.46, design D of six): a night card with a lantern for each word due, hung on a wire beside the button.
+   Each word you review lights one; back on Decks the newly lit ones glow on one after another */
+.hd-review{--hd:#1D2742;background:radial-gradient(120% 100% at 85% 0%,#2C3A63,#1D2742 62%);color:#F3EDE2}
+.hd-review .hd-lbl{color:#FFD9A0}
+.hd-card.rev.hd-review .hd-txt{padding-right:0}
 .hd-rv-n{flex:none;font:800 22px/1.15 var(--display);letter-spacing:-.01em}
-.rv-fan{position:absolute;right:14px;bottom:14px;width:92px;height:96px;pointer-events:none}
-.rv-fan span{position:absolute;left:18px;top:8px;width:56px;height:76px;border-radius:9px;display:grid;place-items:center;background:#FCF8EF;color:var(--ink);
-  font:600 27px/1 var(--hanzi);transform-origin:50% 100%;box-shadow:0 6px 12px -6px rgba(0,30,20,.6),inset 0 0 0 1px rgba(0,40,30,.08)}
-.rv-fan span.l2{font-size:19px}.rv-fan span.l3{font-size:14px}
-.rv-fan span:nth-last-child(3){transform:translateX(-14px) rotate(-14deg)}
-.rv-fan span:nth-last-child(2){transform:translateX(-2px) rotate(-3deg)}
-.rv-fan span:nth-last-child(1){transform:translateX(12px) rotate(10deg)}
-.rv-fan span:only-child{transform:rotate(6deg)}
-.rv-fan .ok{color:var(--jade);font:800 34px/1 var(--ui)}
-.hd-review.done .hd-row{margin-top:6px}
-.hd-review.done .rv-fan{bottom:6px}
-@media (max-width:359px){.hd-card.rev.hd-review .hd-txt{padding-right:84px}.rv-fan{right:6px}}
+.hd-review .hd-go{background:linear-gradient(#FFE79A,#F6C445 55%,#E9AE2C);color:#6A3A00;--edge:rgba(140,80,0,.4);--drop:rgba(0,0,0,.8);text-shadow:none}
+.rv-sub{position:relative;margin-top:12px;font-size:14px;font-weight:600;opacity:.8}
+.rv-lns{position:absolute;right:12px;bottom:8px;width:170px;height:60px;overflow:visible;pointer-events:none}
+.rv-wire{fill:none;stroke:rgba(255,230,190,.35);stroke-width:1.4}
+.rv-str{stroke:rgba(255,230,190,.45);stroke-width:1.3}
+.rv-ln .off rect,.rv-ln .off ellipse,.rv-ln .off .tas{fill:none;stroke:rgba(255,230,190,.45);stroke-width:1.3}
+.rv-ln .off .rib{fill:none;stroke:rgba(255,230,190,.22);stroke-width:1}
+.rv-ln .on{opacity:0}
+.rv-ln.lit .on{opacity:1}.rv-ln.lit .off{opacity:0}
+.rv-ln.new .on{transform-box:fill-box;transform-origin:50% 0;animation:rvLight .75s cubic-bezier(.3,1.4,.5,1) var(--d) both}
+.rv-ln.new .off{animation:rvOff .25s ease var(--d) both}
+@keyframes rvLight{0%{opacity:0;transform:scale(.6)}35%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes rvOff{from{opacity:1}to{opacity:0}}
+.hd-review.done .rv-lns{bottom:auto;top:4px}   /* no button: the lanterns hang beside the title, clear of the line under it */
+@media (max-width:359px){.rv-lns{right:4px;width:150px}}
 @media (max-width:359px){.hd-card.rev.hd-story .hd-shi{width:88px;height:88px}.hd-card.rev.hd-story .hd-txt{padding-right:76px}.hd-story .hd-go{padding:0 14px;font-size:15px}}   /* small phones: the button keeps one line and stays clear of the book */
-@media (prefers-reduced-motion:reduce){.hd-shi,.hd-sheen,.hd-card.just *,.hdx-tile.pop *,.hdx-head.new>*,.hdx-after>*,.tk-word,.hd-card.back.up *{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){.hd-shi,.hd-sheen,.hd-card.just *,.hdx-tile.pop *,.hdx-head.new>*,.hdx-after>*,.tk-word,.hd-card.back.up *,.rv-ln.new *{animation:none!important;transition:none!important}}
 /* the Hanzi of the day pop-up: meaning, stroke order step by step, write it yourself, add to the word bank */
 .hs-top{display:flex;align-items:center;gap:16px;margin:-4px 2px 14px}
 .hs-hz{font-family:var(--hanzi);font-weight:600;font-size:74px;line-height:1;color:var(--ink)}
@@ -8865,10 +8870,11 @@ function HotdStack() {   // only the top two cards are drawn; the third sheet un
 /* 3.45.44: the deck can hold a third card, Review, while words are due for review or once they are all done today.
    db.hotd.deck: the order, top first (db.hotd.top, the older way, still read). A new Review card goes in under the top card,
    so the day runs: uncover today's word, review, read; each card goes to the bottom once it is done */
-function hdReview() {
-  const P = todayPile(), n = P.due.length, t0 = dayStart(Date.now());
-  const did = !n && allItems().some(c => c.srs?.seen >= t0 && c.srs.first < t0);   // an older word was practised today
-  return { n, due: P.due, done: did, show: n > 0 || did };
+function hdReview() {   // words due now, and how many lanterns are lit: words reviewed today that are not due again
+  const P = todayPile(), t0 = dayStart(Date.now()), due = new Set(P.due.map(c => c.hanzi)), done = new Set();
+  for (const c of allItems()) if (c.hanzi && c.srs?.seen >= t0 && c.srs.first < t0 && !due.has(c.hanzi)) done.add(c.hanzi);   // an older word practised today
+  const n = P.due.length, total = due.size + done.size;
+  return { n, due: P.due, total, lit: done.size, done: !n && done.size > 0, show: n > 0 || done.size > 0 };
 }
 function hdOrder() {
   const H = db.hotd, have = ['hotd', 'story']; if (hdReview().show) have.push('review');
@@ -8877,22 +8883,36 @@ function hdOrder() {
   return o;
 }
 function ReviewCard() {
-  const R = hdReview(), back = hdOrder()[0] !== 'review';
-  const seen = new Set(), hz = R.due.map(c => c.hanzi).filter(h => h && !seen.has(h) && seen.add(h)).slice(0, 3).reverse();
-  const fan = R.n ? hz.map(h => `<span class="${[...h].length > 2 ? 'l3' : [...h].length > 1 ? 'l2' : ''}">${esc(h)}</span>`).join('') : '<span class="ok">✓</span>';
+  const R = hdReview(), H = db.hotd, back = hdOrder()[0] !== 'review';
+  const k = Math.min(R.total, 5), lit = R.total ? Math.round(R.lit / R.total * k) : 0;   // up to 5 lanterns; past 5 words each stands for a share
+  const from = back || !H ? lit : Math.min(H.rvLit ?? 0, lit);   // lanterns lit since you last saw the card light up now
+  if (!back && H && H.rvLit !== lit) { H.rvLit = lit; save(); }
+  hdRvNew = lit - from;
+  const big = R.done ? (R.total <= 5 ? `All ${R.total} lit ✓` : 'All lit ✓')
+    : R.lit ? (R.total <= 5 ? `${R.n} more to light` : `${plural(R.n, 'word')} left`)
+    : R.total <= 5 ? `Light ${R.n} lantern${R.n === 1 ? '' : 's'}` : `${plural(R.n, 'word')} to review`;
   const tmr = R.n ? 0 : dueBy(dayStart(Date.now()) + 2 * DAY);
-  return `<section class="hd-card rev hd-story hd-review${R.n ? '' : ' done'}${back ? ' back' : ' front'}" id="hdReview" aria-label="Review"${back ? ' inert aria-hidden="true"' : ''}>
+  return `<section class="hd-card rev hd-story hd-review${R.n ? '' : ' done'}${back ? ' back' : ' front'}" id="hdReview" aria-label="Review: ${esc(big)}"${back ? ' inert aria-hidden="true"' : ''}>
     <div class="hd-lbl">Review <span class="hd-zh">复习</span></div>
-    <div class="hd-row"><div class="hd-txt">${R.n ? `<div class="hd-rv-n">${plural(R.n, 'word')}</div><div class="hd-en">to review today</div>`
-      : `<div class="hd-rv-n">All reviewed ✓</div>`}</div></div>
-    ${R.n ? `<button class="btn hd-go" data-act="review-start">${I.refresh}Review now</button>`
-      : `<div class="hd-en" style="margin-top:4px">${tmr ? `${plural(tmr, 'word')} come${tmr === 1 ? 's' : ''} back tomorrow` : 'Nice work. See you tomorrow'}</div>`}
-    <span class="rv-fan" aria-hidden="true">${fan}</span></section>`;
+    <div class="hd-row"><div class="hd-txt"><div class="hd-rv-n">${big}</div></div></div>
+    ${R.n ? `<button class="btn hd-go" data-act="review-start">${I.refresh}${R.lit ? 'Keep going' : 'Review now'}</button>`
+      : `<div class="rv-sub">${tmr ? `${plural(tmr, 'word')} come${tmr === 1 ? 's' : ''} back tomorrow` : 'See you tomorrow'}</div>`}
+    ${rvLanterns(k, lit, from)}</section>`;
+}
+let hdRvNew = 0;   // how many lanterns the last drawn card is lighting up
+function rvLanterns(k, lit, from) {   // k lanterns hung on a sagging wire; the first `lit` glow, and those from `from` light up one after another
+  const W = 170, x = i => k === 1 ? W / 2 : 17 + i * (W - 34) / (k - 1), y = X => 6 + 32 * (X / W) * (1 - X / W);
+  return `<svg class="rv-lns" viewBox="0 0 ${W} 60" aria-hidden="true"><defs><radialGradient id="rvGlow"><stop offset="0" stop-color="#FF8A3C" stop-opacity=".75"/><stop offset="1" stop-color="#FF8A3C" stop-opacity="0"/></radialGradient></defs>
+    <path class="rv-wire" d="M0 6Q${W / 2} 22 ${W} 6"/>${Array.from({ length: k }, (_, i) => { const X = x(i);
+    return `<g class="rv-ln${i < lit ? ' lit' : ''}${i < lit && i >= from ? ' new' : ''}" style="--d:${Math.max(0, i - from) * 220 + 250}ms" transform="translate(${X.toFixed(1)} ${y(X).toFixed(1)})">
+      <path class="rv-str" d="M0 0v3"/>
+      <g class="off"><rect x="-5" y="3" width="10" height="3.5" rx="1.4"/><ellipse cx="0" cy="18" rx="11" ry="11.5"/><path class="rib" d="M0 7v22M-6 9c-3 6-3 12 0 18M6 9c3 6 3 12 0 18"/><rect x="-5" y="29.5" width="10" height="3" rx="1.4"/><path class="tas" d="M0 33v5"/></g>
+      <g class="on"><circle cx="0" cy="18" r="19" fill="url(#rvGlow)"/><rect x="-5" y="3" width="10" height="3.5" rx="1.4" fill="#F2B33D"/><ellipse cx="0" cy="18" rx="11" ry="11.5" fill="#E8452F" stroke="#FF8A5C" stroke-width="1.2"/><ellipse cx="0" cy="18" rx="4.5" ry="9" fill="#FF9A55" opacity=".6"/><rect x="-5" y="29.5" width="10" height="3" rx="1.4" fill="#F2B33D"/><path d="M0 33v5" stroke="#F2B33D" stroke-width="1.4"/></g></g>`; }).join('')}</svg>`;
 }
 function hdSinkReview() {   // back from a review round with nothing left: the done card shows for a moment, then goes to the bottom
   const H = db.hotd; if (!H || H.revSunk || !hdReview().done) return;
   H.revSunk = true; save();
-  if (hdOrder()[0] === 'review') setTimeout(() => { if ($('#hdStack .front.hd-review')) hdRotate(1); }, 1100);
+  if (hdOrder()[0] === 'review') setTimeout(() => { if ($('#hdStack .front.hd-review')) hdRotate(1); }, 1400 + hdRvNew * 220);
 }
 function HotdStoryCard() {
   const s = db.readCur, H = db.hotd, back = hdOrder()[0] !== 'story', go = s?.opened ? 'Keep reading' : 'Read now';
@@ -13820,7 +13840,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.45';
+const APP_VERSION = '3.45.46';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
