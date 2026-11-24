@@ -2864,7 +2864,9 @@ button.scene-tile:active svg{opacity:.92}
 /* ---------- full-screen moments: onboarding, streak saved, milestones, welcome back, paywall ---------- */
 #ob{position:fixed;inset:0;z-index:60;background:var(--obbg,var(--paper));display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;
   padding:env(safe-area-inset-top) 0 0;animation:obIn .32s cubic-bezier(.2,.8,.3,1) both}
-#ob.out{animation:obOut .2s ease both}
+#ob.out{animation:obOut .2s ease both;pointer-events:none}
+#ob.swap{animation:obSwap .3s ease both} #ob.swap.out{animation:obOut .2s ease both}
+@keyframes obSwap{from{background-color:var(--from)}}
 @keyframes obIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes obOut{to{opacity:0;transform:translateY(10px)}}
 .ob-in{flex:1;display:flex;flex-direction:column;width:100%;max-width:480px;margin:0 auto;padding:0 20px}
@@ -13199,7 +13201,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.21';
+const APP_VERSION = '3.45.22';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13727,14 +13729,17 @@ function settingsSheet() {
    - Badges for real skills, the app icon's dot, and a paywall layout kept as a preview (nothing is sold).
    ========================================================= */
 function layer(html, cls = '') {   // a full-screen page over the app
-  $('#ob')?.remove();
+  // moka2 3.45.22: a page that replaces another one shows at once, its colour fading from the old page's: fading the whole
+  // page in from see-through let the home page flash between onboarding pages
+  const old = $('#ob'), from = old && !old.classList.contains('out') ? getComputedStyle(old).backgroundColor : null; old?.remove();
   const el = document.createElement('div'); el.id = 'ob'; if (cls) el.className = cls;
+  if (from) { el.classList.add('swap'); el.style.setProperty('--from', from); }
   el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
   el.innerHTML = `<div class="ob-in">${html}</div>`; $('#frame').appendChild(el); return el;
 }
 function closeLayer(then) {
   const el = $('#ob'); if (!el) { then?.(); return; }
-  el.id = ''; el.classList.add('out');
+  el.classList.add('out');   // moka2 3.45.22: it keeps its id while it fades out (without it, it lost its look and vanished at once)
   setTimeout(() => { el.remove(); then?.(); }, stillMotion() ? 0 : 200);
 }
 const confetti = () => Array.from({ length: 22 }, (_, i) => `<i style="--x:${(i % 2 ? 1 : -1) * (40 + (i * 37) % 120)}px;--y:${-(60 + (i * 53) % 110)}px;--r:${(i * 97) % 360}deg;--d:${(i % 7) * 40}ms;background:${['#E5483F', '#FFD15C', '#3F7A5F', '#E8742C', '#B23A2C'][i % 5]}"></i>`).join('');
@@ -14239,6 +14244,10 @@ async function obCheckStart() {   // the HSK lists may still be loading
   S.ob.chk = { rounds: [], res: {} }; obRound(S.ob.level || 1); obShow();
 }
 /* v4.57/4.58 (real app): the last page offers an account (Google or email), unless you already have one; a replay shows it too */
+function obUnder(open) {   // moka2 3.45.22: a pop-up opens over the last page and the pages fade out behind it (no home page flash first)
+  const root = $('#sheet-root'); root.style.zIndex = 61; open();
+  setTimeout(() => { if (!$('#ob')) root.style.zIndex = ''; else { const t = setInterval(() => { if (!$('#ob')) { root.style.zIndex = ''; clearInterval(t); } }, 100); } }, 300);
+}
 const obSaveAsk = () => S.ob && (S.ob.replay || !CLOUD.user);
 const obHaveAcct = () => { if (!CLOUD.user) return false; toast('You’re already signed in as ' + (CLOUD.user.email || CLOUD.user.name)); return true; };
 function obFinish(how) {
@@ -14312,7 +14321,7 @@ async function obClick(e) {
     $('#ob [data-ob="next"]').disabled = false; return;
   }
   const a = b.dataset.ob;
-  if (a === 'skip') { obFinish('skipped'); if (!CLOUD.user) setTimeout(() => acctSheet(true), 450); return; }   // v4.47: bring your progress back
+  if (a === 'skip') { if (!CLOUD.user) obUnder(() => acctSheet(true)); obFinish('skipped'); return; }   // v4.47: bring your progress back
   if (a === 'done' && step === 'habit') { O.how = 'not-now'; obGo('pay'); return; }
   if (a === 'done' || a === 'buy') {   // the paywall preview ends the pages
     if (a === 'buy') toast('Preview only. Nothing was bought');
@@ -14321,7 +14330,7 @@ async function obClick(e) {
   }
   if (a === 'google') { LOG.add('onboarding-save', { pick: 'google' }); obFinish(O.how || 'done'); if (obHaveAcct()) return;
     try { await CLOUD.google(); } catch (_) { toast('Couldn’t reach Google. Are you online?'); } return; }   // Google takes over the page and comes back signed in
-  if (a === 'email') { LOG.add('onboarding-save', { pick: 'email' }); obFinish(O.how || 'done'); if (obHaveAcct()) return; setTimeout(() => acctSheet(false, true), 450); return; }
+  if (a === 'email') { LOG.add('onboarding-save', { pick: 'email' }); if (CLOUD.user) { obFinish(O.how || 'done'); obHaveAcct(); return; } obUnder(() => acctSheet(false, true)); obFinish(O.how || 'done'); return; }
   if (a === 'nosave') { LOG.add('onboarding-save', { pick: 'not-now' }); const how = O.how || 'done'; obFinish(how); if (how === 'install-help') setTimeout(installHelp, 350); return; }
   if (a === 'nodate') { O.exam = null; obGo(obNext()); return; }
   if (a === 'quit') { LOG.add('onboarding-done', { how: 'closed', replay: O.replay, demo: O.demo }); if (O.demo) { db.prefs.ob2Seen = Date.now(); save(); } S.ob = null; closeLayer(); return; }
