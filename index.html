@@ -356,6 +356,22 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hd-story .hd-go svg.i{width:16px;height:16px;flex:none}
 .hd-card.rev.hd-story .hd-shi{right:-2px;bottom:-4px;width:100px;height:100px;pointer-events:auto;padding:0;background:none;border:0;cursor:pointer}
 .hd-story .shi-read{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 14px rgba(40,6,4,.45))}
+/* the Review card (3.45.44): jade, laid out like the story card; the words waiting are fanned out as little cards on the right */
+.hd-review{--hd:#2E6A55}
+.hd-card.rev.hd-review .hd-txt{padding-right:96px}
+.hd-rv-n{flex:none;font:800 22px/1.15 var(--display);letter-spacing:-.01em}
+.rv-fan{position:absolute;right:14px;bottom:14px;width:92px;height:96px;pointer-events:none}
+.rv-fan span{position:absolute;left:18px;top:8px;width:56px;height:76px;border-radius:9px;display:grid;place-items:center;background:#FCF8EF;color:var(--ink);
+  font:600 27px/1 var(--hanzi);transform-origin:50% 100%;box-shadow:0 6px 12px -6px rgba(0,30,20,.6),inset 0 0 0 1px rgba(0,40,30,.08)}
+.rv-fan span.l2{font-size:19px}.rv-fan span.l3{font-size:14px}
+.rv-fan span:nth-last-child(3){transform:translateX(-14px) rotate(-14deg)}
+.rv-fan span:nth-last-child(2){transform:translateX(-2px) rotate(-3deg)}
+.rv-fan span:nth-last-child(1){transform:translateX(12px) rotate(10deg)}
+.rv-fan span:only-child{transform:rotate(6deg)}
+.rv-fan .ok{color:var(--jade);font:800 34px/1 var(--ui)}
+.hd-review.done .hd-row{margin-top:6px}
+.hd-review.done .rv-fan{bottom:6px}
+@media (max-width:359px){.hd-card.rev.hd-review .hd-txt{padding-right:84px}.rv-fan{right:6px}}
 @media (max-width:359px){.hd-card.rev.hd-story .hd-shi{width:88px;height:88px}.hd-card.rev.hd-story .hd-txt{padding-right:76px}.hd-story .hd-go{padding:0 14px;font-size:15px}}   /* small phones: the button keeps one line and stays clear of the book */
 @media (prefers-reduced-motion:reduce){.hd-shi,.hd-sheen,.hd-card.just *,.hdx-tile.pop *,.hdx-head.new>*,.hdx-after>*,.tk-word,.hd-card.back.up *{animation:none!important;transition:none!important}}
 /* the Hanzi of the day pop-up: meaning, stroke order step by step, write it yourself, add to the word bank */
@@ -4227,7 +4243,7 @@ addEventListener('keydown', e => {
 function render() {
   if (ZH.k !== sysK()) sysBoot();   // v4.68: a backup or your account brought another system
   const app = $('#app'); const d = curDeck();
-  if (S.view === 'home') { app.innerHTML = Home(); mountHotd();
+  if (S.view === 'home') { app.innerHTML = Home(); mountHotd(); hdSinkReview();
     if (!S.H) loadHsk().then(() => { const sh = $('#hskShelf'); if (sh) sh.outerHTML = HskShelf();
       const hd = $('#hotd[data-wait]'); if (hd) { hd.outerHTML = HotdCard(); mountHotd(); } }, () => {}); }
   else if (S.view === 'deck') { app.innerHTML = DeckView(d); }
@@ -8825,7 +8841,7 @@ const tkMotif = day => {   // day: a dayKey ('2026-10-24', month from 0); the da
   return TK_MOTIFS[((n % TK_MOTIFS.length) + TK_MOTIFS.length) % TK_MOTIFS.length] || TK_MOTIFS[0];
 };
 function HotdCard(just) {   // the card on Decks: a ticket, today's word on the tear-off stub (gold foil until uncovered), one red Learn now button
-  const H = hotdPick(), rev = !!H?.rev, mine = H && bankHas(H.h), back = H?.top === 'story', two = H && [...H.h].length > 1;
+  const H = hotdPick(), rev = !!H?.rev, mine = H && bankHas(H.h), back = hdOrder()[0] !== 'hotd', two = H && [...H.h].length > 1;
   const meta = H ? `<div class="hd-meta"><span>${HSK_NAME(H.lv)}</span>${mine ? '<span>In your word bank ✓</span>' : ''}</div>` : '';
   const [mName, mArt] = H ? tkMotif(H.day) : TK_MOTIFS[0];
   const stub = !H ? '<span class="tk-stub foil" aria-hidden="true"><span class="tk-q">?</span></span>'
@@ -8841,12 +8857,44 @@ function HotdCard(just) {   // the card on Decks: a ticket, today's word on the 
 /* Hanzi of the day and the story card lie in a little deck (db.hotd.top: 'story' when the story card is on top).
    Swipe the top card away to either side: it flies off and slides in at the bottom, the card under it comes up.
    Once today's character is in your word bank the deck turns over by itself, so the story card is on top. */
-function HotdStack() {
-  const storyTop = hotdPick()?.top === 'story';
-  return `<div class="hd-stack" id="hdStack">${storyTop ? HotdCard() + HotdStoryCard() : HotdStoryCard() + HotdCard()}</div>`;
+function HotdStack() {   // only the top two cards are drawn; the third sheet under them stands for the rest
+  hotdPick(); const o = hdOrder(), card = k => k === 'hotd' ? HotdCard() : k === 'story' ? HotdStoryCard() : ReviewCard();
+  return `<div class="hd-stack" id="hdStack">${card(o[1])}${card(o[0])}</div>`;
+}
+/* 3.45.44: the deck can hold a third card, Review, while words are due for review or once they are all done today.
+   db.hotd.deck: the order, top first (db.hotd.top, the older way, still read). A new Review card goes in under the top card,
+   so the day runs: uncover today's word, review, read; each card goes to the bottom once it is done */
+function hdReview() {
+  const P = todayPile(), n = P.due.length, t0 = dayStart(Date.now());
+  const did = !n && allItems().some(c => c.srs?.seen >= t0 && c.srs.first < t0);   // an older word was practised today
+  return { n, due: P.due, done: did, show: n > 0 || did };
+}
+function hdOrder() {
+  const H = db.hotd, have = ['hotd', 'story']; if (hdReview().show) have.push('review');
+  const o = (H?.deck || (H?.top === 'story' ? ['story', 'hotd'] : ['hotd', 'story'])).filter(k => have.includes(k));
+  for (const k of have) if (!o.includes(k)) o.splice(k === 'review' ? Math.min(1, o.length) : o.length, 0, k);
+  return o;
+}
+function ReviewCard() {
+  const R = hdReview(), back = hdOrder()[0] !== 'review';
+  const seen = new Set(), hz = R.due.map(c => c.hanzi).filter(h => h && !seen.has(h) && seen.add(h)).slice(0, 3).reverse();
+  const fan = R.n ? hz.map(h => `<span class="${[...h].length > 2 ? 'l3' : [...h].length > 1 ? 'l2' : ''}">${esc(h)}</span>`).join('') : '<span class="ok">✓</span>';
+  const tmr = R.n ? 0 : dueBy(dayStart(Date.now()) + 2 * DAY);
+  return `<section class="hd-card rev hd-story hd-review${R.n ? '' : ' done'}${back ? ' back' : ' front'}" id="hdReview" aria-label="Review"${back ? ' inert aria-hidden="true"' : ''}>
+    <div class="hd-lbl">Review <span class="hd-zh">复习</span></div>
+    <div class="hd-row"><div class="hd-txt">${R.n ? `<div class="hd-rv-n">${plural(R.n, 'word')}</div><div class="hd-en">to review today</div>`
+      : `<div class="hd-rv-n">All reviewed ✓</div>`}</div></div>
+    ${R.n ? `<button class="btn hd-go" data-act="review-start">${I.refresh}Review now</button>`
+      : `<div class="hd-en" style="margin-top:4px">${tmr ? `${plural(tmr, 'word')} come${tmr === 1 ? 's' : ''} back tomorrow` : 'Nice work. See you tomorrow'}</div>`}
+    <span class="rv-fan" aria-hidden="true">${fan}</span></section>`;
+}
+function hdSinkReview() {   // back from a review round with nothing left: the done card shows for a moment, then goes to the bottom
+  const H = db.hotd; if (!H || H.revSunk || !hdReview().done) return;
+  H.revSunk = true; save();
+  if (hdOrder()[0] === 'review') setTimeout(() => { if ($('#hdStack .front.hd-review')) hdRotate(1); }, 1100);
 }
 function HotdStoryCard() {
-  const s = db.readCur, H = db.hotd, back = H?.top !== 'story', go = s?.opened ? 'Keep reading' : 'Read now';
+  const s = db.readCur, H = db.hotd, back = hdOrder()[0] !== 'story', go = s?.opened ? 'Keep reading' : 'Read now';
   const ch = s ? hanChars((s.zh || '').replace(/^狮狮的?/, '')).slice(0, 2) : [];
   return `<section class="hd-card rev hd-story${back ? ' back' : ' front'}" id="hdStory" aria-label="Story time"${back ? ' inert aria-hidden="true"' : ''}>
     <div class="hd-lbl">Story time <span class="hd-zh">读故事</span>${hdDone(H) ? `<div class="hd-meta"><span>Today’s word ${esc(H.h)} ✓</span></div>` : ''}</div>
@@ -8858,8 +8906,8 @@ const HD_BACK = (p = 0) => `translateY(${12 * (1 - p)}px) scale(${.94 + .06 * p}
 function hdRotate(dir = 1, x = 0) {   // the top card flies off to one side and slides in at the bottom; the card under it rises
   const H = db.hotd, st = $('#hdStack'); if (!H || !st) return;
   const front = st.querySelector('.front'), back = st.querySelector('.back');
-  H.top = H.top === 'story' ? 'hotd' : 'story'; save();
-  LOG.add('daily-card-swipe', { top: H.top === 'story' ? 'story' : 'hanzi' });
+  const o = hdOrder(); H.deck = [...o.slice(1), o[0]]; H.top = H.deck[0]; save();
+  LOG.add('daily-card-swipe', { top: H.top === 'hotd' ? 'hanzi' : H.top });
   if (!front || !back || stillMotion()) { st.outerHTML = HotdStack(); return; }
   const w = st.offsetWidth, p0 = Math.min(1, Math.abs(x) / (w * .5)), T = { duration: 380, easing: 'cubic-bezier(.2,.8,.3,1.06)', fill: 'forwards' };
   front.animate([{ transform: `translateX(${x}px) rotate(${x / w * 10}deg)` }, { transform: `translateX(${dir * w * 1.15}px) rotate(${dir * 16}deg)` }],
@@ -8870,8 +8918,8 @@ function hdRotate(dir = 1, x = 0) {   // the top card flies off to one side and 
   back.animate([{ transform: HD_BACK(p0) }, { transform: 'none' }], T).onfinish = () => {
     if (!st.isConnected) return;
     st.outerHTML = HotdStack();
-    $('#hdStack .back')?.animate([{ transform: `translateX(${dir * 30}px) translateY(18px) scale(.86) rotate(${dir * 6}deg)`, opacity: 0 }, { transform: HD_BACK(), opacity: 1 }],
-      { duration: 320, easing: 'cubic-bezier(.2,.8,.3,1)' });   // the card that flew off tucks in at the bottom
+    $('#hdStack .back')?.animate([{ transform: o.length > 2 ? 'translateY(24px) scale(.88) rotate(1.4deg)' : `translateX(${dir * 30}px) translateY(18px) scale(.86) rotate(${dir * 6}deg)`, opacity: o.length > 2 ? .55 : 0 }, { transform: HD_BACK(), opacity: 1 }],
+      { duration: 320, easing: 'cubic-bezier(.2,.8,.3,1)' });   // the card that flew off tucks in at the bottom (three cards: the next one rises from the sheet under them)
   };
 }
 /* swipe the top daily card: it follows your finger and the card under it comes up into view as you go.
@@ -9051,7 +9099,7 @@ function hdxClose(instant) {   // and shrinks back into the card
   LOG.add('hotd-shut', { hz: H.h, page: el._page + 1, revealed: !!H.rev });
   const done = db.hotd === H && !hdDone(H) && bankHas(H.h);
   let card = $('#hotd'); if (card) { card.outerHTML = HotdCard(H.rev && !el._wasRev); card = $('#hotd'); }   // the card now shows the character
-  const end = () => { el.remove(); if (done) { H.done = true; save(); LOG.add('hotd-done', { hz: H.h }); if (H.top !== 'story') hdRotate(1); } };
+  const end = () => { el.remove(); if (done) { H.done = true; save(); LOG.add('hotd-done', { hz: H.h }); if (hdOrder()[0] === 'hotd') hdRotate(1); } };
   if (instant || stillMotion()) return end();
   const box = el.querySelector('.hdx-box');
   box.querySelectorAll(':scope>*').forEach(x => x.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }));
@@ -13771,7 +13819,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.43';
+const APP_VERSION = '3.45.44';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13827,7 +13875,7 @@ function devLvRestore() {
 function devSheet() {
   const H = hotdPick();
   const now = !H ? 'Today’s character is not picked yet (the HSK list is still loading).'
-    : `Today: ${H.h} ${H.p} · ${H.rev ? 'uncovered' : 'under the foil'} · ${H.top === 'story' ? 'story card on top' : 'Hanzi card on top'}${bankHas(H.h) ? ' · in your word bank' : ''}`;
+    : `Today: ${H.h} ${H.p} · ${H.rev ? 'uncovered' : 'under the foil'} · deck ${hdOrder().join(' > ')}${bankHas(H.h) ? ' · in your word bank' : ''}`;
   const p = (id, t, s) => `<button class="list-btn" id="${id}"><span>${t}<br><small>${s}</small></span><span class="side">${I.chev}</span></button>`;
   const b = (id, t, s) => `<button class="list-btn" id="${id}"${H ? '' : ' disabled'}><span>${t}<br><small>${s}</small></span><span class="side">${I.chev}</span></button>`;
   openSheet(`<h3>Developer</h3>
@@ -13866,7 +13914,7 @@ function devSheet() {
     sh.querySelector('#devMile').onclick = play(function milestone() { const { n } = practiceStreak(); momentMile(MILES.includes(n) ? n : 7); });
     sh.querySelector('#devBack').onclick = play(function welcomeBack() { momentBack(4, 12); });
     sh.querySelector('#devPay').onclick = play(function paywallPreview() { paywall(); });
-    const back = () => { const X = db.hotd; delete X.off; delete X.storyOff; delete X.done; delete X.top; };
+    const back = () => { const X = db.hotd; delete X.off; delete X.storyOff; delete X.done; delete X.top; delete X.deck; delete X.revSunk; };
     const go = (what, prep, then) => () => {
       LOG.add('dev', what); prep(); save(); closeSheet();
       setTimeout(() => {
@@ -15195,9 +15243,12 @@ const A = {
     S.study = null; S.write = null; S.today = null; toast(`${plural(n, 'word')} in ${T.name}`); nav('#/deck/' + T.id);
   },
   'tricky-no': () => { db.trickyNo = roundsDone(); save(); LOG.add('tricky-not-now', {}); $('.tk-card')?.remove(); },
+  'review-start': () => { const P = todayPile(); if (!P.due.length) return render(); S.today = { id: 'today', name: 'Review', accent: ACCENTS[0], cards: P.due, review: true }; S.study = null;
+    LOG.add('review-start', { n: P.due.length }); nav('#/deck/today/study'); },
   'study-done': () => { const today = S.deckId === 'today'; S.study = null; S.today = null; goBack(today ? '#/' : '#/deck/' + S.deckId); },
   'study-again': () => {
-    if (S.deckId === 'today') { const P = todayPile(); if (!P.cards.length) { toast('All done for today'); return A['study-done'](); } S.today = { id: 'today', name: 'Today', accent: ACCENTS[0], cards: P.cards }; }
+    if (S.deckId === 'today') { const P = todayPile(), rv = S.today?.review, L = rv ? P.due : P.cards; if (!L.length) { toast('All done for today'); return A['study-done'](); }
+      S.today = rv ? { id: 'today', name: 'Review', accent: ACCENTS[0], cards: L, review: true } : { id: 'today', name: 'Today', accent: ACCENTS[0], cards: L }; }
     S.study = null; startStudy(); render(); },
   'next': () => stepCard(1),
   'prev': () => stepCard(-1),
