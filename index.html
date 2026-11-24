@@ -13363,7 +13363,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.27';
+const APP_VERSION = '3.45.28';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13441,22 +13441,10 @@ function devSheet() {
       ${p('devCard', 'Play: 7-day streak card', 'The one-week celebration, then the streak card you can share')}
       ${p('devBack', 'Play: welcome back', 'After 3 or more days away, with the win-back offer')}
       ${p('devPay', 'Show: paywall layout', 'Preview only. Nothing can be bought')}
-      ${p('devComic', 'Play: a unit comic, both parts', 'Pick a unit, then tap through part 1 and the ending. Your own progress stays as it is')}
-      ${p('devEat', 'Play: Shi Shi eats a baozi', 'Opens the unit you are on as if you had just finished its last lesson: the lid lifts and he eats it')}
-      ${p('devAuto', 'Play: the whole course by itself', 'Shi Shi eats every baozi, beats Hu Hu and moves on, unit after unit, with no lessons. Your real levels come back at the end or when you tap Stop')}
-      ${p('devComicEnd', 'Play: a unit comic, part 2 only', 'Pick a unit and go straight to its ending, the part that plays after Hu Hu\'s challenge')}
     </div>
-    <div class="day-h" style="margin-top:20px">Levels</div>
-    <div class="list-group">
-      ${p('devLvMax', 'Max out all levels', 'Every lesson done, every boss beaten, every HSK level open, all ' + TRAIL.length + ' monuments bought')}
-      ${p('devLvZero', 'Reset levels', 'Back to Unit 1 and no monuments. Your word bank, streak and decks stay')}
-      ${p('devCoins', 'Set my coins', `Any number you like. You have ${coinFmt(coinBal())} now`)}
-      ${db.devLv ? p('devLvBack', 'Restore my real levels', 'Undo the test: your own lessons, bosses, monuments and coins come back') : ''}
-    </div>
-    <p class="muted dev-now">${esc(devLvNow())}</p>
     <div class="day-h" style="margin-top:20px">Start over</div>
     <button class="btn btn-danger wide" id="devReset">${I.trash}Reset all progress</button>
-    <p class="muted dev-now">Back to a fresh install on this device: word bank, lessons, streak, decks and settings. The activity log stays.</p>`, sh => {
+    <p class="muted dev-now">Back to a fresh install on this device: word bank, streak, decks and settings. The activity log stays.</p>`, sh => {
     // wipe the saved data and restart, so the app opens like the first time (onboarding included); save() is switched off so nothing writes the old data back while the page reloads
     sh.querySelector('#devReset').onclick = () => confirmSheet('Reset all progress?',
       'Everything you learned and made on this device is wiped, as if ShiHanzi was just installed, and the app restarts with the first-run pages. This can’t be undone. To keep a copy, use Export backup first.',
@@ -13470,19 +13458,6 @@ function devSheet() {
     sh.querySelector('#devMile').onclick = play(function milestone() { const { n } = practiceStreak(); momentMile(MILES.includes(n) ? n : 7); });
     sh.querySelector('#devBack').onclick = play(function welcomeBack() { momentBack(4, 12); });
     sh.querySelector('#devPay').onclick = play(function paywallPreview() { paywall(); });
-    const unitPick = (title, f) => () => { closeSheet(); Promise.all((window.SHI_COMIC_LV || []).map(comicLoad)).then(() => setTimeout(() => openSheet(`<h3 style="margin:0 0 14px">${title}</h3><div class="list-group">${LES_UNITS.map(U => COMIC[U.un] ? `<button class="list-btn" data-cu="${U.un}"><span>${HSK_NAME(U.lv)} · Unit ${U.k}<br><small>${esc(COMIC[U.un].title)}</small></span><span class="side">${I.chev}</span></button>` : '').join('')}</div>`, s2 => s2.querySelectorAll('[data-cu]').forEach(b => { b.onclick = () => { LOG.add('dev', `${f.name} ${b.dataset.cu}`); closeSheet(); setTimeout(() => f(+b.dataset.cu), 320); }; })), 320)); };
-    sh.querySelector('#devComic').onclick = unitPick('Which unit?', function comicPreview(un) { comicReplay(un, { demo: 1, all: 1 }); });
-    sh.querySelector('#devEat').onclick = play(function eatBaozi() {
-      const un = ucMe(S.view === 'course' && lvHas(S.cLv) ? S.cLv : playLv() || 1), at = Math.min(unitState(un).at, unitState(un).ls.length);
-      if (!at) { toast('Finish a lesson in this unit first'); return; }
-      (db.unitAt ||= {})[un] = at - 1; save(); if (S.view === 'course' && S.cUnit === un) render(); else nav(unitUrl(un)); });
-    sh.querySelector('#devAuto').onclick = play(function autoplay() { ucAutoplay(); });
-    sh.querySelector('#devComicEnd').onclick = unitPick('Which ending?', function comicEnding(un) { comicPlay(un, COMIC[un].pages.length - 1, null, { demo: 1, label: 'Close' }); });
-    const lvGo = (what, f, msg) => () => { LOG.add('dev', what); f(); save(); closeSheet(); setTimeout(() => { S.instant = true; if (S.view === 'course') render(); else nav('#/course/' + (playLv() || 1)); toast(msg); }, 300); };
-    sh.querySelector('#devLvMax').onclick = lvGo('levels max', devLvMax, 'Every level is maxed out');
-    sh.querySelector('#devLvZero').onclick = lvGo('levels reset', devLvZero, 'Levels are back to the start');
-    sh.querySelector('#devCoins').onclick = () => { closeSheet(); setTimeout(devCoinSheet, 320); };
-    const lb = sh.querySelector('#devLvBack'); if (lb) lb.onclick = lvGo('levels restore', devLvRestore, 'Your real levels are back');
     const back = () => { const X = db.hotd; delete X.off; delete X.storyOff; delete X.done; delete X.top; };
     const go = (what, prep, then) => () => {
       LOG.add('dev', what); prep(); save(); closeSheet();
