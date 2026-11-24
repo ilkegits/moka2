@@ -473,6 +473,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 /* the New deck pop-up: the name with a little deck beside it in the colour you pick */
 /* v3.62 the + in the corner of Decks: tap it and Create group and Create deck rise above it on a light dark veil.
    Each choice has a small 田字格 square with its character (组 group, 卡 deck). Inside a deck the corner button says Add */
+:root{--tzg:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72' fill='none' stroke='%23C0392B'%3E%3Cpath d='M0 0H72V72H0Z' stroke-opacity='.3'/%3E%3Cpath d='M36 0V72M0 36H72' stroke-opacity='.26' stroke-dasharray='4 4' stroke-dashoffset='-2'/%3E%3C/svg%3E")}   /* v3.45.27: a square of 田字格 paper; it went missing with the comics, which made the 组 and 卡 tiles see-through */
 #fab-root{position:fixed;inset:0;z-index:30;pointer-events:none}
 .fab-veil{position:absolute;inset:0;background:rgba(42,20,13,.28);opacity:0;transition:opacity .18s}   /* v4.02: just a little darker, no blur, like the HSK level menu */
 #fab-root.open .fab-veil{opacity:1;pointer-events:auto}
@@ -13225,7 +13226,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.26';
+const APP_VERSION = '3.45.27';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
