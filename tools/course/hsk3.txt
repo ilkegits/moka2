@@ -13,7 +13,7 @@ People: 男人 女人 大人 老 老人 别人 咱们
 Family: 子 姐妹 叔叔 阿姨 夫妻 爱人 结婚 出生
 Body: 脸 嘴 耳朵 头发 毛 腿 脚
 Looks: 年轻 胖 瘦 矮 身高 可爱
-Meeting up: 见面 遇到 遇见 认得 分开 不见 聊 聊天儿
+Meeting up: 见面 遇到 遇见 认得 分开 不见 聊 聊天
 Having guests: 客人 做客 请客 欢迎 礼物 热情
 
 ## Food and shopping | 菜单 | At the ferry-pier market Shi Shi is starving but cannot read the menu or ask for a kilo of bananas
@@ -87,4 +87,4 @@ And, or, but: 又 或 或者 可是 而且 不但 一边
 More and most: 更 越 极 挺 比较 特别
 Roughly: 大概 几乎 差不多 好多 以上 以下
 Joining ideas: 比如 除了 以外 其实 看来 当然
-What shall we do?: 怎样 怎么办 行 不行 最好 一块儿
+What shall we do?: 怎样 怎么办 行 不行 最好 一块

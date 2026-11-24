@@ -10,7 +10,7 @@ window.SHI_COURSE = {
   2: `
 ## Eating out|饭馆
 Tea and coffee:咖啡 奶茶 绿茶 红茶 饭馆 酒店
-A table for two:位 条 鱼 肉 等 一会儿
+A table for two:位 条 鱼 肉 等 一会
 Colours:颜色 红色 白色 黑色 绿色
 At the mall:商场 裤子 手表 包 万 送
 Good, better, best:比 最 高 长 不错 坏 错
@@ -49,7 +49,7 @@ Why? Because:为什么 因为 所以 虽然 但是 但
 
 ## Family and New Year|过年
 Grandparents:爷爷 奶奶 丈夫 妻子 自己
-Children:男孩儿 女孩儿 小孩儿 小时候 从小
+Children:男孩 女孩 小孩 小时候 从小
 Names:姓 姓名 名 介绍 生日 过年
 Lend a hand:帮 帮忙 不好意思 可能 正
 Like this:这样 那样 这么 那么 还是
@@ -70,7 +70,7 @@ People:男人 女人 大人 老 老人 别人 咱们
 Family:子 姐妹 叔叔 阿姨 夫妻 爱人 结婚 出生
 Body:脸 嘴 耳朵 头发 毛 腿 脚
 Looks:年轻 胖 瘦 矮 身高 可爱
-Meeting up:见面 遇到 遇见 认得 分开 不见 聊 聊天儿
+Meeting up:见面 遇到 遇见 认得 分开 不见 聊 聊天
 Having guests:客人 做客 请客 欢迎 礼物 热情
 
 ## Food and shopping|菜单
@@ -144,7 +144,7 @@ And, or, but:又 或 或者 可是 而且 不但 一边
 More and most:更 越 极 挺 比较 特别
 Roughly:大概 几乎 差不多 好多 以上 以下
 Joining ideas:比如 除了 以外 其实 看来 当然
-What shall we do?:怎样 怎么办 行 不行 最好 一块儿
+What shall we do?:怎样 怎么办 行 不行 最好 一块
 `,
   4: `
 ## Food and drink|美食
@@ -244,7 +244,7 @@ At the office:办公 办事 办理 单位 部 部门 出差
 Printing:文件 资料 材料 打印 打印机 复印 份
 Dates and times:日期 月份 底 年底 末 世纪 时间表 秒
 Filling in forms:表 表格 列 填写 证件 身份证 国籍 性别
-Getting a job:招聘 应聘 面试 申请 打工 干活儿 加班
+Getting a job:招聘 应聘 面试 申请 打工 干活 加班
 
 ## Feelings|心情
 Feeling:感 感觉 感受 感情 感动 感人 心 心情 内心
@@ -293,7 +293,7 @@ When:当时 目前 眼前 将来 今后 从此 之前 之后 等到
 In order:首先 其次 接着 最终 顺序 再次 重新 重
 Soon and suddenly:已 将 将要 忽然 暂时 同时 正好 巧
 Very, even more:十分 更加 多么 尤其 大大 好好 实在
-About, only, a bit:大约 至少 仅 仅仅 差点儿 稍 稍微
+About, only, a bit:大约 至少 仅 仅仅 差点 稍 稍微
 How often:平常 日常 往往 偶尔 少见 老是 从来 不断
 
 ## Little words|不过
@@ -538,7 +538,7 @@ Whole and part:全体 整体 总体 综合 其余 大多 个别
 Dealing with:处理 面临 应对 对待 注重 讲究 忽视
 
 ## Little words|总之
-Oh and ah:哦 呀 哈 唉 哎 哎呀 不要紧 没法儿
+Oh and ah:哦 呀 哈 唉 哎 哎呀 不要紧 没法
 Formal little words:所 以 其 及 以及 至 便 某
 Really and after all:居然 果然 反而 反正 毕竟 根本 依然
 More counting words:支 副 架 批 伙 阵 册
@@ -570,14 +570,14 @@ Around the house:住宅 隔壁 走廊 楼道 墙壁 浴室 枕头 自来水 通�
 Heat and light:开关 电源 照明 灯笼 火柴 暖 暖气 热水器
 
 ## Family and looks|亲属
-People:人家 人士 众人 大伙儿 同伴 个体 群众 民众
+People:人家 人士 众人 大伙 同伴 个体 群众 民众
 Getting married:婚姻 求婚 订婚 嫁 娶 夫人 喜事 团圆
 Babies and children:怀孕 诞生 婴儿 娃娃 少儿 未成年人 青春 岁数
 Family line:母 户 家家户户 千家万户 后代 继承 遗产 传承
 Relatives:舅舅 姑姑 姨 媳妇 长辈 亲属 家属 老太太
 Clothes and looks:内衣 背心 羽绒服 外表 样 模样 气质 笑容
 Jewels and make-up:珠宝 珍珠 戒指 项链 耳环 香水 化妆 精致
-Fashion:时尚 潮流 款式 新款 过时 模特儿 造型 搭配
+Fashion:时尚 潮流 款式 新款 过时 模特 造型 搭配
 
 ## Health|康复
 Call for help:求 求助 求救 救命 救援 救助 协助 互助
@@ -711,7 +711,7 @@ Long ago:古人 祖先 后人 相传 文物 国宝 古迹 遗址
 
 ## Crime and rules|规矩
 Poison and death:杀 自杀 死亡 毒 中毒 害 暴力
-Thieves and cheats:偷 小偷儿 偷偷 骗子 欺骗 上当 犯 罪
+Thieves and cheats:偷 小偷 偷偷 骗子 欺骗 上当 犯 罪
 Clues:线索 痕迹 脚印 跟踪 真相 证实 鉴定
 Judge and jail:法官 公安 追究 惩罚 处罚 逃 逃跑 释放
 Hiding:隐藏 隐私 躲避 避 暗示 默默 摆脱

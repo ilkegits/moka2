@@ -5,8 +5,8 @@ Face and throat: 嘴唇 脸颊 须 秃 喉咙 咽喉 咽 气管 腔
 Arms and legs: 四肢 肢体 手脚 手腕 手掌 拳头 指甲 膝盖 关节 筋 屁股
 Chest and organs: 胸膛 脊梁 器官 肾 脾 动脉 脉搏 鲜血 激素 分泌 新陈代谢
 Spit and sneezes: 口水 唾液 痰 鼻涕 尿 粪便 打喷嚏 呛 喘 喘息 憋
-Chew, lick, doze: 啃 嚼 咀嚼 舔 叼 咧嘴 呻吟 酣睡 打盹儿
-The whole body: 身子 身躯 浑身 肌肤 裸 裸露 生理 体质 姿态 个头儿
+Chew, lick, doze: 啃 嚼 咀嚼 舔 叼 咧嘴 呻吟 酣睡 打盹
+The whole body: 身子 身躯 浑身 肌肤 裸 裸露 生理 体质 姿态 个头
 Strong and nimble: 壮 健壮 硬朗 单薄 敏捷 灵敏 灵巧 利索 松弛
 Tired and stiff: 疲惫 疲倦 劳累 僵 僵硬 虚弱 衰弱 麻痹 瘫 瘫痪
 Blind, deaf, lame: 瞎 失明 聋 哑 口吃 瘸 伤残 畸形 拐杖
@@ -77,7 +77,7 @@ Nuts and fruit: 核桃 芝麻 瓜子 莲子 枣 柿子 椰子 蜂蜜 淀粉
 Seasoning: 调料 香料 味精 香油 蘸 麻辣 火辣辣 腥 焦
 Flavour: 滋味 风味 鲜美 醇厚 酥 油腻 热腾腾 馋 富含
 Meals: 伙食 膳食 便饭 就餐 酒楼 料理 丰盛 佳肴 忌口
-Ham, tins, treats: 熏 卤味 火腿 虾 罐头 易拉罐 乳制品 口香糖 冰棍儿
+Ham, tins, treats: 熏 卤味 火腿 虾 罐头 易拉罐 乳制品 口香糖 冰棍
 
 ## Home and building | 住处 | The only room left at the inn is half built, and Shi Shi must tell the carpenter what is still missing
 A place to stay: 住处 住户 别墅 客房 寝室 食宿 定居 落户 搬迁
@@ -93,7 +93,7 @@ Around town: 巷 临街 过道 天桥 礼堂 堂 坛 亭子 喷泉 绿地
 ## Tools and materials | 零件 | In the craftsmen's lane a cart wheel has broken, and Shi Shi cannot ask for the right tool to mend it
 Workshop tools: 锤 钉 钉子 螺丝 斧子 凿 铲 钩 夹子 梯子 杠杆
 Poles and baskets: 杆 筒 筐 筛 框 罩 绳子 把手 包袱 容器 火炬
-Parts and gear: 装置 零件 部件 配件 器材 器械 秤 天平 温度计 望远镜 玩意儿
+Parts and gear: 装置 零件 部件 配件 器材 器械 秤 天平 温度计 望远镜 玩意
 Metal, gems, rubber: 铁 钢铁 锈 玉 钻石 水晶 宝石 宝藏 晶莹 橡胶 纤维
 Light and fire: 光芒 光辉 光彩 光环 荧光 耀眼 闪烁 照耀 火焰 火花 灼热
 Shape and surface: 扁 凹 凸 棱角 光滑 锋利 黏 稠 质地 人造 复合
@@ -102,7 +102,7 @@ Scraps and foam: 渣 粉末 颗粒 泡沫 气泡 海绵 膜 废物 废品 污秽
 
 ## Family and love | 家族 | A lost little cub in the lantern street is crying for her family, and Shi Shi cannot work out who her relatives are
 Relatives: 爹 娘 祖父 祖母 伯父 伯伯 伯母 岳父 岳母 嫂子 女婿
-Husband, wife, kin: 配偶 两口子 老伴儿 寡妇 继父 继母 闺女 双胞胎 孪生 孤儿
+Husband, wife, kin: 配偶 两口子 老伴 寡妇 继父 继母 闺女 双胞胎 孪生 孤儿
 Bloodline: 家族 祖宗 子孙 后裔 子弟 世代 血缘 血脉 姓氏 籍贯 祖籍
 Raising children: 抚养 养活 哺育 收养 领养 监护 遗弃 亲生 摇篮
 Love at home: 宠 宠爱 疼爱 娇惯 孝顺 孝敬 赡养 团聚 探亲
@@ -359,7 +359,7 @@ Can't let go idioms: 爱不释手 依依不舍 恋恋不舍 念念不忘 记忆�
 ## Fear and worry | 忧虑 | The palace gates slam shut at dusk with Shi Shi locked inside, and strange noises echo down the long red corridors
 Fright: 恐怖 吓人 吓唬 恐慌 畏惧 畏缩 胆怯 生怕 受惊 惊动
 Flustered and eager: 慌 慌乱 慌张 慌忙 心慌 惊慌 忙乱 急于 巴不得
-Shock and puzzle: 震惊 震撼 惊奇 诧异 纳闷儿 困惑 迷惑 茫然 触动
+Shock and puzzle: 震惊 震撼 惊奇 诧异 纳闷 困惑 迷惑 茫然 触动
 Worry: 操心 顾虑 忧虑 疑虑 忧愁 犯愁 心事 心病 伤脑筋 苦恼
 On your mind: 牵挂 挂念 惦记 焦急 焦躁 烦躁 烦闷 闷 禁不住
 Anger and frenzy: 气愤 发火 发怒 恼火 发泄 宣泄 激起 唤起 疯 狂 狂热
@@ -429,7 +429,7 @@ Help and rescue: 支援 援助 拯救 挽救 解救 解围 扶持 接济 帮手 
 Looking after: 护 守护 呵护 照料 伺候 侍候 关照 着想 保重 珍重 指引
 Comfort and forgive: 安抚 慰问 慰劳 体谅 谅解 宽恕 饶 饶恕 放过 迁就
 Working together: 搭档 联手 携手 协作 协同 默契 磨合 融洽 和睦
-Friendship: 伴 相伴 知己 友人 交情 情谊 要好 亲近 人缘儿 圈子 社交
+Friendship: 伴 相伴 知己 友人 交情 情谊 要好 亲近 人缘 圈子 社交
 Meeting people: 相遇 相识 结识 逢 会面 相约 联络 私下 私事
 Take in or cast out: 接纳 收留 抛弃 孤立 辜负 冷落 怠慢 亏待 断绝 隔阂 拖累
 Close or not idioms: 形影不离 朝夕相处 深情厚谊 同舟共济 齐心协力 众志成城 素不相识 萍水相逢 敬而远之 格格不入
@@ -455,7 +455,7 @@ Getting it done: 着手 下手 入手 设法 预备 对付 应付 攻关 得手 
 Breaking new ground: 创 首创 开拓 开辟 奠定 立足 造就 投身 坚守 发扬 事迹
 
 ## Thinking it through | 思索 | The palace librarian hands Shi Shi a riddle scroll that must be solved before the library doors will open
-Thoughts and ideas: 心思 念头 思绪 脑海 浮现 心眼儿 点子 计策 构想
+Thoughts and ideas: 心思 念头 思绪 脑海 浮现 心眼 点子 计策 构想
 Thinking it over: 琢磨 思索 沉思 深思 斟酌 推敲 揣摩 权衡 考量 盘算
 Working it out: 推理 推断 推论 推算 估算 计 假定 猜想 揣测 对照 参照
 It dawns on you: 发觉 察觉 觉悟 觉醒 醒悟 领悟 领会 会意 理会
@@ -472,7 +472,7 @@ Paying attention: 留意 留心 留神 警惕 着眼 顾及 正视 反省 不经
 Beliefs and doubts: 坚信 确信 当真 执意 动摇 迟疑 同感 观感 价值观 情结
 Passing judgement: 评审 评判 评定 判定 断定 定论 界定 点评 归纳 归结
 Views and bias: 言论 见解 视角 是非 公道 不平 偏见 偏向 歪曲 纵观 侧重
-Absurd or fishy: 可笑 荒唐 荒谬 荒诞 无理 不像话 离谱儿 活该 可疑 疑点 马后炮
+Absurd or fishy: 可笑 荒唐 荒谬 荒诞 无理 不像话 离谱 活该 可疑 疑点 马后炮
 
 ## Praise and debate | 辩论 | In the Hall of Debate two ministers argue over a new bridge, and Shi Shi is asked to judge who made the better case
 Praise: 赞美 赞扬 赞叹 赞许 歌颂 表彰 奖赏 叫好 锦旗 亮点
@@ -584,7 +584,7 @@ Same or not idioms: 息息相关 相辅相成 因人而异 大同小异 截然�
 ## When and how likely | 迟早 | The emperor's steward keeps changing when the audience will be, and Shi Shi must catch every little "soon", "luckily" and "at most"
 By luck: 幸好 幸亏 好在 有幸 碰巧 恰巧 凑巧 偏偏 竟 果真
 Bound to: 必定 必将 势必 务必 非得 未免 不免 免不了 不由得
-Maybe, at most: 多半 不定 不见得 没准儿 起码 顶多 大不了 好歹 有望 不得已
+Maybe, at most: 多半 不定 不见得 没准 起码 顶多 大不了 好歹 有望 不得已
 Sooner or later: 迟早 终究 到头来 早日 尽早 及早 趁早 预先 迟迟 尚 尚未
 All at once: 随即 当即 火速 猛然 骤然 一举 一头 徐徐 毅然 索性
 Again and again: 再度 屡 屡次 频频 时而 时时 动不动 一连 相继 依次 逐年

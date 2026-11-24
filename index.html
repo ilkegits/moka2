@@ -30,7 +30,7 @@
   document.write('<script src="lib/opencc-1.4.2.js"><\/script>' + (k === 'hk' ? '<script src="lib/to-jyutping-3.1.1.js"><\/script>' : ''));
   document.documentElement.classList.add('zh-t', 'zh-' + k); })();
 </script>
-<script src="course.js?v=334"></script>
+<script src="course.js?v=335"></script>
 <style>
 /* ǖ ǘ ǚ ǜ (lǜ, nǚ) from a system font: Satoshi has no ü with tone marks and would show the mark beside the letter */
 @font-face{font-family:"PyMarks";src:local("Segoe UI"),local("SegoeUI"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Arial");unicode-range:U+01D5-01DC}
@@ -4787,19 +4787,19 @@ function CourseView() {
    words by hand. Lessons open one after another. db.lessons = { n: { done, last, best } }, n from 1. Route: #/course/1/lesson/n */
 const LES_UNITS = [
   ['Hello', '你好', [['Hello', '你 好 你好 我 您 再见 谢谢'], ['Polite words', '不客气 对不起 没关系 没事 请 请问 一下'], ['Me, you, them', '我们 你们 他 她 他们 她们'],
-    ['Who is it?', '是 不 谁 人 叫 名字'], ['Asking questions', '吗 呢 什么 哪 哪个 哪儿 哪里'], ['One to five', '一 二 三 四 五 零']]],
+    ['Who is it?', '是 不 谁 人 叫 名字'], ['Asking questions', '吗 呢 什么 哪 哪个 哪里'], ['One to five', '一 二 三 四 五 零']]],
   ['Numbers and time', '时间', [['Six to ten', '六 七 八 九 十 两'], ['Big numbers', '百 千 几 多少 第 半 一半'], ['Days', '今天 明天 昨天 天 日 号'],
     ['Weeks and months', '星期 星期天 星期日 月 年 岁'], ['Times of day', '早上 上午 中午 下午 晚上 白天'], ['Telling the time', '点 分 分钟 小时 时候 时间']]],
   ['Family and people', '家人', [['Family', '爸爸 妈妈 家 家人 孩子 儿子 女儿'], ['Brothers and sisters', '哥哥 姐姐 弟弟 妹妹 们'], ['Friends', '朋友 男朋友 女朋友 同学 大家 小朋友'],
     ['Men and women', '男 女 先生 女士 老师 学生'], ['At work', '医生 医院 公司 工作 上班 下班'], ['This year', '今年 去年 明年 现在 早 晚']]],
-  ['Food and shopping', '吃饭', [['Eat and drink', '吃 喝 饭 水 茶 菜'], ['Meals', '早饭 午饭 晚饭 米饭 做饭 饭店'], ['Breakfast', '牛奶 鸡蛋 面包 包子 饺子 面条儿'],
-    ['Fruit', '水果 苹果 好吃 杯子 口 一点儿'], ['Money', '买 卖 钱 块 元 贵 便宜'], ['Shops', '商店 超市 书店 店 东西 衣服 穿']]],
+  ['Food and shopping', '吃饭', [['Eat and drink', '吃 喝 饭 水 茶 菜'], ['Meals', '早饭 午饭 晚饭 米饭 做饭 饭店'], ['Breakfast', '牛奶 鸡蛋 面包 包子 饺子 面条'],
+    ['Fruit', '水果 苹果 好吃 杯子 口 一点'], ['Money', '买 卖 钱 块 元 贵 便宜'], ['Shops', '商店 超市 书店 店 东西 衣服 穿']]],
   ['School', '学校', [['School', '学校 小学 中学 大学 上学 课'], ['Students', '大学生 中学生 小学生 上课 下课'], ['Studying', '学 学习 读 读书 写 字'],
     ['Chinese', '中国 中文 汉语 汉字 国 书'], ['Talking', '说 说话 问 问题 听 知道'], ['See and hear', '看 看见 听见 见 认识 觉得']]],
   ['Home and travel', '回家', [['My room', '房间 桌子 椅子 电脑 电视 手机'], ['Sleep and rest', '睡 睡觉 起床 休息 住 回'], ['Phones and films', '喂 电话 打电话 电影 电影院 歌 唱'],
-    ['Getting around', '车 开车 出租车 火车 飞机 坐'], ['Come and go', '去 来 到 开 找 给'], ['Here and there', '这里 那里 这儿 那儿 这边 那边']]],
+    ['Getting around', '车 开车 出租车 火车 飞机 坐'], ['Come and go', '去 来 到 开 找 给'], ['Here and there', '这里 那里 这边 那边']]],
   ['Describing things', '怎么样', [['Up and down', '上 下 里 外 外边 边'], ['Big and small', '大 小 多 少 很 太'], ['Likes', '爱 喜欢 想 要 高兴 忙'],
-    ['Weather', '天气 热 冷 雨 下雨 雪'], ['Nice!', '漂亮 好看 好听 好玩儿 新 真'], ['Feeling ill', '病 生病 看病 有点儿 非常'], ['Pets and play', '狗 猫 只 玩 做']]],
+    ['Weather', '天气 热 冷 雨 下雨 雪'], ['Nice!', '漂亮 好看 好听 好玩 新 真'], ['Feeling ill', '病 生病 看病 有点 非常'], ['Pets and play', '狗 猫 只 玩 做']]],
   ['Little words', '小词', [['This and that', '这 那 这个 那个 这些 那些 哪些'], ['Counting words', '个 本 件 些 一些 有些 有的'], ['Have and be', '有 没有 在 正在 的 了'],
     ['And, also, all', '和 也 都 还 再'], ['Can and may', '会 能 可以 不要 吧 对'], ['How', '怎么 怎么样 前 后 事 它 它们']]],
 ];
@@ -4829,7 +4829,7 @@ const unitLv = un => UNIT(un)?.lv || 1, unK = un => UNIT(un)?.k ?? un, unitLast 
 const unitUrl = un => `#/course/${unitLv(un)}/unit/${un}`, utUrl = un => `#/course/${unitLv(un)}/test/${un}`, lesUrl = n => `#/course/${LES(n)?.lv || 1}/lesson/${n}`;
 const lvDoneSay = lv => lv < 7 ? `finishes ${HSK_NAME(lv)} and opens ${HSK_NAME(lv + 1)}` : `finishes ${HSK_NAME(lv)}`;
 /* plain meanings for lessons where the dictionary's first one is odd or too long ("年: grain; harvest") */
-const LES_MEAN = Object.fromEntries(`的=of; 's|了=(action done; change)|是=to be; yes|在=at; in; to be at|不=no; not|个=(measure word)|和=and; with|好=good; well|也=also; too|会=can; will|还=still; also|给=to give; for|没有=not have; didn't|那=that|什么=what|吧=(let's…; …right?)|点=o'clock; a bit|里=in; inside|年=year|很=very|太=too; very|吗=(yes or no question)|呢=(and…? question)|时候=time; when|你们=you (more than one)|怎么=how|谁=who|找=to look for|今天=today|觉得=to feel; to think|几=how many|大家=everyone|开=to open; to drive|叫=to be called|请=please; to invite|钱=money|不要=don't|本=(measure word: books)|回=to go back|岁=years old|号=date; number|件=(measure word: clothes)|女=woman; female|分=minute; cent|日=day; date|正在=(doing right now)|早=early; morning|们=(more than one person)|块=yuan (money)|多少=how many; how much|哪=which|先生=Mr; sir|卖=to sell|些=some|歌=song|店=shop|元=yuan|唱=to sing|她们=they (women)|它们=they (things)|字=character; word|热=hot|第=(-th: 第一 first)|读=to read|猫=cat|休息=to rest|有的=some (of them)|喂=hello? (phone)|课=lesson; class|饭=rice; meal|家人=family|同学=classmate|雨=rain|雪=snow|百=hundred|那边=over there|哪些=which ones|一点儿=a little|好玩儿=fun|面条儿=noodles|包子=steamed bun|牛奶=milk|鸡蛋=egg|好听=nice to hear|请问=excuse me, may I ask|饺子=dumplings|想=to want; to think|上=up; on|下=down; under|天=day; sky|菜=dish; vegetables|小朋友=kid|起床=to get up|打电话=to phone|妈妈=mum|手机=mobile phone|电影=film|他=he; him|她=she; her|晚=late; evening|坐=to sit; to take (a bus)|认识=to know (someone)|怎么样=how is it?|上课=to have class|读书=to read; to study|没关系=it's OK|中文=Chinese (language)|汉语=Chinese (spoken)|东西=thing; stuff|两=two (of)|一些=a few; some|有些=somewhat; some|学=to learn|学习=to study|上班=to go to work|知道=to know|好看=good-looking|看见=to see|做=to do; to make|家=home; family|后=after; behind|前=before; in front|边=side|外=outside|事=thing; matter|有点儿=a bit|非常=very; really|星期日=Sunday (written)|星期天=Sunday|这里=here|这儿=here (spoken)|那里=there|那儿=there (spoken)|哪里=where|哪儿=where (spoken)|白天=daytime|做饭=to cook|好吃=tasty|下雨=to rain|一半=half|半=half (of)|您=you (polite)|再见=goodbye|谢谢=thank you|对不起=sorry|不客气=you're welcome|你好=hello|这个=this; this one|那个=that; that one|哪个=which; which one|一下=(do something) a bit; once|没事=it's nothing; never mind`.split('|').map(s => s.split('=')));
+const LES_MEAN = Object.fromEntries(`的=of; 's|了=(action done; change)|是=to be; yes|在=at; in; to be at|不=no; not|个=(measure word)|和=and; with|好=good; well|也=also; too|会=can; will|还=still; also|给=to give; for|没有=not have; didn't|那=that|什么=what|吧=(let's…; …right?)|点=o'clock; a bit|里=in; inside|年=year|很=very|太=too; very|吗=(yes or no question)|呢=(and…? question)|时候=time; when|你们=you (more than one)|怎么=how|谁=who|找=to look for|今天=today|觉得=to feel; to think|几=how many|大家=everyone|开=to open; to drive|叫=to be called|请=please; to invite|钱=money|不要=don't|本=(measure word: books)|回=to go back|岁=years old|号=date; number|件=(measure word: clothes)|女=woman; female|分=minute; cent|日=day; date|正在=(doing right now)|早=early; morning|们=(more than one person)|块=yuan (money)|多少=how many; how much|哪=which|先生=Mr; sir|卖=to sell|些=some|歌=song|店=shop|元=yuan|唱=to sing|她们=they (women)|它们=they (things)|字=character; word|热=hot|第=(-th: 第一 first)|读=to read|猫=cat|休息=to rest|有的=some (of them)|喂=hello? (phone)|课=lesson; class|饭=rice; meal|家人=family|同学=classmate|雨=rain|雪=snow|百=hundred|那边=over there|哪些=which ones|一点=a little|好玩=fun|面条=noodles|包子=steamed bun|牛奶=milk|鸡蛋=egg|好听=nice to hear|请问=excuse me, may I ask|饺子=dumplings|想=to want; to think|上=up; on|下=down; under|天=day; sky|菜=dish; vegetables|小朋友=kid|起床=to get up|打电话=to phone|妈妈=mum|手机=mobile phone|电影=film|他=he; him|她=she; her|晚=late; evening|坐=to sit; to take (a bus)|认识=to know (someone)|怎么样=how is it?|上课=to have class|读书=to read; to study|没关系=it's OK|中文=Chinese (language)|汉语=Chinese (spoken)|东西=thing; stuff|两=two (of)|一些=a few; some|有些=somewhat; some|学=to learn|学习=to study|上班=to go to work|知道=to know|好看=good-looking|看见=to see|做=to do; to make|家=home; family|后=after; behind|前=before; in front|边=side|外=outside|事=thing; matter|有点=a bit|非常=very; really|星期日=Sunday (written)|星期天=Sunday|这里=here|那里=there|哪里=where|白天=daytime|做饭=to cook|好吃=tasty|下雨=to rain|一半=half|半=half (of)|您=you (polite)|再见=goodbye|谢谢=thank you|对不起=sorry|不客气=you're welcome|你好=hello|这个=this; this one|那个=that; that one|哪个=which; which one|一下=(do something) a bit; once|没事=it's nothing; never mind`.split('|').map(s => s.split('=')));
 const lesRows = new Map();
 /* { h, p, en } for a lesson word. L: its lesson. v4.42: the official list gives some words more than once (点 HSK 1
    "o'clock", HSK 2 "to order"; 只 zhī HSK 1, zhǐ HSK 3), so a lesson shows the line of its own level (the k-th one when the
@@ -5214,11 +5214,11 @@ Object.assign(COMIC, (() => {
     [[['请问…出租车？', 'qǐngwèn… chūzūchē?', 'excuse me… a taxi?'], ['那边！', 'nàbiān!', 'over there!']], (w, h) => pop(w, h, '#F0703C', '#FFA05C', 92, 150) + ground(w, h, 200, '#B9876A')
       + lion(54, 162, .4, 'focus', 4) + friend('panda', 132, 152, .4, 0, true) + `<path d="M150 136L176 120" stroke="#2B2B33" stroke-width="12" stroke-linecap="round"/>`
       + bubble(58, 40, 86, 26, 56, 110, '出租车?', 15) + shout(126, 96, 40, 18, '那边!', 14, '#2E9E6B')],
-    [[['去哪儿？', 'qù nǎr?', 'where to?'], ['回家！', 'huí jiā!', 'home!']], (w, h) => W(w, h, '#3A2A6E') + `<rect x="10" y="80" width="160" height="70" rx="8" fill="#1B1750" stroke="${ln}" stroke-width="3"/>`
+    [[['去哪里？', 'qù nǎlǐ?', 'where to?'], ['回家！', 'huí jiā!', 'home!']], (w, h) => W(w, h, '#3A2A6E') + `<rect x="10" y="80" width="160" height="70" rx="8" fill="#1B1750" stroke="${ln}" stroke-width="3"/>`
       + [[30, 100], [60, 120], [96, 96], [130, 116], [150, 100]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="#FFD98A"/>`).join('')
       + friend('tiger', 54, 156, .42) + `<circle cx="30" cy="196" r="22" fill="none" stroke="#2B2B33" stroke-width="7"/>` + lion(134, 156, .4, 'fire')
       + `<rect x="-20" y="196" width="${w + 40}" height="40" fill="#B8332C" stroke="${ln}" stroke-width="3"/>`
-      + bubble(54, 36, 82, 26, 56, 92, '去哪儿?', 15) + shout(136, 54, 38, 20, '回家!', 14)],
+      + bubble(54, 36, 82, 26, 56, 92, '去哪里?', 15) + shout(136, 54, 38, 20, '回家!', 14)],
     [[['开车！', 'kāichē!', 'drive!']], (w, h) => grad(w, h, '#1B1750', '#3A2A6E') + stars(w, 60, 8, 4) + moon(320, 36, 12)
       + `<path d="M-20 86H380" stroke="#5A5470" stroke-width="4"/>` + train(-60, 84, .55, 4) + ground(w, h, 138, '#4A3E70') + `<path d="M-20 150H380" stroke="#FFD98A" stroke-width="3" stroke-dasharray="18 14"/>`
       + speed([[120, 106, 40], [110, 122, 48], [128, 138, 34]]) + taxi(230, 140, 1) + lion(226, 106, .12, 'fire', 0, false)],
@@ -5231,9 +5231,9 @@ Object.assign(COMIC, (() => {
   const u7 = [page('u7a', 'B', [
     [[['下雪了！', 'xià xuě le!', 'it’s snowing!']], (w, h) => grad(w, h, '#9FC6E8', '#E6F2FB') + snow(w, 240, 26, 5) + ground(w, h, 236, '#fff', '#9FB8CC')
       + snowman(148, 238, .9) + lion(74, 192, .46, 'cheer', -6) + shout(92, 70, 72, 26, '下雪了!', 18)],
-    [[['好玩儿！', 'hǎowánr!', 'so much fun!']], (w, h) => grad(w, h, '#9FC6E8', '#E6F2FB') + snow(w, 230, 22, 8) + ground(w, h, 226, '#fff', '#9FB8CC')
+    [[['好玩！', 'hǎowán!', 'so much fun!']], (w, h) => grad(w, h, '#9FC6E8', '#E6F2FB') + snow(w, 230, 22, 8) + ground(w, h, 226, '#fff', '#9FB8CC')
       + lion(64, 186, .42, 'wink', 10) + dog(132, 214, .9, true) + `<circle cx="112" cy="138" r="9" fill="#fff" stroke="${ln}" stroke-width="2.5"/>` + speed([[124, 132, 18], [126, 144, 14]], '#9FB8CC')
-      + shout(98, 62, 62, 24, '好玩儿!', 17)],
+      + shout(98, 62, 62, 24, '好玩!', 17)],
     [[['太冷了…', 'tài lěng le…', 'too cold…']], (w, h) => W(w, h, '#2C2350') + win(108, 30, 56, 48, '#1B1750') + `<g transform="translate(108 30)">${snow(56, 48, 6, 3, 2)}</g>`
       + lion(92, 156, .56, 'tired', 0, false) + `<path d="M28 300V206Q92 176 156 206V300Z" fill="#3E7FB1" stroke="${ln}" stroke-width="3" stroke-linejoin="round"/><path d="M40 230Q92 210 144 230M40 256Q92 236 144 256" fill="none" stroke="#fff" stroke-width="2.5" opacity=".5"/>`
       + shiver(18, 120) + shiver(166, 120, -1) + shiver(14, 160) + shiver(170, 160, -1) + sweat(140, 112) + hzO(130, 96, 'ACHOO!', 18, -10, '#fff')
@@ -5261,9 +5261,9 @@ Object.assign(COMIC, (() => {
     [[['在桌子下', 'zài zhuōzi xià', 'under the table']], (w, h) => W(w, h, '#F2C9A0') + `<rect x="20" y="40" width="70" height="128" fill="#5A3B1E" stroke="${ln}" stroke-width="3"/><path d="M90 40L112 50V160L90 168Z" fill="#B8332C" stroke="${ln}" stroke-width="3" stroke-linejoin="round"/>`
       + win(268, 50, 60, 50, '#BDE9FF') + ground(w, h, 168, '#C98E55') + lion(156, 118, .5, 'wow') + card(198, 60, 88, 60, ['在桌子下'], 16, 6) + paw(204, 116, -20) + paw(282, 124, 20)
       + note(8, 8, 0, ['A note from his friends!'])],
-    [[['在哪儿？', 'zài nǎr?', 'where is it?']], (w, h) => grad(w, h, '#8FD3F0', '#D6F1FF') + xcloud(320, 34, .6) + `<rect x="40" y="110" width="280" height="80" fill="#F2C9A0" stroke="${ln}" stroke-width="3"/>`
+    [[['在哪里？', 'zài nǎlǐ?', 'where is it?']], (w, h) => grad(w, h, '#8FD3F0', '#D6F1FF') + xcloud(320, 34, .6) + `<rect x="40" y="110" width="280" height="80" fill="#F2C9A0" stroke="${ln}" stroke-width="3"/>`
       + roof(180, 112, 310, 26, '#2C5A4F') + win(80, 130, 40, 34) + win(240, 130, 40, 34) + lion(190, 52, .38, 'lost', 8) + q(250, 36, 24, 12) + q(140, 30, 18, -10)
-      + bubble(102, 40, 92, 28, 158, 58, '在哪儿?', 16) + note(222, 136, 0, ['He can’t read it!'])],
+      + bubble(102, 40, 92, 28, 158, 58, '在哪里?', 16) + note(222, 136, 0, ['He can’t read it!'])],
     [null, (w, h) => W(w, h, '#F2C9A0') + ground(w, h, 202, '#C98E55')
       + `<g transform="rotate(180 140 186)"><rect x="118" y="160" width="44" height="8" fill="${wood}" stroke="${ln}" stroke-width="2.5"/><path d="M122 168V196M158 168V196M122 160V130H158V160" fill="none" stroke="${woodD}" stroke-width="5"/></g>`
       + [[36, 80, -20, '#3E7FB1'], [140, 70, 24, red], [150, 124, -40, '#5CC898'], [30, 140, 30, gold2]].map(([x, y, r, c]) => `<rect x="${x - 14}" y="${y - 10}" width="28" height="20" rx="2" fill="${c}" stroke="${ln}" stroke-width="2.5" transform="rotate(${r} ${x} ${y})"/>`).join('')
@@ -8191,7 +8191,7 @@ const RL = (() => {
   for (const [k, v] of Object.entries(L)) cat[k] = v.split('|').map(x => { const i = x.indexOf(' '), h = x.slice(0, i); gloss[h] ||= x.slice(i + 1); return h; });
   cat.taste = cat.taste.filter(h => h !== '好喝');   // only said of drinks; frames use taste for food
   // the fixed words in the frames, with what they mean there
-  const G = '狮狮 Shi Shi (the lion)|很 very|也 also|想 to want to|吃 to eat|喝 to drink|去 to go|买 to buy|和 and; with|一起 together|他们 they|他 he|在 at; in|了 (done; changed)|的 \'s; of|有 to have|家 home; family|每天 every day|天气 weather|今天 today|不 not|一点儿 a little|周末 weekend|上班 to go to work|早上 morning|下午 afternoon|晚上 evening|说 to say|我 I; me|你 you|真 really|明天 tomorrow|是 to be|生日 birthday|送 to give (as a present)|看了看 to have a look|但是 but|还是 still; anyway|等 to wait for|还 still; also|没 not (yet)|来 to come|有点儿 a bit|饭店 restaurant|服务员 waiter|问 to ask|什么 what|要 to want; would like|里 inside|没有 not have; there is no|所以 so|超市 supermarket|七点 seven o\'clock|起床 to get up|先 first|然后 then|八点 eight o\'clock|很早 very early|就 already; then|睡觉 to sleep|做 to make; to do|一边 while|聊天 to chat|教 to teach|学 to learn|开始 at first; to start|难 hard|后来 later|容易 easy|现在 now|都 all|下雨 to rain|伞 umbrella|给 to give|一把 one (umbrella)|一个 one; a|本子 notebook|上 on|写着 written|这些 these|认识 to know (a word)|词 word|看一看 to take a look|星期六 Saturday|动物园 zoo|看到 to see|觉得 to think; to feel|学习 to study|汉语 Chinese (language)|很多 a lot of|汉字 Chinese characters|比如 for example|好 good|公园 park|带 to bring|告诉 to tell|喜欢 to like|因为 because|今年 this year|第一次 the first time|太 too; so|啊 ah!|可以 can|一 one|下次 next time|再 again|一定 surely|东西 things|回家 to go home|已经 already|快 quickly; almost|做好 to finish making|朋友 friend|自己 oneself|叫 to be called|只 (for animals)|一只 one (animal)|小 little|每个 every|带着 carrying|还有 and also|在家 at home|休息 to rest|准备 to get ready|出门 to go out'.split('|');
+  const G = '狮狮 Shi Shi (the lion)|很 very|也 also|想 to want to|吃 to eat|喝 to drink|去 to go|买 to buy|和 and; with|一起 together|他们 they|他 he|在 at; in|了 (done; changed)|的 \'s; of|有 to have|家 home; family|每天 every day|天气 weather|今天 today|不 not|一点 a little|周末 weekend|上班 to go to work|早上 morning|下午 afternoon|晚上 evening|说 to say|我 I; me|你 you|真 really|明天 tomorrow|是 to be|生日 birthday|送 to give (as a present)|看了看 to have a look|但是 but|还是 still; anyway|等 to wait for|还 still; also|没 not (yet)|来 to come|有点 a bit|饭店 restaurant|服务员 waiter|问 to ask|什么 what|要 to want; would like|里 inside|没有 not have; there is no|所以 so|超市 supermarket|七点 seven o\'clock|起床 to get up|先 first|然后 then|八点 eight o\'clock|很早 very early|就 already; then|睡觉 to sleep|做 to make; to do|一边 while|聊天 to chat|教 to teach|学 to learn|开始 at first; to start|难 hard|后来 later|容易 easy|现在 now|都 all|下雨 to rain|伞 umbrella|给 to give|一把 one (umbrella)|一个 one; a|本子 notebook|上 on|写着 written|这些 these|认识 to know (a word)|词 word|看一看 to take a look|星期六 Saturday|动物园 zoo|看到 to see|觉得 to think; to feel|学习 to study|汉语 Chinese (language)|很多 a lot of|汉字 Chinese characters|比如 for example|好 good|公园 park|带 to bring|告诉 to tell|喜欢 to like|因为 because|今年 this year|第一次 the first time|太 too; so|啊 ah!|可以 can|一 one|下次 next time|再 again|一定 surely|东西 things|回家 to go home|已经 already|快 quickly; almost|做好 to finish making|朋友 friend|自己 oneself|叫 to be called|只 (for animals)|一只 one (animal)|小 little|每个 every|带着 carrying|还有 and also|在家 at home|休息 to rest|准备 to get ready|出门 to go out'.split('|');
   for (const x of G) { const i = x.indexOf(' '); home[x.slice(0, i)] = x.slice(i + 1); }
   // {slot} gaps; a trailing digit makes a second, different word of the same kind. Tokens are separated by spaces.
   const T = [
@@ -8199,10 +8199,10 @@ const RL = (() => {
     ['一起出去', 'Going out together', ['{time} ， 狮狮 和 {person} 一起 去 {place} 。', '他们 在 {place} {act} 。', '{person} 很 {happy} ， 狮狮 也 很 {happy} 。']],
     ['新东西', 'Something new', ['狮狮 想 买 {thing} 。', '他 去 了 {place} 。', '{place} 的 {thing} 很 {cond} 。', '狮狮 买 了 {thing} ， 他 很 {happy} 。']],
     ['狮狮的小动物', "Shi Shi's pet", ['狮狮 家 有 {animal} 。', '{animal} 很 {look} 。', '狮狮 每天 和 {animal} 一起 {act} 。', '{animal} 喜欢 吃 {food} 。']],
-    ['在家', 'At home', ['今天 天气 很 {weather} 。', '狮狮 不 想 {act} 。', '他 想 在家 {act2} 。', '他 喝 了 一点儿 {drink} 。']],
+    ['在家', 'At home', ['今天 天气 很 {weather} 。', '狮狮 不 想 {act} 。', '他 想 在家 {act2} 。', '他 喝 了 一点 {drink} 。']],
     ['周末', 'The weekend', ['周末 ， 狮狮 不 上班 。', '他 早上 {act} ， 下午 {act2} 。', '晚上 ， 他 和 {person} 去 {place} 吃 {food} 。', '狮狮 说 ： “ 今天 我 很 {happy} ！ ”']],
     ['生日礼物', 'A birthday present', ['明天 是 {person} 的 生日 。', '狮狮 想 送 {person} {thing} 。', '他 去 {place} 看了看 。', '{thing} 很 {cond} ， 狮狮 买 了 。', '{person} 很 {happy} 。']],
-    ['等朋友', 'Waiting', ['狮狮 在 {place} 等 {person} 。', '{person} 还 没 来 ， 狮狮 有点儿 {low} 。', '他 喝 了 一点儿 {drink} 。', '{person} 来 了 ， 狮狮 很 {happy} 。']],
+    ['等朋友', 'Waiting', ['狮狮 在 {place} 等 {person} 。', '{person} 还 没 来 ， 狮狮 有点 {low} 。', '他 喝 了 一点 {drink} 。', '{person} 来 了 ， 狮狮 很 {happy} 。']],
     ['学汉语', 'Learning Chinese', ['狮狮 每天 学习 汉语 。', '他 认识 很多 汉字 ， 比如 “ {any} ” 和 “ {any2} ” 。', '{person} 说 狮狮 的 汉语 很 好 。', '狮狮 很 {happy} 。']],
     ['去公园', 'To the park', ['{time} 天气 很 {weather} 。', '狮狮 和 {person} 去 公园 。', '他们 带 了 {food} 和 {drink} 。', '{food} 真 {taste} ！']],
     ['在饭店', 'At the restaurant', ['狮狮 {low} 了 。', '他 去 饭店 。', '服务员 问 ： “ 你 想 吃 什么 ？ ”', '狮狮 说 ： “ 我 要 {food} 和 {drink} 。 ”']],
@@ -8213,10 +8213,10 @@ const RL = (() => {
     ['下雨了', 'Rain', ['今天 下雨 了 。', '狮狮 没有 伞 ， 他 很 {low} 。', '{person} 给 了 他 一把 伞 。', '他们 一起 去 {place} 。']],
     ['狮狮的本子', "Shi Shi's notebook", ['狮狮 有 一个 本子 。', '本子 上 写着 “ {any} ” 、 “ {any2} ” 和 “ {any3} ” 。', '这些 都 是 他 认识 的 词 。', '他 每天 都 看一看 。']],
     ['动物园', 'At the zoo', ['星期六 ， 狮狮 去 动物园 。', '他 看到 了 {animal} 和 {animal2} 。', '{animal} 在 吃 {food} 。', '狮狮 觉得 {animal2} 很 {look} 。']],
-    ['第一次', 'The first time', ['今年 狮狮 第一次 去 {place} 。', '他 在 那儿 {act} 。', '他 觉得 很 {happy} 。', '下次 他 一定 再 去 。']],
+    ['第一次', 'The first time', ['今年 狮狮 第一次 去 {place} 。', '他 在 那里 {act} 。', '他 觉得 很 {happy} 。', '下次 他 一定 再 去 。']],
     ['准备出门', 'Getting ready', ['狮狮 准备 出门 。', '他 带着 {thing} ， 还有 {thing2} 。', '他 要 去 {place} 找 {person} 。', '{person} 喜欢 {act} ， 狮狮 也 喜欢 。']],
   ];
-  Object.assign(home, { 那儿: 'there', 找: 'to look for; to visit', '，': '', '。': '' });
+  Object.assign(home, { 那里: 'there', 找: 'to look for; to visit', '，': '', '。': '' });
   return { cat, gloss, home, T };
 })();
 
@@ -8665,7 +8665,10 @@ document.addEventListener('click', e => {
 function sayZh(text) {
   try {
     const k = ZH.t ? ZH.k : 'cn', u = new SpeechSynthesisUtterance(zhT(text)); u.lang = SYS[k].lang; u.rate = .85;   // v4.68: a Taiwan or Cantonese voice when you learn those
-    const vs = speechSynthesis.getVoices(), cn = () => vs.find(v => /^zh[-_](CN|Hans)/i.test(v.lang));
+    // standard Mandarin: never a regional voice that also says zh-CN (Edge's Xiaobei, Northeastern, is zh-CN-liaoning; Xiaoni
+    // zh-CN-shaanxi), and the clear standard voices first
+    const vs = speechSynthesis.getVoices(), std = v => /^zh[-_](CN|Hans)$/i.test(v.lang) && !/liaoning|shaanxi|northeast|dialect|sichuan|东北|陕西/i.test(v.name);
+    const cn = () => vs.find(v => std(v) && /xiaoxiao|yunxi|xiaoyi|yunyang|tingting|huihui|普通话/i.test(v.name)) || vs.find(std) || vs.find(v => /^zh[-_](CN|Hans)/i.test(v.lang));
     const v = k === 'hk' ? vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) : k === 'tw' ? vs.find(v => /^zh[-_](TW|Hant)/i.test(v.lang)) || cn() : cn(); if (v) u.voice = v;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (_) {}
@@ -13288,7 +13291,7 @@ function wireSearch(inp, onClear) {
    tools/build_hsk.py. A line whose reading was corrected in v4.41 keeps its old pinyin and meanings in two more columns.
    One line per word: level <TAB> simplified <TAB> pinyin <TAB> meanings. */
 const HSK_NAME = l => l === 7 ? 'HSK 7–9' : 'HSK ' + l;
-const HSK_COUNT = { 1: 300, 2: 200, 3: 500, 4: 1000, 5: 1600, 6: 1800, 7: 5600 };   // words per level, shown before the lists load
+const HSK_COUNT = { 1: 297, 2: 200, 3: 500, 4: 1000, 5: 1600, 6: 1800, 7: 5600 };   // words per level, shown before the lists load
 /* the shelf of HSK levels on the Decks page; rings fill in once the lists are loaded */
 function HskShelf() {
   const inBank = S.H && new Set(db.bank.map(w => w.hanzi));
@@ -13330,6 +13333,14 @@ function loadHsk() {
       if (c.en && c.en === shortMeaning(r.was.e) && c.en !== meanOf(r)) { c.en = meanOf(r); fixed = true; }
       const py = gl.get(c.hanzi)?.p || r.p; if (c.pinyin && c.pinyin === r.was.p && c.pinyin !== py) { c.pinyin = py; fixed = true; }
     }
+    /* standard Mandarin, no Beijing "r": the lists say 哪里, 一点, 好玩 now (tools/no_erhua.py). A saved card for 哪儿 or 一点儿
+       takes the plain word and its reading; a word-bank card whose plain word is already in the bank goes */
+    const NO_R = { 这儿: '这里', 那儿: '那里', 哪儿: '哪里' };
+    const plainOf = h => { if (!h || h.length < 2 || !h.endsWith('儿') || byHz.has(h)) return null; const p = NO_R[h] || h.slice(0, -1); return byHz.has(p) ? p : null; };
+    const toPlain = c => { const h = plainOf(c.hanzi); if (!h) return; c.hanzi = h; c.pinyin = gl.get(h)?.p || byHz.get(h).p; fixed = true; };
+    const banked = new Set(db.bank.map(w => w.hanzi)), keep = db.bank.filter(w => !banked.has(plainOf(w.hanzi)));
+    if (keep.length < db.bank.length) { db.bank = keep; fixed = true; }
+    for (const c of [...db.bank, ...db.decks.flatMap(d => d.cards || [])]) toPlain(c);
     if (fixed) save();
     S.H = { levels, byHz, gloss: gl }; tagBank(); return S.H;
   }).catch(e => { hskP = null; throw e; });
@@ -13624,7 +13635,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.33';
+const APP_VERSION = '3.45.34';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -14186,7 +14197,7 @@ const OB_READ = {
         q: 'What is hard about Xiao Li’s new job?', a: ['The long trip to work', 'The low pay', 'Unfriendly colleagues', 'Working at weekends'] }],
   4: [{ zh: '很多人认为，学习一门外语最重要的是记住大量的词语。其实，比词语更重要的是多听多说。如果只是背单词，却不敢开口，那么即使认识再多的字，也很难和别人交流。',
         q: 'What matters most, says the text?', a: ['Listening and speaking a lot', 'Learning many words by heart', 'Learning grammar first', 'Writing every day'] },
-      { zh: '上周我在网上买了一台洗衣机，没想到送来的时候发现有点儿问题。我马上联系了商店，他们的态度很好，第二天就派人来换了一台新的。这次购物让我对这家商店的印象非常好。',
+      { zh: '上周我在网上买了一台洗衣机，没想到送来的时候发现有点问题。我马上联系了商店，他们的态度很好，第二天就派人来换了一台新的。这次购物让我对这家商店的印象非常好。',
         q: 'What did the shop do?', a: ['Sent a new one the next day', 'Refused to help', 'Gave money back a month later', 'Asked the writer to fix it'] }],
   5: [{ zh: '随着科技的发展，越来越多的年轻人习惯了用手机支付，出门几乎不带现金。这种方式虽然方便，却也带来了一些新的问题，比如个人信息的安全。因此，专家建议大家在使用时一定要提高警惕。',
         q: 'What worry does the text raise?', a: ['Keeping personal information safe', 'Phones costing too much', 'Banks running out of cash', 'Young people spending too much'] },

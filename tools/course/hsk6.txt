@@ -22,14 +22,14 @@ Around the house: 住宅 隔壁 走廊 楼道 墙壁 浴室 枕头 自来水 通
 Heat and light: 开关 电源 照明 灯笼 火柴 暖 暖气 热水器
 
 ## Family and looks | 亲属 | A wedding party blocks the village road and Shi Shi cannot tell the bride's aunt from her mother-in-law
-People: 人家 人士 众人 大伙儿 同伴 个体 群众 民众
+People: 人家 人士 众人 大伙 同伴 个体 群众 民众
 Getting married: 婚姻 求婚 订婚 嫁 娶 夫人 喜事 团圆
 Babies and children: 怀孕 诞生 婴儿 娃娃 少儿 未成年人 青春 岁数
 Family line: 母 户 家家户户 千家万户 后代 继承 遗产 传承
 Relatives: 舅舅 姑姑 姨 媳妇 长辈 亲属 家属 老太太
 Clothes and looks: 内衣 背心 羽绒服 外表 样 模样 气质 笑容
 Jewels and make-up: 珠宝 珍珠 戒指 项链 耳环 香水 化妆 精致
-Fashion: 时尚 潮流 款式 新款 过时 模特儿 造型 搭配
+Fashion: 时尚 潮流 款式 新款 过时 模特 造型 搭配
 
 ## Health | 康复 | Bao Bao turns dizzy on the first watchtower and Shi Shi cannot explain the symptoms to the village doctor
 Call for help: 求 求助 求救 救命 救援 救助 协助 互助
@@ -163,7 +163,7 @@ Long ago: 古人 祖先 后人 相传 文物 国宝 古迹 遗址
 
 ## Crime and rules | 规矩 | Someone has stolen the beacon torch and Shi Shi must follow the clues without breaking the camp rules
 Poison and death: 杀 自杀 死亡 毒 中毒 害 暴力
-Thieves and cheats: 偷 小偷儿 偷偷 骗子 欺骗 上当 犯 罪
+Thieves and cheats: 偷 小偷 偷偷 骗子 欺骗 上当 犯 罪
 Clues: 线索 痕迹 脚印 跟踪 真相 证实 鉴定
 Judge and jail: 法官 公安 追究 惩罚 处罚 逃 逃跑 释放
 Hiding: 隐藏 隐私 躲避 避 暗示 默默 摆脱

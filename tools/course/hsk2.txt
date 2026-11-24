@@ -1,6 +1,6 @@
 ## Eating out | 饭馆 | Shi Shi orders the tastiest bun on the snack street, and the bun begs not to be eaten
 Tea and coffee: 咖啡 奶茶 绿茶 红茶 饭馆 酒店
-A table for two: 位 条 鱼 肉 等 一会儿
+A table for two: 位 条 鱼 肉 等 一会
 Colours: 颜色 红色 白色 黑色 绿色
 At the mall: 商场 裤子 手表 包 万 送
 Good, better, best: 比 最 高 长 不错 坏 错
@@ -39,7 +39,7 @@ Why? Because: 为什么 因为 所以 虽然 但是 但
 
 ## Family and New Year | 过年 | Bao Bao's grandparents come for New Year, and they are very big buns
 Grandparents: 爷爷 奶奶 丈夫 妻子 自己
-Children: 男孩儿 女孩儿 小孩儿 小时候 从小
+Children: 男孩 女孩 小孩 小时候 从小
 Names: 姓 姓名 名 介绍 生日 过年
 Lend a hand: 帮 帮忙 不好意思 可能 正
 Like this: 这样 那样 这么 那么 还是

@@ -44,8 +44,8 @@ SHI_COMICS(2, K => {
   const u1 = [page('h2u1a', 'A', [
     [[['几位？', 'jǐ wèi?', 'how many people?'], ['一位！', 'yí wèi!', 'just one!']], (w, h) => night(w, h, 150) + stall(196, 40, 150, red, '') + sign(236, 12, 70, 25, '饭馆', 16) + friend('dragon', 276, 104, .4)
       + lion(84, 116, .46, 'love', -4) + sweat(106, 146, .7) + bubble(196, 92, 60, 25, 240, 100, '几位?', 15, '#1F5A41') + bubble(130, 40, 62, 26, 106, 72, '一位!', 16) + note(8, 8, 0, ['The snack street'])],
-    [[['一条鱼？肉？', 'yì tiáo yú? ròu?', 'a fish? meat?'], ['等一会儿。', 'děng yíhuìr.', 'one moment.']], (w, h) => pop(w, h, '#5CC8A8', '#8FE0C4', 90, 100) + card(16, 34, 66, 92, ['鱼', '肉'], 28, -5)
-      + clock(136, 62, 28, 8, 50) + lion(58, 170, .34, 'happy', -4, false) + bubble(126, 122, 98, 26, 176, 160, '等一会儿', 15, '#1F5A41')],
+    [[['一条鱼？肉？', 'yì tiáo yú? ròu?', 'a fish? meat?'], ['等一会。', 'děng yíhuì.', 'one moment.']], (w, h) => pop(w, h, '#5CC8A8', '#8FE0C4', 90, 100) + card(16, 34, 66, 92, ['鱼', '肉'], 28, -5)
+      + clock(136, 62, 28, 8, 50) + lion(58, 170, .34, 'happy', -4, false) + bubble(126, 122, 98, 26, 176, 160, '等一会', 15, '#1F5A41')],
     [[['这个最好吃！', 'zhège zuì hǎochī!', 'this one is the tastiest!']], (w, h) => pop(w, h, '#FFC44D', '#FFE08A', 90, 130) + table(90, 176, 150, 44) + basket(90, 166, 1.5) + steam(90, 112, 1.2)
       + shout(92, 50, 70, 24, '最好吃!', 18) + star(26, 106, 8, '#fff') + star(156, 96, 7, '#fff')],
     [[['别吃我！', 'bié chī wǒ!', "don't eat me!"]], (w, h) => pop(w, h, '#B23A2C', '#D9443A', 244, 116) + table(244, 178, 200, 46) + bao(244, 110, .62, 'shout') + lidUp(322, 48, -24) + sweat(300, 74, 1.2) + sweat(186, 80, 1)
@@ -79,7 +79,7 @@ SHI_COMICS(2, K => {
       + bubble(56, 152, 86, 26, 54, 184, '在右边!', 16)],
     [[['楼很高，慢慢走…', 'lóu hěn gāo, mànmàn zǒu…', 'the building is tall. Slowly now…']], (w, h) => W(w, h, '#5A2A5E') + `<path d="M-10 268H50V214H100V160H150V106H190" fill="none" stroke="${ln}" stroke-width="9" stroke-linejoin="round"/><path d="M-10 268H50V214H100V160H150V106H190" fill="none" stroke="#B9AE9C" stroke-width="4" stroke-linejoin="round"/>`
       + lion(76, 150, .4, 'tired', -10) + sweat(106, 118, .9) + sweat(40, 124, .7) + bubble(98, 40, 110, 26, 84, 86, '慢慢走…', 16) + hzO(150, 250, '高', 30, 8, gold)],
-    [[['我在这儿！上面真好看！', 'wǒ zài zhèr! shàngmiàn zhēn hǎokàn!', "I'm here! It is so pretty up here!"]], (w, h) => grad(w, h, '#1E0E36', '#8A3A7E') + stars(w, 150, 9, 8) + moon(140, 50, 22)
+    [[['我在这里！上面真好看！', 'wǒ zài zhèlǐ! shàngmiàn zhēn hǎokàn!', "I'm here! It is so pretty up here!"]], (w, h) => grad(w, h, '#1E0E36', '#8A3A7E') + stars(w, 150, 9, 8) + moon(140, 50, 22)
       + `<rect x="-20" y="232" width="${w + 40}" height="90" fill="#5A2A5E" stroke="${ln}" stroke-width="3"/>` + friend('tiger', 58, 178, .5, -4) + bao(134, 196, .44, 'happy')
       + bubble(92, 98, 122, 26, 128, 150, '上面真好看!', 14) + lantern(24, 262, .4, gold) + lantern(160, 270, .4, gold)],
     [[['你在我旁边，真好。', 'nǐ zài wǒ pángbiān, zhēn hǎo.', 'you are beside me. How nice.']], (w, h) => grad(w, h, '#2E1A56', '#B0478C') + stars(w, 130, 8, 11) + lamps(w, 6, 3)
@@ -123,7 +123,7 @@ SHI_COMICS(2, K => {
   ]), page('h2u4b', 'D', [
     [[['药来了！', 'yào lái le!', 'the medicine is here!']], (w, h) => W(w, h, '#D6F1FF') + `<rect x="92" y="40" width="110" height="130" fill="#FFF8EE" stroke="${ln}" stroke-width="3"/>` + sign(102, 50, 72, 28, '药店', 18, '#2E9E6B', '#fff') + door(118, 96, 44, 74, '#8FE0C4')
       + ground(w, h, 170, '#B9AE9C') + speed([[10, 150, 26], [4, 168, 34]], ln) + bao(70, 150, .44, 'shout') + bottle(110, 190, .8) + bubble(60, 84, 82, 26, 68, 112, '药来了!', 16)],
-    [[['休息一会儿…真舒服。', 'xiūxi yíhuìr… zhēn shūfu.', 'a little rest… so comfy.']], (w, h) => grad(w, h, '#261B5C', '#5A4A9E') + moon(140, 40, 16) + bedBack(92, 150, 150) + lion(58, 128, .36, 'sleep', -14, false) + blanket(92, 150, 150, '#E5483F')
+    [[['休息一会…真舒服。', 'xiūxi yíhuì… zhēn shūfu.', 'a little rest… so comfy.']], (w, h) => grad(w, h, '#261B5C', '#5A4A9E') + moon(140, 40, 16) + bedBack(92, 150, 150) + lion(58, 128, .36, 'sleep', -14, false) + blanket(92, 150, 150, '#E5483F')
       + `<rect x="34" y="96" width="46" height="9" rx="4" fill="#fff" stroke="${ln}" stroke-width="2" transform="rotate(-14 58 100)"/>` + zz(112, 104, 16) + bubble(62, 52, 86, 25, 58, 96, '真舒服…', 15, '#2B6CA3')],
     [[['球进了！', 'qiú jìn le!', 'goal!']], (w, h) => pitch(w, h, 110) + goal(248, 44, 96, 76) + ball(300, 84, 13) + speed([[150, 80, 60], [170, 96, 50]], '#fff') + friend('tiger', 214, 100, .34, -8, false, true)
       + lion(70, 86, .44, 'fire', -8) + shout(130, 34, 62, 22, '球进了!', 17) + star(330, 30, 8, gold)],
@@ -147,7 +147,7 @@ SHI_COMICS(2, K => {
   ]), page('h2u5b', 'C', [
     [[['拿着！这是我的笔。', 'názhe! zhè shì wǒ de bǐ.', 'take it! This is my pen.']], (w, h) => W(w, h, '#F2E3C4') + ground(w, h, 152, '#C9A56A') + table(250, 136, 180, 36) + bao(96, 124, .5, 'happy') + pen(170, 96, 1.2, -12)
       + lion(286, 84, .4, 'miss', 4, false) + bubble(110, 38, 72, 26, 100, 78, '拿着!', 17) + star(206, 70, 7, gold)],
-    [[['等一会儿…我记得！', 'děng yíhuìr… wǒ jìde!', 'wait a moment… I remember!']], (w, h) => pop(w, h, '#FFC44D', '#FFE08A', 80, 100) + lion(70, 108, .5, 'up', -4)
+    [[['等一会…我记得！', 'děng yíhuì… wǒ jìde!', 'wait a moment… I remember!']], (w, h) => pop(w, h, '#FFC44D', '#FFE08A', 80, 100) + lion(70, 108, .5, 'up', -4)
       + `<circle cx="130" cy="70" r="6" fill="#fff" stroke="${ln}" stroke-width="2"/><circle cx="148" cy="56" r="9" fill="#fff" stroke="${ln}" stroke-width="2"/><rect x="164" y="16" width="184" height="96" rx="40" fill="#fff" stroke="${ln}" stroke-width="3"/>`
       + tea(200, 78, .5) + hz(256, 50, '左右', 20, 0, '#2B6CA3') + ball(310, 70, 14) + hz(256, 84, '机票', 17, 0, red) + shout(260, 146, 66, 22, '我记得!', 17)],
     [[['不错！', 'búcuò!', 'well done!']], (w, h) => pop(w, h, '#5CC8A8', '#8FE0C4', 92, 120) + paper(32, 30, 120, 150, 5, hzO(92, 86, '100', 40, -8, red))
