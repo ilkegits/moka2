@@ -3005,7 +3005,15 @@ button.scene-tile:active svg{opacity:.92}
 .ob2-proof b{display:block;font-size:15px;line-height:1.3}
 .ob2-proof p{margin:4px 0 6px;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
 .ob2-proof small{font-size:11.5px;color:var(--muted)}
-#ob.obs-plan{--obbg:#FBE4DA} #ob.obs-how1,#ob.obs-how2,#ob.obs-how3,#ob.obs-how4{--obbg:#E4EFE5} #ob.obs-chart{--obbg:#FCF0D2} #ob.obs-habit{--obbg:#E3EDF2}
+.ob2-pile{position:relative;height:350px;margin:30px 14px 0}
+.ob2-pile .pc{position:absolute;left:0;right:0;top:0;height:320px;background:var(--card);border-radius:22px;box-shadow:var(--shadow);corner-shape:squircle}
+.ob2-pile .p3{transform:translateY(26px) scale(.9);background:#EFE7D9} .ob2-pile .p2{transform:translateY(13px) scale(.95);background:#F6F0E6}
+.ob2-pile .p1{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.ob2-ftz{position:relative;display:grid;place-items:center;height:124px;max-width:100%} .ob2-ftz svg{position:absolute;inset:0;width:100%;height:100%}
+.ob2-ftz span{position:relative;font:400 76px/1 var(--hanzi);letter-spacing:.08em;margin-right:-.08em}
+.ob2-pile .py{margin-top:18px;font:500 20px var(--ui);color:var(--ink-2)} .ob2-pile .en{color:var(--muted);font-size:15px;text-align:center;padding:0 20px}
+.ob2-note{color:var(--muted);font-size:14px;line-height:1.45;margin:18px 4px 0;text-wrap:pretty}
+#ob.obs-how1,#ob.obs-how2,#ob.obs-how3,#ob.obs-how4{--obbg:#E4EFE5} #ob.obs-chart{--obbg:#FCF0D2} #ob.obs-habit{--obbg:#E3EDF2}
 #ob.obs-pay{background:linear-gradient(170deg,#FF5C69,#E0283A 55%,#B8202F);color:#fff}
 #ob.obs-pay .ob-dock{background:none}
 #ob .ob2-in{opacity:0;transform:translateY(12px);animation:ob2Up .5s cubic-bezier(.2,.8,.3,1) forwards;animation-delay:calc(var(--i,0) * 70ms + 60ms)}
@@ -13206,7 +13214,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.23';
+const APP_VERSION = '3.45.24';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -14019,13 +14027,13 @@ function obShow() {
   else if (step === 'why') html = obTop() + `<h2 class="ob2-q ob2-in">Why are you learning Chinese?</h2><p class="ob2-sub ob2-in" style="--i:1">Pick as many as you like.</p>
     <div class="ob-opts" data-pick="why">${OB_WHY.map(([v, g, t], i) => `<span ${inn(2 + i)}>${obOpt(v, `<span class="ob-glyph">${g}</span>`, t, '', O.why.includes(v))}</span>`).join('')}</div>
     <div class="ob-dock ob2-in" style="--i:8"><button class="btn btn-primary" data-ob="next"${O.why.length ? '' : ' disabled'}>Next</button></div>`;   // 3.45.23: the reasons from ShiHanzi2
-  else if (step === 'plan') {
-    const lv = obLv(), chars = obCharsEst();   // v4.63: from the adaptive test's odds, with false taps taken out
-    html = obTop() + `<div class="ob2-plan"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-pop" style="--d:.1s">${shiFace('wow')}</div>
-      <div class="ob2-deck" id="ob2Deck"><div class="c"></div><div class="c"></div><div class="c front"><span class="zh">学</span><div class="ob2-stamps">
-        <span class="ob2-stamp" style="--r:-4deg">${OB_WHY.find(x => x[0] === O.why[0])?.[2] || 'Your plan'}</span><span class="ob2-stamp j" style="--r:3deg">Start at ${HSK_NAME(lv)}</span>
-        <span class="ob2-stamp g" style="--r:-2deg">${O.chk ? chars ? `~${chars.toLocaleString('en')} characters known` : 'Starting from zero' : 'Reviews timed for you'}</span></div></div></div></div>
-      <div class="ob-dock ob2-in" style="--i:14"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
+  else if (step === 'plan') {   // moka2 3.45.24: "Your deck is ready", a real card of your level as the hero (option B of plan-screen-options)
+    const lv = obLv(), c = obFirst(), n = (S.H?.levels[lv]?.length || HSK_COUNT[lv]).toLocaleString('en'), k = [...c.h].length;
+    html = obTop() + `<h2 class="ob2-q ob2-c ob2-in">Your deck is ready</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">${HSK_NAME(lv)} · ${n} words, like this one</p>
+      <div class="ob2-pile ob2-in" style="--i:2"><div class="pc p3"></div><div class="pc p2"></div><div class="pc p1">
+        <div class="ob2-ftz" style="width:${k * 120}px">${obFtz()}<span lang="zh">${esc(c.h)}</span></div><div class="py">${esc(c.p)}</div><div class="en">${esc(c.e)}</div></div></div>
+      <p class="ob2-note ob2-c ob2-in" style="--i:3">Turn a card, say how well you knew it, and ShiHanzi picks the day it comes back.</p>
+      <div class="ob-dock ob2-in" style="--i:4"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
   }
   else if (step === 'how1') {
     const W = obTeach(), w = W.wall, rows = [[w[0], W.easy.h, W.hard.h, w[1], w[2]], [w[3], w[4], w[5], w[6], w[7]], [w[8], w[9], w[10], w[11], w[12]]];
@@ -14150,6 +14158,19 @@ function obShow() {
 }
 /* ---------- onboarding v2 helpers ---------- */
 const obGrid = c => `<svg class="g" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="${c}" stroke-width=".5" stroke-dasharray="2.2 2" fill="none"><path d="M50 0V100M0 50H100M0 0L100 100M100 0L0 100"/></g></svg>`;
+/* 3.45.24: the first card's word: one that fits a reason you picked, if your level has one; else a short word of your level */
+const OB_FIRST = { travel: ['旅游', '飞机', '火车', '机场', '旅行', '护照', '地图', '酒店'], family: ['家', '妈妈', '爸爸', '家人', '孩子', '家庭', '亲戚', '父母'],
+  work: ['工作', '学校', '公司', '老师', '学生', '同事', '上班', '经理'], exam: ['考试', '复习', '成绩', '练习', '准备', '水平'],
+  culture: ['电影', '书', '音乐', '文化', '小说', '电视', '故事', '艺术'], fun: ['玩', '朋友', '喜欢', '高兴', '游戏', '开心', '有趣'] };
+function obFirst() {
+  const O = S.ob, lv = obLv(), key = lv + ':' + O.why.join(); if (O.fc?.key === key) return O.fc;
+  const L = S.H?.levels[lv] || [], card = r => ({ key, h: r.h, p: r.p, e: obMean(r) || meanOf(r) });
+  let r = null;
+  for (const why of O.why) { for (const h of OB_FIRST[why] || []) { r = L.find(x => x.h === h && x.e); if (r) break; } if (r) break; }
+  if (!r) { const pool = L.filter(x => HAN.test(x.h) && [...x.h].length === 2 && obMean(x)); r = pool[Math.random() * pool.length | 0]; }
+  return O.fc = r ? card(r) : { key, h: '学习', p: 'xuéxí', e: 'to study' };
+}
+const obFtz = () => `<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="rgba(178,58,44,.42)" stroke-width="1" stroke-dasharray="3 3" fill="none"><path d="M50 0V100M0 50H100M0 0L100 100M100 0L0 100" vector-effect="non-scaling-stroke"/></g><rect x=".5" y=".5" width="99" height="99" fill="none" stroke="rgba(178,58,44,.42)" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>`;
 const obLv = () => S.ob.chk ? obLevel() : S.ob.level || 1;   // no test: the level you picked
 function obLeft(lv) { const R = S.ob.chk?.rounds.find(x => x.lv === lv), f = R ? obKnownAt(R) : 0; return Math.max(10, Math.round((S.H?.levels[lv]?.length || HSK_COUNT[lv]) * (1 - f))); }
 function obDay(add) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + add); return d; }
@@ -14198,7 +14219,7 @@ function obAnim(el, step) {
   const O = S.ob;
   if (step === 'hi') obDraw(el, '学');
   if (step === 'hello') obType(el, el.querySelector('#ob2Bub'), 'Thousands of characters, not much time? | I’ll help you keep every one.');
-  if (step === 'plan') {
+  if (step === 'plan-old') {   // 3.45.24: the stamped deck is gone (the new page has no animation)
     obType(el, el.querySelector('#ob2Bub'), 'Got it! | Building your plan now', 90);
     const deck = el.querySelector('#ob2Deck');
     el.querySelectorAll('.ob2-stamp').forEach((s, k) => obLater(el, 1100 + k * 620, () => { s.classList.add('on'); deck.classList.remove('jolt'); void deck.offsetWidth; obLater(el, 150, () => deck.classList.add('jolt')); }));
