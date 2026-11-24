@@ -126,7 +126,7 @@ html{overscroll-behavior-y:none}
 /* one place for every tab's headline (Decks, Lessons, Map, Read, Profile): a 60px row at the very top, the headline on the left
    and its buttons (streak flame, menu) on the right, so they sit at the same spot on every tab */
 .screen .pg-head{height:60px;margin-top:0;margin-bottom:14px;align-items:center;flex:none}
-.pg-tr{display:flex;align-items:center;margin-right:-12px}
+.pg-tr{display:flex;align-items:center;gap:12px;margin-right:-12px}   /* 3.45.59: room between flag, pearl and flame */
 .pg-head + .hd-stack{margin-top:0}
 .bar-head{flex:1;margin:0;padding-left:10px;font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1;white-space:nowrap}
 .bar-zh{font-family:var(--hanzi);font-weight:600;font-size:27px;color:var(--seal);letter-spacing:.04em;margin-left:4px}
@@ -149,7 +149,7 @@ html{overscroll-behavior-y:none}
 .hm-xp .coin{width:28px;height:28px;flex:none}
 .hm-xp b{font:800 21px/1 "Baloo 2",var(--ui);padding-top:3px;color:#B07A1E;font-variant-numeric:tabular-nums}
 /* narrow phones: flag, pearl and flame draw a little smaller so the headline stays on one line; under 350px the 卡片/故事 beside it steps aside */
-@media (max-width:389px){.pg-tr .sys-btn{width:36px}.pg-tr .sys-btn .flag{width:26px;height:18px}.hm-xp{padding:0 2px 0 0}.hm-xp .coin{width:24px;height:24px}
+@media (max-width:389px){.pg-tr{gap:8px}.pg-tr .sys-btn{width:36px}.pg-tr .sys-btn .flag{width:26px;height:18px}.hm-xp{padding:0 2px 0 0}.hm-xp .coin{width:24px;height:24px}
   .hm-xp b,.pg-tr .hm-streak b{font-size:18px}.pg-tr .hm-streak{padding:0 6px 0 2px}.pg-tr .hm-streak .flame{width:26px;height:26px}}
 @media (max-width:349px){.pg-head h2 .cal-zh{display:none}}
 /* the picker: a card that drops down under the top bar, every system as a flag tile (like a course switcher) */
@@ -206,6 +206,9 @@ html{overscroll-behavior-y:none}
 .wide{width:100%}
 .row-btns{display:flex;gap:10px}
 .row-btns>.btn{flex:1}
+/* 3.45.59: Again is just a repeat arrow, so Done (red) is the one big button at the end of a round */
+.row-btns>.btn.btn-rep{flex:0 0 58px;padding:0}
+.btn-rep svg.i{width:24px;height:24px;margin:0}
 .link{color:var(--seal);font-weight:600;font-size:14px;padding:6px 2px}
 .pill{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:10px;background:var(--fill);font-size:14px;font-weight:500;color:var(--ink)}
 .pill:active{opacity:.6}
@@ -631,6 +634,13 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
   box-shadow:inset 0 -4px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 14px 24px -10px rgba(30,20,10,.6),0 3px 8px -3px rgba(30,20,10,.3);transition:transform .08s,box-shadow .08s}
 .dk-add:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 6px 12px -8px rgba(30,20,10,.6)}
 .dk-add svg.i{width:20px;height:20px;stroke-width:2.4}
+/* 3.45.59: which side of the cards you see first, picked here before you flip (it used to be a pill inside the round) */
+.dk-side{position:absolute;left:0;bottom:calc(100% - 3px);display:flex;align-items:center;gap:8px;height:40px;padding:0 4px 0 12px;border-radius:13px;background:var(--card);
+  box-shadow:0 10px 22px -12px rgba(30,20,10,.45),0 0 0 1px rgba(120,95,60,.1)}
+.dk-side > span{font-size:13px;font-weight:600;color:var(--muted)}
+.dk-side .seg{padding:2px}
+.dk-side .seg button{height:30px;padding:0 11px;font-size:13.5px}
+.dk-side .seg b{font:500 15px/1 var(--hanzi)}
 /* 3.45.43 the deck page's bottom bar: Write (white, with a 写 square) and Flip (red, the main button) */
 .dk-dock{display:flex;gap:10px}
 #frame.tabs .dock.dk-dock{background:linear-gradient(rgba(244,238,227,0),var(--paper) 22px)}   /* rows scrolling under the bar fade out instead of showing between the buttons */
@@ -673,6 +683,19 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .side{position:absolute;top:0;right:0;bottom:0;width:min(78%,300px);display:flex;flex-direction:column;gap:2px;padding:calc(22px + env(safe-area-inset-top)) 12px 20px;
   background:var(--paper);border-radius:26px 0 0 26px;box-shadow:-24px 0 50px -20px rgba(40,25,10,.45);transform:translateX(105%);transition:transform .32s cubic-bezier(.2,.9,.3,1)}
 #dlg-root.open .side{transform:none}
+/* 3.45.59 (ilkem: "the 3 dots shouldn't open a whole side bar, more of a side pop-up"): deck and group options open as a
+   small card beside the ··· you tapped; sidePlace() pins it under the button, or above it near the bottom of the screen */
+.side.pop{top:auto;bottom:auto;width:min(calc(100% - 24px),240px);padding:6px;gap:0;border-radius:18px;background:var(--card);
+  box-shadow:0 18px 40px -12px rgba(40,25,10,.42),0 0 0 1px rgba(120,95,60,.09);transform:scale(.92);opacity:0;transform-origin:top right;
+  transition:transform .2s cubic-bezier(.2,1.15,.4,1),opacity .14s}
+.side.pop.up{transform-origin:bottom right}
+#dlg-root.open .side.pop{transform:none;opacity:1}
+.side.pop .side-top{padding:8px 12px 6px}
+.side.pop .side-top b{font-size:16px}
+.side.pop .side-top small{font-size:12.5px}
+.side.pop .side-row{min-height:46px;gap:12px;font-size:15.5px;border-radius:12px}
+.side.pop .side-row svg.i{width:19px;height:19px}
+.dlg-scrim.lite{background:rgba(42,20,13,.1)}
 .side-top{display:flex;flex-direction:column;gap:2px;padding:6px 10px 18px}
 .side-top b{font:600 20px/1.2 var(--display);overflow-wrap:anywhere}
 .side-top small{font-size:13.5px;color:var(--muted)}
@@ -837,6 +860,21 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .fc-ch{font-family:var(--hanzi);font-weight:600;line-height:1.05;word-break:break-all;color:var(--ink)}
 .fc-py{font-size:calc(24px * var(--fcs,1));font-weight:700;color:var(--seal);display:flex;align-items:center;gap:6px;letter-spacing:.01em}
 .fc-py .icon-btn{flex:none;width:38px;height:38px;color:var(--seal);background:var(--seal-soft)}
+/* 3.45.59 (ilkem: "the feiji card you gave me on the onboarding, I want my flashcards to look like that"): the onboarding's
+   "Your deck is ready" card. Nearly square, a soft lifted shadow, two cards of the pile peeking out below, the character in
+   a light weight with a little air between, the pinyin in dark grey and the English small and quiet under it */
+.wrap{aspect-ratio:307/320}
+.stage > .wrap,.stage > .fc-pile{grid-area:1/1}
+.fc-pile{position:relative;width:min(100%,340px);aspect-ratio:307/320;max-height:62dvh;pointer-events:none}
+.fc-pile i{position:absolute;inset:0;border-radius:22px;corner-shape:squircle;box-shadow:var(--shadow)}
+.fc-pile i:first-child{transform:translateY(26px) scale(.9);background:#EFE7D9}
+.fc-pile i:last-child{transform:translateY(13px) scale(.95);background:#F6F0E6}
+.stage .stage-shadow{display:none}
+.face{box-shadow:var(--shadow)}
+.fc-ch{font-weight:400;letter-spacing:.08em;margin-right:-.08em}
+.fc-py{font-weight:500;font-size:calc(20px * var(--fcs,1));color:var(--ink-2);letter-spacing:.03em;margin-top:8px}
+.fc-py .icon-btn{width:34px;height:34px;color:var(--ink-2);background:rgba(30,26,21,.06)}
+.face .fc-en{font-family:var(--display);font-weight:500;letter-spacing:0;color:var(--muted);padding:0 8px}
 .fc-en{font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--ink)}
 .fc-q{font-weight:800;letter-spacing:-.015em;line-height:1.15;color:var(--ink)}
 /* 3.45.55: the Aa button in the cards' top bar: each tap makes the card's words the next size up, and after the biggest
@@ -899,7 +937,9 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .seg button{height:30px;padding:0 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--ink);transition:background .2s}
 .seg button.on{background:var(--card);font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.06)}
 .prompt{text-align:center;padding:18px 0 22px}
-.prompt-en{font-family:var(--display);font-weight:600;line-height:1.1;margin:10px 0 8px}
+.prompt-en{font-family:var(--ui);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:10px 0 8px}   /* 3.45.59: the English word in Satoshi */
+/* 3.45.59: Free / Guided sits under the bar, so the progress bar has the whole top row */
+.w-mode{display:flex;justify-content:center;margin:2px 0 -6px}
 .prompt .reveal-line{min-height:28px;display:flex;justify-content:center;align-items:center;gap:10px}
 .prompt .reveal-line .py{margin:0;font-size:16px}
 /* which sense is meant: a common word with the character left out (东＿ · thing) */
@@ -2210,6 +2250,7 @@ button.st-d:active{transform:scale(.9);transition:none}
 .pf-name:focus{background:var(--card-2);box-shadow:var(--ring)}
 .pf-id small{font-size:13px;color:var(--muted)}
 .pf-lv{margin:16px 0 14px}
+.pf-lv:last-child{margin-bottom:2px}
 .pf-lv-t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
 .pf-lv-t b{font-size:15px}
 .pf-lv-t span{font-size:13.5px;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums}
@@ -2878,7 +2919,7 @@ button.st-d:active{transform:scale(.9);transition:none}
 /* v4.30 the faces are drawn three times as big and shrunk back down, so their text and edges stay sharp: with 3D depth on, Chrome can draw a turned tile at low detail and the face came out pixely */
 .lt-f{position:absolute;left:-96px;top:-128px;width:288px;height:384px;scale:calc(1/3) calc(1/3);border-radius:39px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .lt-front{transform:translateZ(19px);background:#F3F0E8;box-shadow:inset 0 0 0 3px #E2DDD0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-.lt-front b{font:400 168px/156px "Long Cang",var(--hanzi);text-shadow:0 -4px 0 rgba(0,0,0,.28),0 4px 0 rgba(255,255,255,.95)}   /* cut into the stone: dark above, light below */
+.lt-front b{margin-bottom:22px;font:400 168px/156px "Long Cang",var(--hanzi);text-shadow:0 -4px 0 rgba(0,0,0,.28),0 4px 0 rgba(255,255,255,.95)}   /* cut into the stone: dark above, light below */
 .lt-front strong{font-size:75px;line-height:81px;font-weight:800;color:#2A2621;font-variant-numeric:tabular-nums;text-shadow:0 3px 0 rgba(255,255,255,.95)}
 .lt-front small{font-size:30px;line-height:36px;font-weight:800;letter-spacing:.1em;color:#7B766B}
 .lt-back{transform:rotateY(180deg) translateZ(19px);background:#2D3D37;box-shadow:inset 0 0 0 18px #2D3D37,inset 0 0 0 24px #6E8A7E}
@@ -8236,7 +8277,7 @@ function pfWeek() {   // this week, Monday to Sunday: the words you proved each 
 function ProfileView() {
   const { n, today } = practiceStreak(), best = Math.max(n, bestStreak()), pv = provenCount(), own = TRAIL.filter((_, i) => monOwns(i + 1)).length;
   const { lv, left } = goalLevel(), total = S.H?.levels[lv]?.length || HSK_COUNT[lv], known = Math.max(0, total - left), f = total ? known / total : 0;
-  const since = pfSince(), go = 'Go through a deck';
+  const since = pfSince();   // 3.45.59: no big red button on Profile (ilkem)
   const tile = (act, icon, big, label, sub, aria, ic = '') => `<button class="pf-stat" data-act="${act}" aria-label="${aria}"><span class="pf-st-ic${ic}">${icon}</span><b>${big}</b><span>${label}</span><small>${sub}</small></button>`;
   return `<div class="screen fade-in pf-pg">   <!-- not "pf": that class is the Add card typing line (40px lines, no wrapping, scrolls sideways) -->
     <div class="section-head cal-head pg-head"><h2>Profile <span class="cal-zh">我的</span></h2>
@@ -8247,7 +8288,6 @@ function ProfileView() {
           <small>${HSK_NAME(lv)} learner${since ? ` · since ${since}` : ''}</small></span></div>
       <div class="pf-lv"><div class="pf-lv-t"><b>${HSK_NAME(lv)}</b><span>${left ? `${plural(left, 'word')} to go` : 'All words known'}</span></div>
         <div class="pf-lv-bar"><i style="width:${gBar(f)}%"></i><span class="pf-lv-end">${lv < 7 ? HSK_NAME(lv + 1) : '🏆'}</span></div></div>
-      <button class="btn btn-seal wide pf-go" data-act="pf-go">${go}</button>
     </section>
     <div class="pf-stats">
       ${tile('streak', FLAME, n, 'Day streak', n && !today ? 'Finish a deck today to keep it' : best ? `Best ${plural(best, 'day')}` : 'Finish a deck to start one', `${n} day streak, open your calendar`, `${n ? ' on' : ''}${n && !today ? ' wait' : ''}`)}
@@ -8837,7 +8877,7 @@ document.addEventListener('click', e => {
    CC BY-SA) plays that recording. Anything else goes to the phone's Chinese voice, and when the phone has none, it fails or it
    stays silent, the word is pieced together from the recorded syllables (the same set the pinyin page uses). */
 const AW_AUDIO = PY_AUDIO.replace('/syllabs/cmn-', '/hsk/cmn-');
-let awP = null, AWS = null, sayN = 0, saySrc = [];
+let awP = null, AWS = null, sayN = 0, saySrc = [], yueEl = null;   // yueEl: the online Cantonese voice playing (3.45.59)
 const loadAw = () => awP ||= fetch('dict/audio-words.txt').then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
   .then(t => AWS = new Set(t.split('\n').map(s => s.trim()).filter(Boolean)), e => { awP = null; throw e; });
 loadAw().catch(() => {});
@@ -8859,6 +8899,7 @@ function acPlay(bufs, gap) {   // one recording, or syllables one after another
 }
 function sayStop() {
   sayN++; saySrc.forEach(s => { try { s.stop(); } catch (_) {} }); saySrc = [];
+  if (yueEl) { try { yueEl.pause(); } catch (_) {} yueEl = null; }
   try { speechSynthesis.cancel(); } catch (_) {}
 }
 const PY_TONE = { '̄': 1, '́': 2, '̌': 3, '̀': 4 };
@@ -8895,9 +8936,19 @@ function ttsSay(text, k, n, fail) {   // the phone's own voice; fail() when it h
     setTimeout(() => { if (!on && n === sayN && !speechSynthesis.speaking) { speechSynthesis.cancel(); no(); } }, 1600);
   } catch (_) { fail(); }
 }
+/* 3.45.59 (ilkem's phone, Android Chrome, has no Cantonese voice: "add a cantonese voice"): when the phone can't speak
+   Cantonese, Google Translate's Cantonese voice reads the word (Hong Kong characters) over the internet. That address
+   answers only requests that carry no Referer, so the page sends none from the first time it is used (nothing else here
+   needs one). */
+function yueSay(text, n) {
+  if (!document.querySelector('meta[name="referrer"]')) { const m = document.createElement('meta'); m.name = 'referrer'; m.content = 'no-referrer'; document.head.append(m); }
+  const a = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=yue&q=${encodeURIComponent(zhT(text).slice(0, 180))}`);
+  a.onerror = () => { if (n === sayN) toast(navigator.onLine ? 'The Cantonese voice didn’t answer. Try again' : 'The Cantonese voice needs the internet'); };
+  yueEl = a; a.play().catch(e => { if (n === sayN && e?.name !== 'AbortError') a.onerror(); });
+}
 function sayZh(text, p) {
   if (!text) return; sayStop(); const n = sayN, k = ZH.t ? ZH.k : 'cn';
-  if (k === 'hk') return ttsSay(text, k, n, () => toast('Your phone has no Cantonese voice'));
+  if (k === 'hk') return ttsSay(text, k, n, () => yueSay(text, n));
   const tts = () => ttsSay(text, k, n, () => sylSay(text, p, n));
   if (!AWS) loadAw().catch(() => {});
   if (!AWS?.has(text)) return tts();
@@ -11333,7 +11384,9 @@ function DeckView(d) {
         <span class="crow-txt"><span class="crow-py">${esc(PY(c.hanzi, c.pinyin))}</span><span class="crow-en">${esc(c.en)}</span></span>${dots(c)}</button></li>`).join('')}</ul><div class="bk-fabgap"></div>`
       : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Put in your first word to start.</p></div>`}
     <div class="dock dk-dock">${n
-      ? `<button class="dk-add" data-act="add-card">${I.plus}Add</button>
+      ? `<div class="dk-side" role="group" aria-label="Show first"><span>Show first</span><div class="seg">${[[0, '<b lang="zh">中文</b>', 'Chinese'], [1, 'English', 'English']].map(([v, t, a]) =>
+          `<button data-act="flip-front" data-v="${v}" class="${!!db.prefs.englishFirst === !!v ? 'on' : ''}" aria-label="${a} first" aria-pressed="${!!db.prefs.englishFirst === !!v}">${t}</button>`).join('')}</div></div>
+        <button class="dk-add" data-act="add-card">${I.plus}Add</button>
         <button class="btn btn-ghost dk-write" data-act="write" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
         <button class="btn btn-seal dk-flip" data-act="study"><span class="dk-ft">${I.flip}Flip ${plural(n, 'card')}</span><small>${sub}</small></button>`
       : `<button class="btn btn-seal wide" data-act="add-card">${I.plus}Add your first card</button>`}</div>
@@ -11422,13 +11475,23 @@ function nameDialog(kind, it, forDeck, inGroup) {   // it = a deck or group to r
   LOG.add('dialog-open', title);
 }
 /* v4.20: the deck page's ··· opens a panel from the right side: Rename, Add to group, Delete deck. No colours */
-function deckSide(d) {
+function sidePlace(root, at) {   // 3.45.59: the options card beside the ··· that opened it
+  const el = root.querySelector('.side'), b = at?.getBoundingClientRect?.(); if (!el) return;
+  el.classList.add('pop'); root.querySelector('.dlg-scrim')?.classList.add('lite');
+  const r = b && b.width ? b : { top: 60, bottom: 60, right: innerWidth - 8 };
+  el.style.right = Math.max(12, innerWidth - r.right - 4) + 'px';
+  const h = el.offsetHeight;
+  if (r.bottom + 6 + h > innerHeight - 12) { el.classList.add('up'); el.style.top = Math.max(12, r.top - 6 - h) + 'px'; }
+  else el.style.top = (r.bottom + 6) + 'px';
+}
+function deckSide(d, at) {
   if (!d) return; const root = $('#dlg-root'), g = groupById(d.group);
   root.innerHTML = `<div class="dlg-scrim"></div><aside class="side" role="dialog" aria-modal="true" aria-label="Deck options">
     <div class="side-top"><b>${esc(d.name)}</b><small>${plural(d.cards.length, 'card')}${g ? ` · in ${esc(g.name)}` : ''}</small></div>
     <button class="side-row" data-side="rename">${I.pen}<span>Rename</span></button>
     <button class="side-row" data-side="group">${I.folder}<span>${g ? 'Move to another group' : 'Add to group'}</span></button>
     <button class="side-row side-del" data-side="del">${I.trash}<span>Delete deck</span></button></aside>`;
+  sidePlace(root, at);
   root.querySelector('.dlg-scrim').onclick = () => closeDlg();
   root.querySelector('.side').onclick = e => {
     const b = e.target.closest('[data-side]'); if (!b) return; const k = b.dataset.side;
@@ -11444,7 +11507,7 @@ function deckSide(d) {
   LOG.add('dialog-open', 'Deck options');
 }
 /* v4.23: a group's options in the same side panel, from the ··· on its line in Your decks or on its own page */
-function groupSide(g) {
+function groupSide(g, at) {
   if (!g) return; const root = $('#dlg-root');
   root.innerHTML = `<div class="dlg-scrim"></div><aside class="side" role="dialog" aria-modal="true" aria-label="Group options">
     <div class="side-top"><b>${esc(g.name)}</b><small>${plural(groupDecks(g).length, 'deck')}</small></div>
@@ -11452,6 +11515,7 @@ function groupSide(g) {
     <button class="side-row" data-side="new">${I.plus}<span>New deck here</span></button>
     <button class="side-row" data-side="rename">${I.pen}<span>Rename</span></button>
     <button class="side-row side-del" data-side="del">${I.trash}<span>Delete group</span></button></aside>`;
+  sidePlace(root, at);
   root.querySelector('.dlg-scrim').onclick = () => closeDlg();
   root.querySelector('.side').onclick = e => {
     const b = e.target.closest('[data-side]'); if (!b) return; const k = b.dataset.side;
@@ -11623,7 +11687,7 @@ function Faces(c, d) {   // English on one side; the character and its pinyin (t
   const py = `<span class="fc-py">${esc(PY(c.hanzi, c.pinyin))}<button class="icon-btn" data-act="say" data-h="${esc(c.hanzi)}" data-p="${esc(c.pinyin || '')}" aria-label="Hear it">${I.sound}</button></span>`, foot = `<span class="foot">${esc(d.name)}</span>`;
   const ans = enF ? `${hz}${py}${foot}`   // English first: the answer is the character and its pinyin
     : `<div class="fc-ch" style="${fs(Math.round(hzSize(n) * .8), Math.floor(290 / n))}">${esc(c.hanzi)}</div>${py}
-      <span class="fc-en" style="${fs(Math.max(17, Math.min(22, Math.round(enSize(c.en) * .6))))}">${esc(c.en)}</span>${foot}`;
+      <span class="fc-en" style="${fs(Math.max(16, Math.min(19, Math.round(enSize(c.en) * .5))))}">${esc(c.en)}</span>${foot}`;
   // English first starts turned round (startAngle 180), so the question goes on the back face
   return `<div class="face front"><div class="face-in">${enF ? ans : q}</div></div>
     <div class="face back"><div class="face-in">${enF ? q : ans}</div></div>`;
@@ -11637,13 +11701,13 @@ function StudyView(d) {
       ${sbHtml(st, (st.i + 1) / n)}
       ${fsBtn()}</header>
     <div class="stage" id="stage" style="--fcs:${cardScale()}"><p class="st-count" id="pcount">${st.i + 1} / ${n}</p><div class="stage-shadow" id="sshadow"></div>
+      <div class="fc-pile" aria-hidden="true"><i></i><i></i></div>
       <div class="wrap" id="wrap"><div class="card3d" id="card3d">${Faces(c, d)}</div></div></div>
     <p class="hint" id="hint" style="opacity:${st.hinted ? 0 : 1}"><span class="touch">Tap to flip · drag sideways to turn it</span><span class="kb">Click or press Space to flip · ← → for the other cards</span></p>
     <div class="controls" id="ctrls">
       <button class="icon-btn lg" data-act="prev" aria-label="Previous">${I.left}</button>
       <div class="mid">
         <button class="pill ${st.shuffled ? 'on' : ''}" data-act="shuffle">${I.shuffle}Shuffle</button>
-        <button class="pill" data-act="side" id="sidebtn">${I.swap}${db.prefs.englishFirst ? 'EN first' : '中 first'}</button>
       </div>
       <button class="icon-btn lg" data-act="next" aria-label="Next">${I.right}</button>
     </div>
@@ -11935,7 +11999,7 @@ function StudySummary(d) {
       <h2>${hz}</h2><div class="done-py">${py} · ${en}</div>${P ? payLine(P) : xpLine(st.xp)}<p class="fe2-deck">${esc(d.name)}</p></section>
     <div class="lt-row" role="img" aria-label="${plural(nf, 'new word')}, ${ok} of ${n} remembered, time ${lesClock(T.ms)}">${tiles}</div><div class="lt-caps">${caps}</div>
     <div class="le2-notes">${notes}</div>${trickyCard()}
-    <div class="dock row-btns"><button class="btn btn-ghost" data-act="study-again">Again</button><button class="btn btn-primary" data-act="study-done">Done</button></div>
+    <div class="dock row-btns"><button class="btn btn-ghost btn-rep" data-act="study-again" aria-label="Again">${I.refresh}</button><button class="btn btn-seal" data-act="study-done">Done</button></div>
   </div>`;
 }
 /* UX 11: the angle the card is drawn at right now, also halfway through a flip, so grabbing it mid-turn carries on from
@@ -12034,7 +12098,8 @@ function promptHtml(c) {
   const W = S.write, chars = hanChars(c.hanzi), ask = writeAsk(c), clue = writeClue(c), open = W.revealed || W.guidedDone;
   const left = W.order.length - W.i;
   const clueT = clue && zhChars(clue.hz), clueHz = clue && [...clue.hz].map((x, i) => x === c.hanzi ? (open ? `<i class="w-gap fill">${esc(clueT[i])}</i>` : '<i class="w-gap"></i>') : esc(clueT[i])).join('');
-  return `<div class="eyebrow">${W.i >= W.main ? `Once more · ${left === 1 ? 'last one' : left + ' left'}` : `Write in hanzi · ${plural(chars.length, 'character')}`}</div>
+  // 3.45.59: no "Write in hanzi · 1 character" line (ilkem: redundant); only a word coming back says so
+  return `${W.i >= W.main ? `<div class="eyebrow">Once more · ${left === 1 ? 'last one' : left + ' left'}</div>` : ''}
       <div class="prompt-en" style="font-size:${Math.min(44, enSize(ask.en))}px">${esc(ask.en)}</div>
       ${clue ? `<div class="w-clue" id="wclue">as in <span class="hz">${clueHz}</span>${W.pyShown || open ? `<span class="py">${esc(PY(clue.hz, clue.py))}</span>` : ''}<span>· ${esc(clue.en)}</span></div>` : ''}
       <div class="reveal-line" id="rline">${open ? revealLine(c) : `<button class="link" data-act="py-hint">${W.pyShown ? esc(PY(c.hanzi, ask.py)) : 'Show ' + PYN().toLowerCase()}</button>`}</div>`;
@@ -12045,8 +12110,8 @@ function WriteView(d) {
   const c = cardById(d, W.order[W.i]);
   return `<div class="screen fade-in" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="back-deck" aria-label="Close">${I.close}</button>
-      ${sbHtml(W, W.i / n)}
-      ${writeSeg()}</header>
+      ${sbHtml(W, W.i / n)}</header>
+    <div class="w-mode">${writeSeg()}</div>
     ${writeBody(c)}
     <div class="dock" id="wdock">${writeDock()}</div></div>`;
 }
@@ -12148,7 +12213,7 @@ function boxSize(n, availW, availH = Infinity) {
   const k = Math.min(n, 4), cols = Math.min(k, 2), rows = Math.ceil(k / cols), gap = 14;
   if (k === 1) return { s: Math.floor(Math.max(150, Math.min(220, availW * 0.64, availH))), gap, cols, rows };
   const byW = (availW - gap * (cols - 1)) / cols, byH = (availH - gap * (rows - 1)) / rows;
-  return { s: Math.floor(Math.max(120, Math.min(170, byW, byH))), gap, cols, rows };
+  return { s: Math.floor(Math.max(120, Math.min(178, byW, byH))), gap, cols, rows };
 }
 function writeRoom(grid) {
   // height left for the boxes: from the top of the grid down to the note, tools and buttons beneath it
@@ -12203,9 +12268,11 @@ function writeEndShow() {
 function mountWrite() {
   const W = S.write; if (W.done) return writeEndShow();
   const d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
-  const grid = $('#grid'), { s, gap, cols, rows } = boxSize(chars.length, grid.clientWidth, writeRoom(grid));
+  // 3.45.59 (ilkem: "slightly bigger when it's 2 next to each other"): two boxes side by side may reach 8px into the page margins
+  const grid = $('#grid'), { s, gap, cols, rows } = boxSize(chars.length, grid.clientWidth + (chars.length > 1 ? 16 : 0), writeRoom(grid));
   grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
-  grid.style.maxWidth = cols * s + (cols - 1) * gap + 'px';
+  const gw = cols * s + (cols - 1) * gap; grid.style.maxWidth = gw + 'px';
+  if (cols > 1) { grid.style.width = gw + 'px'; grid.style.marginLeft = grid.style.marginRight = `calc(50% - ${gw / 2}px)`; }
   grid.classList.toggle('rows', rows > 1);
   const boxes = $$('.tzg', grid);
   if (db.prefs.writeMode === 'guided') initGuided(boxes, chars, s);
@@ -12693,13 +12760,16 @@ function showShiSide(M) {   // just above the Next buttons, over the screen; tap
   el.style.top = (dock.getBoundingClientRect().top - ar.top + app.scrollTop + 6) + 'px';
   el.onclick = () => { if (el.classList.contains('out')) return; el.classList.add('out'); setTimeout(() => el.remove(), 360); };
 }
+/* 3.45.59 (ilkem: "the ink size should be just like the free hand one"): Guided draws your line as thick as Free does.
+   Free's pen is redraw()'s base in screen pixels; HanziWriter draws in its 1024-unit grid inside the padded box, so convert. */
+const freeInkW = s => Math.max(2.4, Math.min(3.6, s / 32)) * 1024 / (s - 2 * Math.round(s * 0.09));
 function initGuided(boxes, chars, s) {
   const W = S.write;
   if (!window.HanziWriter) { $('#note').textContent = 'Guided mode needs internet for stroke data.'; return; }
   W.writers = boxes.map((box, i) => HanziWriter.create(box.querySelector('.quiz'), chars[i], writerOpts(s, {
     showCharacter: false, showOutline: db.prefs.outline,
     strokeColor: css('--ink'), outlineColor: css('--line-2'), drawingColor: css('--ink'), highlightColor: css('--seal'),
-    drawingWidth: INK_W, showHintAfterMisses: 3, highlightOnComplete: true, highlightCompleteColor: css('--jade'),
+    drawingWidth: freeInkW(s), showHintAfterMisses: 3, highlightOnComplete: true, highlightCompleteColor: css('--jade'),
     onLoadCharDataError: () => { box.querySelector('.quiz').innerHTML = `<span class="ans-fallback">${chars[i]}</span>`; },
   })));
   boxes.forEach((b, j) => b.classList.toggle('dim', j > 0));
@@ -12793,8 +12863,8 @@ function WriteSummary(d) {
     <div class="dock" style="display:flex;flex-direction:column;gap:10px">
       ${more ? `<button class="btn btn-seal wide" data-act="write-next">Next ${db.prefs.writeN ?? 10}</button>` : ''}
       ${missed.length ? `<button class="btn ${more ? 'btn-ghost' : 'btn-seal'} wide" data-act="retry-missed">Practise the ${missed.length} missed</button>` : ''}
-      <div class="row-btns"><button class="btn btn-ghost" data-act="write-again">Again</button>${more
-        ? '' : `<button class="btn ${missed.length ? 'btn-ghost' : 'btn-primary'}" data-act="back-deck">Done</button>`}</div>
+      <div class="row-btns"><button class="btn btn-ghost${more ? '' : ' btn-rep'}" data-act="write-again" aria-label="Again">${more ? 'Again' : I.refresh}</button>${more
+        ? '' : `<button class="btn ${missed.length ? 'btn-ghost' : 'btn-seal'}" data-act="back-deck">Done</button>`}</div>
     </div></div>`;
 }
 
@@ -14023,7 +14093,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.58';
+const APP_VERSION = '3.45.59';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -14101,6 +14171,7 @@ function devSheet() {
       ${p('devCard', 'Play: 7-day streak card', 'The one-week celebration, then the streak card you can share')}
       ${p('devBack', 'Play: welcome back', 'After 3 or more days away, with the win-back offer')}
       ${p('devPay', 'Show: paywall layout', 'Preview only. Nothing can be bought')}
+      ${p('devLixi', 'Play: open the red envelope', 'The reading card’s 利是 opening. Preview only: no XP is added')}
     </div>
     <div class="day-h" style="margin-top:20px">Start over</div>
     <button class="btn btn-danger wide" id="devReset">${I.trash}Reset all progress</button>
@@ -14118,6 +14189,7 @@ function devSheet() {
     sh.querySelector('#devMile').onclick = play(function milestone() { const { n } = practiceStreak(); momentMile(MILES.includes(n) ? n : 7); });
     sh.querySelector('#devBack').onclick = play(function welcomeBack() { momentBack(4, 12); });
     sh.querySelector('#devPay').onclick = play(function paywallPreview() { paywall(); });
+    sh.querySelector('#devLixi').onclick = play(function redEnvelope() { lxShow('fu', RC_XP, null, () => render(), true); });   // 3.45.59
     const back = () => { const X = db.hotd; delete X.off; delete X.storyOff; delete X.done; delete X.top; delete X.deck; delete X.revSunk; };
     const go = (what, prep, then) => () => {
       LOG.add('dev', what); prep(); save(); closeSheet();
@@ -14566,7 +14638,9 @@ const OB_LVS = [[1, 'First words'], [2, 'Simple everyday talk'], [3, 'Daily life
 const OB_FOR = [['exam', '考', 'The HSK exam', 'Words from the exam lists, planned up to your exam day'], ['read', '读', 'Reading Chinese day to day', 'Signs, menus, messages and short stories']];
 /* moka2 3.45.21: a self-study app, so no level test (character check, word cards, story); the one level question sets where you start.
    The test's code (check, words, read) is still in the file, unused */
-const OB_STEPS = ['hi', 'hello', 'sys', 'why', 'level', 'plan', 'how1', 'how2', 'how3', 'how4', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
+// 3.45.59: 'habit' (the reminder time and the drawn notification prompt) is out: ilkem found it redundant; a phone asks
+// for notifications with its own system prompt, and moka2 sends no reminders. Its code is still below, unused.
+const OB_STEPS = ['hi', 'hello', 'sys', 'why', 'level', 'plan', 'how1', 'how2', 'how3', 'how4', 'goal', 'chart', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
 const OB_PROG = { sys: .06, why: .12, level: .24, plan: .34, how1: .44, how2: .52, how3: .6, how4: .67, goal: .76, chart: .86, habit: .94, save: 1 };   // 3.45.23: no exam date page   // jumps early, then slows (progress bars that start fast keep more people going)
 const OB_ROUND = 12, OB_ROUNDS = 4;
 /* the short reading test: hand-written passages per HSK level (two each, one picked at random), each with one question */
@@ -15331,8 +15405,8 @@ const A = {
   'new-group': () => { fabShut(); nameDialog('group'); },
   'group-add': () => { fabShut(); groupPicker(curGroup()); },
   'toggle-group': t => groupToggle(t.dataset.id),
-  'group-menu': () => groupSide(curGroup()),
-  'group-side': t => groupSide(groupById(t.dataset.id)),
+  'group-menu': t => groupSide(curGroup(), t),
+  'group-side': t => groupSide(groupById(t.dataset.id), t),
   'fab': () => { const r = $('#fab-root'); if (fabShut()) return; r.classList.add('open'); $('.fab', r)?.setAttribute('aria-expanded', 'true'); LOG.add('fab-open', S.view); },
   'fab-close': () => fabShut(),
   'quick-add': () => quickAddSheet(),
@@ -15389,8 +15463,8 @@ const A = {
   'practise-bank': () => practiseSheet(),
   'decks-sheet': () => decksSheet(),
   'bank-word': t => wordSheet(t.dataset.id),
-  'deck-menu': () => deckSide(curDeck()),
-  'deck-side': t => deckSide(db.decks.find(d => d.id === t.dataset.id)),
+  'deck-menu': t => deckSide(curDeck(), t),
+  'deck-side': t => deckSide(db.decks.find(d => d.id === t.dataset.id), t),
   'add-card': () => cardSheet(null),
   'edit-card': t => cardSheet(t.dataset.id),
   'settings': () => settingsSheet(),
@@ -15472,6 +15546,12 @@ const A = {
     { const b = $('#sbar i'); if (b) b.style.width = gBar(1 / st.order.length) + '%'; } $('#pcount').textContent = `1 / ${st.order.length}`;
     $('#wrap').animate([{ transform: 'scale(.92) rotate(-3deg)', opacity: .4 }, { transform: 'none', opacity: 1 }], { duration: 350, easing: 'cubic-bezier(.2,.85,.25,1)' });
     toast(st.shuffled ? 'Shuffled' : 'Original order');
+  },
+  'flip-front': t => {   // 3.45.59: the deck page's Show first: 中文 / English
+    const en = t.dataset.v === '1'; if (!!db.prefs.englishFirst === en) return;
+    db.prefs.englishFirst = en; save(); haptic?.();
+    t.parentNode.querySelectorAll('button').forEach(b => { const on = b === t; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    LOG.add('flip-front', en ? 'english' : 'chinese');
   },
   'side': t => {
     db.prefs.englishFirst = !db.prefs.englishFirst; save();

@@ -2,7 +2,7 @@
    - The app page itself: try the internet first (so updates arrive), fall back to the saved copy.
    - Fonts, libraries, icons, stroke data: use the saved copy, fetch once if missing.
    - Pinyin lookups are never cached here (the app caches them itself). */
-const CACHE = 'moka2-v303';   // moka2 test copy: its own caches
+const CACHE = 'moka2-v304';   // moka2 test copy: its own caches
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/logo.svg', './mascots/shi-shi.svg',
   'https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.2/dist/hanzi-writer.min.js',
   'https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js'];
