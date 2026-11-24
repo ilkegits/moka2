@@ -132,9 +132,9 @@ html{overscroll-behavior-y:none}
 /* v4.68 which Chinese: Traditional and Cantonese draw characters in their own fonts; the flag beside the streak flame opens the picker */
 :root.zh-tw{--hanzi:"Noto Serif TC","Noto Serif SC","Songti TC","PMingLiU",serif}
 :root.zh-hk{--hanzi:"Noto Serif HK","Noto Serif TC","Noto Serif SC","Songti TC",serif}
-.flag{position:relative;display:block;flex:none;width:30px;height:21px;border-radius:5px;overflow:hidden;box-shadow:0 0 0 1px rgba(30,26,21,.12),0 2px 0 rgba(30,26,21,.16)}
+.flag{position:relative;display:block;flex:none;width:30px;height:21px;border-radius:6px;overflow:hidden}
 .flag svg{display:block;width:100%;height:100%}
-.flag::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,.34),rgba(255,255,255,0) 45%,rgba(0,0,0,.08));pointer-events:none}
+.flag::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1.5px rgba(30,26,21,.13);pointer-events:none}   /* 3.45.33: flat like Duolingo's, a thin edge and no shine */
 .sys-btn{position:relative;display:grid;place-items:center;width:44px;height:42px;border-radius:21px;transition:opacity .2s}
 .sys-btn:active{opacity:.4;transition:none}
 .uc-stats .sys-btn{width:40px;height:40px}
@@ -150,12 +150,24 @@ html{overscroll-behavior-y:none}
 .sys-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .sys-opt{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px 10px;border-radius:16px;border:2px solid transparent;transition:background .15s}
 .sys-opt:active{background:var(--fill)}
-.sys-opt .flag{width:64px;height:44px;border-radius:9px;box-shadow:0 0 0 1px rgba(30,26,21,.12),0 3px 0 rgba(30,26,21,.18)}
-.sys-opt[aria-pressed="true"]{border-color:#3BA7E8;background:rgba(59,167,232,.08)}
+.sys-opt .flag{width:64px;height:44px;border-radius:11px}
+.sys-opt .flag::after{box-shadow:inset 0 0 0 2px rgba(30,26,21,.12)}
+.sys-opt[aria-pressed="true"]{border-color:var(--seal);background:var(--seal-soft)}
 .sys-opt b{font-weight:700;font-size:15px;line-height:1.1}
 .sys-opt small{font-size:12px;color:var(--muted);line-height:1.25;text-align:center}
 .sys-opt small i{font-style:normal;font-family:var(--hanzi);color:var(--ink-2)}
 .sys-note{margin:12px 6px 2px;font-size:12.5px;color:var(--muted);line-height:1.4;text-align:center}
+.sys-ask{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;background:rgba(30,26,21,.45);animation:sysFade .18s ease-out both}
+.sys-ask-card{width:100%;max-width:380px;background:var(--card);border-radius:24px;padding:24px 20px 18px;text-align:center;box-shadow:0 18px 50px rgba(30,26,21,.28);animation:sysAskIn .26s cubic-bezier(.2,.8,.3,1.2) both}
+@keyframes sysAskIn{from{transform:scale(.92);opacity:0}}
+.sys-ask-flags{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;color:var(--muted)}
+.sys-ask-flags .flag{width:52px;height:36px;border-radius:9px}
+.sys-ask h3{margin:0 0 8px;font-size:21px;letter-spacing:-.01em}
+.sys-ask p{margin:0 0 18px;font-size:14.5px;line-height:1.45;color:var(--ink-2)}
+.sys-ask ul{margin:-6px 0 18px;padding:0;list-style:none;text-align:left;font-size:14px;line-height:1.35;color:var(--ink-2);display:grid;gap:7px}
+.sys-ask li{display:flex;gap:9px;align-items:flex-start}.sys-ask li svg{flex:none;width:18px;height:18px;color:var(--jade);margin-top:1px}
+.sys-ask .btn{margin-top:8px}
+@media (prefers-reduced-motion:reduce){.sys-ask-card{animation:none}}
 @keyframes sysFade{from{opacity:0}}
 @keyframes sysDrop{from{opacity:0;transform:translateY(-10px) scale(.97)}}
 @media (prefers-reduced-motion:reduce){.sys-pop,.sys-card{animation:none}}
@@ -3644,15 +3656,15 @@ const PY = (hz, p) => {
   return j || p;
 };
 const PYN = () => ZH.jp ? 'Jyutping' : 'Pinyin';
-/* flags, drawn like little cloth tiles */
-const flagStar = (cx, cy, r, tip = -90) => { let d = ''; for (let i = 0; i < 10; i++) { const a = (tip + i * 36) * Math.PI / 180, q = i % 2 ? r * .382 : r; d += (i ? 'L' : 'M') + (cx + q * Math.cos(a)).toFixed(2) + ' ' + (cy + q * Math.sin(a)).toFixed(2); } return d + 'Z'; };
+/* flags, flat and simple like Duolingo's (3.45.33): plain colours, chunky rounded shapes, no shine */
+const flagStar = (cx, cy, r, tip = -90) => { let d = ''; for (let i = 0; i < 10; i++) { const a = (tip + i * 36) * Math.PI / 180, q = i % 2 ? r * .42 : r; d += (i ? 'L' : 'M') + (cx + q * Math.cos(a)).toFixed(2) + ' ' + (cy + q * Math.sin(a)).toFixed(2); } return d + 'Z'; };
 const FLAG_ART = (() => {
-  const toBig = (x, y) => Math.atan2(5 - y, 5 - x) * 180 / Math.PI;   // the small stars point at the big one
-  const cn = `<rect width="30" height="20" fill="#EE1C25"/><path fill="#FFDE00" d="${flagStar(5, 5, 3)}${[[10, 2], [12, 4], [12, 7], [10, 9]].map(([x, y]) => flagStar(x, y, 1, toBig(x, y))).join('')}"/>`;
-  let rays = ''; for (let i = 0; i < 24; i++) { const a = (i * 15 - 90) * Math.PI / 180, q = i % 2 ? 2.05 : 3.55; rays += (i ? 'L' : 'M') + (7.5 + q * Math.cos(a)).toFixed(2) + ' ' + (5 + q * Math.sin(a)).toFixed(2); }
-  const tw = `<rect width="30" height="20" fill="#FE0000"/><rect width="15" height="10" fill="#000095"/><path fill="#fff" d="${rays}Z"/><circle cx="7.5" cy="5" r="2.05" fill="#000095"/><circle cx="7.5" cy="5" r="1.72" fill="#fff"/>`;
-  const petal = `<path fill="#fff" d="M0 -.2C-1.9 -1.2 -3.7 -3.4 -2.9 -5.7C-2.2 -7.6 .3 -8.2 1.9 -6.9C.2 -6.3 -.6 -4.6 0 -.2Z"/><path d="M-.15 -.6C-1.2 -2.2 -1.6 -3.6 -1.3 -5" fill="none" stroke="#DE2910" stroke-width=".35" stroke-linecap="round"/><path fill="#DE2910" d="${flagStar(-1.35, -4.35, .62)}"/>`;
-  const hk = `<rect width="30" height="20" fill="#DE2910"/><g transform="translate(15 10.4) scale(1.05)">${[0, 1, 2, 3, 4].map(i => `<g transform="rotate(${i * 72})">${petal}</g>`).join('')}</g>`;
+  const round = c => `fill="${c}" stroke="${c}" stroke-linejoin="round"`;
+  const cn = `<rect width="30" height="20" fill="#EE3B36"/><path ${round('#FFD43B')} stroke-width=".9" d="${flagStar(7, 7.2, 3.6)}"/>`
+    + `<path ${round('#FFD43B')} stroke-width=".5" d="${[[13, 2.8], [15.4, 5.4], [15.4, 8.8], [13, 11.4]].map(([x, y]) => flagStar(x, y, 1.15)).join('')}"/>`;
+  let rays = ''; for (let i = 0; i < 12; i++) { const a = i * 30 * Math.PI / 180, b = .26, P = (r, t) => `${(7.5 + r * Math.cos(t)).toFixed(2)} ${(5 + r * Math.sin(t)).toFixed(2)}`; rays += `M${P(1.9, a - b)}L${P(3.7, a)}L${P(1.9, a + b)}Z`; }
+  const tw = `<rect width="30" height="20" fill="#EE3B36"/><rect width="15" height="10" fill="#2350B8"/><path ${round('#fff')} stroke-width=".35" d="${rays}"/><circle cx="7.5" cy="5" r="2.1" fill="#fff"/>`;
+  const hk = `<rect width="30" height="20" fill="#EE3B36"/><g transform="translate(15 10)" fill="#fff">${[0, 1, 2, 3, 4].map(i => `<g transform="rotate(${i * 72})"><ellipse cx=".75" cy="-3.2" rx="1.8" ry="3.3" transform="rotate(24 .75 -3.2)"/></g>`).join('')}<circle r="1.1"/></g>`;
   return { cn, tw, hk };
 })();
 const flagSvg = (k, cls = '') => `<span class="flag${cls ? ' ' + cls : ''}" aria-hidden="true"><svg viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice" focusable="false">${FLAG_ART[k]}</svg></span>`;
@@ -3732,10 +3744,53 @@ function sysPick(from) {
     if (!b) { if (!e.target.closest('.sys-card')) close(); return; }
     if (b.dataset.sys === sysK()) { close(); return; }
     el.querySelectorAll('.sys-opt').forEach(x => x.setAttribute('aria-pressed', x === b));
-    if (await setSys(b.dataset.sys)) close();
+    const to = b.dataset.sys, fresh = db.prefs.sysAsked ? false : await sysAsk(to);   // 3.45.33: the first switch asks first
+    if (!await setSys(to, fresh)) return;
+    db.prefs.sysAsked = 1; save(); close();
+    if (fresh) sysFresh();
   };
   addEventListener('popstate', close);
   LOG.add('system-picker', { now: k });
+}
+/* the first time you switch, ShiHanzi asks before it changes anything: keep your progress (every deck, the word bank and
+   the streak come along and turn into the new characters, on all your devices) or start fresh. There is no X, no tap
+   outside and no Escape: you have to answer. Resolves true (start fresh) or false (keep) */
+function sysAsk(to) {
+  return new Promise(done => {
+    const from = sysK(), el = document.createElement('div'); el.className = 'sys-ask'; el.dataset.zhKeep = '';
+    const tick = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>`;
+    const n = db.decks.length, w = db.bank.length, one = n === 1 && !w || !n && w === 1;
+    const who = [n ? (n === 1 ? 'Your deck' : `All ${n} decks`) : '', w ? `${n ? 'the' : 'The'} ${plural(w, 'word')} in your word bank` : ''].filter(Boolean).join(' and ') || 'Your cards', chars = to === 'cn' ? 'simplified characters' : 'traditional characters';
+    el.innerHTML = `<div class="sys-ask-card" role="alertdialog" aria-modal="true" aria-labelledby="sysAskH">
+      <div class="sys-ask-flags">${flagSvg(from)}${I.chev}${flagSvg(to)}</div>
+      <h3 id="sysAskH">Keep your progress?</h3>
+      <p>You’re switching to ${SYS[to].long}. Keep your progress and everything comes with you:</p>
+      <ul><li>${tick}<span>${who} ${one ? 'switches' : 'switch'} to ${chars}${to === 'hk' ? ' with Jyutping' : from === 'hk' ? ' with pinyin' : ''}</span></li>
+        <li>${tick}<span>Your streak, XP and stories stay as they are</span></li>
+        <li>${tick}<span>It all syncs to your other devices</span></li></ul>
+      <button class="btn btn-seal wide" data-a="keep">Keep my progress</button>
+      <button class="btn btn-ghost wide" data-a="fresh">Start fresh</button>
+</div>`;
+    document.body.append(el); el.querySelector('[data-a="keep"]').focus();
+    const esc = e => { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); } };
+    addEventListener('keydown', esc, true);
+    el.onclick = e => { const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
+      if (a === 'fresh' && !el.dataset.sure) {   // starting fresh clears things, so it says exactly what first
+        el.dataset.sure = 1; const c = el.querySelector('.sys-ask-card');
+        c.querySelector('h3').textContent = 'Start fresh?';
+        c.querySelector('p').textContent = `Your decks, word bank, streak and XP are cleared on this phone and your other devices. This can’t be undone.`;
+        c.querySelector('ul').remove(); c.querySelector('[data-a="keep"]').textContent = 'No, keep my progress';
+        c.querySelector('[data-a="fresh"]').textContent = 'Yes, start fresh'; return; }
+      removeEventListener('keydown', esc, true); el.remove();
+      LOG.add('system-ask', { to, answer: a });
+      done(a === 'fresh');
+    };
+  });
+}
+/* start fresh: the first deck and nothing else; your settings (which Chinese, your level, your goal) stay. The app restarts on it */
+function sysFresh() {
+  const prefs = db.prefs; db = Object.assign(seed(), { prefs }); save();
+  setTimeout(() => location.reload(), 150);   // the account hears about the save first, so the fresh start syncs too
 }
 async function setSys(k, quiet) {
   if (!SYS[k]) return false;
@@ -13569,7 +13624,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.32';
+const APP_VERSION = '3.45.33';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
