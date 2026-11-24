@@ -3000,6 +3000,11 @@ button.scene-tile:active svg{opacity:.92}
 .mo-pips i.on{background:#E8742C}
 .ob-hours{justify-content:center;margin:6px 0 0}
 /* ---------- onboarding v2 (moka2 3.45.7): animated pages, a colour wash per chapter ---------- */
+.ob-lvs{gap:8px} .ob-lvs .ob-opt{min-height:54px;padding:7px 14px} .ob-lvs .ob-num{width:44px;text-align:center;font-size:26px;color:var(--seal)}
+.ob2-proof{margin-top:12px;padding:14px 16px;border-radius:18px;background:#fff;box-shadow:var(--ring),var(--shadow-sm)}
+.ob2-proof b{display:block;font-size:15px;line-height:1.3}
+.ob2-proof p{margin:4px 0 6px;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
+.ob2-proof small{font-size:11.5px;color:var(--muted)}
 #ob.obs-plan{--obbg:#FBE4DA} #ob.obs-how1,#ob.obs-how2,#ob.obs-how3,#ob.obs-how4{--obbg:#E4EFE5} #ob.obs-chart{--obbg:#FCF0D2} #ob.obs-habit{--obbg:#E3EDF2}
 #ob.obs-pay{background:linear-gradient(170deg,#FF5C69,#E0283A 55%,#B8202F);color:#fff}
 #ob.obs-pay .ob-dock{background:none}
@@ -13201,7 +13206,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.22';
+const APP_VERSION = '3.45.23';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13503,7 +13508,7 @@ const CLOUD = (() => {
   const status = () => st.err || (st.dirty ? 'Syncing…' : st.syncedAt ? `Synced ${clock(st.syncedAt)}` : 'Synced');
   const line = () => st.user ? `${st.user.email} · ${status().toLowerCase()}` : 'Sign in to keep your progress on every device';
   return {
-    get user() { return st.user; }, back, line, status,
+    get user() { return st.user; }, back, line, status, warm: () => lib().catch(() => {}),
     // at start-up: pick up a sign-in that just finished, or carry on one from before
     async start() {
       try { const n = sessionStorage.getItem('shicards2.cloudNote'); if (n) { sessionStorage.removeItem('shicards2.cloudNote'); setTimeout(() => toast(n), 700); } } catch (_) {}
@@ -13804,14 +13809,16 @@ function goalSheet() {
    below into your word bank as known, since stories and texts at your level use them all the time. */
 const OB_WHY = [['travel', '旅', 'Travel'], ['family', '家', 'Family and heritage'], ['work', '工', 'Work or school'],
   ['exam', '考', 'The HSK exam'], ['culture', '文', 'Films, books and culture'], ['fun', '趣', 'Just for fun']];
-const OB_LEVEL = [[1, '初', 'Beginner', 'New to Chinese · start at HSK 1'], [2, '中', 'Intermediate', 'Start at HSK 2'], [4, '高', 'Advanced', 'Start at HSK 4'], [5, '专', 'Pro', 'Start at HSK 5']];   // value: the HSK level the character check starts at
+const OB_LEVEL = [[1, '初', 'Beginner', 'New to Chinese · start at HSK 1'], [2, '中', 'Intermediate', 'Start at HSK 2'], [4, '高', 'Advanced', 'Start at HSK 4'], [5, '专', 'Pro', 'Start at HSK 5']];
+/* moka2 3.45.23: you pick your HSK level yourself, every level listed (the value is the level) */
+const OB_LVS = [[1, 'First words'], [2, 'Simple everyday talk'], [3, 'Daily life and travel'], [4, 'Work, news and opinions'], [5, 'Newspapers, films and TV'], [6, 'Books and fluent talk'], [7, 'Near native']];   // value: the HSK level the character check starts at
 /* v2 (moka2 3.45.7): every question is used later. What you learn for picks the exam date page and the plan's flag;
    the level check fills the plan; how it works uses words at your level; the chart shows your own pace; a paywall preview ends it */
 const OB_FOR = [['exam', '考', 'The HSK exam', 'Words from the exam lists, planned up to your exam day'], ['read', '读', 'Reading Chinese day to day', 'Signs, menus, messages and short stories']];
 /* moka2 3.45.21: a self-study app, so no level test (character check, word cards, story); the one level question sets where you start.
    The test's code (check, words, read) is still in the file, unused */
-const OB_STEPS = ['hi', 'hello', 'why', 'level', 'plan', 'how1', 'how2', 'how3', 'how4', 'date', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
-const OB_PROG = { why: .12, level: .24, plan: .34, how1: .44, how2: .52, how3: .6, how4: .67, date: .74, goal: .81, chart: .88, habit: .95, save: 1 };   // jumps early, then slows (progress bars that start fast keep more people going)
+const OB_STEPS = ['hi', 'hello', 'why', 'level', 'plan', 'how1', 'how2', 'how3', 'how4', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
+const OB_PROG = { why: .12, level: .24, plan: .34, how1: .44, how2: .52, how3: .6, how4: .67, goal: .76, chart: .86, habit: .94, save: 1 };   // 3.45.23: no exam date page   // jumps early, then slows (progress bars that start fast keep more people going)
 const OB_ROUND = 12, OB_ROUNDS = 4;
 /* the short reading test: hand-written passages per HSK level (two each, one picked at random), each with one question */
 const OB_READ = {
@@ -14009,14 +14016,14 @@ function obShow() {
   else if (step === 'hello') html = `<div class="ob-top"><button class="icon-btn" data-ob="back" aria-label="Back">${I.back}</button></div>
     <div class="ob2-stage"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-hello ob2-pop">${shiFace('happy')}</div></div>
     <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
-  else if (step === 'why') html = obTop() + `<h2 class="ob2-q ob2-in">What are you learning for?</h2><p class="ob2-sub ob2-in" style="--i:1">This picks your words and your plan.</p>
-    <div class="ob-opts" data-pick="for">${OB_FOR.map(([v, g, t, s], i) => `<span ${inn(2 + i)}>${obOpt(v, `<span class="ob-glyph">${g}</span>`, t, s, O.for === v)}</span>`).join('')}</div>
-    <div class="ob-dock ob2-in" style="--i:5"><button class="btn btn-primary" data-ob="next"${O.for ? '' : ' disabled'}>Next</button></div>`;
+  else if (step === 'why') html = obTop() + `<h2 class="ob2-q ob2-in">Why are you learning Chinese?</h2><p class="ob2-sub ob2-in" style="--i:1">Pick as many as you like.</p>
+    <div class="ob-opts" data-pick="why">${OB_WHY.map(([v, g, t], i) => `<span ${inn(2 + i)}>${obOpt(v, `<span class="ob-glyph">${g}</span>`, t, '', O.why.includes(v))}</span>`).join('')}</div>
+    <div class="ob-dock ob2-in" style="--i:8"><button class="btn btn-primary" data-ob="next"${O.why.length ? '' : ' disabled'}>Next</button></div>`;   // 3.45.23: the reasons from ShiHanzi2
   else if (step === 'plan') {
     const lv = obLv(), chars = obCharsEst();   // v4.63: from the adaptive test's odds, with false taps taken out
     html = obTop() + `<div class="ob2-plan"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-pop" style="--d:.1s">${shiFace('wow')}</div>
       <div class="ob2-deck" id="ob2Deck"><div class="c"></div><div class="c"></div><div class="c front"><span class="zh">学</span><div class="ob2-stamps">
-        <span class="ob2-stamp" style="--r:-4deg">${O.for === 'exam' ? 'HSK exam' : 'Everyday reading'}</span><span class="ob2-stamp j" style="--r:3deg">Start at ${HSK_NAME(lv)}</span>
+        <span class="ob2-stamp" style="--r:-4deg">${OB_WHY.find(x => x[0] === O.why[0])?.[2] || 'Your plan'}</span><span class="ob2-stamp j" style="--r:3deg">Start at ${HSK_NAME(lv)}</span>
         <span class="ob2-stamp g" style="--r:-2deg">${O.chk ? chars ? `~${chars.toLocaleString('en')} characters known` : 'Starting from zero' : 'Reviews timed for you'}</span></div></div></div></div>
       <div class="ob-dock ob2-in" style="--i:14"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
   }
@@ -14051,15 +14058,15 @@ function obShow() {
   }
   else if (step === 'chart') {
     const lv = obLv(), left = obLeft(lv), m = O.goal || 10, per = Math.max(2, Math.round(m * .4)), wk = Math.max(1, Math.round(left / per / 7));
-    const ex = obExamWeeks(), n = Math.min(10, Math.max(wk, ex)), spare = ex - wk;
-    const head = !ex ? `${HSK_NAME(lv)} done in about ${plural(wk, 'week')}` : spare > 0 ? `Ready ${spare === 1 ? 'a week' : plural(spare, 'week')} before your exam`
-      : spare === 0 ? 'Ready just in time for your exam' : 'Your exam comes first: try more minutes';
-    html = obTop() + `<h2 class="ob2-q ob2-in">${head}</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">${m} minutes a day · ${per} new words a day</p>
+    // 3.45.23: no exam any more; a plan longer than 10 weeks shows 10 bars spread over it, so the last bar is the week you finish
+    const n = Math.min(10, wk), wAt = k => wk > n ? Math.round((k + 1) * wk / n) : k + 1;
+    html = obTop() + `<h2 class="ob2-q ob2-in">${HSK_NAME(lv)} done in about ${plural(wk, 'week')}</h2><p class="ob2-sub ob2-c ob2-in" style="--i:1">${m} minutes a day · ${per} new words a day</p>
       <div class="ob2-chart ob2-in" style="--i:2"><div class="ob2-bars"><div class="ob2-goal"></div>
-        ${Array.from({ length: n }, (_, k) => { const w = k + 1, rev = w > wk, h = rev ? 100 : Math.round(Math.min(w, wk) / wk * 100);
-          return `<div class="ob2-bar${rev ? ' rev' : ''}" style="--h:${h}%"><i style="height:${h}%"></i>${w === Math.min(wk, n) ? `<span class="val" data-n="${left}">0</span>` : ''}${ex && (w === ex || w === n && ex > n) ? '<span class="ob2-flag"><b>考</b></span>' : ''}</div>`; }).join('')}</div>
-        <div class="ob2-wk">${Array.from({ length: n }, (_, k) => `<span>W${k === n - 1 && ex > n ? ex : k + 1}</span>`).join('')}</div>
-        <div class="ob2-key"><span><i class="d"></i>All of ${HSK_NAME(lv)}</span><span><i></i>New words</span>${n > wk ? '<span><i class="j"></i>Review only</span>' : ''}${ex ? '<span><b>考</b> Exam</span>' : ''}</div></div>
+        ${Array.from({ length: n }, (_, k) => { const h = Math.round(wAt(k) / wk * 100);
+          return `<div class="ob2-bar" style="--h:${h}%"><i style="height:${h}%"></i>${k === n - 1 ? `<span class="val" data-n="${left}">0</span>` : ''}</div>`; }).join('')}</div>
+        <div class="ob2-wk">${Array.from({ length: n }, (_, k) => `<span>W${wAt(k)}</span>`).join('')}</div>
+        <div class="ob2-key"><span><i class="d"></i>All of ${HSK_NAME(lv)}</span><span><i></i>New words</span></div></div>
+      <div class="ob2-proof ob2-in" style="--i:3"><b>A little every day beats cramming</b><p>In a flashcard study, spreading reviews out worked better than cramming for 90% of learners, even though most of them guessed cramming worked better.</p><small>Kornell, 2009, Applied Cognitive Psychology</small></div>
       <div class="ob-dock ob2-in" style="--i:4"><button class="btn btn-primary" data-ob="next">Sounds good</button></div>`;
   }
   else if (step === 'save') html = obTop(false) + `<div class="ob-art">${shiFace('happy')}</div>
@@ -14074,8 +14081,8 @@ function obShow() {
       <div class="ob2-trial ob2-in" style="--i:5"${O.plan === 'year' ? '' : ' hidden'}><span>Remind me 2 days before the trial ends</span><button class="ob2-sw" data-trial aria-pressed="${O.trial}" aria-label="Trial reminder"></button></div>
       <div class="ob-dock ob2-in" style="--i:6"><button class="btn btn-white" data-ob="buy">${O.plan === 'year' ? 'Start my free week' : 'Continue with Monthly'}</button>
         <p class="ob2-fine">${O.plan === 'year' ? 'Nothing is charged during the free week' : 'Cancel any time'}</p><button class="ob-link" data-ob="done">Not now</button></div>`;
-  else if (step === 'level') html = obTop() + obSay('focus', 'How much Chinese do you know?', 'Your new words start at that level.')
-    + `<div class="ob-opts" data-pick="level">${OB_LEVEL.map(([v, g, t, sub]) => obOpt(v, `<span class="ob-glyph">${g}</span>`, t, sub, O.level === v)).join('')}</div>
+  else if (step === 'level') html = obTop() + obSay('focus', 'Pick your level', 'Your new words start there.')
+    + `<div class="ob-opts ob-lvs" data-pick="level">${OB_LVS.map(([v, t]) => obOpt(v, `<span class="ob-num">${v === 7 ? '7-9' : v}</span>`, HSK_NAME(v), `${t} · ${(S.H?.levels[v]?.length || HSK_COUNT[v]).toLocaleString('en')} words`, O.level === v)).join('')}</div>
     <div class="ob-dock"><button class="btn btn-primary" data-ob="next"${O.level ? '' : ' disabled'}>Continue</button></div>`;
   else if (step === 'check') html = obCheckHTML();
   else if (step === 'words') {
@@ -14136,6 +14143,7 @@ function obShow() {
   const el = layer(html, 'obs-' + step);
   el.querySelector('.ob-in').addEventListener('click', obClick);
   if (step === 'check' && !O.chk) obCheckStart();
+  if (step === 'save') CLOUD.warm();   // 3.45.23: the sign-in library loads now, not after the Google tap
   const bar = el.querySelector('.ob-prog i[data-to]');
   if (bar) { O.prog = +bar.dataset.to / 100; requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = bar.dataset.to + '%'; })); }
   obAnim(el, step);
@@ -14224,7 +14232,7 @@ function obAnim(el, step) {
     if (v) obLater(el, 600, () => { v.classList.add('on'); const n = +v.dataset.n, t0 = performance.now(), dur = stillMotion() ? 0 : end - 600;
       const step = t => { if (!v.isConnected) return; const f = dur ? Math.min(1, (t - t0) / dur) : 1; v.textContent = Math.round(n * (1 - (1 - f) ** 2)) + ' words'; if (f < 1) requestAnimationFrame(step); };
       requestAnimationFrame(step); });
-    obLater(el, end + 100, () => el.querySelector('.ob2-flag')?.classList.add('on'));
+    obLater(el, end, () => haptic(14));   // 3.45.23: a buzz as the count lands (Android; iPhone only buzzes inside a tap)
   }
 }
 /* count the level up one number at a time: quick ticks first, the last ones slower, every number landing whole */
@@ -14250,11 +14258,11 @@ function obUnder(open) {   // moka2 3.45.22: a pop-up opens over the last page a
 }
 const obSaveAsk = () => S.ob && (S.ob.replay || !CLOUD.user);
 const obHaveAcct = () => { if (!CLOUD.user) return false; toast('You’re already signed in as ' + (CLOUD.user.email || CLOUD.user.name)); return true; };
-function obFinish(how) {
+function obFinish(how, keep) {   // keep: leave the last page on screen (Google is about to take over)
   if (S.ob?.demo) {   // the one-time look at the new pages: nothing about your words, level or goal changes
     db.prefs.ob2Seen = Date.now(); save();
     LOG.add('onboarding-done', { how, demo: true, for: S.ob.for, exam_days: obExamDays() || null, goal: S.ob.goal });
-    S.ob = null; closeLayer(() => { S.instant = true; render(); }); return;
+    S.ob = null; if (!keep) closeLayer(() => { S.instant = true; render(); }); return;
   }
   const O = S.ob, sig = O.chk ? obSignals() : {}, lv = O.chk ? obLevel() : how === 'skipped' ? null : O.level || null;
   if (!O.replay && O.chk) {   // what you showed you know goes into the word bank as known (back for a light review over the next weeks)
@@ -14279,11 +14287,12 @@ function obFinish(how) {
     if (db.hotd && !db.hotd.rev && (db.hotd.lv || 1) !== lv) { db.hotd.day = null; db.hotd.past = (db.hotd.past || []).slice(1); hotdPick(); }
     save(); }
   LOG.add('onboarding-done', { how, why: O.why, level: O.level, est: O.chk?.est, sig, goal: O.goal, replay: O.replay, set_level: lv || null });
-  S.ob = null; closeLayer(() => { S.instant = true; render(); });
+  S.ob = null; if (!keep) closeLayer(() => { S.instant = true; render(); });
 }
 async function obClick(e) {
   const b = e.target.closest('[data-ob],[data-v],[data-c],[data-qo],[data-so],[data-plan],[data-trial],[data-h]'); if (!b || !S.ob || b.disabled) return;
   const O = S.ob, step = OB_STEPS[O.i];
+  haptic(b.dataset.ob && b.dataset.ob !== 'back' ? 16 : 9);   // moka2 3.45.23: every tap here buzzes (iPhone: the system tick, from inside the tap)
   if (b.dataset.qo) {   // a word card: show right or wrong for a moment, then the next card (a level up after a right answer, down after a wrong one)
     const Q = O.q, c = Q.cards.at(-1); if (c.pick != null) return;
     c.pick = +b.dataset.qo; LOG.add('onboarding-card', { lv: c.lv, h: c.w.h, right: obRight(c) }); obShow();
@@ -14328,8 +14337,10 @@ async function obClick(e) {
     const how = O.how || 'done'; if (obSaveAsk()) { O.how = how; obGo('save'); return; }   // moka2: the account page comes after the paywall preview
     obFinish(how); if (how === 'install-help') setTimeout(installHelp, 350); return;
   }
-  if (a === 'google') { LOG.add('onboarding-save', { pick: 'google' }); obFinish(O.how || 'done'); if (obHaveAcct()) return;
-    try { await CLOUD.google(); } catch (_) { toast('Couldn’t reach Google. Are you online?'); } return; }   // Google takes over the page and comes back signed in
+  if (a === 'google') { LOG.add('onboarding-save', { pick: 'google' }); if (CLOUD.user) { obFinish(O.how || 'done'); obHaveAcct(); return; }
+    // 3.45.23: the page stays put (no home page in between) until Google's own page takes over
+    b.disabled = true; b.classList.add('busy'); b.querySelector('span').textContent = 'Opening Google…'; obFinish(O.how || 'done', true);
+    try { await CLOUD.google(); } catch (_) { toast('Couldn’t reach Google. Are you online?'); closeLayer(() => { S.instant = true; render(); }); } return; }   // Google takes over the page and comes back signed in
   if (a === 'email') { LOG.add('onboarding-save', { pick: 'email' }); if (CLOUD.user) { obFinish(O.how || 'done'); obHaveAcct(); return; } obUnder(() => acctSheet(false, true)); obFinish(O.how || 'done'); return; }
   if (a === 'nosave') { LOG.add('onboarding-save', { pick: 'not-now' }); const how = O.how || 'done'; obFinish(how); if (how === 'install-help') setTimeout(installHelp, 350); return; }
   if (a === 'nodate') { O.exam = null; obGo(obNext()); return; }
