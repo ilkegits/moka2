@@ -142,6 +142,16 @@ html{overscroll-behavior-y:none}
 .uc-stats .sys-btn .flag{width:28px;height:20px}
 @media (max-width:340px){.uc-stats .sys-btn{width:30px}.uc-stats .sys-btn .flag{width:24px;height:17px}}   /* small phones: the coins stay on screen */
 .rd-head .pg-tr .hm-streak{margin-right:0}
+/* 3.45.50: the XP pearl chip, built like the streak chip beside it, its number in the pearl's gold */
+.hm-xp{position:relative;display:flex;align-items:center;gap:2px;height:42px;padding:0 4px 0 2px;border-radius:21px;transition:opacity .2s}
+.hm-xp:active{opacity:.4;transition:none}
+.hm-xp::after{content:"";position:absolute;inset:min(0px,calc(50% - 22px))}
+.hm-xp .coin{width:28px;height:28px;flex:none}
+.hm-xp b{font:800 21px/1 "Baloo 2",var(--ui);padding-top:3px;color:#B07A1E;font-variant-numeric:tabular-nums}
+/* narrow phones: flag, pearl and flame draw a little smaller so the headline stays on one line; under 350px the 卡片/故事 beside it steps aside */
+@media (max-width:389px){.pg-tr .sys-btn{width:36px}.pg-tr .sys-btn .flag{width:26px;height:18px}.hm-xp{padding:0 2px 0 0}.hm-xp .coin{width:24px;height:24px}
+  .hm-xp b,.pg-tr .hm-streak b{font-size:18px}.pg-tr .hm-streak{padding:0 6px 0 2px}.pg-tr .hm-streak .flame{width:26px;height:26px}}
+@media (max-width:349px){.pg-head h2 .cal-zh{display:none}}
 /* the picker: a card that drops down under the top bar, every system as a flag tile (like a course switcher) */
 .sys-pop{position:fixed;inset:0;z-index:60;background:rgba(30,26,21,.28);animation:sysFade .18s ease-out both}
 .sys-card{position:absolute;left:12px;right:12px;max-width:460px;margin:0 auto;background:var(--card);border-radius:22px;padding:18px 14px 14px;
@@ -8207,6 +8217,9 @@ function PfXp() {
   return `<button class="pf-stat pf-xp" data-act="pf-xp" aria-label="${xp} XP. ${rc.ready ? 'Your red envelope is ready' : `${plural(left, 'story').replace('storys', 'stories')} to the next red envelope`}. Open Read">
     <span class="pf-st-ic">${xpSvg()}</span><b>${xp.toLocaleString('en')}</b><span>XP</span><small>${xpOn(dayKey(Date.now()))} today · ${sub}</small></button>`;
 }
+/* 3.45.50: your XP as a dragon pearl between the flag and the flame at the top of Decks and Read; tap it for Profile */
+const XpBtn = () => { const xp = xpTotal();
+  return `<button class="hm-xp" data-act="hm-xp" aria-label="${xp} XP. Open Profile">${xpSvg()}<b>${xp >= 10000 ? (xp / 1000).toFixed(xp >= 100000 ? 0 : 1).replace(/\.0$/, '') + 'k' : xp.toLocaleString('en')}</b></button>`; };
 /* the flame in the top-right corner of the Decks page: your streak, tap it to open the Streak page */
 const StreakBtn = () => { const { n, today } = practiceStreak();
   return `<button class="hm-streak${n ? ' on' : ''}${n && !today ? ' wait' : ''}" data-act="streak" aria-label="${n ? `${n} day streak` : 'No streak yet'}. Open your calendar">${FLAME}<b>${n}</b></button>`; };
@@ -8545,7 +8558,7 @@ function ReadView() {
   const st = practiceStreak(), tk = dayKey(Date.now()), readToday = db.readDone.some(x => dayKey(x.done) === tk);
   const empty = '<p class="read-note">Your word bank is empty, so this story uses common words. <button class="link-btn" data-act="open-hsk" style="padding:0">Add words you know</button></p>';
   return `<div class="screen fade-in">
-    <div class="rd-head pg-head"><h2>Stories <span class="cal-zh">故事</span></h2><span class="pg-tr">${SysBtn()}${StreakBtn()}</span></div>
+    <div class="rd-head pg-head"><h2>Stories <span class="cal-zh">故事</span></h2><span class="pg-tr">${SysBtn()}${XpBtn()}${StreakBtn()}</span></div>
     ${!s ? '' : s.opened ? `<div class="read-tools" style="margin-top:0">${pyBtn}<button class="pill" data-act="read-new">${I.shuffle}Different story</button></div>
         ${db.bank.length ? '<p class="read-note">Tap a word to see what it means. <u>Underlined</u> words are new: not in your word bank yet.</p>' : empty}
         ${StoryCard(s, '<button class="btn btn-seal wide story-done" data-act="read-finish">I finished this story</button>')}`
@@ -8799,7 +8812,7 @@ function Home() {
   const groups = db.groups || [], loose = db.decks.filter(d => !groupById(d.group));   // v3.62: groups first, then the decks in no group
   return `<div class="screen fade-in has-fab">
     <div class="section-head cal-head pg-head"><h2>Decks <span class="cal-zh">卡片</span></h2>
-      <span class="pg-tr">${SysBtn()}${StreakBtn()}</span></div>
+      <span class="pg-tr">${SysBtn()}${XpBtn()}${StreakBtn()}</span></div>
     ${HotdStack()}
     ${BankPile()}
     <div class="section-head"><h2>Your decks</h2></div>
@@ -11629,7 +11642,7 @@ const lxFlat = look => { const a = lxArt(look); return `<svg viewBox="46 66 148 
 function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives XP (the reading card), drawn as jade XP tokens
   const fr = $('#frame') || document.body, still = stillMotion(), fh = fr.clientHeight || innerHeight, fw = fr.clientWidth || innerWidth, f0 = fr.getBoundingClientRect();
   const W = Math.round(Math.min(140, fh * .19, fw * .34)), H = W * 10 / 7, cy = Math.round(fh * .44), top = Math.round(cy - H / 2), cz = Math.round(W * .21), th = cz * .2;
-  const real = xp ? null : $('.uc-coins'), shown = real && real.offsetParent ? parseInt((real.querySelector('b')?.textContent || '').replace(/\D/g, '')) : NaN, bal0 = isFinite(shown) ? shown : xp ? Math.max(0, xpTotal() - n) : coinBal();
+  const real = $(xp ? '.hm-xp' : '.uc-coins'), shown = !xp && real && real.offsetParent ? parseInt((real.querySelector('b')?.textContent || '').replace(/\D/g, '')) : NaN, bal0 = isFinite(shown) ? shown : xp ? Math.max(0, xpTotal() - n) : coinBal();
   const o = document.createElement('div'); o.className = 'lxo'; o.tabIndex = -1; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', `Red envelope, ${n} ${xp ? 'XP' : 'coins'}`);
   o.style.cssText = `--W:${W}px;--cy:${cy}px;--top:${top}px;--cz:${cz}px`;
   o.innerHTML = `<div class="lxo-bg"></div><div class="lxo-fly">${lx3(look)}</div><div class="lxo-flash"></div>
@@ -13868,7 +13881,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.49';
+const APP_VERSION = '3.45.50';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -15271,6 +15284,7 @@ const A = {
   'rc-open': () => { const st = rcState(); if (st.ready) rcOpen(moments); else { const left = RC_N - 1 - st.n; toast(`${plural(left, 'more story').replace('storys', 'stories')} to open your 利是`); } },
   'rc-all': () => storiesSheet(),
   'pf-xp': () => nav('#/read'),
+  'hm-xp': () => { if (S.view !== 'profile') nav('#/profile'); },
   'side-join': () => { LOG.add('side-account', { pick: 'create' }); acctSheet(false, true); },
   'side-in': () => { LOG.add('side-account', { pick: 'sign-in' }); acctSheet(true); },
   'side-acct': () => acctSheet(),
