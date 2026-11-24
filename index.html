@@ -267,7 +267,8 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 /* the daily cards sit in a little deck: Hanzi of the day and the story card, with a third sheet under them.
    Swipe the top card away and it goes to the bottom; the card under it comes up (no × to close them) */
 .hd-stack{position:relative;display:grid;margin:14px 0 14px;padding-bottom:24px;touch-action:pan-y}
-.hd-stack>.hd-card{grid-area:1/1;margin:0}   /* both cards share one spot, so they are always the same size */
+.hd-stack>.hd-card{grid-area:1/1;margin:0}
+.hd-stack>.hd-card.back{position:absolute;left:0;right:0;top:0;bottom:24px}   /* the under card takes the top card's size, so the deck is as tall as the card on top (3.45.42) */
 .hd-stack>.front{z-index:2;box-shadow:0 16px 26px -16px rgba(110,25,15,.8),0 2px 6px -3px rgba(110,25,15,.5)}
 .hd-stack::after{content:"";position:absolute;left:0;right:0;top:0;bottom:24px;border-radius:22px;background:#A45446;
   transform:translateY(24px) scale(.88) rotate(1.4deg);transform-origin:50% 100%;opacity:.55}   /* the third sheet, deep in the deck */
@@ -345,12 +346,13 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hd-x svg.i{width:16px;height:16px;stroke-width:2.4}
 .hd-st{font-family:var(--hanzi);font-size:23px;font-weight:600;letter-spacing:.02em;line-height:1.2}
 /* story card: no tile; Shi Shi reads a big book in the bottom-right corner, the words sit to his left */
-.hd-story .hd-row{margin-top:6px}
+.hd-story .hd-row{margin-top:4px}
+.hd-story .hd-txt{display:flex;align-items:baseline;gap:8px}   /* title and its English on one line, so the card stays thin */
+.hd-story .hd-lbl .hd-meta{margin:0}
 .hd-card.rev.hd-story .hd-txt{padding-right:88px}
-.hd-story .hd-st{font-size:21px;line-height:1.15;letter-spacing:.04em}
-.hd-story .hd-en{font-size:14.5px;-webkit-line-clamp:1}
-.hd-story .hd-meta{margin-top:7px}
-.hd-story .hd-go{width:auto;height:40px;margin-top:12px;font:700 16px/1 var(--display);min-width:0;padding:0 16px 3px;border-radius:13px;white-space:nowrap;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:6px}   /* the size of the ticket's Learn now */
+.hd-story .hd-st{flex:none;font-size:21px;line-height:1.15;letter-spacing:.04em}
+.hd-story .hd-en{flex:1;min-width:0;margin:0;font-size:14.5px;-webkit-line-clamp:1;display:block;white-space:nowrap;text-overflow:ellipsis}
+.hd-story .hd-go{width:auto;height:40px;margin-top:10px;font:700 16px/1 var(--display);min-width:0;padding:0 16px 3px;border-radius:13px;white-space:nowrap;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:6px}   /* the size of the ticket's Learn now */
 .hd-story .hd-go svg.i{width:16px;height:16px;flex:none}
 .hd-card.rev.hd-story .hd-shi{right:-2px;bottom:-4px;width:100px;height:100px;pointer-events:auto;padding:0;background:none;border:0;cursor:pointer}
 .hd-story .shi-read{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 14px rgba(40,6,4,.45))}
@@ -8829,9 +8831,8 @@ function HotdStoryCard() {
   const s = db.readCur, H = db.hotd, back = H?.top !== 'story', go = s?.opened ? 'Keep reading' : 'Read now';
   const ch = s ? hanChars((s.zh || '').replace(/^狮狮的?/, '')).slice(0, 2) : [];
   return `<section class="hd-card rev hd-story${back ? ' back' : ' front'}" id="hdStory" aria-label="Story time"${back ? ' inert aria-hidden="true"' : ''}>
-    <div class="hd-lbl">Story time <span class="hd-zh">读故事</span></div>
-    <div class="hd-row"><div class="hd-txt"><div class="hd-st">${s ? esc(s.zh) : '狮狮的故事'}</div><div class="hd-en">${s ? esc(s.en) : 'A short story with your words'}</div>
-        ${hdDone(H) ? `<div class="hd-meta"><span>Today’s word ${esc(H.h)} ✓</span></div>` : ''}</div></div>
+    <div class="hd-lbl">Story time <span class="hd-zh">读故事</span>${hdDone(H) ? `<div class="hd-meta"><span>Today’s word ${esc(H.h)} ✓</span></div>` : ''}</div>
+    <div class="hd-row"><div class="hd-txt"><div class="hd-st">${s ? esc(s.zh) : '狮狮的故事'}</div><div class="hd-en">${s ? esc(s.en) : 'A short story with your words'}</div></div></div>
     <button class="btn hd-go" data-act="tab" data-h="#/read">${I.read}${go}</button>
     <button class="hd-shi" data-act="tab" data-h="#/read" tabindex="-1" aria-hidden="true">${shiReads(ch)}</button></section>`;
 }
@@ -8846,6 +8847,8 @@ function hdRotate(dir = 1, x = 0) {   // the top card flies off to one side and 
   front.animate([{ transform: `translateX(${x}px) rotate(${x / w * 10}deg)` }, { transform: `translateX(${dir * w * 1.15}px) rotate(${dir * 16}deg)` }],
     { duration: 260, easing: 'cubic-bezier(.4,0,.9,.5)', fill: 'forwards' });
   back.classList.add('up'); back.style.setProperty('--show', 1);
+  const h0 = st.offsetHeight; back.style.bottom = 'auto'; const h1 = back.offsetHeight + 24; back.style.bottom = '';   // the cards differ in height: the deck grows or shrinks to the one coming up
+  if (h1 !== h0) st.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], T);
   back.animate([{ transform: HD_BACK(p0) }, { transform: 'none' }], T).onfinish = () => {
     if (!st.isConnected) return;
     st.outerHTML = HotdStack();
@@ -13740,7 +13743,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.41';
+const APP_VERSION = '3.45.42';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
