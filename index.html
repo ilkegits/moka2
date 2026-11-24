@@ -378,6 +378,33 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 @keyframes rvOff{from{opacity:1}to{opacity:0}}
 .hd-review.done .rv-lns{bottom:auto;top:4px}   /* no button: the lanterns hang beside the title, clear of the line under it */
 @media (max-width:359px){.rv-lns{right:4px;width:150px}}
+/* Story time (ilkem picked "something between A and D" of eight designs, story-card-options.html): a handscroll unrolled
+   between two wooden rods with gold ends, silk bands top and bottom, a red 读 seal; on it the story's first line with the
+   pinyin over each word and your own words in red, then the title and a red Read now */
+.hd-scroll{--hd:#FBF3E2;color:var(--ink);border-radius:9px;padding:13px 30px 14px 33px;
+  background:linear-gradient(#D9C49A 0 5px,#B89A62 5px 6px,transparent 6px calc(100% - 6px),#B89A62 calc(100% - 6px) calc(100% - 5px),#D9C49A calc(100% - 5px)),
+    repeating-linear-gradient(83deg,rgba(150,120,80,.035) 0 1px,transparent 1px 9px),repeating-linear-gradient(-71deg,rgba(150,120,80,.03) 0 1px,transparent 1px 13px),#FBF3E2}
+.hd-scroll::before,.hd-scroll::after{content:"";position:absolute;top:0;bottom:0;width:16px;border-radius:8px;
+  background:linear-gradient(#C99A3E,#E6C064 50%,#B8862E) top/100% 10px no-repeat,linear-gradient(#B8862E,#E6C064 50%,#C99A3E) bottom/100% 10px no-repeat,linear-gradient(90deg,#4A2812,#8E5A30 45%,#4A2812)}
+.hd-scroll::before{left:3px}.hd-scroll::after{right:3px}   /* the rods: pseudo-elements, so they show even when the card lies under another */
+.hd-stack>.hd-scroll.front{box-shadow:0 16px 24px -16px rgba(110,45,20,.6),0 2px 5px -3px rgba(70,45,20,.4)}
+.hd-scroll .hd-lbl{color:var(--seal);font-weight:700;opacity:1}
+.hd-scroll .hd-meta{margin:0}
+.hd-scroll .hd-meta span{background:rgba(178,58,44,.09);color:var(--seal)}
+.sc-seal{position:absolute;right:30px;top:10px;width:28px;height:28px;border-radius:5px;display:grid;place-items:center;background:#C4432E;color:#FFF3EA;
+  font:900 15px/1 var(--hanzi);transform:rotate(-6deg);box-shadow:inset 0 0 0 1.5px rgba(255,243,234,.45)}
+.sc-line{position:relative;display:flex;align-items:flex-end;margin-top:7px;white-space:nowrap;overflow:hidden;font:600 21px/1.05 var(--hanzi);letter-spacing:.02em;
+  -webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}
+.sc-w{flex:none;display:inline-flex;flex-direction:column;align-items:center;padding:0 1px}
+.sc-w small{font:500 10.5px/1 var(--ui);letter-spacing:0;color:var(--muted);margin-bottom:3px}
+.sc-w.sc-me{color:var(--seal)}.sc-w.sc-me small{color:var(--seal);font-weight:700}
+.sc-p{flex:none}
+.sc-none{font:600 15px/1.3 var(--ui);color:var(--ink-2);margin-top:8px}
+.sc-foot{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.sc-t{min-width:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;font-weight:600;line-height:1.1;color:var(--muted)}
+.sc-t b{font:600 15px/1.1 var(--hanzi);color:var(--ink);letter-spacing:.03em}
+.sc-t b,.sc-t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd-scroll .tk-go{flex:none;align-self:auto}
 @media (max-width:359px){.hd-card.rev.hd-story .hd-shi{width:88px;height:88px}.hd-card.rev.hd-story .hd-txt{padding-right:76px}.hd-story .hd-go{padding:0 14px;font-size:15px}}   /* small phones: the button keeps one line and stays clear of the book */
 @media (prefers-reduced-motion:reduce){.hd-shi,.hd-sheen,.hd-card.just *,.hdx-tile.pop *,.hdx-head.new>*,.hdx-after>*,.tk-word,.hd-card.back.up *,.rv-ln.new *{animation:none!important;transition:none!important}}
 /* the Hanzi of the day pop-up: meaning, stroke order step by step, write it yourself, add to the word bank */
@@ -8915,12 +8942,14 @@ function hdSinkReview() {   // back from a review round with nothing left: the d
 }
 function HotdStoryCard() {
   const s = db.readCur, H = db.hotd, back = hdOrder()[0] !== 'story', go = s?.opened ? 'Keep reading' : 'Read now';
-  const ch = s ? hanChars((s.zh || '').replace(/^狮狮的?/, '')).slice(0, 2) : [];
-  return `<section class="hd-card rev hd-story${back ? ' back' : ' front'}" id="hdStory" aria-label="Story time"${back ? ' inert aria-hidden="true"' : ''}>
+  let line = '<div class="sc-none">A short story with your words</div>';
+  if (s?.lines?.length) { let L = null; try { L = storyTokens(s)[0]; } catch (_) {}
+    if (L?.length) line = `<div class="sc-line" aria-hidden="true">${L.map(t => READ_PUNCT.test(t.h) ? `<span class="sc-p">${esc(t.h)}</span>`
+      : `<span class="sc-w${t.h !== '狮狮' && bankHas(t.h) ? ' sc-me' : ''}"><small>${esc(PY(t.h, t.p))}</small>${esc(t.h)}</span>`).join('')}</div>`; }
+  return `<section class="hd-card rev hd-scroll${back ? ' back' : ' front'}" id="hdStory" aria-label="Story time: ${s ? esc(s.en) : 'a short story'}"${back ? ' inert aria-hidden="true"' : ''}>
     <div class="hd-lbl">Story time <span class="hd-zh">读故事</span>${hdDone(H) ? `<div class="hd-meta"><span>Today’s word ${esc(H.h)} ✓</span></div>` : ''}</div>
-    <div class="hd-row"><div class="hd-txt"><div class="hd-st">${s ? esc(s.zh) : '狮狮的故事'}</div><div class="hd-en">${s ? esc(s.en) : 'A short story with your words'}</div></div></div>
-    <button class="btn hd-go" data-act="tab" data-h="#/read">${I.read}${go}</button>
-    <button class="hd-shi" data-act="tab" data-h="#/read" tabindex="-1" aria-hidden="true">${shiReads(ch)}</button></section>`;
+    <span class="sc-seal" aria-hidden="true">读</span>${line}
+    <div class="sc-foot"><span class="sc-t"><b>${s ? esc(s.zh) : '狮狮的故事'}</b>${s ? `<span>${esc(s.en)}</span>` : ''}</span><button class="tk-go" data-act="tab" data-h="#/read">${go}${I.chev}</button></div></section>`;
 }
 const HD_BACK = (p = 0) => `translateY(${12 * (1 - p)}px) scale(${.94 + .06 * p}) rotate(${-1.2 * (1 - p)}deg)`;   // the under card, p of the way up
 function hdRotate(dir = 1, x = 0) {   // the top card flies off to one side and slides in at the bottom; the card under it rises
@@ -13839,7 +13868,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.47';
+const APP_VERSION = '3.45.48';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
