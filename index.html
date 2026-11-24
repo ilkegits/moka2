@@ -372,10 +372,14 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hd-review{--hd:#1D2742;background:radial-gradient(120% 100% at 85% 0%,#2C3A63,#1D2742 62%);color:#F3EDE2}
 .hd-review .hd-lbl{color:#FFD9A0}
 .hd-card.rev.hd-review .hd-txt{padding-right:0}
-.hd-rv-n{flex:none;font:800 22px/1.15 var(--display);letter-spacing:-.01em}
+.hd-review{padding:16px 14px 16px 16px}   /* 3.45.58: a bit bigger than the thin story card, about the ticket's height */
+.hd-review .hd-lbl{font-size:15px}
+.hd-rv-n{flex:none;font:800 25px/1.15 var(--display);letter-spacing:-.01em}
+.rv-why{position:relative;margin-top:3px;font-size:14px;font-weight:600;color:rgba(243,237,226,.72)}
+.hd-review .hd-go{margin-top:11px}
 .hd-review .hd-go{background:linear-gradient(#FFE79A,#F6C445 55%,#E9AE2C);color:#6A3A00;--edge:rgba(140,80,0,.4);--drop:rgba(0,0,0,.8);text-shadow:none}
 .rv-sub{position:relative;margin-top:12px;font-size:14px;font-weight:600;opacity:.8}
-.rv-lns{position:absolute;right:12px;bottom:8px;width:170px;height:60px;overflow:visible;pointer-events:none}
+.rv-lns{position:absolute;right:12px;bottom:12px;width:170px;height:60px;overflow:visible;pointer-events:none}
 .rv-wire{fill:none;stroke:rgba(255,230,190,.35);stroke-width:1.4}
 .rv-str{stroke:rgba(255,230,190,.45);stroke-width:1.3}
 .rv-ln .off rect,.rv-ln .off ellipse,.rv-ln .off .tas{fill:none;stroke:rgba(255,230,190,.45);stroke-width:1.3}
@@ -387,7 +391,8 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 @keyframes rvLight{0%{opacity:0;transform:scale(.6)}35%{opacity:1}100%{opacity:1;transform:none}}
 @keyframes rvOff{from{opacity:1}to{opacity:0}}
 .hd-review.done .rv-lns{bottom:auto;top:4px}   /* no button: the lanterns hang beside the title, clear of the line under it */
-@media (max-width:359px){.rv-lns{right:4px;width:150px}}
+@media (max-width:389px){.hd-review .hd-go{padding:0 12px 3px}.rv-lns{right:6px;width:150px}}
+@media (max-width:359px){.rv-lns{right:4px;width:136px}}
 /* Story time (ilkem picked "something between A and D" of eight designs, story-card-options.html): a handscroll unrolled
    between two wooden rods with gold knobs that stand out past the paper (3.45.49), a silk border; on it the story's first line with the
    pinyin over each word and your own words in red, then the title and a red Read now */
@@ -9015,11 +9020,23 @@ function HotdStack() {   // only the top two cards are drawn; the third sheet un
 /* 3.45.44: the deck can hold a third card, Review, while words are due for review or once they are all done today.
    db.hotd.deck: the order, top first (db.hotd.top, the older way, still read). A new Review card goes in under the top card,
    so the day runs: uncover today's word, review, read; each card goes to the bottom once it is done */
-function hdReview() {   // words due now, and how many lanterns are lit: words reviewed today that are not due again
-  const P = todayPile(), t0 = dayStart(Date.now()), due = new Set(P.due.map(c => c.hanzi)), done = new Set();
-  for (const c of allItems()) if (c.hanzi && c.srs?.seen >= t0 && c.srs.first < t0 && !due.has(c.hanzi)) done.add(c.hanzi);   // an older word practised today
-  const n = P.due.length, total = due.size + done.size;
-  return { n, due: P.due, total, lit: done.size, done: !n && done.size > 0, show: n > 0 || done.size > 0 };
+/* 3.45.58 (ilkem: "it should be for the ones smn got wrong multiple times"): the Review card only holds words you missed
+   twice or more (a Forgot in a flip round or a wrong first try in writing, counted over every copy of the word, the way
+   trickyWords counts them). Those that are due now hang unlit; the ones you went through today are lit */
+function missedWords() {   // hanzi -> its copy that is due first, for words missed 2+ times
+  const n = new Map(), first = new Map();
+  for (const c of allItems()) { if (!c.hanzi) continue;
+    n.set(c.hanzi, (n.get(c.hanzi) || 0) + (c.srs?.miss || 0) + (c.hist || []).filter(x => x === 0).length);
+    const f = first.get(c.hanzi); if (c.srs && (!f || c.srs.due < f.srs.due)) first.set(c.hanzi, c); }
+  return new Map([...first].filter(([h]) => n.get(h) >= 2));
+}
+function hdReview() {   // missed words due now, and how many lanterns are lit: missed words gone through today that are not due again
+  const now = Date.now(), t0 = dayStart(now), M = missedWords(), due = [], done = new Set();
+  const today = new Set(allItems().filter(x => x.srs?.seen >= t0).map(x => x.hanzi));
+  for (const [h, c] of M) { if (c.srs.due <= now) due.push(c); else if (today.has(h)) done.add(h); }
+  due.sort((a, b) => a.srs.due - b.srs.due); const D = due.slice(0, MAX_PILE);
+  const n = D.length, total = n + done.size;
+  return { n, due: D, total, lit: done.size, done: !n && done.size > 0, show: n > 0 || done.size > 0, M };
 }
 function hdOrder() {
   const H = db.hotd, have = ['hotd', 'story']; if (hdReview().show) have.push('review');
@@ -9036,10 +9053,11 @@ function ReviewCard() {
   const big = R.done ? (R.total <= 5 ? `All ${R.total} lit ✓` : 'All lit ✓')
     : R.lit ? (R.total <= 5 ? `${R.n} more to light` : `${plural(R.n, 'word')} left`)
     : R.total <= 5 ? `Light ${R.n} lantern${R.n === 1 ? '' : 's'}` : `${plural(R.n, 'word')} to review`;
-  const tmr = R.n ? 0 : dueBy(dayStart(Date.now()) + 2 * DAY);
+  const tmr = R.n ? 0 : [...R.M.values()].filter(c => c.srs.due < dayStart(Date.now()) + 2 * DAY).length;
   return `<section class="hd-card rev hd-story hd-review${R.n ? '' : ' done'}${back ? ' back' : ' front'}" id="hdReview" aria-label="Review: ${esc(big)}"${back ? ' inert aria-hidden="true"' : ''}>
     <div class="hd-lbl">Review <span class="hd-zh">复习</span></div>
     <div class="hd-row"><div class="hd-txt"><div class="hd-rv-n">${big}</div></div></div>
+    ${R.n ? '<div class="rv-why">Words you missed more than once</div>' : ''}
     ${R.n ? `<button class="btn hd-go" data-act="review-start">${I.refresh}${R.lit ? 'Keep going' : 'Review now'}</button>`
       : `<div class="rv-sub">${tmr ? `${plural(tmr, 'word')} come${tmr === 1 ? 's' : ''} back tomorrow` : 'See you tomorrow'}</div>`}
     ${rvLanterns(k, lit, from)}</section>`;
@@ -9049,7 +9067,7 @@ function rvLanterns(k, lit, from) {   // k lanterns hung on a sagging wire; the 
   const W = 170, x = i => k === 1 ? W / 2 : 17 + i * (W - 34) / (k - 1), y = X => 6 + 32 * (X / W) * (1 - X / W);
   return `<svg class="rv-lns" viewBox="0 0 ${W} 60" aria-hidden="true"><defs><radialGradient id="rvGlow"><stop offset="0" stop-color="#FF8A3C" stop-opacity=".75"/><stop offset="1" stop-color="#FF8A3C" stop-opacity="0"/></radialGradient></defs>
     <path class="rv-wire" d="M0 6Q${W / 2} 22 ${W} 6"/>${Array.from({ length: k }, (_, i) => { const X = x(i);
-    return `<g class="rv-ln${i < lit ? ' lit' : ''}${i < lit && i >= from ? ' new' : ''}" style="--d:${Math.max(0, i - from) * 220 + 250}ms" transform="translate(${X.toFixed(1)} ${y(X).toFixed(1)})">
+    return `<g class="rv-ln${i < lit ? ' lit' : ''}${i < lit && i >= from ? ' new' : ''}" style="--d:${Math.max(0, i - from) * 220 + 250}ms" transform="translate(${X.toFixed(1)} ${y(X).toFixed(1)}) scale(1.15)">
       <path class="rv-str" d="M0 0v3"/>
       <g class="off"><rect x="-5" y="3" width="10" height="3.5" rx="1.4"/><ellipse cx="0" cy="18" rx="11" ry="11.5"/><path class="rib" d="M0 7v22M-6 9c-3 6-3 12 0 18M6 9c3 6 3 12 0 18"/><rect x="-5" y="29.5" width="10" height="3" rx="1.4"/><path class="tas" d="M0 33v5"/></g>
       <g class="on"><circle cx="0" cy="18" r="19" fill="url(#rvGlow)"/><rect x="-5" y="3" width="10" height="3.5" rx="1.4" fill="#F2B33D"/><ellipse cx="0" cy="18" rx="11" ry="11.5" fill="#E8452F" stroke="#FF8A5C" stroke-width="1.2"/><ellipse cx="0" cy="18" rx="4.5" ry="9" fill="#FF9A55" opacity=".6"/><rect x="-5" y="29.5" width="10" height="3" rx="1.4" fill="#F2B33D"/><path d="M0 33v5" stroke="#F2B33D" stroke-width="1.4"/></g></g>`; }).join('')}</svg>`;
@@ -14005,7 +14023,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.57';
+const APP_VERSION = '3.45.58';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -15430,11 +15448,11 @@ const A = {
     S.study = null; S.write = null; S.today = null; toast(`${plural(n, 'word')} in ${T.name}`); nav('#/deck/' + T.id);
   },
   'tricky-no': () => { db.trickyNo = roundsDone(); save(); LOG.add('tricky-not-now', {}); $('.tk-card')?.remove(); },
-  'review-start': () => { const P = todayPile(); if (!P.due.length) return render(); S.today = { id: 'today', name: 'Review', accent: ACCENTS[0], cards: P.due, review: true }; S.study = null;
-    LOG.add('review-start', { n: P.due.length }); nav('#/deck/today/study'); },
+  'review-start': () => { const R = hdReview(); if (!R.n) return render(); S.today = { id: 'today', name: 'Review', accent: ACCENTS[0], cards: R.due, review: true }; S.study = null;
+    LOG.add('review-start', { n: R.n, missed: true }); nav('#/deck/today/study'); },
   'study-done': () => { const today = S.deckId === 'today'; S.study = null; S.today = null; goBack(today ? '#/' : '#/deck/' + S.deckId); },
   'study-again': () => {
-    if (S.deckId === 'today') { const P = todayPile(), rv = S.today?.review, L = rv ? P.due : P.cards; if (!L.length) { toast('All done for today'); return A['study-done'](); }
+    if (S.deckId === 'today') { const rv = S.today?.review, L = rv ? hdReview().due : todayPile().cards;   // 3.45.58: Review is the missed words if (!L.length) { toast('All done for today'); return A['study-done'](); }
       S.today = rv ? { id: 'today', name: 'Review', accent: ACCENTS[0], cards: L, review: true } : { id: 'today', name: 'Today', accent: ACCENTS[0], cards: L }; }
     S.study = null; startStudy(); render(); },
   'fsize': t => {   // 3.45.55: one tap, the next size; after the biggest, the smallest again
