@@ -24,6 +24,12 @@
 <link href="https://api.fontshare.com/v2/css?f[]=chillax@500,600,700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.2/dist/hanzi-writer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
+<script>/* v4.68 Traditional (Taiwan) or Cantonese (Hong Kong): the character converter (and Jyutping) load before the app starts */
+(() => { let k = null; try { k = localStorage.getItem('moka2.sys'); } catch (_) {}
+  if (k !== 'tw' && k !== 'hk') return;
+  document.write('<script src="lib/opencc-1.4.2.js"><\/script>' + (k === 'hk' ? '<script src="lib/to-jyutping-3.1.1.js"><\/script>' : ''));
+  document.documentElement.classList.add('zh-t', 'zh-' + k); })();
+</script>
 <script src="course.js?v=334"></script>
 <style>
 /* ǖ ǘ ǚ ǜ (lǜ, nǚ) from a system font: Satoshi has no ü with tone marks and would show the mark beside the letter */
@@ -123,6 +129,39 @@ html{overscroll-behavior-y:none}
 .pg-head + .hd-stack{margin-top:0}
 .bar-head{flex:1;margin:0;padding-left:10px;font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1;white-space:nowrap}
 .bar-zh{font-family:var(--hanzi);font-weight:600;font-size:27px;color:var(--seal);letter-spacing:.04em;margin-left:4px}
+/* v4.68 which Chinese: Traditional and Cantonese draw characters in their own fonts; the flag beside the streak flame opens the picker */
+:root.zh-tw{--hanzi:"Noto Serif TC","Noto Serif SC","Songti TC","PMingLiU",serif}
+:root.zh-hk{--hanzi:"Noto Serif HK","Noto Serif TC","Noto Serif SC","Songti TC",serif}
+.flag{position:relative;display:block;flex:none;width:30px;height:21px;border-radius:5px;overflow:hidden;box-shadow:0 0 0 1px rgba(30,26,21,.12),0 2px 0 rgba(30,26,21,.16)}
+.flag svg{display:block;width:100%;height:100%}
+.flag::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(255,255,255,.34),rgba(255,255,255,0) 45%,rgba(0,0,0,.08));pointer-events:none}
+.sys-btn{position:relative;display:grid;place-items:center;width:44px;height:42px;border-radius:21px;transition:opacity .2s}
+.sys-btn:active{opacity:.4;transition:none}
+.uc-stats .sys-btn{width:40px;height:40px}
+.uc-stats .sys-btn .flag{width:28px;height:20px}
+@media (max-width:340px){.uc-stats .sys-btn{width:30px}.uc-stats .sys-btn .flag{width:24px;height:17px}}   /* small phones: the coins stay on screen */
+.rd-head .pg-tr .hm-streak{margin-right:0}
+/* the picker: a card that drops down under the top bar, every system as a flag tile (like a course switcher) */
+.sys-pop{position:fixed;inset:0;z-index:60;background:rgba(30,26,21,.28);animation:sysFade .18s ease-out both}
+.sys-card{position:absolute;left:12px;right:12px;max-width:460px;margin:0 auto;background:var(--card);border-radius:22px;padding:18px 14px 14px;
+  box-shadow:0 24px 48px -18px rgba(40,25,10,.45),0 2px 0 rgba(255,255,255,.7) inset;animation:sysDrop .26s cubic-bezier(.2,1.2,.4,1) both}
+.sys-arrow{position:absolute;top:-7px;width:16px;height:16px;background:var(--card);transform:translateX(-50%) rotate(45deg);border-radius:3px}
+.sys-h{margin:0 4px 12px;font-weight:700;font-size:17px;letter-spacing:-.01em}
+.sys-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sys-opt{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px 10px;border-radius:16px;border:2px solid transparent;transition:background .15s}
+.sys-opt:active{background:var(--fill)}
+.sys-opt .flag{width:64px;height:44px;border-radius:9px;box-shadow:0 0 0 1px rgba(30,26,21,.12),0 3px 0 rgba(30,26,21,.18)}
+.sys-opt[aria-pressed="true"]{border-color:#3BA7E8;background:rgba(59,167,232,.08)}
+.sys-opt b{font-weight:700;font-size:15px;line-height:1.1}
+.sys-opt small{font-size:12px;color:var(--muted);line-height:1.25;text-align:center}
+.sys-opt small i{font-style:normal;font-family:var(--hanzi);color:var(--ink-2)}
+.sys-note{margin:12px 6px 2px;font-size:12.5px;color:var(--muted);line-height:1.4;text-align:center}
+@keyframes sysFade{from{opacity:0}}
+@keyframes sysDrop{from{opacity:0;transform:translateY(-10px) scale(.97)}}
+@media (prefers-reduced-motion:reduce){.sys-pop,.sys-card{animation:none}}
+.dr-flag{display:grid;place-items:center;width:24px}.dr-flag .flag{width:24px;height:17px;border-radius:4px}
+.ob-zh{font-family:var(--hanzi);font-style:normal}
+.ob-opt .flag{width:46px;height:32px;border-radius:7px;margin-right:2px}
 
 /* ---------- buttons ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;padding:0 20px;border-radius:16px;font:600 16.5px/1.08 var(--display);transition:opacity .2s, background .2s}
@@ -3558,6 +3597,157 @@ if (!db.pfMig) {
 db.mapKeep = db.mapKeep && typeof db.mapKeep === 'object' ? db.mapKeep : {};
 save();
 
+/* ---------- which Chinese: Simplified (Mainland China), Traditional (Taiwan) or Cantonese (Hong Kong) (v4.68) ----------
+   ilkem: "give a question if they are learning traditional or simplified chinese ... put china and taiwan flags next to the
+   flame ... add cantonese with the hongkong flag". Everything is stored once, in simplified characters with Mandarin pinyin
+   (the HSK lists, lessons, stories and your word bank all are), and shown in the system you picked:
+   - every piece of Chinese on screen turns into traditional characters as it appears (OpenCC, whole words first, so 头发 is
+     頭髮 and 发现 發現), Taiwan forms for Traditional, Hong Kong forms for Cantonese (lib/opencc-1.4.2.js);
+   - writing practice, Hanzi of the day and stroke order draw and check the traditional character, and the handwriting reader
+     reads Taiwan or Hong Kong writing;
+   - Cantonese shows Jyutping wherever a reading is shown (lib/to-jyutping-3.1.1.js) and speaks with a Cantonese voice;
+   - characters you type or draw are turned back into simplified before they are saved, so they match the HSK lists.
+   Change it with the flag next to the streak flame (Decks, Lessons, Stories) or in the menu; the first run asks. Text inside
+   [data-zh-keep] is left as written (the picker names each system in its own characters). */
+const SYS = {
+  cn: { name: 'Simplified', long: 'Simplified Chinese', zh: '简体字', lang: 'zh-CN', hw: 'zh_CN', sound: 'Mandarin', where: 'China, Singapore' },
+  tw: { name: 'Traditional', long: 'Traditional Chinese', zh: '繁體字', lang: 'zh-TW', hw: 'zh_TW', sound: 'Mandarin', where: 'Taiwan' },
+  hk: { name: 'Cantonese', long: 'Cantonese', zh: '粵語', lang: 'zh-HK', hw: 'zh_HK', sound: 'Cantonese', where: 'Hong Kong, Macau' },
+};
+const SYS_KEYS = ['cn', 'tw', 'hk'];
+const sysK = () => SYS[db.prefs.sys] ? db.prefs.sys : 'cn';
+const ZH = { k: null, t: null, s: null, jp: null };   // t: simplified to the system's characters, s: back to simplified, jp: Jyutping of a word
+const ZH_HAN = /[㐀-鿿豈-﫿]/;
+const zhT = s => ZH.t && s && ZH_HAN.test(s) ? ZH.t(s) : s;   // in the characters of the system you picked
+const zhS = s => ZH.s && s && ZH_HAN.test(s) ? ZH.s(s) : s;   // typed or drawn characters back to the simplified the app stores
+/* one character as it is written inside its word (发 in 头发 is 髮, in 发现 發) */
+const zhIn = (ch, word) => {
+  if (!ZH.t || !word) return zhT(ch);
+  const w = [...word], t = [...zhT(word)], i = w.indexOf(ch);
+  return i >= 0 && t.length === w.length ? t[i] : zhT(ch);
+};
+/* a word's characters one by one, each in the form it takes in that word (for words drawn a character per box) */
+const zhChars = w => { const a = [...(w || '')]; if (!ZH.t) return a; const t = [...zhT(w)]; return t.length === a.length ? t : a; };
+/* the characters to write for a card: in its word's own traditional forms */
+const wChars = c => {
+  const h = hanChars(c.hanzi); if (!ZH.t) return h;
+  if (h.length === 1 && c.clue?.hz) return [zhIn(h[0], c.clue.hz)];
+  const t = hanChars(zhT(c.hanzi)); return t.length === h.length ? t : h;
+};
+const hwLang = () => ZH.t ? SYS[ZH.k].hw : 'zh_CN';   // the handwriting reader's language
+/* the reading shown for a word: its pinyin, or in Cantonese its Jyutping */
+const jpCache = new Map();
+const PY = (hz, p) => {
+  if (!ZH.jp || !hz || !ZH_HAN.test(hz)) return p;
+  let j = jpCache.get(hz);
+  if (j === undefined) { try { j = ZH.jp(hz); } catch (_) { j = ''; } jpCache.set(hz, j); }
+  return j || p;
+};
+const PYN = () => ZH.jp ? 'Jyutping' : 'Pinyin';
+/* flags, drawn like little cloth tiles */
+const flagStar = (cx, cy, r, tip = -90) => { let d = ''; for (let i = 0; i < 10; i++) { const a = (tip + i * 36) * Math.PI / 180, q = i % 2 ? r * .382 : r; d += (i ? 'L' : 'M') + (cx + q * Math.cos(a)).toFixed(2) + ' ' + (cy + q * Math.sin(a)).toFixed(2); } return d + 'Z'; };
+const FLAG_ART = (() => {
+  const toBig = (x, y) => Math.atan2(5 - y, 5 - x) * 180 / Math.PI;   // the small stars point at the big one
+  const cn = `<rect width="30" height="20" fill="#EE1C25"/><path fill="#FFDE00" d="${flagStar(5, 5, 3)}${[[10, 2], [12, 4], [12, 7], [10, 9]].map(([x, y]) => flagStar(x, y, 1, toBig(x, y))).join('')}"/>`;
+  let rays = ''; for (let i = 0; i < 24; i++) { const a = (i * 15 - 90) * Math.PI / 180, q = i % 2 ? 2.05 : 3.55; rays += (i ? 'L' : 'M') + (7.5 + q * Math.cos(a)).toFixed(2) + ' ' + (5 + q * Math.sin(a)).toFixed(2); }
+  const tw = `<rect width="30" height="20" fill="#FE0000"/><rect width="15" height="10" fill="#000095"/><path fill="#fff" d="${rays}Z"/><circle cx="7.5" cy="5" r="2.05" fill="#000095"/><circle cx="7.5" cy="5" r="1.72" fill="#fff"/>`;
+  const petal = `<path fill="#fff" d="M0 -.2C-1.9 -1.2 -3.7 -3.4 -2.9 -5.7C-2.2 -7.6 .3 -8.2 1.9 -6.9C.2 -6.3 -.6 -4.6 0 -.2Z"/><path d="M-.15 -.6C-1.2 -2.2 -1.6 -3.6 -1.3 -5" fill="none" stroke="#DE2910" stroke-width=".35" stroke-linecap="round"/><path fill="#DE2910" d="${flagStar(-1.35, -4.35, .62)}"/>`;
+  const hk = `<rect width="30" height="20" fill="#DE2910"/><g transform="translate(15 10.4) scale(1.05)">${[0, 1, 2, 3, 4].map(i => `<g transform="rotate(${i * 72})">${petal}</g>`).join('')}</g>`;
+  return { cn, tw, hk };
+})();
+const flagSvg = (k, cls = '') => `<span class="flag${cls ? ' ' + cls : ''}" aria-hidden="true"><svg viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice" focusable="false">${FLAG_ART[k]}</svg></span>`;
+const SysBtn = () => { const k = sysK();
+  return `<button class="sys-btn" data-act="sys" aria-haspopup="dialog" aria-label="Learning ${SYS[k].long}. Change">${flagSvg(k)}</button>`; };
+
+/* the converter and Jyutping are loaded only for Traditional and Cantonese; the page's head loads them before the app starts
+   when the phone remembers your pick (moka2.sys), otherwise (a backup or your account brought it) they load here */
+const libLoad = (src, g) => window[g] ? Promise.resolve() : new Promise((ok, no) => {
+  const s = document.createElement('script'); s.src = src; s.onload = () => window[g] ? ok() : no(new Error(g)); s.onerror = no; document.head.append(s); });
+const sysLibs = k => k === 'cn' ? Promise.resolve() : Promise.all([libLoad('lib/opencc-1.4.2.js', 'OpenCC'), k === 'hk' && libLoad('lib/to-jyutping-3.1.1.js', 'ToJyutping')]);
+function sysFont(k) {   // Noto Serif TC (Taiwan) or HK, so the characters have their own shapes there
+  const fam = k === 'hk' ? 'HK' : 'TC', id = 'font-zh-' + fam; if (k === 'cn' || document.getElementById(id)) return;
+  const l = document.createElement('link'); l.id = id; l.rel = 'stylesheet'; l.href = `https://fonts.googleapis.com/css2?family=Noto+Serif+${fam}:wght@400;600;900&display=swap`; document.head.append(l);
+}
+function sysApply() {
+  const k = sysK(); ZH.k = k; ZH.t = ZH.s = ZH.jp = null; jpCache.clear();
+  if (k !== 'cn' && window.OpenCC) { const to = k === 'tw' ? 'tw' : 'hk'; ZH.t = OpenCC.Converter({ from: 'cn', to }); ZH.s = OpenCC.Converter({ from: to, to: 'cn' }); }
+  if (k === 'hk' && window.ToJyutping) ZH.jp = hz => { const l = ToJyutping.getJyutpingList(hz).filter(([c]) => ZH_HAN.test(c)); return l.every(x => x[1]) ? l.map(x => x[1]).join(' ') : ''; };
+  const h = document.documentElement; h.classList.toggle('zh-t', !!ZH.t); h.classList.toggle('zh-tw', !!ZH.t && k === 'tw'); h.classList.toggle('zh-hk', !!ZH.t && k === 'hk');
+  if (ZH.t) sysFont(k);
+  try { localStorage.setItem('moka2.sys', k); } catch (_) {}
+  zhWatch();
+}
+function sysBoot() {
+  sysApply();
+  const k = sysK(); if (k !== 'cn' && (!ZH.t || k === 'hk' && !ZH.jp)) sysLibs(k).then(() => { if (sysK() === k) { sysApply(); render(); } }, () => {});
+}
+/* every piece of text that appears on the page, in the system's characters (attributes people read too) */
+const ZH_KEEP = 'script,style,textarea,[data-zh-keep]', ZH_ATTR = ['aria-label', 'placeholder', 'title'];
+let zhObs = null; const zhSeen = new WeakMap();
+function zhText(n) {
+  const v = n.data; if (!ZH_HAN.test(v) || zhSeen.get(n) === v) return;
+  const p = n.parentElement; if (!p || p.closest(ZH_KEEP)) return;
+  const t = ZH.t(v); zhSeen.set(n, t); if (t !== v) n.data = t;
+}
+const zhSeenA = new WeakMap();
+function zhAttr(el, a) {
+  const v = el.getAttribute(a), seen = zhSeenA.get(el); if (!v || !ZH_HAN.test(v) || seen?.[a] === v || el.closest(ZH_KEEP)) return;
+  const t = ZH.t(v); (seen || zhSeenA.set(el, {}).get(el))[a] = t; if (t !== v) el.setAttribute(a, t);
+}
+function zhTree(root) {
+  if (root.nodeType === 3) { zhText(root); return; }
+  if (root.nodeType !== 1 || root.closest(ZH_KEEP)) return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) zhText(n);
+  for (const a of ZH_ATTR) { if (root.hasAttribute(a)) zhAttr(root, a); root.querySelectorAll(`[${a}]`).forEach(el => zhAttr(el, a)); }
+}
+function zhWatch() {
+  if (!ZH.t) { zhObs?.disconnect(); zhObs = null; return; }
+  if (!zhObs) zhObs = new MutationObserver(ms => { if (!ZH.t) return;
+    for (const m of ms) m.type === 'characterData' ? zhText(m.target) : m.type === 'attributes' ? zhAttr(m.target, m.attributeName) : m.addedNodes.forEach(zhTree); });
+  zhObs.disconnect(); zhObs.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ZH_ATTR });
+  zhTree(document.body);
+}
+/* Chinese drawn on a canvas (the unit towns' signs, the streak card, the scratch card) follows the system too */
+for (const m of ['fillText', 'strokeText', 'measureText']) {
+  const f = CanvasRenderingContext2D.prototype[m];
+  CanvasRenderingContext2D.prototype[m] = function (t, ...a) { return f.call(this, ZH.t && typeof t === 'string' ? zhT(t) : t, ...a); };
+}
+sysBoot();
+/* switching: the flag's picker drops down under the top bar; pick a flag and the whole app changes over (your words and
+   progress stay, they are the same words) */
+const sysSub = k => `${SYS[k].sound}<br><i>${SYS[k].zh}</i>`;
+function sysPick(from) {
+  $('#sysPop')?.remove();
+  const k = sysK(), r = from?.getBoundingClientRect?.(), top = r ? Math.round(r.bottom + 10) : 70, ax = r ? Math.round(r.left + r.width / 2) : null;
+  const el = document.createElement('div'); el.className = 'sys-pop'; el.id = 'sysPop'; el.dataset.zhKeep = '';
+  el.innerHTML = `<div class="sys-card" role="dialog" aria-modal="true" aria-label="Which Chinese are you learning?" style="top:${top}px">${ax ? '<i class="sys-arrow"></i>' : ''}
+    <p class="sys-h">Which Chinese are you learning?</p>
+    <div class="sys-row">${SYS_KEYS.map(x => `<button class="sys-opt" data-sys="${x}" aria-pressed="${x === k}">${flagSvg(x)}<b>${SYS[x].name}</b><small>${sysSub(x)}</small></button>`).join('')}</div>
+    <p class="sys-note">Decks, stories and writing all switch over. Your words and progress stay.</p></div>`;
+  document.body.append(el);
+  if (ax) { const c = el.querySelector('.sys-card'), cr = c.getBoundingClientRect(); el.querySelector('.sys-arrow').style.left = Math.min(cr.width - 24, Math.max(24, ax - cr.left)) + 'px'; }
+  const close = () => { el.remove(); removeEventListener('popstate', close); };
+  el.onclick = async e => {
+    const b = e.target.closest('[data-sys]');
+    if (!b) { if (!e.target.closest('.sys-card')) close(); return; }
+    if (b.dataset.sys === sysK()) { close(); return; }
+    el.querySelectorAll('.sys-opt').forEach(x => x.setAttribute('aria-pressed', x === b));
+    if (await setSys(b.dataset.sys)) close();
+  };
+  addEventListener('popstate', close);
+  LOG.add('system-picker', { now: k });
+}
+async function setSys(k, quiet) {
+  if (!SYS[k]) return false;
+  const was = sysK();
+  try { await sysLibs(k); }
+  catch (_) { toast('Couldn’t load the traditional characters. Are you online?'); return false; }
+  db.prefs.sys = k; save(); LOG.add('system', { from: was, to: k });
+  sysApply(); render();
+  if (!quiet && k !== was) toast(`Now learning ${SYS[k].long}`);
+  return true;
+}
+
 const deckById = id => id === 'les' ? S.les?.wd : id === 'bank' ? bankDeck() : id === 'today' ? (S.today || todayDeck()) : db.decks.find(d => d.id === id);
 const curDeck = () => deckById(S.deckId);
 const cardById = (d, id) => d.cards.find(c => c.id === id);
@@ -3928,6 +4118,7 @@ addEventListener('keydown', e => {
 
 /* ---------- render ---------- */
 function render() {
+  if (ZH.k !== sysK()) sysBoot();   // v4.68: a backup or your account brought another system
   const app = $('#app'); const d = curDeck();
   if (S.view === 'home') { app.innerHTML = Home(); mountHotd();
     if (!S.H) loadHsk().then(() => { const sh = $('#hskShelf'); if (sh) sh.outerHTML = HskShelf();
@@ -6832,7 +7023,7 @@ function lesWriteMount() {   // start the stroke-by-stroke writing box (HanziWri
   if (!window.HanziWriter) return off();
   const s = box.offsetWidth || lesBoxSize(), trace = Q.mode === 'trace';
   let miss = 0, N = 0;
-  const W = HanziWriter.create(q, Q.ch, writerOpts(s, { showCharacter: false, showOutline: trace, strokeColor: css('--ink'), outlineColor: css('--line'),
+  const W = HanziWriter.create(q, zhIn(Q.ch, Q.w.h), writerOpts(s, { showCharacter: false, showOutline: trace, strokeColor: css('--ink'), outlineColor: css('--line'),
     drawingColor: css('--ink'), highlightColor: css('--seal'), drawingWidth: LES_INK, showHintAfterMisses: 2,
     highlightOnComplete: true, highlightCompleteColor: css('--jade'), strokeAnimationSpeed: 2.2, delayBetweenStrokes: 70,   // "Show me how" plays quickly
     charDataLoader: (ch, ok, err) => loadRef(ch).then(ok, err) }));
@@ -6840,7 +7031,7 @@ function lesWriteMount() {   // start the stroke-by-stroke writing box (HanziWri
   E.wq = () => W.quiz({ onMistake: () => { miss++; },
     onCorrectStroke: d => { if (d.strokesRemaining) cap.textContent = `Stroke ${d.strokeNum + 1} of ${N || d.strokeNum + 1 + d.strokesRemaining} ✓`; },
     onComplete: () => lesWriteDone(Q, miss) });
-  loadRef(Q.ch).then(ref => { N = ref.strokes.length; if (E.writer === W && E.ans == null && !trace) cap.textContent = `${plural(N, 'stroke')}. A hint shows after 3 slips.`; }, off);
+  loadRef(zhIn(Q.ch, Q.w.h)).then(ref => { N = ref.strokes.length; if (E.writer === W && E.ans == null && !trace) cap.textContent = `${plural(N, 'stroke')}. A hint shows after 3 slips.`; }, off);
   E.wq();
 }
 function lesWriteDone(Q, miss) {
@@ -6885,7 +7076,7 @@ function lesOpts(Q) {   // the answer and three others that can't be mistaken fo
   const out = [a], seen = new Set([a[show]]);
   for (const w of [...shuffle(S.les.pool), ...more]) {
     if (out.length >= 4) break;
-    if (w.h === a.h || w.en === a.en || seen.has(w[show]) || sound && w.p === a.p) continue;
+    if (w.h === a.h || w.en === a.en || seen.has(w[show]) || sound && (w.p === a.p || ZH.jp && PY(w.h, w.p) === PY(a.h, a.p))) continue;   // v4.68: Cantonese readings can match where pinyin differs
     seen.add(w[show]); out.push(w);
   }
   return shuffle(out);
@@ -6903,7 +7094,7 @@ function lesInner() {
   if (Q.t === 'meet') {   // a new hanzi card: the word in tianzige, its sound, pinyin and meaning
     const k = E.words.indexOf(a), nx = E.q[E.qi + 1]?.t;
     return `${top}<div class="les-body"><p class="les-ask">New card<span>${k + 1} of ${E.words.length}</span></p>
-      <div class="lc lc-meet">${lcCells(a.h)}<button class="les-py" data-act="say" data-h="${esc(a.h)}" aria-label="Hear ${esc(a.h)}">${esc(a.p)}${I.sound}</button>
+      <div class="lc lc-meet">${lcCells(a.h)}<button class="les-py" data-act="say" data-h="${esc(a.h)}" aria-label="Hear ${esc(a.h)}">${esc(PY(a.h, a.p))}${I.sound}</button>
         <span class="les-mean">${esc(a.en)}</span></div></div>
       <div class="les-dock"><button class="btn btn-seal wide" data-les="next">${nx === 'write' ? 'Trace it' : nx === 'meet' ? 'Next card' : 'Turn the cards'}</button></div>`;
   }
@@ -6962,7 +7153,7 @@ function utEndHtml() {   // a unit test's result: passed (the next unit opens) o
       <h1>${E.pass ? `Unit ${unK(un)} passed!` : 'Not quite yet'}</h1>${E.pay ? payLine(E.pay) : ''}<p class="muted">${sub}</p>
       <div class="les-tally"><span><b>${E.pct}%</b><small>${right} of ${of} right</small></span><span><b>${E.pts}</b><small>points</small></span><span><b>${E.best}</b><small>best run</small></span></div>
       ${missed.length ? `<div class="les-end-box"><b class="no">Look at ${missed.length === 1 ? 'this one' : 'these'} again</b>
-        <div class="les-words">${missed.map(w => `<span class="les-chip"><b>${esc(w.h)}</b><small>${esc(w.p)}</small><i>${esc(w.en)}</i></span>`).join('')}</div></div>` : ''}</div>
+        <div class="les-words">${missed.map(w => `<span class="les-chip"><b>${esc(w.h)}</b><small>${esc(PY(w.h, w.p))}</small><i>${esc(w.en)}</i></span>`).join('')}</div></div>` : ''}</div>
     <div class="les-dock">${E.pass ? '<button class="btn btn-seal wide" data-les="end">Continue</button>'
       : '<div class="row-btns"><button class="btn btn-ghost" data-les="end">Later</button><button class="btn btn-seal" data-les="retry">Try again</button></div>'}</div>`;
 }
@@ -7284,7 +7475,7 @@ function radSheet(t) {
       <button class="icon-btn rs-say" data-act="say" data-h="${full}" aria-label="Say it">${I.sound}</button></div>
     <div class="rs-h">Characters with ${g}</div>
     <div class="rs-list">${[...ex].map(h => { const w = c1Word(h);
-      return `<button class="rs-ch" data-act="c1-char" data-h="${h}" data-rad="1"><b>${h}</b><span>${esc(w.p)}</span><small>${esc(w.e)}</small></button>`; }).join('')}</div>
+      return `<button class="rs-ch" data-act="c1-char" data-h="${h}" data-rad="1"><b>${h}</b><span>${esc(PY(h, w.p))}</span><small>${esc(w.e)}</small></button>`; }).join('')}</div>
     <p class="muted rs-foot">Tap a character to see how it is written. The radical is drawn in green.</p>`);
 }
 
@@ -7321,23 +7512,23 @@ const ruleWriters = new Map();
 function mountStrokes() {
   if (!window.HanziWriter) return;
   $$('.sr-box .quiz').forEach(q => {
-    const w = HanziWriter.create(q, q.dataset.ch, writerOpts(84, { showOutline: true, strokeColor: css('--ink'), outlineColor: css('--line'), strokeAnimationSpeed: 1.6, delayBetweenStrokes: 220 }));
+    const w = HanziWriter.create(q, zhT(q.dataset.ch), writerOpts(84, { showOutline: true, strokeColor: css('--ink'), outlineColor: css('--line'), strokeAnimationSpeed: 1.6, delayBetweenStrokes: 220 }));
     ruleWriters.set(q.dataset.ch, w);
   });
 }
 function strokeSheet(t) {
   const h = t.dataset.h, rad = t.dataset.rad === '1', w = c1Word(h);
-  openSheet(`<div class="ss-top"><span class="ss-hz">${h}</span><span class="ss-txt"><b>${esc(w.p)}</b><small>${esc(w.e)}</small></span>
+  openSheet(`<div class="ss-top"><span class="ss-hz">${h}</span><span class="ss-txt"><b>${esc(PY(h, w.p))}</b><small>${esc(w.e)}</small></span>
       <button class="icon-btn rs-say" data-act="say" data-h="${h}" aria-label="Say it">${I.sound}</button></div>
     <div class="hs-stage"><div class="tzg" style="--s:220px">${TZG}<div class="quiz" id="ssQ"></div></div></div>
     <div class="hs-cap" id="ssCap">Loading the strokes…</div>
     <div class="row-btns ss-btns"><button class="btn btn-ghost" id="ssPlay">${I.play}Watch</button><button class="btn btn-seal" id="ssWrite">${I.pen}Write it</button></div>`, sh => {
     const cap = sh.querySelector('#ssCap');
     if (!window.HanziWriter) { cap.textContent = 'The strokes need the internet. Try again when you are online.'; return; }
-    const W = HanziWriter.create(sh.querySelector('#ssQ'), h, writerOpts(220, { showOutline: true, strokeColor: css('--ink'), outlineColor: css('--line'),
+    const W = HanziWriter.create(sh.querySelector('#ssQ'), zhT(h), writerOpts(220, { showOutline: true, strokeColor: css('--ink'), outlineColor: css('--line'),
       drawingColor: css('--ink'), highlightColor: css('--seal'), ...(rad ? { radicalColor: C1 } : {}) }));
     let N = 0, run = 0;   // run: a newer Watch or Write wins, so a finished film doesn't overwrite the Write caption
-    loadRef(h).then(ref => { N = ref.strokes.length; if (sh.isConnected) watch(); }, () => { cap.textContent = 'The strokes need the internet. Try again when you are online.'; });
+    loadRef(zhT(h)).then(ref => { N = ref.strokes.length; if (sh.isConnected) watch(); }, () => { cap.textContent = 'The strokes need the internet. Try again when you are online.'; });
     const watch = () => { const me = ++run; W.cancelQuiz(); W.showCharacter(); cap.textContent = `${plural(N, 'stroke')}${rad ? ' · the radical is green' : ''}`;
       W.animateCharacter({ onComplete: () => { if (sh.isConnected && me === run) cap.textContent = `${plural(N, 'stroke')} · now write it yourself`; } }); };
     sh.querySelector('#ssPlay').onclick = watch;
@@ -7465,7 +7656,7 @@ function calDaySheet(d, y = new Date().getFullYear(), m = new Date().getMonth())
   openSheet(`<h3>${when}</h3><p class="day-zh">${zh}</p>
     <div class="day-stats">${stat(words.length, 'word learned', 'words learned', '生词')}${stat(decks.length, 'deck practised', 'decks practised', '卡组')}${stat(stories.length, 'story read', 'stories read', '故事')}</div>
     ${words.length ? `<div class="day-h">Words you learned</div>
-      <div class="day-words">${words.map(w => `<button class="day-w" data-act="day-word" data-id="${w.id}"><b>${esc(w.hanzi)}</b><span>${esc(w.pinyin || '')}</span><small>${esc(w.en || '')}</small></button>`).join('')}</div>` : ''}
+      <div class="day-words">${words.map(w => `<button class="day-w" data-act="day-word" data-id="${w.id}"><b>${esc(w.hanzi)}</b><span>${esc(PY(w.hanzi, w.pinyin || ''))}</span><small>${esc(w.en || '')}</small></button>`).join('')}</div>` : ''}
     ${decks.length ? `<div class="day-h">Decks you worked on</div><div class="group">${decks.map(deckRow).join('')}</div>` : ''}
     ${stories.length ? `<div class="day-h">Stories you read</div>
       <div class="group">${stories.map(s => `<button class="row" data-act="read-open" data-id="${s.id}">
@@ -8061,7 +8252,7 @@ const shortDate = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric',
 function StoryCard(s, foot) {
   const on = !!db.prefs.readPy, fresh = new Set(storyNewWords(s).map(w => w.h));   // new for you: the words the end of the story asks and offers for your word bank
   const word = (t, li, wi) => READ_PUNCT.test(t.h) ? `<span class="rp">${esc(t.h)}</span>`
-    : `<button class="rw${fresh.has(t.h) ? ' new' : ''}" data-act="rw" data-k="${li}.${wi}"><span class="rh">${esc(t.h)}</span><span class="ry">${esc(t.p)}</span></button>`;
+    : `<button class="rw${fresh.has(t.h) ? ' new' : ''}" data-act="rw" data-k="${li}.${wi}"><span class="rh">${esc(t.h)}</span><span class="ry">${esc(PY(t.h, t.p))}</span></button>`;
   return `<article class="story${on ? ' py' : ''}">
       <div class="story-head"><h3 class="story-zh">${esc(s.zh)}</h3><span class="story-en">${esc(s.en)}</span></div>
       ${storyTokens(s).map((l, li) => `<p class="story-line">${readGroups(l).map(g => `<span class="rg">${g.map(wi => word(l[wi], li, wi)).join('')}</span>`).join('')}</p>`).join('')}
@@ -8182,7 +8373,7 @@ function shelfOpen(zh) {   // a book on the shelf: the story, or the list of the
 }
 function ReadView() {
   const s = readStory(), on = !!db.prefs.readPy;
-  const pyBtn = `<button class="pill${on ? ' on' : ''}" data-act="read-py" aria-pressed="${on}"><span class="py-glyph">拼</span>Pinyin</button>`;
+  const pyBtn = `<button class="pill${on ? ' on' : ''}" data-act="read-py" aria-pressed="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}</button>`;
   if (S.readId) return `<div class="screen fade-in">
     <header class="bar"><button class="icon-btn" data-act="read-back" aria-label="Back">${I.back}</button><div class="bar-title">Finished story</div><div style="width:42px"></div></header>
     ${s ? `<div class="read-tools" style="margin-top:6px">${pyBtn}</div>
@@ -8193,7 +8384,7 @@ function ReadView() {
   const st = practiceStreak(), tk = dayKey(Date.now()), readToday = db.readDone.some(x => dayKey(x.done) === tk);
   const empty = '<p class="read-note">Your word bank is empty, so this story uses common words. <button class="link-btn" data-act="open-hsk" style="padding:0">Add words you know</button></p>';
   return `<div class="screen fade-in">
-    <div class="rd-head pg-head"><h2>Stories <span class="cal-zh">故事</span></h2>${StreakBtn()}</div>
+    <div class="rd-head pg-head"><h2>Stories <span class="cal-zh">故事</span></h2><span class="pg-tr">${SysBtn()}${StreakBtn()}</span></div>
     ${!s ? '' : s.opened ? `<div class="read-tools" style="margin-top:0">${pyBtn}<button class="pill" data-act="read-new">${I.shuffle}Different story</button></div>
         ${db.bank.length ? '<p class="read-note">Tap a word to see what it means. <u>Underlined</u> words are new: not in your word bank yet.</p>' : empty}
         ${StoryCard(s, '<button class="btn btn-seal wide story-done" data-act="read-finish">I finished this story</button>')}`
@@ -8287,7 +8478,7 @@ function finishSheet() {
     openSheet(`<h3>New words in this story</h3>
       ${words.length ? `<p class="muted" style="margin:-8px 0 16px;text-align:center">Untick any you haven't learned yet. The rest go into your word bank.</p>
         <div class="group" id="rnList" style="margin-bottom:18px">${words.map(w => `<button class="row word on" style="--sep:52px" data-h="${esc(w.h)}"><span class="sel">${I.check}</span><span class="hz">${esc(w.h)}</span>
-          <span class="row-main"><span class="wp">${esc(w.p)}</span><span class="we">${esc(w.en)}</span></span>${w.lv ? `<span class="row-val">${HSK_NAME(w.lv)}</span>` : ''}</button>`).join('')}</div>`
+          <span class="row-main"><span class="wp">${esc(PY(w.h, w.p))}</span><span class="we">${esc(w.en)}</span></span>${w.lv ? `<span class="row-val">${HSK_NAME(w.lv)}</span>` : ''}</button>`).join('')}</div>`
       : '<p class="muted" style="margin:-8px 0 22px;text-align:center">Every word in this story is already in your word bank.</p>'}
       <div class="sheet-go"><button class="btn btn-seal wide" id="rnGo"></button></div>`, sh => {
       const btn = sh.querySelector('#rnGo');
@@ -8306,7 +8497,7 @@ function finishSheet() {
     const ask = () => {
       const Q = Qs[i];
       openSheet(`<h3>${Q.again ? 'Once more' : 'Quick check'}${Qs.length > 1 ? `<span class="rc-n">${i + 1} of ${Qs.length}</span>` : ''}</h3>
-        <div class="rc-card rc-in"><span class="rc-hz">${esc(Q.h)}</span><span class="rc-py" id="rcPy">${db.prefs.readPy ? esc(Q.p) : ''}</span></div>
+        <div class="rc-card rc-in"><span class="rc-hz">${esc(Q.h)}</span><span class="rc-py" id="rcPy">${db.prefs.readPy ? esc(PY(Q.h, Q.p)) : ''}</span></div>
         <p class="rc-ask">What does it mean in this story?</p>
         <div class="les-opts list rc-in" id="rcOpts">${Q.opts.map((m, k) => `<button class="les-opt" data-k="${k}"><span class="lo-en">${esc(m)}</span></button>`).join('')}</div>
         <p class="rc-fb" id="rcFb" aria-live="polite"></p>
@@ -8317,7 +8508,7 @@ function finishSheet() {
           const pick = +b.dataset.k, right = pick === Q.ok;
           box.classList.add('answered');
           box.querySelectorAll('.les-opt').forEach((o, k) => { o.disabled = true; if (k === Q.ok) o.classList.add('ok', right ? 'pick' : 'reveal'); else if (k === pick) o.classList.add('no'); });
-          sh.querySelector('#rcPy').textContent = Q.p;
+          sh.querySelector('#rcPy').textContent = PY(Q.h, Q.p);
           fb.textContent = right ? 'Right!' : `Not quite: ${Q.h} is ${Q.en}.`; fb.classList.toggle('no', !right);
           right ? chime() : buzz();
           if (!right) { const o = shuffle(Q.opts.slice()); Qs.push({ ...Q, opts: o, ok: o.indexOf(Q.en), again: true }); }   // a miss comes back once the others are done, until you get it right
@@ -8388,7 +8579,7 @@ function readPop(t) {
   const chars = [...new Set(hanChars(w.h))].map(c => [c, readMeaning(c)]).filter(x => x[1]);   // each character once, only the ones with a meaning
   const parts = hanChars(w.h).length > 1 && chars.length ? `<div class="rpop-parts">${chars.map(([c, m]) => `<span><b>${esc(c)}</b>${esc(m)}</span>`).join('')}</div>` : '';
   const pop = document.createElement('div'); pop.className = 'rpop';
-  pop.innerHTML = `<div class="rpop-top"><div><div class="rpop-hz">${esc(w.h)}</div><div class="rpop-py">${esc(w.p)}</div></div>
+  pop.innerHTML = `<div class="rpop-top"><div><div class="rpop-hz">${esc(w.h)}</div><div class="rpop-py">${esc(PY(w.h, w.p))}</div></div>
       ${'speechSynthesis' in window ? `<button class="rpop-say" data-act="say" data-h="${esc(w.h)}" aria-label="Say it">${I.sound}</button>` : ''}</div>
     <div class="rpop-en">${esc(en) || '<span class="muted">No meaning found</span>'}</div>${parts}
     ${b ? '<div class="rpop-tag">In your word bank</div>' : HAN.test(w.h) ? `<button class="rpop-add" data-act="rpop-add" data-k="${t.dataset.k}">${I.plus}Add to my words</button>` : ''}`;
@@ -8418,8 +8609,9 @@ document.addEventListener('click', e => {
 });
 function sayZh(text) {
   try {
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = .85;
-    const v = speechSynthesis.getVoices().find(v => /^zh[-_](CN|Hans)/i.test(v.lang)); if (v) u.voice = v;
+    const k = ZH.t ? ZH.k : 'cn', u = new SpeechSynthesisUtterance(zhT(text)); u.lang = SYS[k].lang; u.rate = .85;   // v4.68: a Taiwan or Cantonese voice when you learn those
+    const vs = speechSynthesis.getVoices(), cn = () => vs.find(v => /^zh[-_](CN|Hans)/i.test(v.lang));
+    const v = k === 'hk' ? vs.find(v => /^(zh[-_]HK|yue)/i.test(v.lang)) : k === 'tw' ? vs.find(v => /^zh[-_](TW|Hant)/i.test(v.lang)) || cn() : cn(); if (v) u.voice = v;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (_) {}
 }
@@ -8443,7 +8635,7 @@ function Home() {
   const groups = db.groups || [], loose = db.decks.filter(d => !groupById(d.group));   // v3.62: groups first, then the decks in no group
   return `<div class="screen fade-in has-fab">
     <div class="section-head cal-head pg-head"><h2>Decks <span class="cal-zh">卡片</span></h2>
-      <span class="pg-tr">${StreakBtn()}</span></div>
+      <span class="pg-tr">${SysBtn()}${StreakBtn()}</span></div>
     ${HotdStack()}
     ${BankPile()}
     <div class="section-head"><h2>Your decks</h2></div>
@@ -8461,7 +8653,7 @@ function BankPile() {
   const e = n >= 300 ? 4 : n >= 100 ? 3 : n >= 20 ? 2 : n ? 1 : 0, len = w ? [...w.hanzi].length : 1;
   const when = w ? (w.added >= t0 ? 'added today' : w.added >= t0 - 864e5 ? 'added yesterday' : w.added ? `added ${shortDate(w.added)}` : '') : '';
   const face = w ? `<span class="wbp-hz${len >= 4 ? ' l4' : len === 3 ? ' l3' : ''}">${esc(w.hanzi)}</span>
-      <span class="wbp-w"><b>${esc(w.pinyin || '')}</b><small>${[w.en ? esc(w.en) : '', when].filter(Boolean).join(' · ')}</small></span>`
+      <span class="wbp-w"><b>${esc(PY(w.hanzi, w.pinyin || ''))}</b><small>${[w.en ? esc(w.en) : '', when].filter(Boolean).join(' · ')}</small></span>`
     : `<span class="wbp-hz none">字</span><span class="wbp-w"><b>Your words land here</b><small>Finish a lesson or tick words you know</small></span>`;
   return `<button class="wbp" style="--e:${e}" data-act="open-bank" aria-label="Word bank: ${plural(n, 'word')}${w ? `, newest ${esc(w.hanzi)}` : ''}">
     <span class="wbp-face"><span class="wbp-top"><span>Word bank<span class="wbp-zh">词库</span></span><span class="chev">${I.chev}</span></span>${face}
@@ -8496,7 +8688,7 @@ function HotdCard(just) {   // the card on Decks: Shi Shi holds up today's chara
   const H = hotdPick(), rev = !!H?.rev, mine = H && bankHas(H.h), back = H?.top === 'story';
   const meta = H ? `<div class="hd-meta"><span>${HSK_NAME(H.lv)}</span>${mine ? '<span>In your word bank ✓</span>' : ''}</div>` : '';
   const txt = !H ? '<div class="hd-big">A new character</div><div class="hd-sub">Getting it ready…</div>'
-    : rev ? `<div class="hd-py">${esc(H.p)}</div><div class="hd-en">${esc(meanOf(H))}</div>${meta}`
+    : rev ? `<div class="hd-py">${esc(PY(H.h, H.p))}</div><div class="hd-en">${esc(meanOf(H))}</div>${meta}`
     : `<div class="hd-big">A new character is waiting</div>${meta}`;
   return `<section class="hd-card hd-day${rev ? ' rev' : ''}${just ? ' just' : ''}${back ? ' back' : ' front'}" id="hotd" aria-label="Hanzi of the day"${H ? '' : ' data-wait="1"'}${back ? ' inert aria-hidden="true"' : ''}>
     <div class="hd-lbl">Hanzi of the day</div>
@@ -8612,7 +8804,7 @@ function paintFoil(ctx, w, h) {
 function mountHotd() {   // note today's stroke count for the pop-up once the stroke data is at hand
   const H = db.hotd; if (!H || H.n || !window.HanziWriter || mountHotd.busy) return;
   mountHotd.busy = true;
-  loadRef(H.h).then(ref => { H.n = ref.strokes.length; save(); }, () => {})
+  loadRef(zhT(H.h)).then(ref => { H.n = ref.strokes.length; save(); }, () => {})
     .finally(() => { mountHotd.busy = false; });
 }
 /* ---------- the Hanzi of the day pop-up ----------
@@ -8638,13 +8830,13 @@ function hotdMeanings(H) {
   return [...new Set(H.e.split('; ').map(m => plainMeaning(m)).filter(m => m && !/^(CL|surname|variant of|old variant)/i.test(m)))].slice(0, 4);
 }
 function HdxId(H) {   // page 1, once uncovered: the sound and the meaning above the box
-  return `<div class="hdx-py">${esc(H.p)}${'speechSynthesis' in window ? `<button class="hs-say" data-act="say" data-h="${esc(H.h)}" aria-label="Say it">${I.sound}</button>` : ''}</div>
+  return `<div class="hdx-py">${esc(PY(H.h, H.p))}${'speechSynthesis' in window ? `<button class="hs-say" data-act="say" data-h="${esc(H.h)}" aria-label="Say it">${I.sound}</button>` : ''}</div>
     <div class="hdx-en">${hotdMeanings(H).map(esc).join(' <span>·</span> ')}</div>`;
 }
 const HdxAfter = H => `<div class="hd-meta"><span>${HSK_NAME(H.lv)}</span><span id="hsN">${H.n ? plural(H.n, 'stroke') : '…'}</span></div>`;
 function HdxHTML(H, S2, S3) {
   const rev = !!H.rev, mine = bankHas(H.h);
-  const mark = h => [...h].map(c => c === H.h ? `<i>${esc(c)}</i>` : esc(c)).join('');
+  const mark = h => { const T = zhChars(h); return [...h].map((c, i) => c === H.h ? `<i>${esc(T[i])}</i>` : esc(T[i])).join(''); };
   const words = S.H ? [...S.H.byHz.values()].filter(r => r.h !== H.h && r.h.includes(H.h) && [...r.h].length <= 3).sort((a, b) => a.lv - b.lv || a.h.length - b.h.length).slice(0, 3) : [];
   return `<div class="hdx-scrim"></div>
   <div class="hdx-box" role="dialog" aria-modal="true" aria-label="Hanzi of the day">
@@ -8673,7 +8865,7 @@ function HdxHTML(H, S2, S3) {
       <section class="hdx-pg hdx-p3" aria-label="${HDX_PAGES[3]}">
         <h4 class="hs-h">Use it <span>例句</span></h4>
         ${words.length ? `<div class="hdx-lbl">Words with ${esc(H.h)}</div>
-        <div class="hdx-words">${words.map(r => `<button class="hdx-word" data-act="say" data-h="${esc(r.h)}"><b>${mark(r.h)}</b><span><span class="hdx-wpy">${esc(r.p)}</span><small>${esc(meanOf(r))}</small></span>${I.sound}</button>`).join('')}</div>` : ''}
+        <div class="hdx-words">${words.map(r => `<button class="hdx-word" data-act="say" data-h="${esc(r.h)}"><b>${mark(r.h)}</b><span><span class="hdx-wpy">${esc(PY(r.h, r.p))}</span><small>${esc(meanOf(r))}</small></span>${I.sound}</button>`).join('')}</div>` : ''}
         <div class="hdx-lbl">In a sentence</div>
         <div class="hdx-sents" id="hdxSents"><p class="hdx-none">Loading sentences…</p></div>
         <p class="hdx-src">Sentences from Tatoeba (tatoeba.org)</p>
@@ -8759,6 +8951,8 @@ function mountHdx(el, H) {
   if (H.rev) hdxPages(el, H); else hdxScratch(el, H);
 }
 function hdxRuby(zh, h) {   // a sentence with its pinyin over each character, read in context (so 一, 不 and 了 come out right)
+  if (ZH.jp) { let l = null; try { l = ToJyutping.getJyutpingList(zh); } catch (_) {}   // v4.68 Cantonese: Jyutping over each character
+    if (l?.length) return l.map(([c, j]) => j && ZH_HAN.test(c) ? `<ruby${c === h ? ' class="hz-me"' : ''}>${esc(c)}<rt>${esc(j)}</rt></ruby>` : esc(c)).join(''); }
   let a = null; try { a = window.pinyinPro && pinyinPro.pinyin(zh, { type: 'all' }); } catch (_) {}
   if (!Array.isArray(a) || !a.length) return esc(zh);
   return a.map(o => o.isZh ? `<ruby${o.origin === h ? ' class="hz-me"' : ''}>${esc(o.origin)}<rt>${esc(o.pinyin)}</rt></ruby>` : esc(o.origin)).join('');
@@ -8776,7 +8970,7 @@ function hdxPages(el, H) {   // the other pages fill in once the character is ou
 function hdxScratch(el, H) {   // page 1: rub the gold off the big tianzige
   const box = el.querySelector('#hdxTile'), cv = box.querySelector('canvas'), fx = el.querySelector('.hd-fx');
   const w = box.offsetWidth, h = box.offsetHeight; if (!w) return;
-  if (window.HanziWriter && !H.n) loadRef(H.h).then(ref => { H.n = ref.strokes.length; save(); }, () => {});
+  if (window.HanziWriter && !H.n) loadRef(zhT(H.h)).then(ref => { H.n = ref.strokes.length; save(); }, () => {});
   const dpr = Math.min(2, devicePixelRatio || 1), ctx = cv.getContext('2d', { willReadFrequently: true });
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.scale(dpr, dpr);
   paintFoil(ctx, w, h); box.classList.add('live');
@@ -8844,7 +9038,7 @@ function hdxTrace(el, H) {
   const start = () => {
     writer?.cancelQuiz?.(); q.innerHTML = ''; round++;
     let miss = 0; cap.textContent = 'Trace the light character, stroke by stroke';
-    writer = HanziWriter.create(q, H.h, writerOpts(S3, {
+    writer = HanziWriter.create(q, zhT(H.h), writerOpts(S3, {
       showCharacter: false, showOutline: true, strokeColor: css('--ink'), outlineColor: css('--line'), drawingColor: css('--ink'), highlightColor: css('--seal'),
       drawingWidth: LES_INK, showHintAfterMisses: 2, highlightOnComplete: true, highlightCompleteColor: css('--jade'),
       charDataLoader: (ch, ok, err) => loadRef(ch).then(ok, err) }));
@@ -8876,7 +9070,7 @@ function mountHotdSheet(sh, H) {
   const fail = () => { cap.textContent = 'The strokes need the internet. Try again when you are online.'; sh.querySelector('.hs-ctl').hidden = true;
     box.querySelector('.quiz').innerHTML = `<span class="ans-fallback" style="--s:${S2}px">${esc(H.h)}</span>`; };
   if (!window.HanziWriter) return fail();
-  loadRef(H.h).then(ref => {
+  loadRef(zhT(H.h)).then(ref => {
     if (!sh.isConnected) return;
     const N = ref.strokes.length, id = 'hs' + uid().slice(0, 6);
     if (H.n !== N) { H.n = N; save(); }
@@ -10598,7 +10792,7 @@ function BuildView() {
     <div class="les-body"><p class="les-ask">What does it mean?<span>Prove words${trailLv(w) ? ` · HSK ${trailLv(w)}` : ''}</span></p>
       <div class="les-big"><span class="les-hz" style="font-size:${lesHz(w.hanzi)}px">${esc(w.hanzi)}</span><button class="les-snd" data-act="say" data-h="${esc(w.hanzi)}" aria-label="Hear it">${I.sound}</button></div>
       <div class="les-opts list${done ? ' answered' : ''}">${F.opts.map((e, i) => `<button class="les-opt${cls(e, i)}" data-act="fb-opt" data-i="${i}"${done ? ' disabled' : ''}><span class="lo-en">${esc(e)}</span>${ok && e === w.en ? '<span class="lo-stamp" aria-hidden="true">对</span>' : ''}</button>`).join('')}</div>
-      ${done ? `<p class="fb-note ${ok ? 'ok' : 'no'}" role="status">${ok ? `<b>Proven</b> ${esc(w.pinyin || '')}` : `<b>${esc(w.hanzi)} · ${esc(w.pinyin || '')}</b> means “${esc(w.en)}”. It goes to your review.`}</p>` : ''}</div>
+      ${done ? `<p class="fb-note ${ok ? 'ok' : 'no'}" role="status">${ok ? `<b>Proven</b> ${esc(PY(w.hanzi, w.pinyin || ''))}` : `<b>${esc(w.hanzi)} · ${esc(PY(w.hanzi, w.pinyin || ''))}</b> means “${esc(w.en)}”. It goes to your review.`}</p>` : ''}</div>
     ${done && !ok ? '<div class="les-dock"><button class="btn btn-seal wide" data-act="fb-next">Continue</button></div>' : ''}</div>`;
 }
 function fbPick(i) {
@@ -10726,7 +10920,7 @@ function DeckView(d) {
     <div class="section-head"><h2>Cards</h2></div>
     ${n ? `<ul class="cards">${d.cards.map(c => `<li><button class="crow" data-act="edit-card" data-id="${c.id}">
         <span class="crow-hz">${esc(c.hanzi)}</span>
-        <span class="crow-txt"><span class="crow-py">${esc(c.pinyin)}</span><span class="crow-en">${esc(c.en)}</span></span>${dots(c)}</button></li>`).join('')}</ul>`
+        <span class="crow-txt"><span class="crow-py">${esc(PY(c.hanzi, c.pinyin))}</span><span class="crow-en">${esc(c.en)}</span></span>${dots(c)}</button></li>`).join('')}</ul>`
       : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Tap Add to put in your first word.</p></div>`}
   </div>`;
 }
@@ -11002,7 +11196,7 @@ function Faces(c, d) {   // English on one side; the character and its pinyin (t
   if (d.id === 'today') d = db.decks.find(x => x.cards.includes(c)) || { name: 'Word bank' };   // today's cards: the deck each one is from
   const hz = `<div class="fc-ch" style="font-size:${hzSize(n)}px">${esc(c.hanzi)}</div>`;   // the plain character, no writing grid
   const q = enF ? `<div class="fc-q" style="font-size:${enSize(c.en)}px">${esc(c.en)}</div>` : hz;
-  const py = `<span class="fc-py">${esc(c.pinyin)}<button class="icon-btn" data-act="say" data-h="${esc(c.hanzi)}" aria-label="Hear it">${I.sound}</button></span>`, foot = `<span class="foot">${esc(d.name)}</span>`;
+  const py = `<span class="fc-py">${esc(PY(c.hanzi, c.pinyin))}<button class="icon-btn" data-act="say" data-h="${esc(c.hanzi)}" aria-label="Hear it">${I.sound}</button></span>`, foot = `<span class="foot">${esc(d.name)}</span>`;
   const ans = enF ? `${hz}${py}${foot}`   // English first: the answer is the character and its pinyin
     : `<div class="fc-ch" style="font-size:${Math.round(hzSize(n) * .8)}px">${esc(c.hanzi)}</div>${py}
       <span class="fc-en" style="font-size:${Math.max(17, Math.min(22, Math.round(enSize(c.en) * .6)))}px">${esc(c.en)}</span>${foot}`;
@@ -11413,11 +11607,11 @@ function resetCardState() { Object.assign(S.write, { revealed: false, pyShown: f
 function promptHtml(c) {
   const W = S.write, chars = hanChars(c.hanzi), ask = writeAsk(c), clue = writeClue(c), open = W.revealed || W.guidedDone;
   const left = W.order.length - W.i;
-  const clueHz = clue && [...clue.hz].map(x => x === c.hanzi ? (open ? `<i class="w-gap fill">${esc(x)}</i>` : '<i class="w-gap"></i>') : esc(x)).join('');
+  const clueT = clue && zhChars(clue.hz), clueHz = clue && [...clue.hz].map((x, i) => x === c.hanzi ? (open ? `<i class="w-gap fill">${esc(clueT[i])}</i>` : '<i class="w-gap"></i>') : esc(clueT[i])).join('');
   return `<div class="eyebrow">${W.i >= W.main ? `Once more · ${left === 1 ? 'last one' : left + ' left'}` : `Write in hanzi · ${plural(chars.length, 'character')}`}</div>
       <div class="prompt-en" style="font-size:${Math.min(44, enSize(ask.en))}px">${esc(ask.en)}</div>
-      ${clue ? `<div class="w-clue" id="wclue">as in <span class="hz">${clueHz}</span>${W.pyShown || open ? `<span class="py">${esc(clue.py)}</span>` : ''}<span>· ${esc(clue.en)}</span></div>` : ''}
-      <div class="reveal-line" id="rline">${open ? revealLine(c) : `<button class="link" data-act="py-hint">${W.pyShown ? esc(ask.py) : 'Show pinyin'}</button>`}</div>`;
+      ${clue ? `<div class="w-clue" id="wclue">as in <span class="hz">${clueHz}</span>${W.pyShown || open ? `<span class="py">${esc(PY(clue.hz, clue.py))}</span>` : ''}<span>· ${esc(clue.en)}</span></div>` : ''}
+      <div class="reveal-line" id="rline">${open ? revealLine(c) : `<button class="link" data-act="py-hint">${W.pyShown ? esc(PY(c.hanzi, ask.py)) : 'Show ' + PYN().toLowerCase()}</button>`}</div>`;
 }
 function WriteView(d) {
   const W = S.write, n = W.order.length;
@@ -11433,7 +11627,7 @@ function WriteView(d) {
 const writeSeg = () => { const guided = db.prefs.writeMode === 'guided';
   return `<div class="seg"><button data-act="wmode" data-m="free" class="${guided ? '' : 'on'}">Free</button><button data-act="wmode" data-m="guided" class="${guided ? 'on' : ''}">Guided</button></div>`; };
 function writeBody(c) {   // the prompt, the writing boxes, the note and the tools: the word bank's writing screen, also used inside lessons
-  const chars = hanChars(c.hanzi), guided = db.prefs.writeMode === 'guided';
+  const chars = wChars(c), guided = db.prefs.writeMode === 'guided';
   return `<section class="prompt" id="wprompt">${promptHtml(c)}</section>
     <div class="grid" id="grid">${chars.map((ch, i) => `<div class="tzg" data-i="${i}" data-n="${i + 1}">${TZG}<canvas></canvas><div class="ans"></div><div class="quiz"></div></div>`).join('')}</div>
     <div class="note" id="note">${guided ? 'Draw each stroke in order — wrong strokes bounce back.' : 'Write with your finger, then check.'}</div>
@@ -11441,14 +11635,14 @@ function writeBody(c) {   // the prompt, the writing boxes, the note and the too
       ? `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill ${db.prefs.outline ? 'on' : ''}" data-act="outline">${I.eye}Outline</button><button class="pill" data-act="giveup">Show me</button>`
       : `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill" data-act="undo">${I.undo}Undo</button><button class="pill" data-act="clear">${I.trash}Clear</button>`}</div>`;
 }
-const revealLine = c => `<span class="hz" style="font-size:22px">${esc(c.hanzi)}</span><span class="py">${esc(writeAsk(c).py)}</span>`;
+const revealLine = c => `<span class="hz" style="font-size:22px">${esc(c.hanzi)}</span><span class="py">${esc(PY(c.hanzi, writeAsk(c).py))}</span>`;
 /* Hint: each tap draws the next part of the character faintly in red (晴: 日, then 龶, then 月), its strokes one after
    another in their writing direction. Once you have written over a part, its hint fades away, so the box stays clean.
    Free: box by box, part by part. Guided: the part you are due to write next, in the box you are on.
    Small characters (4 strokes or fewer) go stroke by stroke. */
 async function writeHint() {
   const W = S.write; if (W.revealed || W.checking || W.guidedDone) return;
-  const c = cardById(curDeck(), W.order[W.i]), chars = hanChars(c.hanzi), boxes = $$('#grid .tzg');
+  const c = cardById(curDeck(), W.order[W.i]), chars = wChars(c), boxes = $$('#grid .tzg');
   let refs; try { [refs] = await Promise.all([Promise.all(chars.map(loadRef)), loadParts().catch(() => null)]); } catch (_) { toast('Hints need the internet the first time'); return; }
   if (S.write !== W || W.revealed || W.guidedDone) return;
   chars.forEach((ch, i) => { W.hg[i] ||= { groups: hintGroups(ch, refs[i]), shown: new Set(), done: new Set() }; boxes[i]._hintRef = refs[i]; });
@@ -11572,7 +11766,7 @@ function writeEndShow() {
 }
 function mountWrite() {
   const W = S.write; if (W.done) return writeEndShow();
-  const d = curDeck(), c = cardById(d, W.order[W.i]), chars = hanChars(c.hanzi);
+  const d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   const grid = $('#grid'), { s, gap, cols, rows } = boxSize(chars.length, grid.clientWidth, writeRoom(grid));
   grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
   grid.style.maxWidth = cols * s + (cols - 1) * gap + 'px';
@@ -11840,7 +12034,7 @@ function strokeCheck(userStrokes, ref, s) {
   const avg = (A, B) => A.reduce((a, p) => a + nearest(p, B), 0) / A.length;
   return { ok, owned, misplaced: own.filter(c => c < JUDGE.strokeCov).length, strong, looseOk, twinOk, partOk, extra, missing, stray, total, badPart: badPart && { pos: badPart.pos, radical: !!badPart.radical }, fit: (avg(Ua, Ra) + avg(Ra, Ua)) / 2 };
 }
-async function recognize(strokes, s, lang = 'zh_CN') {
+async function recognize(strokes, s, lang = hwLang()) {
   const t0 = strokes[0]?.[0]?.t || 0;
   const ink = strokes.map(st => [st.map(p => Math.round(p.x)), st.map(p => Math.round(p.y)), st.map(p => Math.round(p.t - t0))]);
   const r = await fetch('https://inputtools.google.com/request?ime=handwriting&app=mobilesearch&cs=1&oe=UTF-8', {
@@ -11861,7 +12055,7 @@ async function rescueWithWord(word, chars, boxes, res) {
     const ink = strokes.map(st => [st.map(p => Math.round(p.x)), st.map(p => Math.round(p.y)), st.map(p => p.t)]);
     const r = await fetch('https://inputtools.google.com/request?ime=handwriting&app=mobilesearch&cs=1&oe=UTF-8', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ options: 'enable_pre_space', requests: [{ writing_guide: { writing_area_width: s * chars.length, writing_area_height: s }, ink, language: 'zh_CN' }] }),
+      body: JSON.stringify({ options: 'enable_pre_space', requests: [{ writing_guide: { writing_area_width: s * chars.length, writing_area_height: s }, ink, language: hwLang() }] }),
     });
     const j = await r.json(), cands = j[0] === 'SUCCESS' ? (j[1]?.[0]?.[1] || []) : [];
     if (cands.slice(0, 3).includes(chars.join(''))) weak.forEach(i => { res[i] = { ...res[i], ok: true, rescued: true }; });
@@ -12000,7 +12194,7 @@ function morphToChar(box, ref) {
   raf = requestAnimationFrame(frame);
 }
 function revealFree() {
-  const W = S.write, d = curDeck(), c = cardById(d, W.order[W.i]), chars = hanChars(c.hanzi);
+  const W = S.write, d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   W.revealed = true;
   $$('#grid .tzg').forEach((box, i) => {
@@ -12025,7 +12219,7 @@ function revealFree() {
   if (!W.checking) showVerdict();
 }
 function showVerdict() {   // the checker's answer: green or red ring per box, the reason, the sound, the grade buttons
-  const W = S.write, c = cardById(curDeck(), W.order[W.i]), chars = hanChars(c.hanzi);
+  const W = S.write, c = cardById(curDeck(), W.order[W.i]), chars = wChars(c);
   const boxes = $$('#grid .tzg');
   boxes.forEach((box, i) => { const j = W.judge?.chars?.[i]; if (j && j.ok !== null) box.classList.add(j.ok ? 'judged-ok' : 'judged-no'); });
   const M = W.miss = W.judge?.ok === false ? writeMiss(chars) : null;
@@ -12041,7 +12235,7 @@ function showVerdict() {   // the checker's answer: green or red ring per box, t
 }
 /* Shi Shi slides in from the side of the screen with a speech bubble: what you wrote instead (清 qīng · clear),
    which part goes where (Left part: 日, not 氵, that makes 清), or why it isn't right yet, and a kind word */
-const ssLabel = n => { const x = partInfo(n), g = [x.p, x.en].filter(Boolean).map(esc).join(' · ');   // 子 zǐ · child, the reading kept on one line
+const ssLabel = n => { const x = partInfo(n), g = [x.p && PY(n, x.p), x.en].filter(Boolean).map(esc).join(' · ');   // 子 zǐ · child, the reading kept on one line
   return `<b class="hz">${esc(n)}</b>${g ? ` <span class="ss-g">${g}</span>` : ''}`; };
 function shiSide(M) {
   const n = $$('#grid .tzg').length > 1 ? ` in box ${M.i + 1}` : '';
@@ -12051,7 +12245,7 @@ function shiSide(M) {
     say = `<strong class="ss-t ok">${pos}${n}: ${ssLabel(M.want)}</strong>${M.got ? `<span>not ${ssLabel(M.got)}${M.w ? `, that makes <b class="hz">${esc(M.w)}</b>` : ''}</span>` : M.w ? `<span>yours reads <b class="hz">${esc(M.w)}</b></span>` : ''}`;
   } else if (M.kind === 'char') {
     const x = charInfo(M.w);
-    say = `<strong class="ss-t">You wrote <b class="hz">${esc(M.w)}</b>${n}</strong><span>${x.p ? esc(x.p) : ''}${x.p && x.en ? ' · ' : ''}${x.en ? esc(x.en) : ''}</span>`;
+    say = `<strong class="ss-t">You wrote <b class="hz">${esc(M.w)}</b>${n}</strong><span>${x.p ? esc(PY(M.w, x.p)) : ''}${x.p && x.en ? ' · ' : ''}${x.en ? esc(x.en) : ''}</span>`;
   } else say = `<strong class="ss-t">${esc(M.why)}</strong>`;
   return `<div class="shi-side" role="status"><div class="ss-bub">${say}<small>${esc(M.cheer)}</small></div><div class="ss-lion">${shiFace(M.kind === 'part' ? 'peek' : 'miss')}</div></div>`;
 }
@@ -12345,7 +12539,7 @@ function cardSheet(cardId) {
         if (!E.enDirty && E.autoEn) { fen.value = ''; E.autoEn = false; }
         const q = fen.value.trim(), hits = E.D && q.length >= 2 ? searchEnglish(E.D, q).slice(0, 6) : [];   // no Chinese yet: the English looked up the other way
         means.innerHTML = '';   // v4.12: these Chinese picks sit under the Chinese box, not under the English
-        sugs.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(r.p)}</span></button>`).join('');
+        sugs.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(PY(r.h, r.p))}</span></button>`).join('');
       };
       const paintHz = () => {
         fhz.textContent = E.hanzi; $q('#fword').hidden = !E.hanzi; fpy.placeholder = E.hanzi ? '' : exZh();
@@ -12356,7 +12550,7 @@ function cardSheet(cardId) {
         reads.innerHTML = R.length > 1 ? R.map((r, i) => `<button class="mean ${i === E.reading && !E.pyDirty ? 'on' : ''}" data-r="${i}">${esc(r.p)}</button>`).join('') : '';
         paintMeans(); paintBtn();
       };
-      const setHz = hz => { E.hanzi = hz; E.pyDirty = false; E.reading = 0; if (!hz) E.enFirst = false; paintHz(); };
+      const setHz = hz => { E.hanzi = zhS(hz); E.pyDirty = false; E.reading = 0; if (!hz) E.enFirst = false; paintHz(); };
       const paintCands = list => {
         if (!fpy.value) { cands.innerHTML = ''; cands._list = []; return; }
         cands.innerHTML = list.length ? list.map((x, i) => `<button class="cand" data-i="${i}">${esc(x.h)}</button>`).join('') : '<span class="msg">No match yet…</span>';
@@ -12686,7 +12880,7 @@ function quickAddSheet() {
       const more = startsWith(Q.word);
       not.innerHTML = `<b>${esc(Q.word)}</b> is not a word in the dictionary, so it can’t go in your word bank. `
         + (more.length ? 'Keep writing, or pick a word that starts with it:' : 'Tap ⌫ to take the last character off.')
-        + (more.length ? `<div class="qa-sugg">${more.map(r => `<button data-h="${esc(r.h)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(r.p)}</span></button>`).join('')}</div>` : '');
+        + (more.length ? `<div class="qa-sugg">${more.map(r => `<button data-h="${esc(r.h)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(PY(r.h, r.p))}</span></button>`).join('')}</div>` : '');
     };
     const paintInfo = () => {
       const R = readings();
@@ -12704,11 +12898,11 @@ function quickAddSheet() {
     const paintWord = () => {
       hzEl.textContent = Q.word || (Q.mode === 'write' ? 'Write a character below…' : Q.mode === 'pinyin' ? 'Type pinyin below…' : 'Search in English below…');
       hzEl.classList.toggle('ph', !Q.word);
-      pyEl.textContent = Q.word ? curPinyin() : '';
+      pyEl.textContent = Q.word ? PY(Q.word, curPinyin()) : '';
       paintInfo(); paintButton();
     };
     const setWord = (w, row, typed) => {
-      Q.word = w; Q.enDirty = false; Q.typed = typed || '';
+      Q.word = zhS(w); Q.enDirty = false; Q.typed = typed || '';
       const R = readings(), said = Q.typed && R.findIndex(r => normPy(r.p) === Q.typed);   // the reading you typed comes first
       Q.reading = row ? Math.max(0, R.indexOf(row)) : said > 0 ? said : 0;
       paintWord();
@@ -12808,7 +13002,7 @@ function quickAddSheet() {
           if (seq !== Q.seq) return;
           const rows = searchEnglish(Q.D, q); res._rows = rows;
           res.innerHTML = rows.length ? rows.map((r, i) => `<button class="en-row" data-i="${i}"><span class="hz">${esc(r.h)}</span>
-              <span class="wm"><div class="wp">${esc(r.p)}</div><div class="we">${esc(r.e)}</div></span></button>`).join('')
+              <span class="wm"><div class="wp">${esc(PY(r.h, r.p))}</div><div class="we">${esc(r.e)}</div></span></button>`).join('')
             : `<span class="msg">Nothing found for “${esc(q)}”. Try another word.</span>`;
         };
         inp.addEventListener('input', () => { clearTimeout(t); t = setTimeout(run, 140); });
@@ -12879,7 +13073,7 @@ function BankView() {
       ${n > 1 ? `<div class="bk-sort"><button class="bk-sort-btn" data-act="bank-sort" aria-label="Filter words: ${bankModeLabel(lvls)}. Change">${I.sort}${bankModeLabel(lvls)}</button></div>` : ''}
       <div id="bankWords">${groups.map(([lv, ws]) => `<section class="bk-sec">${byHsk ? `<h3 class="bk-gh">${lv ? HSK_NAME(lv) : 'Not in HSK'}<span class="bk-gh-n">${ws.length}</span></h3>` : ''}
         <div class="group word-list">${ws.map(w => `<button class="row word word-row st-${wStage(w)}" style="--sep:76px" data-act="bank-word" data-id="${w.id}" data-st="${wStage(w)}" data-s="${esc((w.hanzi + ' ' + normPy(w.pinyin || '') + ' ' + (w.pinyin || '') + ' ' + (w.en || '')).toLowerCase())}">
-          <span class="hz">${esc(w.hanzi)}<i class="w-dot ${wStage(w)}" title="${wStage(w)}"></i></span><span class="row-main"><span class="wp">${esc(w.pinyin)}</span><span class="we">${esc(w.en || '—')}</span></span>${w.hsk && !byHsk ? `<span class="row-val">${HSK_NAME(w.hsk)}</span>` : ''}<span class="chev">${I.chev}</span></button>`).join('')}</div></section>`).join('')}</div>
+          <span class="hz">${esc(w.hanzi)}<i class="w-dot ${wStage(w)}" title="${wStage(w)}"></i></span><span class="row-main"><span class="wp">${esc(PY(w.hanzi, w.pinyin))}</span><span class="we">${esc(w.en || '—')}</span></span>${w.hsk && !byHsk ? `<span class="row-val">${HSK_NAME(w.hsk)}</span>` : ''}<span class="chev">${I.chev}</span></button>`).join('')}</div></section>`).join('')}</div>
       <p class="bk-none" id="bankNone" hidden></p>
       <p class="muted" style="font-size:11.5px;margin:18px 2px 0">Meanings from CC-CEDICT (mdbg.net, CC BY-SA 4.0)</p>
       <div class="bk-fabgap"></div>`
@@ -12893,7 +13087,7 @@ function mountBank() {
   const list = $('#bankWords'), secs = $$('#bankWords .bk-sec'), none = $('#bankNone');
   if (S.keepQ) { q.value = S.bankQv || ''; q.parentElement.querySelector('.clr').hidden = !q.value; S.keepQ = false; }   // a new sort draws the page again; the search stays
   const apply = () => {
-    const s = q.value.trim().toLowerCase(), sp = normPy(s), f = S.bankF || 'all'; let k = 0; S.bankQv = q.value;
+    const s = zhS(q.value.trim().toLowerCase()), sp = normPy(s), f = S.bankF || 'all'; let k = 0; S.bankQv = q.value;
     secs.forEach(sec => {   // each HSK level's heading counts the words still showing under it, and goes when none are left
       let m = 0;
       sec.querySelectorAll('.word-row').forEach(r => { const off = (f !== 'all' && r.dataset.st !== f) || (!!s && !r.dataset.s.includes(s) && !(sp && r.dataset.s.includes(sp))); r.hidden = off; if (!off) m++; });
@@ -12992,7 +13186,7 @@ function charsSheet() {   // every character in your words, the first ones you l
 function wordSheet(id) {
   const w = db.bank.find(x => x.id === id); if (!w) return;
   const has = new Set(db.decks.filter(d => d.cards.some(c => c.hanzi === w.hanzi)).map(d => d.id)), sel = new Set();
-  openSheet(`<div class="compose" style="margin-bottom:16px"><div class="qa-word"><div class="compose-hz">${esc(w.hanzi)}</div><div class="compose-py">${esc(w.pinyin)}</div>${w.src === 'lesson' && LES(w.les) ? `<div class="muted w-src">From ${HSK_NAME(LES(w.les).lv)} lesson ${LES(w.les).k} · ${esc(LES(w.les).title)}</div>` : ''}</div></div>
+  openSheet(`<div class="compose" style="margin-bottom:16px"><div class="qa-word"><div class="compose-hz">${esc(w.hanzi)}</div><div class="compose-py">${esc(PY(w.hanzi, w.pinyin))}</div>${w.src === 'lesson' && LES(w.les) ? `<div class="muted w-src">From ${HSK_NAME(LES(w.les).lv)} lesson ${LES(w.les).k} · ${esc(LES(w.les).title)}</div>` : ''}</div></div>
     <label class="field"><span class="lbl">Meaning · English</span><input class="input" id="wEn" value="${esc(w.en || '')}" placeholder="What it means" autocomplete="off"></label>
     <div class="group qa-decks"><button class="row" id="wDecks"><span class="row-main"><span class="row-t">Add to deck</span></span><span class="row-val" id="wDeckVal"></span><span class="chev">${I.chev}</span></button></div>
     <div class="row-btns" style="margin-top:6px"><button class="btn btn-ghost" id="wDel" style="flex:0 0 56px;padding:0;color:var(--seal)" aria-label="Remove from word bank">${I.trash}</button>
@@ -13140,8 +13334,9 @@ function partInfo(n) {   // { p, en } for a part: the radicals table first (plai
   const g = S.H?.gloss?.get(n); if (g) return { p: g.p, en: g.en.split(';')[0] };
   const m = S.P?.meta.get(n); return { p: m?.p || '', en: m?.en || '' };
 }
-const partLabel = n => { const x = partInfo(n); return `<b class="hz">${esc(n)}</b>${x.p ? ` ${esc(x.p)}` : ''}${x.en ? ` · ${esc(x.en)}` : ''}`; };
+const partLabel = n => { const x = partInfo(n); return `<b class="hz">${esc(n)}</b>${x.p ? ` ${esc(PY(n, x.p))}` : ''}${x.en ? ` · ${esc(x.en)}` : ''}`; };
 function charInfo(h) {   // pinyin and a short meaning for a character the checker thinks you wrote
+  h = zhS(h);   // v4.68: the reader may have read a traditional one
   const g = S.H?.gloss?.get(h); if (g) return { p: g.p, en: g.en };
   const r = S.H?.byHz.get(h); if (r) return { p: r.p, en: meanOf(r) };
   for (const lv of [1, 2, 3, 4, 5, 6, 7]) for (const w of S.H?.levels[lv] || []) {   // only inside words (医 in 医生): "yī, as in 医生 doctor"
@@ -13331,7 +13526,7 @@ function mountHsk() {
   const inBank = new Set(db.bank.map(w => w.hanzi));
   let rows = L, shown = 0;
   const row = r => `<button class="row word ${inBank.has(r.h) ? 'has' : sel.has(r.h) ? 'on' : ''}" style="--sep:52px" data-h="${esc(r.h)}"><span class="sel">${I.check}</span><span class="hz">${esc(r.h)}</span>
-    <span class="row-main"><span class="wp">${esc(r.p)}</span><span class="we">${esc(meanOf(r))}</span></span></button>`;
+    <span class="row-main"><span class="wp">${esc(PY(r.h, r.p))}</span><span class="we">${esc(meanOf(r))}</span></span></button>`;
   const more = () => { if (shown >= rows.length) return; list.insertAdjacentHTML('beforeend', rows.slice(shown, shown + 150).map(row).join('')); shown += 150; };
   const fresh = () => rows.filter(r => !inBank.has(r.h));
   const paint = () => {
@@ -13341,7 +13536,7 @@ function mountHsk() {
   };
   const reset = () => { list.innerHTML = rows.length ? '' : '<div class="row"><span class="row-s">No word in this level matches.</span></div>'; shown = 0; more(); paint(); };
   q.oninput = () => {
-    const s = q.value.trim().toLowerCase(), sp = normPy(s);
+    const s = zhS(q.value.trim().toLowerCase()), sp = normPy(s);
     rows = !s ? L : L.filter(r => r.h.includes(s) || (sp && (r.np ??= normPy(r.p)).includes(sp)) || r.e.toLowerCase().includes(s));
     reset();
   };
@@ -13374,7 +13569,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.31';
+const APP_VERSION = '3.45.32';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -13767,6 +13962,7 @@ function settingsRows(dr) {
     `<${tag} class="${dr ? 'dr-item' : 'list-btn'}"${id ? ` id="${id}"` : ''}${tag === 'label' ? ' style="cursor:pointer"' : ''}>${dr ? icon : ''}<span${dr ? ' class="dr-t"' : ''}>${t}${dr ? '' : '<br>'}${small}</span>${side}${extra}</${tag}>`;
   return [
     row('sAcct', I.profile, `<span class="acct-t">${CLOUD.user ? 'Your account' : 'Sign in'}</span>`, `<small id="acctSub"${CLOUD.user ? '' : ' class="opt"'}>${esc(CLOUD.line())}</small>`),   // v4.47
+    row('sSys', `<span class="dr-flag">${flagSvg(sysK())}</span>`, 'Chinese', `<small>${SYS[sysK()].long} · ${SYS[sysK()].where}</small>`),   // v4.68
     row('sName', I.pen, 'Your name', db.prefs.name ? `<small>${esc(db.prefs.name)}</small>` : '<small class="opt">Shown in the menu and on your profile</small>'),
     row('sRem', I.bell, 'Daily reminder', `<small id="remSub">${remindLine()}</small>`),   // v2.91: moved here from Profile
     isInstalled() ? '' : row('sInst', I.install, 'Install app', '<small class="opt">Put ShiHanzi on your home screen</small>'),
@@ -13803,6 +13999,7 @@ function bindSettings(sh, dr) {
   sh.querySelector('#sLog').onclick = leave(logSheet);
   sh.querySelector('#sDev').onclick = leave(devSheet);
   sh.querySelector('#sName').onclick = leave(nameSheet);
+  sh.querySelector('#sSys').onclick = leave(() => sysPick());
   sh.querySelector('#sAcct').onclick = leave(() => acctSheet());
   sh.querySelector('#sRem').onclick = leave(remindSheet);
   sh.querySelector('#sExp').onclick = () => {
@@ -13915,8 +14112,8 @@ const OB_LVS = [[1, 'First words'], [2, 'Simple everyday talk'], [3, 'Daily life
 const OB_FOR = [['exam', '考', 'The HSK exam', 'Words from the exam lists, planned up to your exam day'], ['read', '读', 'Reading Chinese day to day', 'Signs, menus, messages and short stories']];
 /* moka2 3.45.21: a self-study app, so no level test (character check, word cards, story); the one level question sets where you start.
    The test's code (check, words, read) is still in the file, unused */
-const OB_STEPS = ['hi', 'hello', 'why', 'level', 'plan', 'how1', 'how2', 'how3', 'how4', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
-const OB_PROG = { why: .12, level: .24, plan: .34, how1: .44, how2: .52, how3: .6, how4: .67, goal: .76, chart: .86, habit: .94, save: 1 };   // 3.45.23: no exam date page   // jumps early, then slows (progress bars that start fast keep more people going)
+const OB_STEPS = ['hi', 'hello', 'sys', 'why', 'level', 'plan', 'how1', 'how2', 'how3', 'how4', 'goal', 'chart', 'habit', 'pay', 'save'];   // moka2 v3.45.11: 'save' (make an account, from the real app's v4.57) comes last
+const OB_PROG = { sys: .06, why: .12, level: .24, plan: .34, how1: .44, how2: .52, how3: .6, how4: .67, goal: .76, chart: .86, habit: .94, save: 1 };   // 3.45.23: no exam date page   // jumps early, then slows (progress bars that start fast keep more people going)
 const OB_ROUND = 12, OB_ROUNDS = 4;
 /* the short reading test: hand-written passages per HSK level (two each, one picked at random), each with one question */
 const OB_READ = {
@@ -13947,7 +14144,7 @@ const OB_READ = {
 };
 const canRemind = () => 'PushManager' in window && 'Notification' in window && SYNC.on && !(db.prefs.remind?.on);
 function obStart(replay, demo) {   // demo: shown once on moka2 to try the new pages; it changes nothing
-  S.ob = { i: 0, hist: [], why: [], level: null, goal: null, replay: !!replay || !!demo, demo: !!demo, for: null, exam: null, how: null, plan: 'year', trial: true, hour: 19, prog: 0 };
+  S.ob = { i: 0, hist: [], why: [], level: null, goal: null, replay: !!replay || !!demo, demo: !!demo, for: null, exam: null, how: null, plan: 'year', trial: true, hour: 19, prog: 0, sys: replay || demo || db.prefs.sys ? sysK() : null };
   loadHsk().catch(() => {});
   LOG.add('onboarding', { step: 'hi', replay: !!replay });
   obShow();
@@ -14114,6 +14311,9 @@ function obShow() {
   else if (step === 'hello') html = `<div class="ob-top"><button class="icon-btn" data-ob="back" aria-label="Back">${I.back}</button></div>
     <div class="ob2-stage"><div class="ob2-bub" id="ob2Bub"></div><div class="ob2-shi ob2-hello ob2-pop">${shiFace('happy')}</div></div>
     <div class="ob-dock ob2-in" style="--i:3"><button class="btn btn-primary" data-ob="next">Next</button></div>`;
+  else if (step === 'sys') html = obTop() + `<h2 class="ob2-q ob2-in">Which Chinese are you learning?</h2><p class="ob2-sub ob2-in" style="--i:1">Characters, sounds and stories follow your pick. Change it any time with the flag at the top.</p>
+    <div class="ob-opts" data-pick="sys" data-zh-keep>${SYS_KEYS.map((k, i) => `<span ${inn(2 + i)}>${obOpt(k, flagSvg(k), SYS[k].long, `${SYS[k].sound} · <span class="ob-zh">${SYS[k].zh}</span> · ${SYS[k].where}`, O.sys === k)}</span>`).join('')}</div>
+    <div class="ob-dock ob2-in" style="--i:5"><button class="btn btn-primary" data-ob="next"${O.sys ? '' : ' disabled'}>Next</button></div>`;   // 3.45.32: from ShiHanzi2's v4.68
   else if (step === 'why') html = obTop() + `<h2 class="ob2-q ob2-in">Why are you learning Chinese?</h2><p class="ob2-sub ob2-in" style="--i:1">Pick as many as you like.</p>
     <div class="ob-opts" data-pick="why">${OB_WHY.map(([v, g, t], i) => `<span ${inn(2 + i)}>${obOpt(v, `<span class="ob-glyph">${g}</span>`, t, '', O.why.includes(v))}</span>`).join('')}</div>
     <div class="ob-dock ob2-in" style="--i:8"><button class="btn btn-primary" data-ob="next"${O.why.length ? '' : ' disabled'}>Next</button></div>`;   // 3.45.23: the reasons from ShiHanzi2
@@ -14189,7 +14389,7 @@ function obShow() {
     const Q = O.q, c = Q.cards.at(-1), done = c.pick != null;
     const cls = (o, k) => !done ? '' : o.ok ? (c.pick === k ? ' ok pick' : ' ok reveal') : c.pick === k ? ' no' : '';
     html = obTop() + `<p class="les-ask ob-qask">What does this mean?<span>${Q.cards.length} of ${Q.max}</span></p>
-      <div class="les-card ob-qcard"><span class="les-hz" style="font-size:${lesHz(c.w.h)}px">${esc(c.w.h)}</span>${done ? `<span class="les-mean">${esc(c.w.p)}</span>` : ''}</div>
+      <div class="les-card ob-qcard"><span class="les-hz" style="font-size:${lesHz(c.w.h)}px">${esc(c.w.h)}</span>${done ? `<span class="les-mean">${esc(PY(c.w.h, c.w.p))}</span>` : ''}</div>
       <div class="les-opts list${done ? ' answered' : ''}">${c.opts.map((o, k) => `<button class="les-opt${cls(o, k)}" data-qo="${k}"${done ? ' disabled' : ''}><span class="lo-en">${esc(o.en)}</span></button>`).join('')}</div>
       <div class="ob-dock"><button class="ob-link" data-qo="-1"${done ? ' disabled' : ''}>I don’t know this one</button></div>`;
   }
@@ -14438,8 +14638,8 @@ async function obClick(e) {
     const k = b.closest('[data-pick]').dataset.pick;
     if (k === 'for') { O.for = b.dataset.v; O.why = [O.for]; O.tw = null; $$('#ob [data-pick="for"] .ob-opt').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#ob [data-ob="next"]').disabled = false; return; }
     if (k === 'why') { const v = b.dataset.v; O.why = O.why.includes(v) ? O.why.filter(x => x !== v) : [...O.why, v]; b.setAttribute('aria-pressed', O.why.includes(v)); $('#ob [data-ob="next"]').disabled = !O.why.length; return; }
-    O[k] = +b.dataset.v;
-    b.parentElement.querySelectorAll('.ob-opt').forEach(x => x.setAttribute('aria-pressed', x === b));
+    O[k] = k === 'sys' ? b.dataset.v : +b.dataset.v;
+    b.closest('[data-pick]').querySelectorAll('.ob-opt').forEach(x => x.setAttribute('aria-pressed', x === b));
     $('#ob [data-ob="next"]').disabled = false; return;
   }
   const a = b.dataset.ob;
@@ -14487,6 +14687,7 @@ async function obClick(e) {
     if (obPlace()) { LOG.add('onboarding-placed', O.chk.est); O.q = null; O.st = null; O.tw = null; obGo(obSkipTests() ? 'plan' : 'words'); } else obShow();
     return;
   }
+  if (step === 'sys') { if (!O.sys) return; b.disabled = true; const ok = await setSys(O.sys, true); b.disabled = false; if (ok && S.ob === O) obGo(obNext()); return; }   // everything after this is in your Chinese
   obGo(obNext());
 }
 
@@ -14746,6 +14947,7 @@ const A = {
   'drawer': () => openDrawer(),
   'dr-profile': () => { closeDrawer(); if (S.view !== 'profile') { S.instant = true; nav('#/profile'); } },
   'streak': () => { S.smo = 0; nav('#/streak'); },
+  'sys': t => sysPick(t),   // v4.68: the flag beside the streak flame
   'st-close': () => goBack('#/'),
   'st-month': t => { S.smo += +t.dataset.step; const c = $('#stCal'); if (c) c.outerHTML = StreakCal(); },
   'st-share': () => shareStreak(),
@@ -14820,7 +15022,7 @@ const A = {
   'check': async () => {
     const W = S.write; if (!W.history.length) { toast('Write something first'); return; }
     if (W.checking || W.revealed) return; W.checking = true; const t0 = Date.now();
-    const chars = hanChars(cardById(curDeck(), W.order[W.i]).hanzi), boxes = $$('#grid .tzg');
+    const chars = wChars(cardById(curDeck(), W.order[W.i])), boxes = $$('#grid .tzg');
     const judging = Promise.all(boxes.map((b, i) => judgeChar(chars[i], b._strokes || [], b._s))).then(r => rescueWithWord(null, chars, boxes, r));
     revealFree();   // your ink starts turning into the character right away; the verdict lands while it moves
     const [res] = await Promise.all([judging, loadParts().catch(() => null)]);   // the parts let Shi Shi name a wrong part

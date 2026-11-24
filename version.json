@@ -1,1 +1,1 @@
-{"version": "3.45.31", "notes": "The writing check is stricter: every stroke must be drawn in its own place. A 酒 with the 儿 drawn under the box instead of inside it no longer counts as right"}
+{"version": "3.45.32", "notes": "Pick which Chinese you learn: Simplified (China), Traditional (Taiwan) or Cantonese (Hong Kong). The first run asks after the hello, and the flag next to the streak flame on Decks and Read switches it any time"}
