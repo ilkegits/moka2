@@ -576,7 +576,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .hdx-saved>span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .hdx-saved b{font:700 16.5px/1.2 var(--ui);color:var(--jade);letter-spacing:-.01em}
 .hdx-saved small{font-size:13.5px;line-height:1.3;color:var(--muted)}
-.hdx-saved .sv-hz{flex:none;font-family:var(--hanzi);font-weight:600;font-size:26px;line-height:1;color:var(--ink);opacity:.9}
+.hdx-saved .sv-hz{flex:none;font-family:var(--hanzi);font-weight:600;font-size:24px;line-height:1;color:var(--ink);opacity:.85}
 .hdx-saved.new .sv-tick{animation:pop .4s cubic-bezier(.2,.9,.3,1.4) both}
 .hdx-saved.new>span,.hdx-saved.new .sv-hz{animation:svIn .35s .08s ease-out both}
 @keyframes svIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
@@ -14119,7 +14119,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.61';
+const APP_VERSION = '3.45.62';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
