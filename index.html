@@ -1935,6 +1935,7 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-box{flex:1;min-width:0;height:44px;display:flex;align-items:center;padding:0 40px 0 14px;border-radius:13px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);text-align:left;color:var(--ink)}   /* 3.45.69: slimmer */
 .dc-txt{flex:1;min-width:0;overflow:hidden;white-space:nowrap;font:400 17px/1.25 "PyMarks","Satoshi",var(--hanzi);letter-spacing:0;color:var(--ink);cursor:text}
 .dc-q{flex:1;min-width:0;height:100%;border:0;padding:0;background:none;font:400 17px/1.25 "PyMarks","Satoshi",var(--hanzi);letter-spacing:0;color:var(--ink);caret-color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}   /* like the app's other search fields */
+.dc-th,.dc-txt mark{font-size:20px}.dc-q.hz{font-size:20px}   /* 3.45.76: Chinese characters in the bar a bit bigger than the 17px letters */
 .dc-q::selection,.dc-txt::selection{background:var(--seal-soft);color:var(--ink)}
 .dc-q::placeholder{color:var(--muted)}
 .dc-q::-webkit-search-cancel-button{display:none}
@@ -13518,11 +13519,12 @@ function mountDict() {
     const ph = k() === 'en' ? 'Type an English word' : 'Write below, or type pinyin';
     txt.hidden = !show; inp.hidden = show;
     if (show) {
-      txt.innerHTML = `${esc(st.text)}${pend ? `<mark>${esc(st.cands[0])}</mark>` : ''}<i class="dc-caret"></i>${st.text || pend ? '' : `<span class="dc-ph">${ph}</span>`}`;
+      txt.innerHTML = `${esc(st.text).replace(/\p{Script=Han}+/gu, m => `<span class="dc-th">${m}</span>`)}${pend ? `<mark>${esc(st.cands[0])}</mark>` : ''}<i class="dc-caret"></i>${st.text || pend ? '' : `<span class="dc-ph">${ph}</span>`}`;
       txt.setAttribute('aria-label', pend ? `Use ${st.cands[0]} and write the next character` : 'Type in the search bar');
       txt.scrollLeft = txt.scrollWidth;
     }
     if (inp.value !== st.text) inp.value = st.text;
+    inp.classList.toggle('hz', HAN.test(st.text));
     inp.placeholder = ph;
     $('#dcClr').hidden = !st.text && !st.strokes.length;
     $('#dcBk').disabled = !st.text && !st.strokes.length;
@@ -13658,7 +13660,7 @@ function mountDict() {
   /* typing: pinyin or characters in Chinese, words in English; characters typed in English mode turn the flag to Chinese */
   let rowT = 0;
   inp.addEventListener('input', () => {
-    st.text = inp.value;
+    st.text = inp.value; inp.classList.toggle('hz', HAN.test(st.text));
     if (k() === 'en' && HAN.test(st.text)) { st.text = st.text.replace(/[^\p{Script=Han}]/gu, ''); setLang(zh, true); return; }
     if (k() !== 'en' && DCV.D && dcLooksEnglish(DCV.D, st.text)) setLang('en', true);   // 3.45.73: an English word, not pinyin: the flag turns at once
     $('#dcClr').hidden = !st.text; $('#dcBk').disabled = !st.text;
@@ -14652,7 +14654,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.75';
+const APP_VERSION = '3.45.76';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });

@@ -1,1 +1,1 @@
-{"version": "3.45.75", "notes": "Dictionary results list more compact: smaller characters, pinyin and meanings, less space around each word"}
+{"version": "3.45.76", "notes": "Dictionary: Chinese characters in the search bar a bit bigger (20px, the letters stay 17px)"}
