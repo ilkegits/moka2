@@ -1930,13 +1930,16 @@ svg.sil{filter:brightness(0);opacity:.28}
 .dc-bar{position:relative;display:flex;gap:8px}
 .dc-box{flex:1;min-width:0;height:54px;display:flex;align-items:center;padding:0 48px 0 16px;border-radius:16px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);text-align:left;color:var(--ink)}
 .dc-txt{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:600 26px/1.2 var(--hanzi);letter-spacing:.04em}
-.dc-txt.en{font:600 19px/1.2 var(--ui);letter-spacing:0}
+.dc-in{flex:1;min-width:0;height:100%;border:0;padding:0;background:none;font:600 19px/1.2 var(--ui);color:var(--ink);outline:none}
+.dc-in::placeholder{font-weight:400;font-size:15.5px;color:var(--muted)}
+.dc-in::-webkit-search-cancel-button{display:none}
+.dc-in[hidden],.dc-txt[hidden],.dc-clr[hidden],.dc-undo[hidden]{display:none}
 .dc-txt u{text-decoration:underline 2px var(--seal);text-underline-offset:6px;color:var(--muted)}
 .dc-ph{font:400 15.5px/1 var(--ui);letter-spacing:0;color:var(--muted)}
-.dc-clr{position:absolute;top:6px;right:66px;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;color:var(--muted)}
+.dc-clr{position:absolute;top:6px;right:56px;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;color:var(--muted)}
 .dc-clr svg{width:18px;height:18px}
 .dc-clr:active{opacity:.4}
-.dc-flag{flex:none;width:58px;height:54px;display:grid;place-items:center;border-radius:16px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm)}
+.dc-flag{flex:none;width:48px;height:54px;display:grid;place-items:center;border-radius:12px}   /* 3.45.67: no box around the flag */
 .dc-flag .flag{width:34px;height:23px;border-radius:6px;box-shadow:0 0 0 1px rgba(30,20,10,.08)}
 .dc-flag:active{transform:scale(.94)}
 .dc-flag.pop .flag{animation:dcFlag .34s cubic-bezier(.3,1.5,.5,1)}
@@ -1946,7 +1949,6 @@ svg.sil{filter:brightness(0);opacity:.28}
 .dc-cand{flex:none;min-width:52px;height:52px;padding:0 6px;border-radius:12px;font:500 30px/1 var(--hanzi);color:var(--ink)}
 .dc-cand.on{background:var(--seal-soft);color:var(--seal)}
 .dc-cand:active{background:var(--fill)}
-.dc-cands.en .dc-cand{font:600 19px/1 var(--ui);padding:0 14px}
 .dc-cnote{margin:0 auto;font-size:13.5px;color:var(--muted);white-space:nowrap}
 .dc-pad{position:relative;flex:1;min-height:200px;border-radius:24px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);overflow:hidden;container-type:size}
 .dc-guide{position:absolute;inset:0;margin:auto;width:76cqmin;height:76cqmin;fill:none;stroke:var(--seal);opacity:.2;pointer-events:none}
@@ -13396,10 +13398,9 @@ function searchEnglish(D, q) {
    The whole page below the top bar is a writing pad with a faint 米字格 in the middle. Each stroke is read by the same
    Google handwriting reader the writing practice uses; its guesses fill the row under the search box. Tap one and it goes
    into the box; Look up (or tapping the box) lists the CC-CEDICT words for it, and a word opens with its readings, meanings,
-   sound and "Add to word bank". The flag picks what you write: Simplified (China), Traditional (Taiwan), Hong Kong
-   (Cantonese, with Jyutping) or English letters (English to Chinese). It is the page's own setting (db.prefs.dictLang): it
-   does not change the app's system. Chinese here is drawn by the page itself in the flag's characters ([data-zh-keep]). */
-const DC_LANGS = ['cn', 'tw', 'hk', 'en'];
+   sound and "Add to word bank". 3.45.67 (ilkem): the flag switches only between the Chinese you learn (China, Taiwan or
+   Hong Kong, the app's system) and English, and has no box around it. English is typed with the keyboard; the pad still
+   reads Chinese, and writing on it, or typing Chinese characters, turns the flag back to Chinese (db.prefs.dictEn). Chinese here is drawn by the page itself in the flag's characters ([data-zh-keep]). */
 const DC = {
   cn: { name: 'Simplified', hw: 'zh_CN' },
   tw: { name: 'Traditional', hw: 'zh_TW' },
@@ -13409,7 +13410,7 @@ const DC = {
 FLAG_ART.en = '<rect width="30" height="20" fill="#2350B8"/><path d="M0 0L30 20M30 0L0 20" stroke="#fff" stroke-width="4.2"/>'
   + '<path d="M0 0L30 20M30 0L0 20" stroke="#EE3B36" stroke-width="1.5"/><path d="M15 0V20M0 10H30" stroke="#fff" stroke-width="6.4"/>'
   + '<path d="M15 0V20M0 10H30" stroke="#EE3B36" stroke-width="3.4"/>';
-const dcLang = () => DC[db.prefs.dictLang] ? db.prefs.dictLang : sysK();
+const dcLang = () => db.prefs.dictEn ? 'en' : sysK();   // 3.45.67: the flag is your Chinese or English, nothing else
 const DCV = { conv: {}, D: null };   // conv: the OpenCC pair for tw / hk; D: the dictionary once loaded
 function dcLibs(k) {   // the character converter (and Jyutping for Cantonese), loaded the first time that flag is picked
   if (k !== 'tw' && k !== 'hk') return Promise.resolve();
@@ -13429,9 +13430,10 @@ function DictView() {
   return `<div class="screen dc dc-${k}" data-zh-keep>
     <div class="dc-top">
       <div class="dc-bar">
-        <button class="dc-box" id="dcBox" aria-label="Look up what you wrote"><span class="dc-txt" id="dcTxt"></span></button>
+        <div class="dc-box" id="dcBox"><span class="dc-txt" id="dcTxt" role="button" tabindex="0" aria-label="Look up what you wrote"></span>
+          <input class="dc-in" id="dcIn" type="search" placeholder="Type an English word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" hidden></div>
         <button class="dc-clr" id="dcClr" aria-label="Clear" hidden>${I.close}</button>
-        <button class="dc-flag" id="dcFlag" aria-label="Writing in ${DC[k].name}. Tap to change">${flagSvg(k)}</button>
+        <button class="dc-flag" id="dcFlag" aria-label="${DC[k].name}. Tap to switch to ${k === 'en' ? DC[sysK()].name : 'English'}">${flagSvg(k)}</button>
       </div>
       <div class="dc-cands" id="dcCands" role="listbox" aria-label="Suggestions"></div>
     </div>
@@ -13450,23 +13452,25 @@ function DictView() {
 function mountDict() {
   const st = S.dct, pad = $('#dcPad'), cv = $('#dcInk'); if (!pad) return;
   const ctx = cv.getContext('2d'); let seq = 0, W = 0, H = 0;
-  const k = () => dcLang();
+  const k = () => dcLang(), zh = sysK(), inp = $('#dcIn');
+  if (st.sys && st.sys !== zh && st.text && HAN.test(st.text)) st.text = dcT(dcS(st.text, st.sys), zh);   // the app's Chinese changed since
+  st.sys = zh;
   const paintBox = () => {
-    const pend = st.strokes.length && st.cands[0];
-    $('#dcTxt').innerHTML = st.text || pend ? `${esc(st.text)}${pend ? `<u>${esc(st.cands[0])}</u>` : ''}`
-      : `<span class="dc-ph">Write ${k() === 'en' ? 'English' : 'a character'} below</span>`;
-    $('#dcTxt').classList.toggle('en', k() === 'en');
+    const pend = st.strokes.length && st.cands[0], en = k() === 'en';
+    $('#dcTxt').hidden = en; inp.hidden = !en;
+    if (en) { if (inp.value !== st.text) inp.value = st.text; }
+    else $('#dcTxt').innerHTML = st.text || pend ? `${esc(st.text)}${pend ? `<u>${esc(st.cands[0])}</u>` : ''}`
+      : '<span class="dc-ph">Write a character below</span>';
     $('#dcClr').hidden = !st.text && !st.strokes.length;
-    $('#dcGo').disabled = !st.text && !pend;
+    $('#dcGo').disabled = en ? !st.text.trim() : !st.text && !pend;
     $('#dcBk').disabled = !st.text && !st.strokes.length;
     $('#dcUndo').hidden = !st.strokes.length;
     $('#dcHint').hidden = !!st.strokes.length;
   };
   const paintCands = () => {
     const el = $('#dcCands');
-    el.classList.toggle('en', k() === 'en');
     el.innerHTML = st.cands.length ? st.cands.map((c, i) => `<button class="dc-cand${i ? '' : ' on'}" data-i="${i}" role="option">${esc(c)}</button>`).join('')
-      : `<p class="dc-cnote">${st.err ? 'Reading handwriting needs the internet' : st.strokes.length ? '' : `Writing in ${DC[k()].name}. Tap the flag to change`}</p>`;
+      : `<p class="dc-cnote">${st.err ? 'Reading handwriting needs the internet' : st.strokes.length ? '' : k() === 'en' ? 'Type in English, or write Chinese below' : `Writing in ${DC[zh].name}. Tap the flag to type in English`}</p>`;
     el.scrollLeft = 0;
     paintBox();
   };
@@ -13483,7 +13487,7 @@ function mountDict() {
   };
   const size = () => { const r = pad.getBoundingClientRect(); W = r.width; H = r.height; cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio); draw(); };
   const recog = async () => {
-    const n = ++seq, lang = k();
+    const n = ++seq, lang = zh;   // the pad always reads Chinese; English is typed
     if (!st.strokes.length) { st.cands = []; st.err = false; paintCands(); return; }
     const t0 = st.strokes[0][0].t;
     const ink = st.strokes.map(s => [s.map(p => Math.round(p.x)), s.map(p => Math.round(p.y)), s.map(p => Math.round(p.t - t0))]);
@@ -13494,16 +13498,15 @@ function mountDict() {
       });
       const j = await r.json(); if (n !== seq) return;
       let c = j[0] === 'SUCCESS' ? (j[1]?.[0]?.[1] || []) : [];
-      if (lang === 'en') c = c.map(x => x.trim()).filter(x => x && !HAN.test(x));
-      else { await dcLibs(lang).catch(() => {}); if (n !== seq) return;
-        c = c.filter(x => [...x].length === 1 && HAN.test(x)).map(x => lang === 'cn' ? x : dcT(x, lang)); }   // one character each (no "门冂" pairs), in the flag's characters
+      await dcLibs(lang).catch(() => {}); if (n !== seq) return;
+      c = c.filter(x => [...x].length === 1 && HAN.test(x)).map(x => lang === 'cn' ? x : dcT(x, lang));   // one character each (no "门冂" pairs), in the app's characters
       st.cands = [...new Set(c)].slice(0, 12); st.err = false;
     } catch (_) { if (n !== seq) return; st.cands = []; st.err = true; }
     paintCands();
   };
   const take = c => {   // a suggestion goes into the box and the pad clears for the next character
     if (!c) return;
-    st.text = k() === 'en' && st.text && !/\s$/.test(st.text) ? st.text + ' ' + c : st.text + c;
+    st.text += c;
     st.strokes = []; st.cands = []; seq++; draw(); paintCands(); haptic(8);
     LOG.add('dict-pick', { c, lang: k() });
   };
@@ -13513,7 +13516,18 @@ function mountDict() {
   };
   const lookUp = () => {
     if (st.strokes.length && st.cands[0]) take(st.cands[0]);
-    if (st.text) dictResults(st.text);
+    if (k() === 'en' && HAN.test(st.text)) setLang(zh, true);
+    if (st.text.trim()) { inp.blur(); dictResults(st.text.trim()); }
+  };
+  /* the flag: the app's Chinese (China, Taiwan or Hong Kong) or English, which is typed with the keyboard */
+  const setLang = (to, keep) => {
+    const was = k(); if (was === to) return;
+    db.prefs.dictEn = to === 'en' ? 1 : 0; save(); LOG.add('dict-lang', { to, auto: !!keep || undefined });
+    const scr = $('#app .dc'); scr.classList.remove('dc-' + was); scr.classList.add('dc-' + to);
+    const f = $('#dcFlag'); f.innerHTML = flagSvg(to); f.setAttribute('aria-label', `${DC[to].name}. Tap to switch to ${to === 'en' ? DC[zh].name : 'English'}`);
+    f.classList.remove('pop'); f.offsetWidth; f.classList.add('pop');
+    if (!keep) st.text = '';   // English words and characters don't mix in one look-up
+    st.strokes = []; st.cands = []; seq++; draw(); paintCands();
   };
   /* the pad: one finger writes, two fingers clear it, a tap on an empty pad deletes the last character */
   const live = new Map(); let cur = null, down = null, multi = false;
@@ -13526,6 +13540,7 @@ function mountDict() {
       if (st.strokes.length) { st.strokes = []; st.cands = []; seq++; draw(); paintCands(); haptic(12); LOG.add('dict-clear'); }
       return;
     }
+    if (k() === 'en') { setLang(zh); inp.blur(); }   // writing on the pad: back to Chinese at once
     multi = false; const p = pt(e); down = { ...p, empty: !st.strokes.length };
     cur = [p]; st.strokes.push(cur); draw();
   });
@@ -13546,23 +13561,24 @@ function mountDict() {
   $('#dcUndo').onclick = () => { st.strokes.pop(); draw(); recog(); paintBox(); };
   $('#dcBk').onclick = back;
   $('#dcGo').onclick = lookUp;
-  $('#dcBox').onclick = () => { if (st.text || st.cands[0]) lookUp(); };
-  $('#dcClr').onclick = () => { st.text = ''; st.strokes = []; st.cands = []; seq++; draw(); paintCands(); };
+  $('#dcTxt').onclick = () => { if (st.text || st.cands[0]) lookUp(); };
+  $('#dcTxt').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lookUp(); } };
+  $('#dcClr').onclick = () => { st.text = ''; st.strokes = []; st.cands = []; seq++; draw(); paintCands(); if (k() === 'en') inp.focus(); };
   $('#dcCands').onclick = e => { const b = e.target.closest('.dc-cand'); if (b) take(st.cands[+b.dataset.i]); };
-  $('#dcFlag').onclick = () => {   // China, Taiwan, Hong Kong, English, and round again
-    const was = k(), to = DC_LANGS[(DC_LANGS.indexOf(was) + 1) % DC_LANGS.length];
-    db.prefs.dictLang = to; save(); haptic(8); LOG.add('dict-lang', { to });
-    const scr = $('#app .dc'); scr.classList.remove('dc-' + was); scr.classList.add('dc-' + to);
-    const f = $('#dcFlag'); f.innerHTML = flagSvg(to); f.setAttribute('aria-label', `Writing in ${DC[to].name}. Tap to change`);
-    f.classList.remove('pop'); f.offsetWidth; f.classList.add('pop');
-    if ((was === 'en') !== (to === 'en')) st.text = '';   // English letters and characters don't mix in one look-up
-    else if (st.text && to !== 'en') { st.text = dcS(st.text, was); dcLibs(to).then(() => { st.text = dcT(st.text, to); paintBox(); }, () => {}); }
-    dcLibs(to).catch(() => {});
-    st.cands = []; recog(); paintCands();
+  /* typing (English mode): a word in Chinese characters (a Chinese keyboard) turns the flag back to Chinese by itself */
+  inp.addEventListener('input', () => {
+    st.text = inp.value;
+    if (HAN.test(st.text)) { inp.blur(); st.text = st.text.replace(/[^\p{Script=Han}]/gu, ''); setLang(zh, true); return; }
+    paintBox();
+  });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); lookUp(); } });
+  $('#dcFlag').onclick = () => {   // your Chinese (the flag of the system you learn) or English, nothing else
+    const to = k() === 'en' ? zh : 'en'; haptic(8); setLang(to);
+    if (to === 'en') inp.focus();   // inside the tap, so the phone's keyboard comes up
   };
   const ro = new ResizeObserver(() => { if (pad.isConnected) size(); else ro.disconnect(); }); ro.observe(pad);
   size(); paintCands();
-  dcLibs(k()).then(() => { if (k() !== 'cn' && st.text) paintBox(); }, () => {});
+  dcLibs(zh).then(() => { if (zh !== 'cn' && st.text) paintBox(); }, () => {});
   if (!DCV.D) loadDict().then(D => { DCV.D = D; }, () => {});
   if (!S.H) loadHsk().catch(() => {});
 }
@@ -13579,10 +13595,10 @@ function dictFind(D, q, k) {
   return out;
 }
 function dictResults(q) {
-  const k = dcLang();
-  const rowHtml = (r, i) => `<button class="dc-row" data-i="${i}"><span class="dc-rhz">${esc(dcT(r.h, k))}</span>
-    <span class="dc-rtx"><span class="dc-rpy">${esc(dcRead(r, k))}</span><span class="dc-ren">${esc(r.e.split('; ').slice(0, 3).join('; '))}</span></span></button>`;
-  openSheet(`<div class="dc-sh dc-${k}" data-zh-keep><h3 class="dc-sh-h"><span class="${k === 'en' ? '' : 'dc-qhz'}">${esc(q)}</span></h3><div id="dcList"><p class="muted">Looking it up…</p></div></div>`, sh => {
+  const k = dcLang(), z = k === 'en' ? sysK() : k;   // z: the Chinese the words are shown in
+  const rowHtml = (r, i) => `<button class="dc-row" data-i="${i}"><span class="dc-rhz">${esc(dcT(r.h, z))}</span>
+    <span class="dc-rtx"><span class="dc-rpy">${esc(dcRead(r, z))}</span><span class="dc-ren">${esc(r.e.split('; ').slice(0, 3).join('; '))}</span></span></button>`;
+  openSheet(`<div class="dc-sh dc-${z}" data-zh-keep><h3 class="dc-sh-h"><span class="${k === 'en' ? '' : 'dc-qhz'}">${esc(q)}</span></h3><div id="dcList"><p class="muted">Looking it up…</p></div></div>`, sh => {
     LOG.add('dict-look-up', { q, lang: k });
     loadDict().then(D => {
       DCV.D = D; const list = sh.querySelector('#dcList'); if (!list) return;
@@ -13594,7 +13610,7 @@ function dictResults(q) {
   });
 }
 function dictEntry(r, back) {
-  const k = dcLang(), hz = dcT(r.h, k === 'en' ? sysK() : k), other = hz !== r.h ? r.h : k === 'cn' && DCV.conv.tw ? dcT(r.h, 'tw') : '';
+  const k = dcLang() === 'en' ? sysK() : dcLang(), hz = dcT(r.h, k), other = hz !== r.h ? r.h : k === 'cn' && DCV.conv.tw ? dcT(r.h, 'tw') : '';
   const lv = S.H?.byHz.get(r.h)?.lv, has = () => !!bankHas(r.h);
   const ms = r.e.split('; ');
   openSheet(`<div class="dc-sh dc-${k}" data-zh-keep>
@@ -14417,7 +14433,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.66';
+const APP_VERSION = '3.45.67';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
