@@ -2023,8 +2023,22 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 
 /* ---------- read ---------- */
 .read-tools{display:flex;justify-content:flex-end;gap:8px;margin:-10px 0 12px}
-.rd-py{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 2px 0 6px;font-size:15px;font-weight:500;color:var(--ink)}
+/* the story's own tools, inside the card above its title: Aa (text size) on the left, Pinyin with a slim switch on the right */
+.story-tools{display:flex;align-items:center;justify-content:space-between;margin:-8px -4px 4px -6px}
+.rd-py{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 4px 0 6px;font-size:15px;font-weight:500;color:var(--ink)}
 .rd-py .py-glyph{color:var(--ink-2)}
+.rd-py .switch{width:40px;height:24px}
+.rd-py .switch::after{width:20px;height:20px}
+.rd-py .switch.on::after{transform:translateX(16px)}
+.aa-wrap{position:relative}
+.aa-btn{min-width:44px;min-height:44px;padding:0 6px;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.aa-btn small{font-size:13px}
+.aa-btn:active{opacity:.5}
+.aa-pop{position:absolute;z-index:7;top:calc(100% - 2px);left:0;display:flex;gap:2px;padding:4px;border-radius:12px;background:var(--card);box-shadow:var(--ring),0 12px 24px -10px rgba(60,35,10,.35)}
+.aa-pop[hidden]{display:none}
+.aa-pop button{width:46px;height:40px;border-radius:9px;font-family:var(--hanzi);color:var(--ink);line-height:1}
+.aa-pop button.on{background:var(--ink);color:var(--paper)}
+.story:has(.story-stamp) .story-stamp{top:56px}
 .py-glyph{font-family:var(--hanzi);font-weight:600;font-size:15px;line-height:1}
 .read-note{font-size:13.5px;color:var(--muted);margin:0 2px 14px}
 .read-note u{text-decoration:underline dotted var(--seal) 1.5px;text-underline-offset:4px}
@@ -2152,13 +2166,13 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .rd-hero.flip .rd-body{animation:fadeIn .35s .2s both}
 @media (prefers-reduced-motion:reduce){.pg-fly,.pg-old,.pg-ride{display:none}.pg-new,.pg-new.pg-l{opacity:1;animation:none}.rd-pop,.rd-hero.flip .rd-body{animation:none}}
 @media (prefers-reduced-motion:reduce){.mo-book{animation:none}.bk-art{transition:none}}
-.story-line{margin:0 0 2px;display:flex;flex-wrap:wrap;align-items:flex-start;font-family:var(--hanzi);font-size:28px;line-height:1.6;color:var(--ink)}
+.story-line{margin:0 0 2px;display:flex;flex-wrap:wrap;align-items:flex-start;font-family:var(--hanzi);font-size:var(--rd-fs,28px);line-height:1.6;color:var(--ink)}
 .rw,.rp{display:inline-flex;flex-direction:column;align-items:center}
 .rw{border-radius:6px;padding:0 1px;font:inherit;line-height:inherit;transition:background .2s}
 .rg{display:inline-flex;align-items:flex-start}
 .rw.new{background:radial-gradient(circle,color-mix(in srgb,var(--seal) 80%,transparent) 0.8px,transparent 1.1px) left calc(100% - 2px)/4px 4px repeat-x}
 .rw.hl{background:rgba(255,209,92,.6);transition:none}
-.ry{display:none;font-family:var(--ui);font-size:14px;font-weight:500;color:var(--seal);line-height:1.1;margin:-3px 0 5px;white-space:nowrap}
+.ry{display:none;font-family:var(--ui);font-size:calc(8px + var(--rd-fs,28px)*.22);font-weight:500;color:var(--seal);line-height:1.1;margin:-3px 0 5px;white-space:nowrap}
 .story.py .ry{display:block}
 .rpop{position:absolute;z-index:6;min-width:128px;max-width:250px;background:var(--ink);color:var(--paper);border-radius:13px;padding:9px 14px 10px;
   box-shadow:0 14px 28px -12px rgba(30,20,10,.6);animation:rpopIn .16s ease-out both}
@@ -4267,6 +4281,7 @@ function tapLabel(el) {
   return [el.dataset?.act && `[${el.dataset.act}]`, el.id && `#${el.id}`, txt && `"${txt}"`].filter(Boolean).join(' ') || el.tagName.toLowerCase();
 }
 // capture phase: the tap is written down before whatever it causes (a new page, a toast)
+addEventListener('click', e => { if (!(e.target instanceof Element && e.target.closest('.aa-wrap'))) $$('.aa-pop:not([hidden])').forEach(p => { p.hidden = true; p.previousElementSibling.setAttribute('aria-expanded', false); }); }, true);   // the Aa sizes close on a tap anywhere else
 addEventListener('click', e => {
   if (!LOG.on || !(e.target instanceof Element) || e.target.closest('[data-hap]')) return;
   const el = e.target.closest('button,a,label,input,select,textarea,[data-act]');
@@ -8703,11 +8718,16 @@ function readStory() {
   return db.readCur;
 }
 const shortDate = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+const READ_SIZES = [22, 28, 34, 40];   // story text sizes, picked with Aa
 function StoryCard(s, foot) {
   const on = !!db.prefs.readPy, fresh = new Set(storyNewWords(s).map(w => w.h));   // new for you: the words the end of the story asks and offers for your word bank
   const word = (t, li, wi) => READ_PUNCT.test(t.h) ? `<span class="rp">${esc(t.h)}</span>`
     : `<button class="rw${fresh.has(t.h) ? ' new' : ''}" data-act="rw" data-k="${li}.${wi}"><span class="rh">${esc(t.h)}</span><span class="ry">${esc(PY(t.h, t.p))}</span></button>`;
-  return `<article class="story${on ? ' py' : ''}">
+  const sz = READ_SIZES[db.prefs.readSize ?? 1] ?? 28;
+  return `<article class="story${on ? ' py' : ''}" style="--rd-fs:${sz}px">
+      <div class="story-tools"><div class="aa-wrap"><button class="aa-btn" data-act="read-aa" aria-label="Text size" aria-expanded="false">A<small>a</small></button>
+        <div class="aa-pop" hidden>${READ_SIZES.map((n, i) => `<button data-act="read-size" data-n="${i}" class="${n === sz ? 'on' : ''}" style="font-size:${12 + i * 4}px" aria-label="Text size ${i + 1}">字</button>`).join('')}</div></div>
+        <button class="rd-py" data-act="read-py" role="switch" aria-checked="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}<span class="switch${on ? ' on' : ''}"></span></button></div>
       <div class="story-head"><h3 class="story-zh">${esc(s.zh)}</h3><span class="story-en">${esc(s.en)}</span></div>
       ${storyTokens(s).map((l, li) => `<p class="story-line">${readGroups(l).map(g => `<span class="rg">${g.map(wi => word(l[wi], li, wi)).join('')}</span>`).join('')}</p>`).join('')}
       ${foot || ''}
@@ -8833,12 +8853,10 @@ function shelfOpen(zh) {   // a book on the shelf: the story, or the list of the
       <span class="row-s">finished ${shortDate(s.done)}${s.learned?.length ? ` · +${plural(s.learned.length, 'word')}` : ''}</span></span><span class="chev">${I.chev}</span></button>`).join('')}</div>`);
 }
 function ReadView() {
-  const s = readStory(), on = !!db.prefs.readPy;
-  const pyBtn = `<button class="rd-py" data-act="read-py" role="switch" aria-checked="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}<span class="switch${on ? ' on' : ''}"></span></button>`;   // pinyin on the right, with an on/off switch
+  const s = readStory();
   if (S.readId) return `<div class="screen fade-in">
     <header class="bar"><button class="icon-btn" data-act="read-back" aria-label="Back">${I.back}</button><div class="bar-title">Finished story</div><div style="width:42px"></div></header>
-    ${s ? `<div class="read-tools" style="margin-top:6px">${pyBtn}</div>
-      ${StoryCard(s, `<div class="story-stamp" aria-label="Finished, ${s.hsk ? HSK_NAME(s.hsk) : 'not on the HSK lists'}"><b>读完</b><span>${s.hsk ? HSK_NAME(s.hsk) : 'HSK —'}</span></div>
+    ${s ? `${StoryCard(s, `<div class="story-stamp" aria-label="Finished, ${s.hsk ? HSK_NAME(s.hsk) : 'not on the HSK lists'}"><b>读完</b><span>${s.hsk ? HSK_NAME(s.hsk) : 'HSK —'}</span></div>
         <p class="story-meta">Finished ${shortDate(s.done)}${s.learned?.length ? ` · added ${s.learned.map(esc).join('、')} to your word bank` : ''}</p>`)}`
       : '<div class="empty"><p>This story is no longer saved.</p></div>'}
   </div>`;
@@ -8846,8 +8864,7 @@ function ReadView() {
   const empty = '<p class="read-note">Your word bank is empty, so this story uses common words. <button class="link-btn" data-act="open-hsk" style="padding:0">Add words you know</button></p>';
   return `<div class="screen fade-in">
     <div class="rd-head pg-head"><h2>Stories <span class="cal-zh">故事</span></h2><span class="pg-tr">${SysBtn()}${XpBtn()}${StreakBtn()}</span></div>
-    ${!s ? '' : s.opened ? `<div class="read-tools" style="margin-top:0">${pyBtn}</div>
-        ${db.bank.length ? '<p class="read-note">Tap a word to see what it means. <u>Underlined</u> words are new: not in your word bank yet.</p>' : empty}
+    ${!s ? '' : s.opened ? `${db.bank.length ? '<p class="read-note">Tap a word to see what it means. <u>Underlined</u> words are new: not in your word bank yet.</p>' : empty}
         ${StoryCard(s, '<button class="btn btn-seal wide story-done" data-act="read-finish">I finished this story</button><button class="link-btn rd-other" data-act="read-new">Different story</button>')}`
       : StoryCover(s, st, readToday) + (db.bank.length ? '' : empty)}
     ${ReadCard()}
@@ -14715,7 +14732,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.79';
+const APP_VERSION = '3.45.80';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16110,6 +16127,9 @@ const A = {
   'say': t => sayZh(t.dataset.h, t.dataset.p),
   'hotd-open': () => hotdOpen(),
   'rpop-add': t => addReadWord(t),
+  'read-aa': t => { const p = t.nextElementSibling, open = p.hidden; p.hidden = !open; t.setAttribute('aria-expanded', open); },
+  'read-size': t => { const i = +t.dataset.n; db.prefs.readSize = i; save(); closeReadPop();
+    $('.story')?.style.setProperty('--rd-fs', READ_SIZES[i] + 'px'); t.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === t)); },
   'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.querySelector('.switch')?.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-checked', db.prefs.readPy); $('.story')?.classList.toggle('py', db.prefs.readPy); },
   'read-new': () => { const from = coverChars(db.readCur); db.readCur = makeStory(db.readCur?.zh); save(); S.instant = true; render(); riffleBook(from); },
   'read-start': () => { if (!db.readCur) return; db.readCur.opened = Date.now(); db.last = { t: 'read' }; save(); LOG.add('read-start', db.readCur.zh); render(); },
