@@ -13476,7 +13476,7 @@ function mountDict() {
   };
   const draw = () => {
     ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); ctx.clearRect(0, 0, W, H);
-    ctx.strokeStyle = css('--ink'); ctx.lineCap = ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(6, Math.min(W, H) / 46);
+    ctx.strokeStyle = css('--ink'); ctx.lineCap = ctx.lineJoin = 'round'; ctx.lineWidth = Math.min(6, Math.max(3.5, Math.min(W, H) / 95));   // 3.45.68: Pleco's thin line, about 1% of the pad (4 px on a phone)
     for (const s of st.strokes) {
       ctx.beginPath(); ctx.moveTo(s[0].x, s[0].y);
       if (s.length === 1) ctx.lineTo(s[0].x + .1, s[0].y);
@@ -14433,7 +14433,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.67';
+const APP_VERSION = '3.45.68';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
