@@ -289,6 +289,13 @@ button.pill.on{box-shadow:inset 0 -3px 0 rgba(0,0,0,.4),0 8px 14px -10px rgba(30
 .hd-card.back{z-index:1;transform:translateY(12px) scale(.94) rotate(-1.2deg);transform-origin:50% 100%;
   box-shadow:0 8px 14px -10px rgba(110,25,15,.6)}
 .hd-card.back>*{opacity:var(--show,0)}
+/* 3.45.66 (ilkem: the edge under the card looked "clumsy and messy"): the cards under the top one lie straight, like the
+   word bank pile below: plain paper edges, no tilt, no wooden rods or red showing. A paper cover (an inset shadow, so it sits
+   under the content) fades out as the card under comes up during a swipe */
+.hd-stack::after{transform:translateY(18px) scale(.9);opacity:1;border-radius:18px;background:#EAE0CE;box-shadow:0 0 0 1px rgba(120,95,60,.14),0 8px 12px -8px rgba(70,45,20,.3)}
+.hd-stack>.hd-card.back{transform:translateY(9px) scale(.95);border-radius:18px;
+  box-shadow:inset 0 0 0 999px rgba(243,236,223,calc(1 - var(--show,0))),0 0 0 1px rgba(120,95,60,calc(.13 * (1 - var(--show,0))))}
+.hd-stack>.hd-card.back::before,.hd-stack>.hd-card.back::after{opacity:var(--show,0)}
 .hd-card.back.up>*{transition:opacity .25s}
 .hd-card.back.up .hd-shi{animation:hdUp .6s cubic-bezier(.3,1.5,.5,1) .12s both}
 .hd-card{--hd:#C4432E;position:relative;overflow:hidden;margin:-12px 0 28px;padding:13px 14px 14px 16px;border-radius:22px;background:var(--hd);color:var(--seal-ink);
@@ -9225,7 +9232,7 @@ function HotdStoryCard() {
     ${line}
     <div class="sc-foot"><span class="sc-t"><b>${s ? esc(s.zh) : '狮狮的故事'}</b>${s ? `<span>${esc(s.en)}</span>` : ''}</span><button class="tk-go" data-act="tab" data-h="#/read">${go}${I.chev}</button></div></section>`;
 }
-const HD_BACK = (p = 0) => `translateY(${12 * (1 - p)}px) scale(${.94 + .06 * p}) rotate(${-1.2 * (1 - p)}deg)`;   // the under card, p of the way up
+const HD_BACK = (p = 0) => `translateY(${9 * (1 - p)}px) scale(${.95 + .05 * p})`;   // the under card, p of the way up (3.45.66: straight, no tilt)
 function hdRotate(dir = 1, x = 0) {   // the top card flies off to one side and slides in at the bottom; the card under it rises
   const H = db.hotd, st = $('#hdStack'); if (!H || !st) return;
   const front = st.querySelector('.front'), back = st.querySelector('.back');
@@ -9241,7 +9248,7 @@ function hdRotate(dir = 1, x = 0) {   // the top card flies off to one side and 
   back.animate([{ transform: HD_BACK(p0) }, { transform: 'none' }], T).onfinish = () => {
     if (!st.isConnected) return;
     st.outerHTML = HotdStack();
-    $('#hdStack .back')?.animate([{ transform: o.length > 2 ? 'translateY(24px) scale(.88) rotate(1.4deg)' : `translateX(${dir * 30}px) translateY(18px) scale(.86) rotate(${dir * 6}deg)`, opacity: o.length > 2 ? .55 : 0 }, { transform: HD_BACK(), opacity: 1 }],
+    $('#hdStack .back')?.animate([{ transform: o.length > 2 ? 'translateY(18px) scale(.9)' : `translateX(${dir * 30}px) translateY(18px) scale(.86) rotate(${dir * 6}deg)`, opacity: o.length > 2 ? 1 : 0 }, { transform: HD_BACK(), opacity: 1 }],
       { duration: 320, easing: 'cubic-bezier(.2,.8,.3,1)' });   // the card that flew off tucks in at the bottom (three cards: the next one rises from the sheet under them)
   };
 }
@@ -14410,7 +14417,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.65';
+const APP_VERSION = '3.45.66';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
