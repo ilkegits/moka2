@@ -1,1 +1,1 @@
-{"version": "3.45.80", "notes": "Stories: the Pinyin switch is slimmer and sits in the story card, and a new Aa button on its left picks one of four text sizes"}
+{"version": "3.45.81", "notes": "Stories: one tap on Aa moves the text to the next size (after the biggest, back to the smallest); no size picker to choose from"}

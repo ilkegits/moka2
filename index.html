@@ -2030,14 +2030,9 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .rd-py .switch{width:40px;height:24px}
 .rd-py .switch::after{width:20px;height:20px}
 .rd-py .switch.on::after{transform:translateX(16px)}
-.aa-wrap{position:relative}
 .aa-btn{min-width:44px;min-height:44px;padding:0 6px;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
 .aa-btn small{font-size:13px}
 .aa-btn:active{opacity:.5}
-.aa-pop{position:absolute;z-index:7;top:calc(100% - 2px);left:0;display:flex;gap:2px;padding:4px;border-radius:12px;background:var(--card);box-shadow:var(--ring),0 12px 24px -10px rgba(60,35,10,.35)}
-.aa-pop[hidden]{display:none}
-.aa-pop button{width:46px;height:40px;border-radius:9px;font-family:var(--hanzi);color:var(--ink);line-height:1}
-.aa-pop button.on{background:var(--ink);color:var(--paper)}
 .story:has(.story-stamp) .story-stamp{top:56px}
 .py-glyph{font-family:var(--hanzi);font-weight:600;font-size:15px;line-height:1}
 .read-note{font-size:13.5px;color:var(--muted);margin:0 2px 14px}
@@ -4281,7 +4276,6 @@ function tapLabel(el) {
   return [el.dataset?.act && `[${el.dataset.act}]`, el.id && `#${el.id}`, txt && `"${txt}"`].filter(Boolean).join(' ') || el.tagName.toLowerCase();
 }
 // capture phase: the tap is written down before whatever it causes (a new page, a toast)
-addEventListener('click', e => { if (!(e.target instanceof Element && e.target.closest('.aa-wrap'))) $$('.aa-pop:not([hidden])').forEach(p => { p.hidden = true; p.previousElementSibling.setAttribute('aria-expanded', false); }); }, true);   // the Aa sizes close on a tap anywhere else
 addEventListener('click', e => {
   if (!LOG.on || !(e.target instanceof Element) || e.target.closest('[data-hap]')) return;
   const el = e.target.closest('button,a,label,input,select,textarea,[data-act]');
@@ -8718,15 +8712,14 @@ function readStory() {
   return db.readCur;
 }
 const shortDate = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-const READ_SIZES = [22, 28, 34, 40];   // story text sizes, picked with Aa
+const READ_SIZES = [22, 28, 34, 40];   // story text sizes; each tap on Aa moves to the next
 function StoryCard(s, foot) {
   const on = !!db.prefs.readPy, fresh = new Set(storyNewWords(s).map(w => w.h));   // new for you: the words the end of the story asks and offers for your word bank
   const word = (t, li, wi) => READ_PUNCT.test(t.h) ? `<span class="rp">${esc(t.h)}</span>`
     : `<button class="rw${fresh.has(t.h) ? ' new' : ''}" data-act="rw" data-k="${li}.${wi}"><span class="rh">${esc(t.h)}</span><span class="ry">${esc(PY(t.h, t.p))}</span></button>`;
   const sz = READ_SIZES[db.prefs.readSize ?? 1] ?? 28;
   return `<article class="story${on ? ' py' : ''}" style="--rd-fs:${sz}px">
-      <div class="story-tools"><div class="aa-wrap"><button class="aa-btn" data-act="read-aa" aria-label="Text size" aria-expanded="false">A<small>a</small></button>
-        <div class="aa-pop" hidden>${READ_SIZES.map((n, i) => `<button data-act="read-size" data-n="${i}" class="${n === sz ? 'on' : ''}" style="font-size:${12 + i * 4}px" aria-label="Text size ${i + 1}">字</button>`).join('')}</div></div>
+      <div class="story-tools"><button class="aa-btn" data-act="read-aa" aria-label="Text size: tap for the next size">A<small>a</small></button>
         <button class="rd-py" data-act="read-py" role="switch" aria-checked="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}<span class="switch${on ? ' on' : ''}"></span></button></div>
       <div class="story-head"><h3 class="story-zh">${esc(s.zh)}</h3><span class="story-en">${esc(s.en)}</span></div>
       ${storyTokens(s).map((l, li) => `<p class="story-line">${readGroups(l).map(g => `<span class="rg">${g.map(wi => word(l[wi], li, wi)).join('')}</span>`).join('')}</p>`).join('')}
@@ -14732,7 +14725,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.80';
+const APP_VERSION = '3.45.81';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16127,9 +16120,8 @@ const A = {
   'say': t => sayZh(t.dataset.h, t.dataset.p),
   'hotd-open': () => hotdOpen(),
   'rpop-add': t => addReadWord(t),
-  'read-aa': t => { const p = t.nextElementSibling, open = p.hidden; p.hidden = !open; t.setAttribute('aria-expanded', open); },
-  'read-size': t => { const i = +t.dataset.n; db.prefs.readSize = i; save(); closeReadPop();
-    $('.story')?.style.setProperty('--rd-fs', READ_SIZES[i] + 'px'); t.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === t)); },
+  'read-aa': () => { const i = ((db.prefs.readSize ?? 1) + 1) % READ_SIZES.length; db.prefs.readSize = i; save(); closeReadPop();   // each tap: the next size, after the biggest back to the smallest
+    $('.story')?.style.setProperty('--rd-fs', READ_SIZES[i] + 'px'); },
   'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.querySelector('.switch')?.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-checked', db.prefs.readPy); $('.story')?.classList.toggle('py', db.prefs.readPy); },
   'read-new': () => { const from = coverChars(db.readCur); db.readCur = makeStory(db.readCur?.zh); save(); S.instant = true; render(); riffleBook(from); },
   'read-start': () => { if (!db.readCur) return; db.readCur.opened = Date.now(); db.last = { t: 'read' }; save(); LOG.add('read-start', db.readCur.zh); render(); },
