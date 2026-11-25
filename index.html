@@ -51,7 +51,7 @@
   --ring:0 0 0 1px rgba(120,95,60,.07),0 1px 2px rgba(70,45,20,.05);   /* a group's quiet edge instead of a drop shadow */
   --kb:0px;
   --tabh:54px;
-  --tabw:min(78px, calc((100vw - 40px) / 3));   /* moka2: three tabs */
+  --tabw:min(78px, calc((100vw - 40px) / 4));   /* moka2: four tabs (3.45.65 Dictionary) */
   color-scheme:light;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1875,7 +1875,7 @@ svg.sil{filter:brightness(0);opacity:.28}
 /* A small floating capsule of frosted glass: the page shows through it, blurred, with a lit top rim.
    The tapped icon fills at once; a red lacquer bead glides to it, stretching a little on the way. */
 #tabbar{position:fixed;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;margin:0 auto;display:none;
-  width:calc(var(--tabw) * 3 + 20px);height:var(--tabh);padding:0 9px;border-radius:999px;
+  width:calc(var(--tabw) * 4 + 20px);height:var(--tabh);padding:0 9px;border-radius:999px;
   background:linear-gradient(rgba(255,255,255,.34),rgba(255,255,255,0) 60%),rgba(250,245,236,.56);
   -webkit-backdrop-filter:blur(20px) saturate(1.8);backdrop-filter:blur(20px) saturate(1.8);
   border:1px solid rgba(255,255,255,.6);
@@ -1913,6 +1913,72 @@ svg.sil{filter:brightness(0);opacity:.28}
 .tab.on svg.i{color:var(--seal-ink)}
 .tab:focus-visible{outline:2px solid var(--seal);outline-offset:-3px}
 @media (prefers-reduced-motion:reduce){.tab-pill,.tab svg.i{transition:none}.tab-pill.go::before{animation:none}}
+
+/* ---------- Dictionary tab (3.45.65): a writing pad under a search box and a flag ---------- */
+.dc-cn{--hanzi:"Noto Serif SC","Songti SC","STSong",serif}
+.dc-tw{--hanzi:"Noto Serif TC","Noto Serif SC","Songti TC","PMingLiU",serif}
+.dc-hk{--hanzi:"Noto Serif HK","Noto Serif TC","Noto Serif SC","Songti TC",serif}
+.screen.dc{height:100dvh;min-height:0;overflow:hidden}
+.dc-top{flex:none;padding-top:12px}
+.dc-bar{position:relative;display:flex;gap:8px}
+.dc-box{flex:1;min-width:0;height:54px;display:flex;align-items:center;padding:0 48px 0 16px;border-radius:16px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);text-align:left;color:var(--ink)}
+.dc-txt{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:600 26px/1.2 var(--hanzi);letter-spacing:.04em}
+.dc-txt.en{font:600 19px/1.2 var(--ui);letter-spacing:0}
+.dc-txt u{text-decoration:underline 2px var(--seal);text-underline-offset:6px;color:var(--muted)}
+.dc-ph{font:400 15.5px/1 var(--ui);letter-spacing:0;color:var(--muted)}
+.dc-clr{position:absolute;top:6px;right:66px;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;color:var(--muted)}
+.dc-clr svg{width:18px;height:18px}
+.dc-clr:active{opacity:.4}
+.dc-flag{flex:none;width:58px;height:54px;display:grid;place-items:center;border-radius:16px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm)}
+.dc-flag .flag{width:34px;height:23px;border-radius:6px;box-shadow:0 0 0 1px rgba(30,20,10,.08)}
+.dc-flag:active{transform:scale(.94)}
+.dc-flag.pop .flag{animation:dcFlag .34s cubic-bezier(.3,1.5,.5,1)}
+@keyframes dcFlag{0%{transform:scale(.6) rotate(-8deg);opacity:.3}}
+.dc-cands{display:flex;align-items:center;gap:2px;height:60px;margin:6px -20px 8px;padding:0 16px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.dc-cands::-webkit-scrollbar{display:none}
+.dc-cand{flex:none;min-width:52px;height:52px;padding:0 6px;border-radius:12px;font:500 30px/1 var(--hanzi);color:var(--ink)}
+.dc-cand.on{background:var(--seal-soft);color:var(--seal)}
+.dc-cand:active{background:var(--fill)}
+.dc-cands.en .dc-cand{font:600 19px/1 var(--ui);padding:0 14px}
+.dc-cnote{margin:0 auto;font-size:13.5px;color:var(--muted);white-space:nowrap}
+.dc-pad{position:relative;flex:1;min-height:200px;border-radius:24px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);overflow:hidden;container-type:size}
+.dc-guide{position:absolute;inset:0;margin:auto;width:76cqmin;height:76cqmin;fill:none;stroke:var(--seal);opacity:.2;pointer-events:none}
+.dc-guide *{vector-effect:non-scaling-stroke;stroke-width:1.2}
+.dc-guide path{stroke-dasharray:6 6}
+.dc-guide .x{opacity:.55}
+#dcInk{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.dc-undo{position:absolute;top:8px;right:8px}
+.dc-hint{position:absolute;left:16px;right:16px;bottom:76px;margin:0;text-align:center;font-size:12.5px;line-height:1.5;color:var(--muted);pointer-events:none}
+.dc-acts{position:absolute;right:12px;bottom:12px;display:flex;gap:8px}
+.dc-bk{width:54px;height:50px;display:grid;place-items:center;border-radius:16px;background:var(--fill);color:var(--ink)}
+.dc-bk:active{opacity:.6}
+.dc-bk:disabled,.dc-go:disabled{opacity:.4}
+.dc-go{min-width:120px}
+/* the look-up pop-ups */
+.dc-sh-h{margin:4px 0 14px}
+.dc-qhz{font-family:var(--hanzi);font-weight:600;letter-spacing:.04em}
+.dc-rows{margin-bottom:8px}
+.dc-row{display:flex;align-items:center;gap:14px;width:100%;padding:11px 16px;text-align:left;color:var(--ink)}
+.dc-row+.dc-row{border-top:1px solid var(--line)}
+.dc-row:active{background:var(--fill)}
+.dc-rhz{flex:none;min-width:40px;font:600 24px/1.2 var(--hanzi);letter-spacing:.03em}
+.dc-rtx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dc-rpy{font-size:14.5px;font-weight:600;color:var(--ink-2)}
+.dc-ren{font-size:13.5px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dc-none{font-size:15px;color:var(--muted);margin:6px 2px 18px}
+.dc-back{display:inline-flex;align-items:center;gap:4px;margin:-4px 0 4px;font-family:var(--hanzi)}
+.dc-back svg{width:18px;height:18px}
+.dc-ent{display:flex;align-items:baseline;justify-content:center;gap:12px;margin:6px 0 4px}
+.dc-ehz{font:600 64px/1.15 var(--hanzi);letter-spacing:.04em;color:var(--ink)}
+.dc-eother{font:500 24px/1 var(--hanzi);color:var(--muted)}
+.dc-epy{display:flex;align-items:center;justify-content:center;gap:4px;font-size:19px;font-weight:600;color:var(--ink-2)}
+.dc-lv{margin-left:6px;padding:3px 8px;border-radius:7px;background:var(--seal-soft);color:var(--seal);font-size:12px;font-weight:700}
+.dc-means{margin:14px 0 22px;padding-left:24px;font-size:15.5px;line-height:1.45;color:var(--ink)}
+.dc-means li+li{margin-top:5px}
+.dc-means li::marker{color:var(--muted);font-size:13px}
+.dc-in{display:flex;align-items:center;justify-content:center;gap:6px;height:50px;margin:0;font-weight:600;color:#2B7752}
+.dc-in svg{width:20px;height:20px}
+@media (prefers-reduced-motion:reduce){.dc-flag.pop .flag{animation:none}}
 
 /* ---------- read ---------- */
 .read-tools{display:flex;gap:8px;margin:-10px 0 12px}
@@ -3738,6 +3804,7 @@ const I = {
   profile: ic('<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/>'),
   camera: ic('<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.5"/>'),
   read: ic('<path d="M3 5.5C5.5 4.3 8.7 4.3 12 6c3.3-1.7 6.5-1.7 9-.5v13c-2.5-1.2-5.7-1.2-9 .5-3.3-1.7-6.5-1.7-9-.5z"/><path d="M12 6v13"/>'),   // v3.99: the book of the scroll's Read button, not a sheet
+  dict: ic('<path d="M20.3 3.7c.6.6-4.3 7.4-7.6 10.3l-2.7-2.7c2.9-3.3 9.7-8.2 10.3-7.6z"/><path d="M9.2 12.4l2.4 2.4c-.3 2.6-2.2 4.9-6.9 5.2.9-1.2 1-2.4 1.3-3.9.4-1.9 1.4-3.3 3.2-3.7z"/>'),   // 3.45.65 Dictionary tab: a writing brush, like Pleco's handwriting tab
   sound: ic('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>'),
   refresh: ic('<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.8 4.2v4.3h-4.3"/>'),
   install: ic('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M12 7v7M9.2 11.2L12 14l2.8-2.8"/>'),
@@ -3753,6 +3820,7 @@ const IF = {
   decks: icOn('<path d="M4.5 7.5v10a3 3 0 0 0 3 3h8"/><rect x="8" y="3.5" width="11.5" height="14.5" rx="2" fill="currentColor"/>'),
   learn: icOn('<path d="M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2z" fill="currentColor"/><path d="M12 7.5v11" style="stroke:var(--seal)"/>'),
   read: icOn('<path d="M3 5.5C5.5 4.3 8.7 4.3 12 6c3.3-1.7 6.5-1.7 9-.5v13c-2.5-1.2-5.7-1.2-9 .5-3.3-1.7-6.5-1.7-9-.5z" fill="currentColor"/><path d="M12 7v11" style="stroke:var(--seal)"/>'),
+  dict: icOn('<path d="M20.3 3.7c.6.6-4.3 7.4-7.6 10.3l-2.7-2.7c2.9-3.3 9.7-8.2 10.3-7.6z"/><path d="M9.2 12.4l2.4 2.4c-.3 2.6-2.2 4.9-6.9 5.2.9-1.2 1-2.4 1.3-3.9.4-1.9 1.4-3.3 3.2-3.7z" fill="currentColor"/>'),
   map: icOn('<path d="M3.5 6.5L9 4.5l6 2 5.5-2v13l-5.5 2-6-2-5.5 2z" fill="currentColor"/><path d="M9 4.5v13M15 6.5v13" style="stroke:var(--seal)"/>'),
   profile: icOn('<circle cx="12" cy="8.5" r="3.8" fill="currentColor"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5z" fill="currentColor"/>'),
 };
@@ -4032,6 +4100,7 @@ function parse() {
     return { view: 'course', deckId: null, clv: lv, part: lv === 1 ? p[2] || null : null }; }   // HSK 1's old /tones etc. links still open the Basics pages
   if (p[0] === 'group' && groupById(p[1])) return { view: 'group', deckId: null, groupId: p[1] };
   if (p[0] === 'read') return { view: 'read', deckId: null, readId: p[1] || null };
+  if (p[0] === 'dict') return { view: 'dict', deckId: null };
   if (p[0] === 'map') return { view: 'map', deckId: null, city: Math.min(TRAIL.length, Math.max(0, +p[1] || 0)) || null };
   if (p[0] === 'build') return { view: 'build', deckId: null, city: Math.min(TRAIL.length, Math.max(1, +p[1] || 1)) };
   if (p[0] === 'learn' || p[0] === 'profile' || p[0] === 'bank' || p[0] === 'streak') return { view: p[0], deckId: null };
@@ -4340,7 +4409,7 @@ function logSheet() {
 
 /* ---------- desktop: menu on the left, account and progress on the right (moka2 v3.45.20) ---------- */
 const WIDE = () => matchMedia('(min-width:900px)').matches;
-const SIDE_ZH = { decks: '卡片', read: '故事', profile: '我的' };
+const SIDE_ZH = { decks: '卡片', read: '故事', dict: '字典', profile: '我的' };
 function sideAcct() {
   const u = CLOUD.user;
   if (u) return `<button class="sr-me" data-act="side-acct" aria-label="Your account"><span class="acct-face">${esc((u.name || u.email || '?')[0].toUpperCase())}</span>
@@ -4358,7 +4427,7 @@ function paintSide(on) {
     + `<div class="sn-foot">${sideAcct()}</div>`;
   const { n, today } = practiceStreak(), pv = provenCount(), xp = xpTotal();
   const stat = (act, icon, big, sub) => `<button class="sr-stat" data-act="${act}"><span class="sr-ic">${icon}</span><span><b>${big}</b><small>${sub}</small></span></button>`;
-  rl.innerHTML = sideAcct() + (on === 2 ? '' : `<section class="sr-stats" aria-label="Your progress">
+  rl.innerHTML = sideAcct() + (TABS[on]?.[0] === 'profile' ? '' : `<section class="sr-stats" aria-label="Your progress">
     ${stat('streak', FLAME, n + ' day streak', n && !today ? 'Finish a deck today to keep it' : n ? 'Done for today' : 'Finish a deck to start one')}
     ${stat('open-bank', '<span class="pf-zh">字</span>', plural(pv, 'word') + ' proven', db.bank.length ? `${plural(db.bank.length, 'word')} in your bank` : 'Learn words to prove them')}
     ${stat('pf-xp', xpSvg(), xp + ' XP', `${xpOn(dayKey(Date.now()))} today`)}</section>`);   // Profile shows these itself
@@ -4392,6 +4461,7 @@ function render() {
   else if (S.view === 'map') { S.mapFresh = S.lastView !== 'map'; app.innerHTML = MapView(); mountMap(); }   // mapFresh: the Map was just opened, not drawn again
   else if (S.view === 'build') { app.innerHTML = BuildView(); if (S.fb?.done) setTimeout(() => coinRain($('.fb-end'), S.fb?.pay), 450); }
   else if (S.view === 'read') { app.innerHTML = ReadView(); mountRead(); }
+  else if (S.view === 'dict') { app.innerHTML = DictView(); mountDict(); }
   else if (S.view === 'profile') { app.innerHTML = ProfileView(); }
   else if (S.view === 'streak') { app.innerHTML = StreakView(); }
   else if (S.view === 'bank') { app.innerHTML = BankView(); mountBank(); }
@@ -4406,7 +4476,7 @@ function render() {
 }
 
 /* ---------- bottom tab bar (hidden during flip and write sessions) ---------- */
-const TABS = [['decks', 'Decks', '#/'], ['read', 'Read', '#/read'], ['profile', 'Profile', '#/profile']];   // moka2: Map and Lessons are gone
+const TABS = [['decks', 'Decks', '#/'], ['read', 'Read', '#/read'], ['dict', 'Dictionary', '#/dict'], ['profile', 'Profile', '#/profile']];   // moka2: Map and Lessons are gone
 function renderTabs() {
   // picking words on an HSK level: its own bottom bar (Select all / Add) takes the tab bar's place, as in a select mode
   const cur = S.view === 'hsk' && S.hskLevel ? null : S.view === 'home' || S.view === 'deck' || S.view === 'group' || S.view === 'bank' || S.view === 'hsk' ? 'decks' : S.view === 'course' ? S.cUnit ? null : 'learn' : S.view;   // a unit's campaign is its own full page, without the tab bar
@@ -13312,6 +13382,236 @@ function searchEnglish(D, q) {
   return out;
 }
 
+/* ---------- Dictionary tab (3.45.65) ----------
+   ilkem, from Pleco's handwriting screen: "a new tab, just for dictionary ... just a free screen to write hanzi. On the top
+   corner u should be clicking and the flag swaps between china/taiwan/hk and english w each click, indicating the input. The
+   top bar is where the suggestions will come up ... I dont want the other options which pleco has, just the writing opt".
+   The whole page below the top bar is a writing pad with a faint 米字格 in the middle. Each stroke is read by the same
+   Google handwriting reader the writing practice uses; its guesses fill the row under the search box. Tap one and it goes
+   into the box; Look up (or tapping the box) lists the CC-CEDICT words for it, and a word opens with its readings, meanings,
+   sound and "Add to word bank". The flag picks what you write: Simplified (China), Traditional (Taiwan), Hong Kong
+   (Cantonese, with Jyutping) or English letters (English to Chinese). It is the page's own setting (db.prefs.dictLang): it
+   does not change the app's system. Chinese here is drawn by the page itself in the flag's characters ([data-zh-keep]). */
+const DC_LANGS = ['cn', 'tw', 'hk', 'en'];
+const DC = {
+  cn: { name: 'Simplified', hw: 'zh_CN' },
+  tw: { name: 'Traditional', hw: 'zh_TW' },
+  hk: { name: 'Cantonese', hw: 'zh_HK' },
+  en: { name: 'English', hw: 'en' },
+};
+FLAG_ART.en = '<rect width="30" height="20" fill="#2350B8"/><path d="M0 0L30 20M30 0L0 20" stroke="#fff" stroke-width="4.2"/>'
+  + '<path d="M0 0L30 20M30 0L0 20" stroke="#EE3B36" stroke-width="1.5"/><path d="M15 0V20M0 10H30" stroke="#fff" stroke-width="6.4"/>'
+  + '<path d="M15 0V20M0 10H30" stroke="#EE3B36" stroke-width="3.4"/>';
+const dcLang = () => DC[db.prefs.dictLang] ? db.prefs.dictLang : sysK();
+const DCV = { conv: {}, D: null };   // conv: the OpenCC pair for tw / hk; D: the dictionary once loaded
+function dcLibs(k) {   // the character converter (and Jyutping for Cantonese), loaded the first time that flag is picked
+  if (k !== 'tw' && k !== 'hk') return Promise.resolve();
+  sysFont(k);
+  return sysLibs(k).then(() => {
+    if (!DCV.conv[k] && window.OpenCC) DCV.conv[k] = { t: OpenCC.Converter({ from: 'cn', to: k }), s: OpenCC.Converter({ from: k, to: 'cn' }) };
+  });
+}
+const dcT = (s, k = dcLang()) => DCV.conv[k] && s && ZH_HAN.test(s) ? DCV.conv[k].t(s) : s;   // simplified to the flag's characters
+const dcS = (s, k = dcLang()) => DCV.conv[k] && s && ZH_HAN.test(s) ? DCV.conv[k].s(s) : s;   // and back, for looking up
+function dcRead(row, k = dcLang()) {   // pinyin, or Jyutping for Cantonese
+  if (k !== 'hk' || !window.ToJyutping) return row.p;
+  try { const l = ToJyutping.getJyutpingList(row.h).filter(([c]) => ZH_HAN.test(c)); return l.length && l.every(x => x[1]) ? l.map(x => x[1]).join(' ') : row.p; } catch (_) { return row.p; }
+}
+function DictView() {
+  const k = dcLang(), st = S.dct ||= { text: '', strokes: [], cands: [], err: false };
+  return `<div class="screen dc dc-${k}" data-zh-keep>
+    <div class="dc-top">
+      <div class="dc-bar">
+        <button class="dc-box" id="dcBox" aria-label="Look up what you wrote"><span class="dc-txt" id="dcTxt"></span></button>
+        <button class="dc-clr" id="dcClr" aria-label="Clear" hidden>${I.close}</button>
+        <button class="dc-flag" id="dcFlag" aria-label="Writing in ${DC[k].name}. Tap to change">${flagSvg(k)}</button>
+      </div>
+      <div class="dc-cands" id="dcCands" role="listbox" aria-label="Suggestions"></div>
+    </div>
+    <div class="dc-pad" id="dcPad">
+      <svg class="dc-guide" viewBox="0 0 100 100" aria-hidden="true"><rect x="1" y="1" width="98" height="98" rx="4"/><path d="M50 1V99M1 50H99"/><path class="x" d="M3 3L97 97M97 3L3 97"/></svg>
+      <canvas id="dcInk" aria-label="Writing pad"></canvas>
+      <button class="dc-undo icon-btn" id="dcUndo" aria-label="Undo last stroke" hidden>${I.undo}</button>
+      <p class="dc-hint" id="dcHint">Tap with two fingers to clear<br>Tap again when clear to delete</p>
+      <div class="dc-acts">
+        <button class="dc-bk" id="dcBk" aria-label="Delete last character">${I.bksp}</button>
+        <button class="btn btn-seal dc-go" id="dcGo">Look up</button>
+      </div>
+    </div>
+  </div>`;
+}
+function mountDict() {
+  const st = S.dct, pad = $('#dcPad'), cv = $('#dcInk'); if (!pad) return;
+  const ctx = cv.getContext('2d'); let seq = 0, W = 0, H = 0;
+  const k = () => dcLang();
+  const paintBox = () => {
+    const pend = st.strokes.length && st.cands[0];
+    $('#dcTxt').innerHTML = st.text || pend ? `${esc(st.text)}${pend ? `<u>${esc(st.cands[0])}</u>` : ''}`
+      : `<span class="dc-ph">Write ${k() === 'en' ? 'English' : 'a character'} below</span>`;
+    $('#dcTxt').classList.toggle('en', k() === 'en');
+    $('#dcClr').hidden = !st.text && !st.strokes.length;
+    $('#dcGo').disabled = !st.text && !pend;
+    $('#dcBk').disabled = !st.text && !st.strokes.length;
+    $('#dcUndo').hidden = !st.strokes.length;
+    $('#dcHint').hidden = !!st.strokes.length;
+  };
+  const paintCands = () => {
+    const el = $('#dcCands');
+    el.classList.toggle('en', k() === 'en');
+    el.innerHTML = st.cands.length ? st.cands.map((c, i) => `<button class="dc-cand${i ? '' : ' on'}" data-i="${i}" role="option">${esc(c)}</button>`).join('')
+      : `<p class="dc-cnote">${st.err ? 'Reading handwriting needs the internet' : st.strokes.length ? '' : `Writing in ${DC[k()].name}. Tap the flag to change`}</p>`;
+    el.scrollLeft = 0;
+    paintBox();
+  };
+  const draw = () => {
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = css('--ink'); ctx.lineCap = ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(6, Math.min(W, H) / 46);
+    for (const s of st.strokes) {
+      ctx.beginPath(); ctx.moveTo(s[0].x, s[0].y);
+      if (s.length === 1) ctx.lineTo(s[0].x + .1, s[0].y);
+      for (let i = 1; i < s.length - 1; i++) ctx.quadraticCurveTo(s[i].x, s[i].y, (s[i].x + s[i + 1].x) / 2, (s[i].y + s[i + 1].y) / 2);
+      if (s.length > 1) ctx.lineTo(s[s.length - 1].x, s[s.length - 1].y);
+      ctx.stroke();
+    }
+  };
+  const size = () => { const r = pad.getBoundingClientRect(); W = r.width; H = r.height; cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio); draw(); };
+  const recog = async () => {
+    const n = ++seq, lang = k();
+    if (!st.strokes.length) { st.cands = []; st.err = false; paintCands(); return; }
+    const t0 = st.strokes[0][0].t;
+    const ink = st.strokes.map(s => [s.map(p => Math.round(p.x)), s.map(p => Math.round(p.y)), s.map(p => Math.round(p.t - t0))]);
+    try {
+      const r = await fetch('https://inputtools.google.com/request?ime=handwriting&app=mobilesearch&cs=1&oe=UTF-8', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ options: 'enable_pre_space', requests: [{ writing_guide: { writing_area_width: Math.round(W), writing_area_height: Math.round(H) }, ink, language: DC[lang].hw }] }),
+      });
+      const j = await r.json(); if (n !== seq) return;
+      let c = j[0] === 'SUCCESS' ? (j[1]?.[0]?.[1] || []) : [];
+      if (lang === 'en') c = c.map(x => x.trim()).filter(x => x && !HAN.test(x));
+      else { await dcLibs(lang).catch(() => {}); if (n !== seq) return;
+        c = c.filter(x => [...x].length === 1 && HAN.test(x)).map(x => lang === 'cn' ? x : dcT(x, lang)); }   // one character each (no "门冂" pairs), in the flag's characters
+      st.cands = [...new Set(c)].slice(0, 12); st.err = false;
+    } catch (_) { if (n !== seq) return; st.cands = []; st.err = true; }
+    paintCands();
+  };
+  const take = c => {   // a suggestion goes into the box and the pad clears for the next character
+    if (!c) return;
+    st.text = k() === 'en' && st.text && !/\s$/.test(st.text) ? st.text + ' ' + c : st.text + c;
+    st.strokes = []; st.cands = []; seq++; draw(); paintCands(); haptic(8);
+    LOG.add('dict-pick', { c, lang: k() });
+  };
+  const back = () => {   // delete: the strokes on the pad first, then the last character (or English word) in the box
+    if (st.strokes.length) { st.strokes = []; st.cands = []; seq++; draw(); paintCands(); return; }
+    st.text = k() === 'en' ? st.text.replace(/\s*\S+\s*$/, '') : [...st.text].slice(0, -1).join(''); paintBox();
+  };
+  const lookUp = () => {
+    if (st.strokes.length && st.cands[0]) take(st.cands[0]);
+    if (st.text) dictResults(st.text);
+  };
+  /* the pad: one finger writes, two fingers clear it, a tap on an empty pad deletes the last character */
+  const live = new Map(); let cur = null, down = null, multi = false;
+  const pt = e => { const r = pad.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp }; };
+  cv.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    live.set(e.pointerId, 1); cv.setPointerCapture?.(e.pointerId);
+    if (live.size > 1) {   // a second finger: clear the pad
+      multi = true; if (cur) { st.strokes.pop(); cur = null; }
+      if (st.strokes.length) { st.strokes = []; st.cands = []; seq++; draw(); paintCands(); haptic(12); LOG.add('dict-clear'); }
+      return;
+    }
+    multi = false; const p = pt(e); down = { ...p, empty: !st.strokes.length };
+    cur = [p]; st.strokes.push(cur); draw();
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!cur || live.size > 1) return;
+    for (const ev of e.getCoalescedEvents?.() || [e]) cur.push(pt(ev));
+    draw();
+  });
+  const up = e => {
+    live.delete(e.pointerId); if (!cur) return;
+    const s = cur; cur = null;
+    if (multi) return;
+    const last = s[s.length - 1], still = Math.hypot(last.x - down.x, last.y - down.y) < 8 && last.t - down.t < 300;
+    if (down.empty && still) { st.strokes.pop(); draw(); back(); haptic(6); return; }   // tap when clear: delete
+    recog(); paintBox();
+  };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', e => { live.delete(e.pointerId); if (cur) { st.strokes.pop(); cur = null; draw(); } });
+  $('#dcUndo').onclick = () => { st.strokes.pop(); draw(); recog(); paintBox(); };
+  $('#dcBk').onclick = back;
+  $('#dcGo').onclick = lookUp;
+  $('#dcBox').onclick = () => { if (st.text || st.cands[0]) lookUp(); };
+  $('#dcClr').onclick = () => { st.text = ''; st.strokes = []; st.cands = []; seq++; draw(); paintCands(); };
+  $('#dcCands').onclick = e => { const b = e.target.closest('.dc-cand'); if (b) take(st.cands[+b.dataset.i]); };
+  $('#dcFlag').onclick = () => {   // China, Taiwan, Hong Kong, English, and round again
+    const was = k(), to = DC_LANGS[(DC_LANGS.indexOf(was) + 1) % DC_LANGS.length];
+    db.prefs.dictLang = to; save(); haptic(8); LOG.add('dict-lang', { to });
+    const scr = $('#app .dc'); scr.classList.remove('dc-' + was); scr.classList.add('dc-' + to);
+    const f = $('#dcFlag'); f.innerHTML = flagSvg(to); f.setAttribute('aria-label', `Writing in ${DC[to].name}. Tap to change`);
+    f.classList.remove('pop'); f.offsetWidth; f.classList.add('pop');
+    if ((was === 'en') !== (to === 'en')) st.text = '';   // English letters and characters don't mix in one look-up
+    else if (st.text && to !== 'en') { st.text = dcS(st.text, was); dcLibs(to).then(() => { st.text = dcT(st.text, to); paintBox(); }, () => {}); }
+    dcLibs(to).catch(() => {});
+    st.cands = []; recog(); paintCands();
+  };
+  const ro = new ResizeObserver(() => { if (pad.isConnected) size(); else ro.disconnect(); }); ro.observe(pad);
+  size(); paintCands();
+  dcLibs(k()).then(() => { if (k() !== 'cn' && st.text) paintBox(); }, () => {});
+  if (!DCV.D) loadDict().then(D => { DCV.D = D; }, () => {});
+  if (!S.H) loadHsk().catch(() => {});
+}
+/* what the box holds, looked up: the word itself first, then words that begin with it, then words that have it inside;
+   English finds the Chinese words that mean it */
+function dictFind(D, q, k) {
+  if (k === 'en') return searchEnglish(D, q);
+  const s = dcS(q, k), out = [], seen = new Set();
+  const add = r => { const id = r.h + '|' + r.p; if (seen.has(id) || r.e.startsWith('erhua variant')) return; seen.add(id); out.push(r); };   // Standard Mandarin: no Beijing 儿 forms
+  (D.byHz.get(s) || []).forEach(add);
+  for (const r of D.rows) { if (out.length >= 40) break; if (r.h !== s && r.h.startsWith(s)) add(r); }
+  for (const r of D.rows) { if (out.length >= 50) break; if (!r.h.startsWith(s) && r.h.includes(s)) add(r); }
+  if (!out.length && [...s].length > 1) for (const c of s) (D.byHz.get(c) || []).slice(0, 1).forEach(add);   // not a word: its characters one by one
+  return out;
+}
+function dictResults(q) {
+  const k = dcLang();
+  const rowHtml = (r, i) => `<button class="dc-row" data-i="${i}"><span class="dc-rhz">${esc(dcT(r.h, k))}</span>
+    <span class="dc-rtx"><span class="dc-rpy">${esc(dcRead(r, k))}</span><span class="dc-ren">${esc(r.e.split('; ').slice(0, 3).join('; '))}</span></span></button>`;
+  openSheet(`<div class="dc-sh dc-${k}" data-zh-keep><h3 class="dc-sh-h"><span class="${k === 'en' ? '' : 'dc-qhz'}">${esc(q)}</span></h3><div id="dcList"><p class="muted">Looking it up…</p></div></div>`, sh => {
+    LOG.add('dict-look-up', { q, lang: k });
+    loadDict().then(D => {
+      DCV.D = D; const list = sh.querySelector('#dcList'); if (!list) return;
+      const rows = dictFind(D, q, k);
+      list.innerHTML = rows.length ? `<div class="group dc-rows">${rows.map(rowHtml).join('')}</div>`
+        : `<p class="dc-none">No words found for ${esc(q)}. Clear it and write it again.</p>`;
+      list.onclick = e => { const b = e.target.closest('.dc-row'); if (b) dictEntry(rows[+b.dataset.i], q); };
+    }, () => { const list = sh.querySelector('#dcList'); if (list) list.innerHTML = '<p class="dc-none">The dictionary could not load. Check the internet and try again.</p>'; });
+  });
+}
+function dictEntry(r, back) {
+  const k = dcLang(), hz = dcT(r.h, k === 'en' ? sysK() : k), other = hz !== r.h ? r.h : k === 'cn' && DCV.conv.tw ? dcT(r.h, 'tw') : '';
+  const lv = S.H?.byHz.get(r.h)?.lv, has = () => !!bankHas(r.h);
+  const ms = r.e.split('; ');
+  openSheet(`<div class="dc-sh dc-${k}" data-zh-keep>
+    ${back != null ? `<button class="link-btn dc-back" id="dcBack">${I.back}${esc(back)}</button>` : ''}
+    <div class="dc-ent"><div class="dc-ehz">${esc(hz)}</div>${other && other !== hz ? `<div class="dc-eother">${esc(other)}</div>` : ''}</div>
+    <div class="dc-epy"><span>${esc(dcRead(r, k))}</span><button class="icon-btn dc-say" id="dcSay" aria-label="Play the sound">${I.sound}</button>${lv ? `<span class="dc-lv">${HSK_NAME(lv)}</span>` : ''}</div>
+    <ol class="dc-means">${ms.map(m => `<li>${esc(m)}</li>`).join('')}</ol>
+    <div id="dcAddWrap"></div></div>`, sh => {
+    const wrap = sh.querySelector('#dcAddWrap');
+    const paint = () => { wrap.innerHTML = has() ? `<p class="dc-in">${I.check}In your word bank</p>` : '<button class="btn btn-seal wide" id="dcAdd">Add to word bank</button>'; };
+    paint();
+    wrap.onclick = e => {
+      if (!e.target.closest('#dcAdd') || has()) return;
+      db.bank.unshift({ id: uid(), hanzi: r.h, pinyin: r.p, en: shortMeaning(r.e), added: Date.now(), hsk: S.H ? S.H.byHz.get(r.h)?.lv || 0 : undefined }); save();
+      LOG.add('dict-add', { hz: r.h }); haptic(10); toast(`Added ${hz} to your word bank`); paint();
+    };
+    sh.querySelector('#dcSay').onclick = () => {
+      if (k === 'hk') { sayStop(); const n = sayN; ttsSay(r.h, 'hk', n, () => yueSay(r.h, n)); } else sayZh(r.h, r.p);
+    };
+    sh.querySelector('#dcBack')?.addEventListener('click', () => dictResults(back));
+    LOG.add('dict-word', { hz: r.h });
+  });
+}
+
 /* ---------- word bank ----------
    Everything you add with Quick add lands here; the count of different characters is "characters you know". */
 function bankCharList() {   // oldest first
@@ -14110,7 +14410,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.64';
+const APP_VERSION = '3.45.65';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -15627,7 +15927,8 @@ document.addEventListener('click', e => {
   const targets = () => {
     if (S.view === 'deck' || S.view === 'bank') return { tab: 0, prev: { tab: 0, html: () => Home(), go: () => { S.instant = S.toTop = true; goBack('#/'); } } };
     if (S.view === 'map' && S.mapLv) return null;   // inside a monument: no swiping to the next tab
-    const order = ['home', 'read', 'profile'], views = [Home, ReadView, ProfileView], i = order.indexOf(S.view);
+    if (S.view === 'dict') return null;   // the Dictionary page is a writing pad: a finger there writes, it never swipes
+    const order = ['home', 'read', 'dict', 'profile'], views = [Home, ReadView, DictView, ProfileView], i = order.indexOf(S.view);
     if (i < 0) return null;
     const t = j => views[j] && { tab: j, html: views[j], go: () => { S.instant = true; nav(TABS[j][2]); } };
     return { tab: i, prev: t(i - 1), next: t(i + 1) };
