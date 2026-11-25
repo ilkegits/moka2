@@ -1926,6 +1926,10 @@ svg.sil{filter:brightness(0);opacity:.28}
 .dc-tw{--hanzi:"Noto Serif TC","Noto Serif SC","Songti TC","PMingLiU",serif}
 .dc-hk{--hanzi:"Noto Serif HK","Noto Serif TC","Noto Serif SC","Songti TC",serif}
 .screen.dc{height:100dvh;min-height:0;overflow:hidden}
+/* 3.45.70 (ilkem: "the writing field shouldnt be shrinking"): this app lets the keyboard shrink the page; while you type here
+   the page keeps its full height, so the pad stays the same size under the keyboard, and the tab bar steps out of the way */
+.screen.dc:has(.dc-q:focus){height:var(--full-h,100dvh)}
+html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab-guard{display:none}
 .dc-top{flex:none;padding-top:12px}
 .dc-bar{position:relative;display:flex;gap:8px}
 .dc-box{flex:1;min-width:0;height:44px;display:flex;align-items:center;padding:0 40px 0 14px;border-radius:13px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);text-align:left;color:var(--ink)}   /* 3.45.69: slimmer */
@@ -14460,7 +14464,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.69';
+const APP_VERSION = '3.45.70';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16090,6 +16094,7 @@ if (window.visualViewport) {
     if (innerWidth !== tw) { tw = innerWidth; tall = 0; }
     const typing = !!document.activeElement?.matches?.('input:not([type=checkbox],[type=radio],[type=range],[type=button]),textarea,[contenteditable]');
     if (!typing) tall = Math.max(tall, vv.height);
+    if (tall) de.style.setProperty('--full-h', tall + 'px');   // 3.45.70: the page's height without the keyboard (the Dictionary pad keeps it)
     de.classList.toggle('kb-up', typing && tall > 0 && vv.height < tall - 120);
   };
   upd();

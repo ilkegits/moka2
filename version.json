@@ -1,1 +1,1 @@
-{"version": "3.45.69", "notes": "Dictionary: slimmer search bar you can type in (pinyin or characters, or English), no Look up button: words show under the bar, tap one to open it. Tapping the bar keeps the sketched character and clears the pad. Typed text is no longer green; the flag only clicks, no turn"}
+{"version": "3.45.70", "notes": "Dictionary: the writing pad keeps its full size when the keyboard opens; the tab bar hides while you type"}
