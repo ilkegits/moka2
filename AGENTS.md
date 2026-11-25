@@ -1,9 +1,26 @@
-# moka2: the ShiCards test copy
+# moka2: ShiHanzi
 
-This folder is a second copy of ShiCards for trying ideas on ilkem's phone, live at
+## Which app ilkem means (read this first)
+
+ilkem's requests are for **ShiHanzi**, unless ilkem names ShiHanzi2.
+
+| App | Repo | Folder on ilkem's PC | Live at | Other names ilkem uses |
+|---|---|---|---|---|
+| **ShiHanzi**: where ilkem's requests go | `ilkegits/moka2` | `C:\Users\ilkem\moka2` | https://ilkegits.github.io/moka2/ | ShiCards, Shihanzi, moka2 |
+| ShiHanzi2: only when named | `ilkegits/moka` | `C:\Users\ilkem\HANZI` | https://ilkegits.github.io/moka/ | ShiCards2, Shihanzi2, moka |
+
+- The trap: the repo called `moka` (folder `HANZI`) is ShiHanzi**2**. The repo called `moka2` is ShiHanzi, without the 2.
+- A request that does not name an app goes to ShiHanzi (`moka2`), even when the session was opened in the `moka` repo or the `HANZI` folder. Clone or open `ilkegits/moka2` and make the change there.
+- Change ShiHanzi2 only when ilkem says ShiHanzi2 (or ShiCards2) for that request. If `moka2` can't be reached from where you are, say so and stop; never make the change in ShiHanzi2 instead.
+- ilkem dictates, so the names can come through garbled. Read any of them as ShiHanzi unless a "2" is clearly there.
+- Why this is written down: on 2026-11-25, v4.70 to v4.73 (word bank + and Add card fixes) were asked for ShiHanzi but shipped to ShiHanzi2.
+
+## This repo
+
+This folder is ShiHanzi (it began as a test copy of ShiCards), live at
 https://ilkegits.github.io/moka2/ (GitHub repo `ilkegits/moka2`, Pages from `main`).
-The real app is `C:\Users\ilkem\HANZI` (repo `ilkegits/moka`, https://ilkegits.github.io/moka/).
-Changes asked for "on moka2" go here only. Moving a change to the real app is a separate step, done only when ilkem asks.
+ShiHanzi2 is `C:\Users\ilkem\HANZI` (repo `ilkegits/moka`, https://ilkegits.github.io/moka/).
+ilkem's requests go here (see the table above). Moving a change over to ShiHanzi2 is a separate step, done only when ilkem asks.
 
 ## Keep the two apps apart
 
