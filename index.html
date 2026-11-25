@@ -1925,10 +1925,10 @@ svg.sil{filter:brightness(0);opacity:.28}
 .dc-cn{--hanzi:"Noto Serif SC","Songti SC","STSong",serif}
 .dc-tw{--hanzi:"Noto Serif TC","Noto Serif SC","Songti TC","PMingLiU",serif}
 .dc-hk{--hanzi:"Noto Serif HK","Noto Serif TC","Noto Serif SC","Songti TC",serif}
-.screen.dc{height:100dvh;min-height:0;overflow:hidden;margin:0 -20px;padding-left:20px;padding-right:20px}   /* full width, so the pad reaches both edges */
+.screen.dc{position:relative;height:100dvh;min-height:0;overflow:hidden;margin:0 -20px;padding-left:20px;padding-right:20px}   /* full width, so the pad reaches both edges */
 /* 3.45.70 (ilkem: "the writing field shouldnt be shrinking"): this app lets the keyboard shrink the page; while you type here
    the page keeps its full height, so the pad stays the same size under the keyboard, and the tab bar steps out of the way */
-.screen.dc:has(.dc-q:focus){height:var(--full-h,100dvh)}
+.screen.dc:has(.dc-q:focus):has(.dc-pad:not([hidden])){height:var(--full-h,100dvh)}   /* the pad, not the list: the list may shrink above the keyboard */
 html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab-guard{display:none}
 .dc-top{flex:none;padding-top:12px}
 .dc-bar{position:relative;display:flex;gap:8px}
@@ -1969,20 +1969,24 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-bk{position:absolute;right:16px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));width:54px;height:50px;display:grid;place-items:center;border-radius:16px;background:var(--fill);color:var(--ink)}
 .dc-bk:active{opacity:.6}
 .dc-bk:disabled{opacity:.4}
-/* the look-up pop-ups */
-.dc-sh-h{margin:4px 0 14px}
-.dc-qhz{font-family:var(--hanzi);font-weight:600;letter-spacing:.04em}
-.dc-rows{margin-bottom:8px}
-.dc-row{display:flex;align-items:center;gap:14px;width:100%;padding:11px 16px;text-align:left;color:var(--ink)}
-.dc-row+.dc-row{border-top:1px solid var(--line)}
-.dc-row:active{background:var(--fill)}
-.dc-rhz{flex:none;min-width:40px;font:600 24px/1.2 var(--hanzi);letter-spacing:.03em}
-.dc-rtx{display:flex;flex-direction:column;gap:2px;min-width:0}
-.dc-rpy{font-size:14.5px;font-weight:600;color:var(--ink-2)}
-.dc-ren{font-size:13.5px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.dc-none{font-size:15px;color:var(--muted);margin:6px 2px 18px}
-.dc-back{display:inline-flex;align-items:center;gap:4px;margin:-4px 0 4px;font-family:var(--hanzi)}
-.dc-back svg{width:18px;height:18px}
+/* 3.45.72 the results list, after Pleco's */
+.dc-list{flex:1;min-height:0;margin:0 -20px;border-top:1px solid var(--line);overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--tabh) + 96px + env(safe-area-inset-bottom))}
+.dc-list[hidden],.dc-pad[hidden],.dc-cands[hidden],.dc-write[hidden]{display:none}
+.dc-sec{padding:6px 16px;background:var(--paper-deep);font:600 19px/1.35 var(--hanzi);letter-spacing:.03em;color:var(--ink)}
+.dc-ent-row{display:block;width:100%;padding:11px 16px 13px;text-align:left;color:var(--ink);border-bottom:1px solid var(--line)}
+.dc-ent-row:active{background:var(--fill)}
+.dc-l1{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:8px}
+.dc-lhz{font:500 30px/1.25 var(--hanzi);letter-spacing:.02em}
+.dc-lalt{margin-left:-4px;font:400 22px/1 var(--hanzi);color:var(--muted)}
+.dc-lpy{font-size:18px;font-weight:700;color:var(--ink)}
+.dc-ldef{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:3px;font-size:15.5px;line-height:1.45;color:var(--ink-2)}
+.dc-ldef b{margin:0 4px 0 2px;font-weight:700;color:var(--ink)}
+.dc-ldef b:first-child{margin-left:0}
+.dc-lnote{margin:18px 16px;font-size:15px;color:var(--muted)}
+.dc-write{position:absolute;right:16px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:var(--paper);box-shadow:0 10px 22px -10px rgba(30,20,10,.6)}
+.dc-write svg{width:24px;height:24px}
+.dc-write:active{transform:scale(.94)}
+/* the word page */
 .dc-ent{display:flex;align-items:baseline;justify-content:center;gap:12px;margin:6px 0 4px}
 .dc-ehz{font:600 64px/1.15 var(--hanzi);letter-spacing:.04em;color:var(--ink)}
 .dc-eother{font:500 24px/1 var(--hanzi);color:var(--muted)}
@@ -13449,6 +13453,8 @@ function DictView() {
       <p class="dc-hint" id="dcHint">Tap with two fingers to clear<br>Tap again when clear to delete</p>
       <button class="dc-bk" id="dcBk" aria-label="Delete last character">${I.bksp}</button>
     </div>
+    <div class="dc-list" id="dcList" hidden></div>
+    <button class="dc-write" id="dcWrite" aria-label="Write a character" hidden>${I.dict}</button>
   </div>`;
 }
 /* 3.45.69 (ilkem): a slimmer search bar you can type in, in Chinese too (pinyin or characters), with no Look up button.
@@ -13473,7 +13479,29 @@ function mountDict() {
     $('#dcHint').hidden = !!st.strokes.length;
   };
   const note = s => `<p class="dc-cnote">${s}</p>`;
+  /* 3.45.72 (ilkem, from Pleco): after a search the results fill the page, a word per row (characters in tone colours, the
+     other script in brackets, the reading, numbered meanings); a phrase that is not one word is split into its words, each
+     under a grey band (你知道: 你, 知道). Typing shows the list as you type; the brush button goes back to the pad */
+  const list = $('#dcList'); let lrows = [];
+  const setMode = m => {
+    st.mode = m; const L = m === 'list';
+    pad.hidden = L; list.hidden = !L; $('#dcCands').hidden = L; $('#dcWrite').hidden = !L;
+    if (!L) requestAnimationFrame(size);
+  };
+  const paintList = () => {
+    const q = st.text.trim(); lrows = [];
+    if (!q) { list.innerHTML = ''; return; }
+    if (!DCV.D) { list.innerHTML = '<p class="dc-lnote">Opening the dictionary…</p>'; return; }
+    const html = dictGroups(DCV.D, q, k()).map(g => (g.head ? `<div class="dc-sec">${esc(dcT(g.head, zh))}</div>` : '')
+      + g.rows.map(r => dcRowHtml(r, lrows.push(r) - 1, zh)).join('')).join('');
+    list.innerHTML = lrows.length ? html : `<p class="dc-lnote">No words for ${esc(q)}</p>`;
+    list.scrollTop = 0;
+  };
+  list.onclick = e => { const b = e.target.closest('.dc-ent-row'); if (b) { inp.blur(); dictEntry(lrows[+b.dataset.i]); } };
+  const showList = () => { setMode('list'); paintList(); paintBox(); };
+  $('#dcWrite').onclick = () => { inp.blur(); setMode('pad'); paintRow(); haptic(8); };
   const paintRow = () => {
+    if (st.mode === 'list') { paintList(); paintBox(); return; }
     const el = $('#dcCands'), q = st.text.trim(), en = k() === 'en';
     words = [];
     if (st.strokes.length) el.innerHTML = st.cands.length ? st.cands.map((c, i) => `<button class="dc-cand${i ? '' : ' on'}" data-i="${i}">${esc(c)}</button>`).join('')
@@ -13534,7 +13562,7 @@ function mountDict() {
     const was = k(); if (was === to) return;
     db.prefs.dictEn = to === 'en' ? 1 : 0; save(); LOG.add('dict-lang', { to, auto: !!keep || undefined });
     const f = $('#dcFlag'); f.innerHTML = flagSvg(to); f.setAttribute('aria-label', `${DC[to].name}. Tap to switch to ${to === 'en' ? DC[zh].name : 'English'}`);
-    if (!keep) st.text = '';   // English words and characters don't mix in one search
+    if (!keep) { st.text = ''; setMode('pad'); }   // English words and characters don't mix in one search
     clearPad(); paintRow();
   };
   /* the pad: one finger writes, two fingers clear it, a tap on an empty pad deletes the last character */
@@ -13571,12 +13599,12 @@ function mountDict() {
   $('#dcBk').onclick = back;
   txt.onclick = () => take(st.cands[0]);   // the bar while a sketch is guessed: keep that guess, sketch the next one
   txt.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); take(st.cands[0]); } };
-  $('#dcClr').onclick = () => { st.text = ''; clearPad(); paintRow(); inp.focus(); };
+  $('#dcClr').onclick = () => { st.text = ''; clearPad(); setMode('pad'); paintRow(); inp.focus(); };
   $('#dcCands').onclick = e => {
     const c = e.target.closest('.dc-cand'), w = e.target.closest('.dc-word');
     if (c) take(st.cands[+c.dataset.i]);
     else if (w) { inp.blur(); dictEntry(words[+w.dataset.w]); }
-    else if (e.target.closest('.dc-all')) { inp.blur(); dictResults(st.text.trim()); }
+    else if (e.target.closest('.dc-all')) { inp.blur(); showList(); }
   };
   /* typing: pinyin or characters in Chinese, words in English; characters typed in English mode turn the flag to Chinese */
   let rowT = 0;
@@ -13584,17 +13612,19 @@ function mountDict() {
     st.text = inp.value;
     if (k() === 'en' && HAN.test(st.text)) { st.text = st.text.replace(/[^\p{Script=Han}]/gu, ''); setLang(zh, true); return; }
     $('#dcClr').hidden = !st.text; $('#dcBk').disabled = !st.text;
+    if ((st.mode === 'list') !== !!st.text.trim()) setMode(st.text.trim() ? 'list' : 'pad');   // typing: the list as you type
     cancelAnimationFrame(rowT); rowT = requestAnimationFrame(paintRow);
   });
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inp.blur(); if (st.text.trim()) dictResults(st.text.trim()); } });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inp.blur(); if (st.text.trim()) showList(); } });
   $('#dcFlag').onclick = () => {   // your Chinese (the flag of the system you learn) or English, nothing else
     const to = k() === 'en' ? zh : 'en'; haptic(8); setLang(to);
     if (to === 'en') inp.focus();   // inside the tap, so the phone's keyboard comes up
   };
   const ro = new ResizeObserver(() => { if (pad.isConnected) size(); else ro.disconnect(); }); ro.observe(pad);
+  setMode(st.mode === 'list' && st.text.trim() ? 'list' : 'pad');
   size(); paintRow();
-  dcLibs(zh).then(() => { if (pad.isConnected && zh !== 'cn') paintRow(); }, () => {});
-  if (!DCV.D) loadDict().then(D => { DCV.D = D; if (pad.isConnected) paintRow(); }, () => {});
+  dcLibs(zh === 'cn' ? 'tw' : zh).then(() => { if (pad.isConnected && (zh !== 'cn' || st.mode === 'list')) paintRow(); }, () => {});   // the list shows the other script in brackets
+  if (!DCV.D) loadDict().then(D => { DCV.D = D; if (pad.isConnected) paintRow(); }, () => { if (pad.isConnected && st.mode === 'list') list.innerHTML = '<p class="dc-lnote">The dictionary could not load. Check the internet and try again.</p>'; });
   if (!S.H) loadHsk().catch(() => {});
 }
 /* what the bar holds, looked up: characters find the word itself, then words that begin with it, then words that have it
@@ -13621,30 +13651,42 @@ function dictFind(D, q, k) {
   (D.byHz.get(s) || []).forEach(add);
   for (const r of D.rows) { if (out.length >= 40) break; if (r.h !== s && r.h.startsWith(s)) add(r); }
   for (const r of D.rows) { if (out.length >= 50) break; if (!r.h.startsWith(s) && r.h.includes(s)) add(r); }
-  if (!out.length && [...s].length > 1) for (const c of s) (D.byHz.get(c) || []).slice(0, 1).forEach(add);   // not a word: its characters one by one
+  if (!out.length && [...s].length > 1) for (const w of dcSegment(D, s)) (D.byHz.get(w) || []).slice(0, 1).forEach(add);   // not a word: the words in it (你知道: 你, 知道), not character by character
   return out;
 }
-function dictResults(q) {
-  const k = dcLang(), z = sysK();   // z: the Chinese the words are shown in
-  const rowHtml = (r, i) => `<button class="dc-row" data-i="${i}"><span class="dc-rhz">${esc(dcT(r.h, z))}</span>
-    <span class="dc-rtx"><span class="dc-rpy">${esc(dcRead(r, z))}</span><span class="dc-ren">${esc(r.e.split('; ').slice(0, 3).join('; '))}</span></span></button>`;
-  openSheet(`<div class="dc-sh dc-${z}" data-zh-keep><h3 class="dc-sh-h"><span class="dc-qhz">${esc(q)}</span></h3><div id="dcList"><p class="muted">Looking it up…</p></div></div>`, sh => {
-    LOG.add('dict-look-up', { q, lang: k });
-    loadDict().then(D => {
-      DCV.D = D; const list = sh.querySelector('#dcList'); if (!list) return;
-      const rows = dictFind(D, q, k);
-      list.innerHTML = rows.length ? `<div class="group dc-rows">${rows.map(rowHtml).join('')}</div>`
-        : `<p class="dc-none">No words found for ${esc(q)}. Clear it and try again.</p>`;
-      list.onclick = e => { const b = e.target.closest('.dc-row'); if (b) dictEntry(rows[+b.dataset.i], q); };
-    }, () => { const list = sh.querySelector('#dcList'); if (list) list.innerHTML = '<p class="dc-none">The dictionary could not load. Check the internet and try again.</p>'; });
-  });
+/* a phrase split into the dictionary's words, longest first from the left (你知道 -> 你, 知道; 我喜欢吃苹果 -> 我, 喜欢, 吃, 苹果) */
+function dcSegment(D, s) {
+  const a = [...s], out = []; let i = 0;
+  while (i < a.length) {
+    let n = Math.min(8, a.length - i);
+    while (n > 1 && !D.byHz.has(a.slice(i, i + n).join(''))) n--;
+    out.push(a.slice(i, i + n).join('')); i += n;
+  }
+  return out;
 }
-function dictEntry(r, back) {
+/* the results list: one group, or for a phrase that is not a word (and starts no word) a group per word in it */
+function dictGroups(D, q, k) {
+  q = q.trim(); if (!q) return [];
+  if (k === 'en' || !HAN.test(q)) return [{ rows: dictFind(D, q, k) }];
+  const s = dcS(q, k);
+  if ([...s].length === 1 || D.byHz.has(s) || D.rows.some(r => r.h !== s && r.h.startsWith(s))) return [{ rows: dictFind(D, q, k) }];
+  return dcSegment(D, s).filter(w => HAN.test(w)).map(w => ({ head: w, rows: (D.byHz.get(w) || []).filter(r => !r.e.startsWith('erhua variant')) }));
+}
+/* one word in the list, like Pleco: the characters in their tone colours, the other script in brackets, the reading, and the
+   meanings numbered (three lines at most; the word's page has them all) */
+function dcRowHtml(r, i, z) {
+  const hz = dcT(r.h, z), alt = z === 'cn' ? (DCV.conv.tw ? DCV.conv.tw.t(r.h) : hz) : r.h;
+  const ch = [...hz], ts = pySyls(r.p).map(x => x[1]), col = z !== 'hk' && ts.length === ch.length;   // Cantonese has its own tones: no Mandarin colours
+  const ms = r.e.split('; ');
+  return `<button class="dc-ent-row" data-i="${i}"><span class="dc-l1"><span class="dc-lhz">${ch.map((c, j) => col ? `<span style="color:${TONE_C[ts[j]]}">${esc(c)}</span>` : esc(c)).join('')}</span>`
+    + `${alt !== hz && [...alt].length === ch.length ? `<span class="dc-lalt">〔${esc(alt)}〕</span>` : ''}<span class="dc-lpy">${esc(dcRead(r, z))}</span></span>`
+    + `<span class="dc-ldef">${ms.length > 1 ? ms.map((m, j) => `<b>${j + 1}</b>${esc(m)}`).join(' ') : esc(ms[0])}</span></button>`;
+}
+function dictEntry(r) {
   const k = dcLang() === 'en' ? sysK() : dcLang(), hz = dcT(r.h, k), other = hz !== r.h ? r.h : k === 'cn' && DCV.conv.tw ? dcT(r.h, 'tw') : '';
   const lv = S.H?.byHz.get(r.h)?.lv, has = () => !!bankHas(r.h);
   const ms = r.e.split('; ');
   openSheet(`<div class="dc-sh dc-${k}" data-zh-keep>
-    ${back != null ? `<button class="link-btn dc-back" id="dcBack">${I.back}${esc(back)}</button>` : ''}
     <div class="dc-ent"><div class="dc-ehz">${esc(hz)}</div>${other && other !== hz ? `<div class="dc-eother">${esc(other)}</div>` : ''}</div>
     <div class="dc-epy"><span>${esc(dcRead(r, k))}</span><button class="icon-btn dc-say" id="dcSay" aria-label="Play the sound">${I.sound}</button>${lv ? `<span class="dc-lv">${HSK_NAME(lv)}</span>` : ''}</div>
     <ol class="dc-means">${ms.map(m => `<li>${esc(m)}</li>`).join('')}</ol>
@@ -13660,7 +13702,6 @@ function dictEntry(r, back) {
     sh.querySelector('#dcSay').onclick = () => {
       if (k === 'hk') { sayStop(); const n = sayN; ttsSay(r.h, 'hk', n, () => yueSay(r.h, n)); } else sayZh(r.h, r.p);
     };
-    sh.querySelector('#dcBack')?.addEventListener('click', () => dictResults(back));
     LOG.add('dict-word', { hz: r.h });
   });
 }
@@ -14463,7 +14504,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.71';
+const APP_VERSION = '3.45.72';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
