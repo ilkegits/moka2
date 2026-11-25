@@ -1,1 +1,1 @@
-{"version": "3.45.83", "notes": "App icon fixed for Android: the seal is smaller in the maskable icon, so the installed icon shows the whole scalloped seal on white instead of a cropped red disc"}
+{"version": "3.45.84", "notes": "Android app icon: the seal is a bit bigger, 79% of the icon, the same as on other phones"}
