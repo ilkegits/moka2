@@ -1976,14 +1976,14 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 /* 3.45.72 the results list, after Pleco's */
 .dc-list{flex:1;min-height:0;margin:0 -20px;border-top:1px solid var(--line);overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--tabh) + 96px + env(safe-area-inset-bottom))}
 .dc-list[hidden],.dc-pad[hidden],.dc-write[hidden]{display:none}
-.dc-sec{padding:6px 16px;background:var(--paper-deep);font:600 19px/1.35 var(--hanzi);letter-spacing:.03em;color:var(--ink)}
-.dc-ent-row{display:block;width:100%;padding:11px 16px 13px;text-align:left;color:var(--ink);border-bottom:1px solid var(--line)}
+.dc-sec{padding:4px 16px;background:var(--paper-deep);font:600 16px/1.35 var(--hanzi);letter-spacing:.03em;color:var(--ink)}
+.dc-ent-row{display:block;width:100%;padding:7px 16px 8px;text-align:left;color:var(--ink);border-bottom:1px solid var(--line)}
 .dc-ent-row:active{background:var(--fill)}
-.dc-l1{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:8px}
-.dc-lhz{font:500 30px/1.25 var(--hanzi);letter-spacing:.02em}
-.dc-lalt{margin-left:-4px;font:400 22px/1 var(--hanzi);color:var(--muted)}
-.dc-lpy{font-size:18px;font-weight:700;color:var(--ink)}
-.dc-ldef{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:3px;font-size:15.5px;line-height:1.45;color:var(--ink-2)}
+.dc-l1{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:7px}
+.dc-lhz{font:500 24px/1.2 var(--hanzi);letter-spacing:.02em}
+.dc-lalt{margin-left:-4px;font:400 17px/1 var(--hanzi);color:var(--muted)}
+.dc-lpy{font-size:15.5px;font-weight:700;color:var(--ink)}
+.dc-ldef{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:1px;font-size:14px;line-height:1.35;color:var(--ink-2)}
 .dc-ldef b{margin:0 4px 0 2px;font-weight:700;color:var(--ink)}
 .dc-ldef b:first-child{margin-left:0}
 .dc-lnote{margin:18px 16px;font-size:15px;color:var(--muted)}
@@ -14652,7 +14652,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.74';
+const APP_VERSION = '3.45.75';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
