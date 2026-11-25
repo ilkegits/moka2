@@ -1990,15 +1990,41 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-write{position:absolute;right:16px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:var(--paper);box-shadow:0 10px 22px -10px rgba(30,20,10,.6)}
 .dc-write svg{width:24px;height:24px}
 .dc-write:active{transform:scale(.94)}
-/* the word page */
-.dc-ent{display:flex;align-items:baseline;justify-content:center;gap:12px;margin:6px 0 4px}
-.dc-ehz{font:600 64px/1.15 var(--hanzi);letter-spacing:.04em;color:var(--ink)}
-.dc-eother{font:500 24px/1 var(--hanzi);color:var(--muted)}
-.dc-epy{display:flex;align-items:center;justify-content:center;gap:4px;font-size:19px;font-weight:600;color:var(--ink-2)}
-.dc-lv{margin-left:6px;padding:3px 8px;border-radius:7px;background:var(--seal-soft);color:var(--seal);font-size:12px;font-weight:700}
-.dc-means{margin:14px 0 22px;padding-left:24px;font-size:15.5px;line-height:1.45;color:var(--ink)}
-.dc-means li+li{margin-top:5px}
-.dc-means li::marker{color:var(--muted);font-size:13px}
+/* the word page (3.45.74): a flashcard that turns over to the stroke order */
+.dcc{margin:0 0 12px;perspective:1600px;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.dcc-in{display:grid;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.25,1)}
+.dcc-in.drag{transition:none}
+@media (prefers-reduced-motion:reduce){.dcc-in{transition-duration:.01s}}
+.dcc-face{grid-area:1/1;min-width:0;min-height:280px;padding:22px 20px 16px;border-radius:24px;background:var(--card);box-shadow:var(--ring),var(--shadow);
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column}
+.dcc-back{transform:rotateY(180deg);align-items:center;padding-top:16px}
+.dcc-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px}
+.dcc-hz{font:600 calc(78px - var(--n) * 9px)/1.1 var(--hanzi);letter-spacing:.03em;color:var(--ink)}
+.dcc-id{min-width:0;display:flex;flex-direction:column;gap:6px}
+.dcc-py{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:700;line-height:1.2}
+.dcc-say{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--seal-soft);color:var(--seal)}
+.dcc-say svg.i{width:19px;height:19px}
+.dcc-say:active{opacity:.5}
+.dcc-tags{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.dc-lv{padding:3px 8px;border-radius:7px;background:var(--seal-soft);color:var(--seal);font-size:12px;font-weight:700}
+.sheet:has(.dcc)>.handle{margin-bottom:40px}   /* the close button gets a row of its own above the card */
+.dcc-other{font:500 19px/1 var(--hanzi);color:var(--muted)}
+.dcc-means{flex:1;margin:16px 0 4px;padding:14px 0 0 22px;border-top:1px solid var(--line);font-size:15.5px;line-height:1.45;color:var(--ink)}
+.dcc-means:has(li:only-child){padding-left:0;list-style:none}
+.dcc-means li+li{margin-top:5px}
+.dcc-means li::marker{color:var(--muted);font-size:13px;font-weight:700}
+.dcc-hint{display:flex;align-items:center;justify-content:flex-end;gap:2px;margin-top:10px;font-size:13px;font-weight:600;color:var(--muted)}
+.dcc-hint svg.i{width:16px;height:16px}
+.dcc-h{align-self:stretch;display:flex;align-items:baseline;gap:8px;margin:0 2px 12px;font-size:17px;font-weight:700}
+.dcc-h span{font-family:var(--hanzi);font-size:14px;font-weight:600;color:var(--seal)}
+.dcc .hs-tabs{flex-wrap:wrap;margin:-2px 0 12px}
+.dcc .hs-tzg,.dcc .hs-tzg *{touch-action:pan-y}   /* a swipe on the box turns the card like anywhere else */
+.dcc .hs-tzg{cursor:pointer}
+.dcc .hs-ctl{margin-top:14px}
+.dcc-dots{display:flex;justify-content:center;margin:-2px 0 10px}
+.dcc-dots button{width:22px;height:30px;display:grid;place-items:center}
+.dcc-dots button::before{content:"";width:7px;height:7px;border-radius:4px;background:var(--ink-2);opacity:.3;transition:width .25s,opacity .25s}
+.dcc-dots button.on::before{width:20px;opacity:1;background:var(--seal)}
 .dc-in{display:flex;align-items:center;justify-content:center;gap:6px;height:50px;margin:0;font-weight:600;color:#2B7752}
 .dc-in svg{width:20px;height:20px}
 
@@ -4863,7 +4889,9 @@ function CourseBlock() {
    (tones, pinyin chart, radicals, stroke order) live under Basics instead: #/basics, #/basics/tones, /pinyin, /radicals, /strokes. */
 const C1 = '#35A877';   // HSK 1's own green, the same as its picture card
 const CRS_ZH = ['', '入门', '小吃街', '漓江', '古城', '中秋', '长城', '皇城'];   // each level's world, as the sign on its course page: the gate, the snack street, the Li River, the old town, Mid-Autumn, the Great Wall, the imperial city
-const TONE_C = ['var(--muted)', '#E5483F', '#E8A33C', '#2E9E6B', '#3E7FB1'];   // tone colours: 1 red, 2 gold, 3 green, 4 blue
+/* tone colours, Pleco's scheme (each tone its own colour, so you see the tones before you read the pinyin): 1 red, 2 amber,
+   3 green, 4 blue, neutral grey. 3.45.74: a little deeper, the old gold was hard to read on the paper (2:1, now 3.4:1) */
+const TONE_C = ['var(--muted)', '#D8352A', '#C27410', '#1E8A57', '#2D69B3'];
 /* the pitch of each tone on a five-level scale (5 = high): 1 is 55, 2 is 35, 3 is 214, 4 is 51; the light tone is a short mid dot */
 const TONE_D = ['M44 30H56', 'M10 6H90', 'M10 30C40 28 70 22 90 6', 'M10 42C26 56 56 60 90 18', 'M10 6C40 14 70 34 90 54'];
 const toneSvg = (t, cls = '') => `<svg class="tone-svg ${cls}" viewBox="0 0 100 60" aria-hidden="true" focusable="false">
@@ -9605,8 +9633,7 @@ function hdxTrace(el, H) {
 }
 /* the stroke order page (one quick animation) and the word bank button */
 function mountHotdSheet(sh, H) {
-  const box = sh.querySelector('#hsBox'), svg = box.querySelector('.hs-svg'), cap = sh.querySelector('#hsCap');
-  const bub = sh.querySelector('#hsBub'), shi = sh.querySelector('#hsShi'), S2 = box.offsetWidth || 228;
+  const bub = sh.querySelector('#hsBub'), shi = sh.querySelector('#hsShi');
   const say = (txt, mood) => { bub.textContent = txt; bub.classList.remove('new'); void bub.offsetWidth; bub.classList.add('new');
     if (mood) { shi.innerHTML = shiFace(mood); shi.classList.remove('hop'); void shi.offsetWidth; if (mood === 'cheer') shi.classList.add('hop'); } };
   sh.querySelector('#hsAdd').onclick = e => {
@@ -9617,17 +9644,26 @@ function mountHotdSheet(sh, H) {
     b.outerHTML = HdxAdd(true, true);
     say(`${H.h} is in your word bank now. It will come back in your daily cards.`, 'cheer');
   };
-  const fail = () => { cap.textContent = 'The strokes need the internet. Try again when you are online.'; sh.querySelector('.hs-ctl').hidden = true;
-    box.querySelector('.quiz').innerHTML = `<span class="ans-fallback" style="--s:${S2}px">${esc(H.h)}</span>`; };
-  if (!window.HanziWriter) return fail();
-  const cs = [...H.h], two = cs.length > 1, tabs = [...sh.querySelectorAll('#hsTabs button')];
-  hdRefs(H).then(refs => {
-    if (!sh.isConnected) return;
-    const total = hdCount(refs);
+  const cs = [...H.h], two = cs.length > 1;
+  strokeFilm(sh, H, { log: 'hotd-play', auto: true, onCount: total => {
     if (H.n !== total) { H.n = total; save(); }
     const nEl = sh.querySelector('#hsN'); if (nEl) nEl.textContent = plural(total, 'stroke');
     say(two ? `${cs.length} characters, ${total} strokes. Watch them, then swipe on and write them!`
       : total <= 4 ? `Only ${total} strokes. Watch it, then swipe on and write it!` : `${total} strokes. Top to bottom, left to right. Tap play to watch again.`);
+  } });
+}
+/* the stroke order film (Word of the day, and the Dictionary card): #hsBox draws each stroke in red with the brush, in order;
+   #hsPlay plays the whole word, a tap on the box this character again, #hsTabs picks the character of a longer word.
+   o.auto: plays by itself the first time the box is on screen; else sh._film.play() starts it. */
+function strokeFilm(sh, H, o = {}) {
+  const box = sh.querySelector('#hsBox'), svg = box.querySelector('.hs-svg'), cap = sh.querySelector('#hsCap'), S2 = box.offsetWidth || 228;
+  const fail = () => { cap.textContent = 'The strokes need the internet. Try again when you are online.'; sh.querySelector('.hs-ctl').hidden = true;
+    box.querySelector('.quiz').innerHTML = `<span class="ans-fallback" style="--s:${S2}px">${esc(zhT(H.h))}</span>`; };
+  if (!window.HanziWriter) return fail();
+  const cs = [...H.h], two = cs.length > 1, tabs = [...sh.querySelectorAll('#hsTabs button')];
+  hdRefs(H).then(refs => {
+    if (!sh.isConnected) return;
+    o.onCount?.(hdCount(refs));
     const FLIP = 'translate(0 900) scale(1 -1)';
     let run = 0, anim = null, ci = 0, ref, N, P, ink, num;
     const pre = () => two ? `${cs[ci]} · ` : '';
@@ -9644,7 +9680,7 @@ function mountHotdSheet(sh, H) {
     const show = (k, all) => {   // the first k strokes in place; the last of them red, unless it is the finished character
       P.forEach((p, i) => p.setAttribute('class', i < k - 1 || (all && i < k) ? 's-done' : i === k - 1 ? 's-cur' : 's-todo'));
       badge(all ? -1 : k - 1);
-      cap.textContent = pre() + (k === 0 ? `${plural(N, 'stroke')} · press play` : all ? `All ${N} strokes ✓` : `Stroke ${k} of ${N}`);
+      cap.textContent = pre() + (k === 0 ? `${plural(N, 'stroke')} · press play` : all ? (N > 1 ? `All ${N} strokes ✓` : '1 stroke ✓') : `Stroke ${k} of ${N}`);
     };
     const stop = () => { run++; anim?.cancel(); anim = null; ink?.removeAttribute('d'); };
     const draw = i => new Promise(res => {   // stroke i draws itself in red with the brush, the way it is written
@@ -9667,13 +9703,16 @@ function mountHotdSheet(sh, H) {
         if (!(await wait(650, me))) return;
         pick(++k); show(0);
       }
-      LOG.add('hotd-play', { hz: H.h });
+      LOG.add(o.log || 'film-play', { hz: H.h });
     };
     sh.querySelector('#hsPlay').onclick = () => play(0, true);   // play: the whole word from the start
     box.onclick = () => play(ci);   // tap the box to watch this character again
     tabs.forEach((b, k) => { b.onclick = () => play(k); });
-    pick(0); show(0);   // plays by itself the first time the box is on screen
-    if (!stillMotion() && 'IntersectionObserver' in window) { const io = new IntersectionObserver(es => {
+    pick(0); show(0);
+    sh._film = { play: () => play(0, true), stop: () => { stop(); show(0); } };
+    if (sh._filmWant) { sh._filmWant = false; play(0, true); }   // asked for before the strokes had loaded
+    // o.auto: plays by itself the first time the box is on screen
+    if (o.auto && !stillMotion() && 'IntersectionObserver' in window) { const io = new IntersectionObserver(es => {
       if (es.some(x => x.isIntersecting)) { io.disconnect(); setTimeout(() => sh.isConnected && play(0, true), 250); } }, { threshold: .7 });
       io.observe(box); }
   }, fail);
@@ -13714,22 +13753,45 @@ function dictGroups(D, q, k) {
 }
 /* one word in the list, like Pleco: the characters in their tone colours, the other script in brackets, the reading, and the
    meanings numbered (three lines at most; the word's page has them all) */
+function dcTones(r, k, hz) {   // the characters and the reading in their tone colours; Cantonese has its own tones, so plain ink
+  const ch = [...hz], ts = pySyls(r.p).map(x => x[1]), on = k !== 'hk' && ts.length === ch.length, rd = dcRead(r, k), sy = rd.split(' ');
+  const c = (t, x) => `<span style="color:${TONE_C[t]}">${esc(x)}</span>`;
+  return { H: on ? ch.map((x, j) => c(ts[j], x)).join('') : esc(hz), P: on && sy.length === ch.length ? sy.map((x, j) => c(ts[j], x)).join(' ') : esc(rd) };
+}
 function dcRowHtml(r, i, z) {
-  const hz = dcT(r.h, z), alt = z === 'cn' ? (DCV.conv.tw ? DCV.conv.tw.t(r.h) : hz) : r.h;
-  const ch = [...hz], ts = pySyls(r.p).map(x => x[1]), col = z !== 'hk' && ts.length === ch.length;   // Cantonese has its own tones: no Mandarin colours
+  const hz = dcT(r.h, z), alt = z === 'cn' ? (DCV.conv.tw ? DCV.conv.tw.t(r.h) : hz) : r.h, T = dcTones(r, z, hz);
   const ms = r.e.split('; ');
-  return `<button class="dc-ent-row" data-i="${i}"><span class="dc-l1"><span class="dc-lhz">${ch.map((c, j) => col ? `<span style="color:${TONE_C[ts[j]]}">${esc(c)}</span>` : esc(c)).join('')}</span>`
-    + `${alt !== hz && [...alt].length === ch.length ? `<span class="dc-lalt">〔${esc(alt)}〕</span>` : ''}<span class="dc-lpy">${esc(dcRead(r, z))}</span></span>`
+  return `<button class="dc-ent-row" data-i="${i}"><span class="dc-l1"><span class="dc-lhz">${T.H}</span>`
+    + `${alt !== hz && [...alt].length === [...hz].length ? `<span class="dc-lalt">〔${esc(alt)}〕</span>` : ''}<span class="dc-lpy">${T.P}</span></span>`
     + `<span class="dc-ldef">${ms.length > 1 ? ms.map((m, j) => `<b>${j + 1}</b>${esc(m)}`).join(' ') : esc(ms[0])}</span></button>`;
 }
+/* 3.45.74 (ilkem): a word opens as a flashcard. Front: the word, its pronunciation beside it, the meanings under it.
+   Swipe it (either way) and it turns over to the stroke order, which plays by itself; swipe again for the front.
+   A tap on the front, the dots under it, or the arrow keys turn it too. */
 function dictEntry(r) {
   const k = dcLang() === 'en' ? sysK() : dcLang(), hz = dcT(r.h, k), other = hz !== r.h ? r.h : k === 'cn' && DCV.conv.tw ? dcT(r.h, 'tw') : '';
-  const lv = S.H?.byHz.get(r.h)?.lv, has = () => !!bankHas(r.h);
-  const ms = r.e.split('; ');
+  const lv = S.H?.byHz.get(r.h)?.lv, has = () => !!bankHas(r.h), T = dcTones(r, k, hz);
+  const ms = r.e.split('; '), n = [...hz].length;
+  const F = { h: [...r.h].filter(c => ZH_HAN.test(c)).join('') };   // the stroke film: only the Chinese characters (卡拉OK: 卡拉)
+  const fc = [...F.h], S2 = Math.round(Math.min(216, Math.min(innerWidth, 480) - 112, innerHeight * .34));
   openSheet(`<div class="dc-sh dc-${k}" data-zh-keep>
-    <div class="dc-ent"><div class="dc-ehz">${esc(hz)}</div>${other && other !== hz ? `<div class="dc-eother">${esc(other)}</div>` : ''}</div>
-    <div class="dc-epy"><span>${esc(dcRead(r, k))}</span><button class="icon-btn dc-say" id="dcSay" aria-label="Play the sound">${I.sound}</button>${lv ? `<span class="dc-lv">${HSK_NAME(lv)}</span>` : ''}</div>
-    <ol class="dc-means">${ms.map(m => `<li>${esc(m)}</li>`).join('')}</ol>
+    <div class="dcc" id="dcCard"><div class="dcc-in">
+      <section class="dcc-face dcc-front" aria-label="The word">
+        <div class="dcc-top"><div class="dcc-hz" style="--n:${Math.min(n, 6)}">${T.H}</div>
+          <div class="dcc-id"><div class="dcc-py"><span>${T.P}</span><button class="dcc-say" id="dcSay" aria-label="Play the sound">${I.sound}</button></div>
+            ${lv || (other && other !== hz) ? `<div class="dcc-tags">${lv ? `<span class="dc-lv">${HSK_NAME(lv)}</span>` : ''}${other && other !== hz ? `<span class="dcc-other">${esc(other)}</span>` : ''}</div>` : ''}</div></div>
+        <ol class="dcc-means">${ms.map(m => `<li>${esc(m)}</li>`).join('')}</ol>
+        ${fc.length ? `<div class="dcc-hint">Swipe for the stroke order ${I.chev}</div>` : ''}
+      </section>
+      ${fc.length ? `<section class="dcc-face dcc-back" aria-label="Stroke order" inert>
+        <h4 class="dcc-h">Stroke order <span>笔顺</span></h4>
+        ${fc.length > 1 ? `<div class="hs-tabs" id="hsTabs" role="tablist">${fc.map((c, i) => `<button role="tab" data-ci="${i}"${i ? '' : ' class="on" aria-selected="true"'}>${esc(zhT(c))}</button>`).join('')}</div>` : ''}
+        <div class="hs-stage"><div class="tzg hs-tzg" id="hsBox" style="--s:${S2}px">${TZG}<svg class="hs-svg" viewBox="-70 -70 1164 1164" aria-hidden="true"></svg><div class="quiz"></div></div></div>
+        <div class="hs-ctl"><button class="icon-btn hs-play" id="hsPlay" aria-label="Play the strokes">${I.play}</button></div>
+        <div class="hs-cap" id="hsCap">Loading the strokes…</div>
+      </section>` : ''}
+    </div></div>
+    ${fc.length ? '<nav class="dcc-dots" aria-label="Sides"><button data-side="0" class="on" aria-label="The word" aria-current="true"></button><button data-side="1" aria-label="Stroke order"></button></nav>' : ''}
     <div id="dcAddWrap"></div></div>`, sh => {
     const wrap = sh.querySelector('#dcAddWrap');
     const paint = () => { wrap.innerHTML = has() ? `<p class="dc-in">${I.check}In your word bank</p>` : '<button class="btn btn-seal wide" id="dcAdd">Add to word bank</button>'; };
@@ -13743,7 +13805,53 @@ function dictEntry(r) {
       if (k === 'hk') { sayStop(); const n = sayN; ttsSay(r.h, 'hk', n, () => yueSay(r.h, n)); } else sayZh(r.h, r.p);
     };
     LOG.add('dict-word', { hz: r.h });
+    if (fc.length) dcCardTurn(sh, r.h, F);
   });
+}
+function dcCardTurn(sh, hz, F) {   // the card turns over in the direction your finger goes
+  const card = sh.querySelector('#dcCard'), inn = card.querySelector('.dcc-in'), front = card.querySelector('.dcc-front'), back = card.querySelector('.dcc-back');
+  const dots = [...sh.querySelectorAll('.dcc-dots button')];
+  let rot = 0, g = null, noClickUntil = 0;
+  const side = () => ((Math.round(rot / 180) % 2) + 2) % 2;   // 0 front, 1 stroke order
+  strokeFilm(sh, F, { log: 'dict-strokes' });
+  const turn = (dir, how) => {
+    rot += dir * 180; inn.style.transform = `rotateY(${rot}deg)`;
+    const b = side(); front.inert = !!b; back.inert = !b;
+    dots.forEach((d, j) => { d.classList.toggle('on', j === b); d.toggleAttribute('aria-current', j === b); });
+    if (b) { if (sh._film) sh._film.play(); else sh._filmWant = true; } else { sh._filmWant = false; sh._film?.stop(); }
+    haptic(8); LOG.add('dict-turn', { hz, side: b ? 'strokes' : 'word', how });
+  };
+  card.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    g = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, on: false, w: card.offsetWidth };
+  });
+  card.addEventListener('pointermove', e => {
+    if (!g || e.pointerId !== g.id) return; const dx = e.clientX - g.x, dy = e.clientY - g.y;
+    if (!g.on) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      if (Math.abs(dx) < Math.abs(dy) * 1.2) { g = null; return; }   // up or down: the pop-up scrolls or closes
+      g.on = true; inn.classList.add('drag'); try { card.setPointerCapture(g.id); } catch (_) {}
+    }
+    inn.style.transform = `rotateY(${rot + Math.max(-180, Math.min(180, dx / g.w * 200))}deg)`;
+  });
+  const up = e => {
+    if (!g || e.pointerId !== g.id) return; const G = g; g = null; if (!G.on) return;
+    inn.classList.remove('drag'); noClickUntil = performance.now() + 300;
+    const dx = e.clientX - G.x, fast = Math.abs(dx) / Math.max(1, e.timeStamp - G.t) > .45;
+    if (e.type === 'pointerup' && (Math.abs(dx) > G.w * .22 || (fast && Math.abs(dx) > 24))) turn(dx > 0 ? 1 : -1, 'swipe');
+    else inn.style.transform = `rotateY(${rot}deg)`;   // not far enough: it springs back
+  };
+  card.addEventListener('pointerup', up); card.addEventListener('pointercancel', up);
+  card.addEventListener('click', e => {
+    if (performance.now() < noClickUntil) { e.stopPropagation(); e.preventDefault(); return; }
+    if (!side() && !e.target.closest('button')) turn(1, 'tap');   // a tap on the front turns it; on the back the box replays the film
+  }, true);
+  sh.querySelector('.dcc-dots').onclick = e => { const b = e.target.closest('[data-side]'); if (b && +b.dataset.side !== side()) turn(+b.dataset.side ? 1 : -1, 'dot'); };
+  const key = e => {
+    if (!card.isConnected) return removeEventListener('keydown', key);
+    if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !e.target.closest?.('input,textarea')) { e.preventDefault(); turn(e.key === 'ArrowRight' ? 1 : -1, 'key'); }
+  };
+  addEventListener('keydown', key);
 }
 
 /* ---------- word bank ----------
@@ -14544,7 +14652,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.73';
+const APP_VERSION = '3.45.74';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });

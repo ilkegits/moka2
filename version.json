@@ -1,1 +1,1 @@
-{"version": "3.45.73", "notes": "Dictionary like Pleco: guesses along the bottom with Delete and Done, the character being written marked in the bar with a blinking cursor, Done shows the words; English typed in Chinese mode turns the flag to English at once"}
+{"version": "3.45.74", "notes": "Dictionary: a word opens as a flashcard (the word, its pronunciation beside it, the meanings under it); swipe it to turn it over to the stroke order. Tone colours a little deeper (the gold was hard to read), and the pinyin in the list is in tone colours too"}
