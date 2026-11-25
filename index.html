@@ -2022,7 +2022,9 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-in svg{width:20px;height:20px}
 
 /* ---------- read ---------- */
-.read-tools{display:flex;gap:8px;margin:-10px 0 12px}
+.read-tools{display:flex;justify-content:flex-end;gap:8px;margin:-10px 0 12px}
+.rd-py{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 2px 0 6px;font-size:15px;font-weight:500;color:var(--ink)}
+.rd-py .py-glyph{color:var(--ink-2)}
 .py-glyph{font-family:var(--hanzi);font-weight:600;font-size:15px;line-height:1}
 .read-note{font-size:13.5px;color:var(--muted);margin:0 2px 14px}
 .read-note u{text-decoration:underline dotted var(--seal) 1.5px;text-underline-offset:4px}
@@ -8767,7 +8769,7 @@ function shelfOpen(zh) {   // a book on the shelf: the story, or the list of the
 }
 function ReadView() {
   const s = readStory(), on = !!db.prefs.readPy;
-  const pyBtn = `<button class="pill${on ? ' on' : ''}" data-act="read-py" aria-pressed="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}</button>`;
+  const pyBtn = `<button class="rd-py" data-act="read-py" role="switch" aria-checked="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}<span class="switch${on ? ' on' : ''}"></span></button>`;   // pinyin on the right, with an on/off switch
   if (S.readId) return `<div class="screen fade-in">
     <header class="bar"><button class="icon-btn" data-act="read-back" aria-label="Back">${I.back}</button><div class="bar-title">Finished story</div><div style="width:42px"></div></header>
     ${s ? `<div class="read-tools" style="margin-top:6px">${pyBtn}</div>
@@ -8779,9 +8781,9 @@ function ReadView() {
   const empty = '<p class="read-note">Your word bank is empty, so this story uses common words. <button class="link-btn" data-act="open-hsk" style="padding:0">Add words you know</button></p>';
   return `<div class="screen fade-in">
     <div class="rd-head pg-head"><h2>Stories <span class="cal-zh">故事</span></h2><span class="pg-tr">${SysBtn()}${XpBtn()}${StreakBtn()}</span></div>
-    ${!s ? '' : s.opened ? `<div class="read-tools" style="margin-top:0">${pyBtn}<button class="pill" data-act="read-new">${I.shuffle}Different story</button></div>
+    ${!s ? '' : s.opened ? `<div class="read-tools" style="margin-top:0">${pyBtn}</div>
         ${db.bank.length ? '<p class="read-note">Tap a word to see what it means. <u>Underlined</u> words are new: not in your word bank yet.</p>' : empty}
-        ${StoryCard(s, '<button class="btn btn-seal wide story-done" data-act="read-finish">I finished this story</button>')}`
+        ${StoryCard(s, '<button class="btn btn-seal wide story-done" data-act="read-finish">I finished this story</button><button class="link-btn rd-other" data-act="read-new">Different story</button>')}`
       : StoryCover(s, st, readToday) + (db.bank.length ? '' : empty)}
     ${ReadCard()}
   </div>`;
@@ -14647,7 +14649,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.77';
+const APP_VERSION = '3.45.78';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16042,7 +16044,7 @@ const A = {
   'say': t => sayZh(t.dataset.h, t.dataset.p),
   'hotd-open': () => hotdOpen(),
   'rpop-add': t => addReadWord(t),
-  'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-pressed', db.prefs.readPy); $('.story')?.classList.toggle('py', db.prefs.readPy); },
+  'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.querySelector('.switch')?.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-checked', db.prefs.readPy); $('.story')?.classList.toggle('py', db.prefs.readPy); },
   'read-new': () => { const from = coverChars(db.readCur); db.readCur = makeStory(db.readCur?.zh); save(); S.instant = true; render(); riffleBook(from); },
   'read-start': () => { if (!db.readCur) return; db.readCur.opened = Date.now(); db.last = { t: 'read' }; save(); LOG.add('read-start', db.readCur.zh); render(); },
   'read-finish': () => finishSheet(),
