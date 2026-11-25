@@ -1976,6 +1976,7 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-done:active{opacity:.75}
 /* 3.45.72 the results list, after Pleco's */
 .dc-list{flex:1;min-height:0;margin:0 -20px;border-top:1px solid var(--line);overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--tabh) + 96px + env(safe-area-inset-bottom))}
+.dc-list.dc-peek{flex:none;height:min(34%,270px);padding-bottom:0}   /* 3.45.78: the words above the pad while you write */
 .dc-list[hidden],.dc-pad[hidden],.dc-write[hidden]{display:none}
 .dc-sec{padding:4px 16px;background:var(--paper-deep);font:600 16px/1.35 var(--hanzi);letter-spacing:.03em;color:var(--ink)}
 .dc-ent-row{display:block;width:100%;padding:7px 16px 8px;text-align:left;color:var(--ink);border-bottom:1px solid var(--line)}
@@ -13482,6 +13483,7 @@ function DictView() {
         <button class="dc-flag" id="dcFlag" aria-label="${DC[k].name}. Tap to switch to ${k === 'en' ? DC[sysK()].name : 'English'}">${flagSvg(k)}</button>
       </div>
     </div>
+    <div class="dc-list" id="dcList" hidden></div>
     <div class="dc-pad" id="dcPad">
       <canvas id="dcInk" aria-label="Writing pad"></canvas>
       <button class="dc-undo icon-btn" id="dcUndo" aria-label="Undo last stroke" hidden>${I.undo}</button>
@@ -13490,7 +13492,6 @@ function DictView() {
         <button class="dc-bk" id="dcBk" aria-label="Delete last character">${I.bksp}</button>
         <button class="dc-done" id="dcDone">Done</button></div>
     </div>
-    <div class="dc-list" id="dcList" hidden></div>
     <button class="dc-write" id="dcWrite" aria-label="Write a character" hidden>${I.dict}</button>
   </div>`;
 }
@@ -13531,11 +13532,11 @@ function mountDict() {
   const list = $('#dcList'); let lrows = [];
   const setMode = m => {
     st.mode = m; const L = m === 'list';
-    pad.hidden = L; list.hidden = !L; $('#dcWrite').hidden = !L;
+    pad.hidden = L; list.hidden = !L; list.classList.toggle('dc-peek', !L); $('#dcWrite').hidden = !L;
     if (!L) requestAnimationFrame(size);
   };
-  const paintList = () => {
-    const q = st.text.trim(); lrows = [];
+  const paintList = (q = st.text.trim()) => {
+    lrows = [];
     if (!q) { list.innerHTML = ''; return; }
     if (!DCV.D) { list.innerHTML = '<p class="dc-lnote">Opening the dictionary…</p>'; return; }
     const html = dictGroups(DCV.D, q, k()).map(g => (g.head ? `<div class="dc-sec">${esc(dcT(g.head, zh))}</div>` : '')
@@ -13552,6 +13553,12 @@ function mountDict() {
     el.innerHTML = !st.strokes.length ? '' : st.cands.length ? st.cands.map((c, i) => `<button class="dc-cand${i ? '' : ' on'}" data-i="${i}">${esc(c)}</button>`).join('')
       : st.err ? note('Reading handwriting needs the internet') : '';
     el.scrollLeft = 0;
+    /* 3.45.78 (ilkem: "you shouldn't have to click enter for it to load the words"): once a written character is in the bar,
+       its words show above the pad by themselves, and they follow the guess for the character being written next. Done still
+       opens the full list. The space comes only after a character is kept, when the pad is clear, so no ink ever moves */
+    const peek = !!st.text.trim();
+    if (list.hidden === peek) list.hidden = !peek;
+    if (peek) paintList(((st.strokes.length && st.cands[0] ? (HAN.test(st.text) ? st.text : '') + st.cands[0] : st.text)).trim());
     paintBox();
   };
   const draw = () => {
@@ -14647,7 +14654,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.77';
+const APP_VERSION = '3.45.78';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
