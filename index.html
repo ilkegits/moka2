@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>ShiHanzi</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/favicon-64.png?v=462">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=462">
+<link rel="icon" href="icons/favicon-64.png?v=34582">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=34582">
 <meta name="apple-mobile-web-app-title" content="ShiHanzi">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4488,7 +4488,7 @@ function sideAcct() {
 function paintSide(on) {
   const nv = $('#side-nav'), rl = $('#side-rail'); if (!nv || !WIDE()) return;
   if (on == null) on = +(nv.dataset.on ?? -1); nv.dataset.on = on;
-  nv.innerHTML = `<button class="sn-brand" data-act="tab" data-h="#/" aria-label="ShiHanzi, go to Decks"><img src="icons/logo.svg" alt=""><b>Shi<span>Hanzi</span></b></button>`
+  nv.innerHTML = `<button class="sn-brand" data-act="tab" data-h="#/" aria-label="ShiHanzi, go to Decks"><img src="icons/seal.svg" alt=""><b>Shi<span>Hanzi</span></b></button>`
     + TABS.map(([k, label, h], j) => `<button class="sn-item${j === on ? ' on' : ''}" data-act="tab" data-h="${h}"${j === on ? ' aria-current="page"' : ''}>${I[k].replace('class="i"', 'class="i i-off"')}${IF[k]}<span>${label}</span><i lang="zh">${SIDE_ZH[k]}</i></button>`).join('')
     + `<div class="sn-foot">${sideAcct()}</div>`;
   const { n, today } = practiceStreak(), pv = provenCount(), xp = xpTotal();
@@ -14725,7 +14725,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.81';
+const APP_VERSION = '3.45.82';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
