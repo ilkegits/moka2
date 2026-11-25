@@ -1925,7 +1925,7 @@ svg.sil{filter:brightness(0);opacity:.28}
 .dc-cn{--hanzi:"Noto Serif SC","Songti SC","STSong",serif}
 .dc-tw{--hanzi:"Noto Serif TC","Noto Serif SC","Songti TC","PMingLiU",serif}
 .dc-hk{--hanzi:"Noto Serif HK","Noto Serif TC","Noto Serif SC","Songti TC",serif}
-.screen.dc{height:100dvh;min-height:0;overflow:hidden}
+.screen.dc{height:100dvh;min-height:0;overflow:hidden;margin:0 -20px;padding-left:20px;padding-right:20px}   /* full width, so the pad reaches both edges */
 /* 3.45.70 (ilkem: "the writing field shouldnt be shrinking"): this app lets the keyboard shrink the page; while you type here
    the page keeps its full height, so the pad stays the same size under the keyboard, and the tab bar steps out of the way */
 .screen.dc:has(.dc-q:focus){height:var(--full-h,100dvh)}
@@ -1947,7 +1947,7 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-flag .flag{width:34px;height:23px;border-radius:6px;box-shadow:0 0 0 1px rgba(30,20,10,.08)}
 .dc-flag:active{transform:scale(.9);transition:none}   /* the click: a quick press, nothing else (3.45.69) */
 .dc-flag{transition:transform .12s}
-.dc-cands{display:flex;align-items:center;gap:2px;height:60px;margin:4px -20px 6px;padding:0 16px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.dc-cands{display:flex;align-items:center;gap:2px;height:60px;margin:4px -20px 4px;padding:0 16px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
 .dc-cands::-webkit-scrollbar{display:none}
 .dc-cand{flex:none;min-width:52px;height:52px;padding:0 6px;border-radius:12px;font:500 30px/1 var(--hanzi);color:var(--ink)}
 .dc-cand.on{background:var(--seal-soft);color:var(--seal)}
@@ -1958,15 +1958,15 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-word small{max-width:120px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11.5px;color:var(--muted)}
 .dc-word:active,.dc-all:active{background:var(--fill)}
 .dc-all{flex:none;height:54px;padding:0 12px;border-radius:12px;font-size:14px;font-weight:600;color:var(--seal);white-space:nowrap}
-.dc-pad{position:relative;flex:1;min-height:200px;border-radius:24px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);overflow:hidden;container-type:size}
-.dc-guide{position:absolute;inset:0;margin:auto;width:76cqmin;height:76cqmin;fill:none;stroke:var(--seal);opacity:.2;pointer-events:none}
-.dc-guide *{vector-effect:non-scaling-stroke;stroke-width:1.2}
-.dc-guide path{stroke-dasharray:6 6}
-.dc-guide .x{opacity:.55}
+/* 3.45.71 (ilkem: "just copy it from pleco ... the full screening"): like Pleco the pad is the whole rest of the screen, edge to edge
+   and down to the bottom edge, plain, under a thin line; the tab bar floats over it */
+.dc-pad{position:relative;flex:1;min-height:200px;margin:0 -20px;border-top:1px solid var(--line);overflow:hidden}
+#frame.tabs .screen.dc{padding-bottom:0}
+#frame:has(.screen.dc) #tab-guard{display:none}
 #dcInk{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
-.dc-undo{position:absolute;top:8px;right:8px}
-.dc-hint{position:absolute;left:76px;right:76px;bottom:14px;margin:0;text-align:center;font-size:12.5px;line-height:1.5;color:var(--muted);pointer-events:none}
-.dc-bk{position:absolute;right:12px;bottom:12px;width:54px;height:50px;display:grid;place-items:center;border-radius:16px;background:var(--fill);color:var(--ink)}
+.dc-undo{position:absolute;top:8px;right:12px}
+.dc-hint{position:absolute;left:84px;right:84px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));margin:0;text-align:center;font-size:12.5px;line-height:1.5;color:var(--muted);pointer-events:none}
+.dc-bk{position:absolute;right:16px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));width:54px;height:50px;display:grid;place-items:center;border-radius:16px;background:var(--fill);color:var(--ink)}
 .dc-bk:active{opacity:.6}
 .dc-bk:disabled{opacity:.4}
 /* the look-up pop-ups */
@@ -13444,7 +13444,6 @@ function DictView() {
       <div class="dc-cands" id="dcCands" aria-label="Suggestions"></div>
     </div>
     <div class="dc-pad" id="dcPad">
-      <svg class="dc-guide" viewBox="0 0 100 100" aria-hidden="true"><rect x="1" y="1" width="98" height="98" rx="4"/><path d="M50 1V99M1 50H99"/><path class="x" d="M3 3L97 97M97 3L3 97"/></svg>
       <canvas id="dcInk" aria-label="Writing pad"></canvas>
       <button class="dc-undo icon-btn" id="dcUndo" aria-label="Undo last stroke" hidden>${I.undo}</button>
       <p class="dc-hint" id="dcHint">Tap with two fingers to clear<br>Tap again when clear to delete</p>
@@ -14464,7 +14463,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.70';
+const APP_VERSION = '3.45.71';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
