@@ -2112,6 +2112,20 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .bk.now .bk-name{color:var(--seal);font-weight:700}
 .mo-book{position:relative;z-index:1;width:112px;margin:26px auto 0;filter:drop-shadow(0 10px 10px rgba(60,40,20,.25));animation:donePop .7s cubic-bezier(.2,.9,.3,1.3) both}
 .mo-book svg{display:block;width:100%;height:auto}
+/* 3.45.79: the story finished page: Shi Shi claps the book shut, pat pat, then holds it up with its cover to you */
+.mo-book.mo-clap{width:184px;margin-top:6px;filter:drop-shadow(0 8px 8px rgba(60,40,20,.18))}
+.sc g{transform-box:view-box}
+.sc-open{transform-origin:100px 150px}
+.sc-shut{transform-origin:100px 170px;opacity:0}
+.sc-f2,.sc-puff{opacity:0}
+.sc-puff{transform-origin:100px 150px}
+.sc-all{transform-origin:100px 216px}
+.sc.end .sc-open,.sc.end .sc-f1{opacity:0}
+.sc.end .sc-shut,.sc.end .sc-f2{opacity:1}
+.sc.end .sc-pl{transform:translate(39px,24px)}
+.sc.end .sc-pr{transform:translate(-39px,24px)}
+.mo-hero.clap .done-burst{top:120px}
+.mo-hero.clap .done-burst i{animation-delay:calc(var(--d) + 1.06s)}
 /* the quick check before a story is finished: one word of the story, three meanings */
 .rc-card{display:flex;flex-direction:column;align-items:center;gap:2px;margin:0 0 14px;padding:20px 16px 16px;border-radius:20px;background:var(--card);box-shadow:0 0 0 2px rgba(120,95,60,.12),0 4px 0 rgba(120,95,60,.12)}
 .rc-hz{font:600 46px/1.2 var(--hanzi);letter-spacing:.04em;color:var(--ink)}
@@ -4601,6 +4615,49 @@ function shiReads([a = '读', b = '书'] = [], from) {
     + [26, 174].map(x => `<ellipse cx="${x}" cy="142" rx="11" ry="14" fill="#E5483F" stroke="#7E1D19" stroke-width="4"/><path d="M${x - 4} 134v6M${x + 4} 134v6" stroke="#7E1D19" stroke-width="2.5" stroke-linecap="round"/>`).join('')
     + '</svg>';
 }
+/* the story finished page: Shi Shi holds the story's book open, then claps it shut twice; after the second clap it is
+   closed, its own cover to you (bookArt: the slip with the title, gold once read twice), and he beams. The open book folds
+   about its spine (100,150) and his paws ride in on its outer edges, so they meet in the middle: the clap. clapPlay runs it */
+function shiClap(zh, i, gold) {
+  const [a = '读', b = '书'] = hanChars(zh.replace(/^狮狮的?/, '')).slice(0, 2);
+  const cv = gold ? '#F4C14E' : BK_INK[i % BK_INK.length], cvS = gold ? '#7A4A08' : '#1B2A4A';
+  const pg = (x, r, c) => `<text x="${x}" y="152" font-size="31" fill="#2A0E0C" transform="rotate(${r} ${x} 152)" font-family="'Noto Serif SC',serif" font-weight="600" text-anchor="middle" dominant-baseline="central">${esc(c)}</text>`;
+  const paw = x => `<ellipse cx="${x}" cy="142" rx="11" ry="14" fill="#E5483F" stroke="#7E1D19" stroke-width="4"/><path d="M${x - 4} 134v6M${x + 4} 134v6" stroke="#7E1D19" stroke-width="2.5" stroke-linecap="round"/>`;
+  const face = m => shiFace(m).replace('<svg class="shi-face"', '<svg x="22" y="2" width="156" height="156"');
+  return `<svg class="sc" viewBox="0 0 200 222" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><g class="sc-all">`
+    + `<g class="sc-f1">${face('read')}</g><g class="sc-f2">${face('cheer')}</g>`
+    + `<g class="sc-open"><path d="M18 120Q60 108 100 124Q140 108 182 120L180 192Q140 182 100 198Q60 182 20 192Z" fill="${cv}" stroke="${cvS}" stroke-width="4" stroke-linejoin="round"/>`
+    + '<path d="M26 114Q64 102 100 118L100 188Q64 174 28 182Z" fill="#FFF8EE" stroke="#7E1D19" stroke-width="3.5" stroke-linejoin="round"/>'
+    + '<path d="M174 114Q136 102 100 118L100 188Q136 174 172 182Z" fill="#FFF8EE" stroke="#7E1D19" stroke-width="3.5" stroke-linejoin="round"/>'
+    + '<path d="M100 120V186" stroke="#E8D9C4" stroke-width="5"/><path d="M40 170Q64 164 88 172M112 172Q136 164 160 170" fill="none" stroke="#E8D9C4" stroke-width="3" stroke-linecap="round"/>'
+    + pg(62, -5, a) + pg(138, 5, b) + '</g>'
+    + `<g class="sc-shut">${bookArt(zh, i, true, gold).replace('<svg ', '<svg x="65" y="128" width="70" height="91" ')}</g>`
+    + '<g class="sc-puff" fill="none" stroke="#A86A0C" stroke-width="3.5" stroke-linecap="round"><path d="M80 128L72 120M76 148H65M80 168L72 176M120 128L128 120M124 148H135M120 168L128 176"/></g>'
+    + `<g class="sc-pl">${paw(26)}</g><g class="sc-pr">${paw(174)}</g></g></svg>`;
+}
+/* the clap: two pats, the book shut after the second, then one happy hop. still: the last picture at once */
+function clapPlay(el) {
+  const sv = el?.querySelector('.sc'); if (!sv) return;
+  if (stillMotion() || !sv.animate) { sv.classList.add('end'); return; }
+  const T0 = 650, D = 1100, k = ms => ms / D, hit1 = 170, hit2 = 540, o = { duration: D, delay: T0, fill: 'both' };
+  const q = (sel, frames) => sv.querySelector(sel).animate(frames, o);
+  const fold = 'cubic-bezier(.55,0,.9,.5)', back = 'cubic-bezier(.2,.7,.4,1)';
+  q('.sc-open', [{ transform: 'scaleX(1)', opacity: 1, easing: fold }, { transform: 'scaleX(.05)', offset: k(hit1), easing: back }, { transform: 'scaleX(.5)', offset: k(390), easing: fold },
+    { transform: 'scaleX(.05)', opacity: 1, offset: k(hit2) }, { transform: 'scaleX(.05)', opacity: 0, offset: k(hit2 + 1) }, { transform: 'scaleX(.05)', opacity: 0 }]);
+  const paws = s => [{ transform: 'none', easing: fold }, { transform: `translate(${64 * s}px,4px)`, offset: k(hit1), easing: back }, { transform: `translate(${37 * s}px,2px)`, offset: k(390), easing: fold },
+    { transform: `translate(${64 * s}px,4px)`, offset: k(hit2), easing: 'cubic-bezier(.3,1.4,.5,1)' }, { transform: `translate(${39 * s}px,24px)`, offset: k(780) }, { transform: `translate(${39 * s}px,24px)` }];
+  q('.sc-pl', paws(1)); q('.sc-pr', paws(-1));
+  q('.sc-shut', [{ opacity: 0, transform: 'scaleX(.1)' }, { opacity: 0, transform: 'scaleX(.1)', offset: k(hit2) }, { opacity: 1, transform: 'scaleX(.1)', offset: k(hit2 + 1), easing: 'cubic-bezier(.3,1.5,.5,1)' },
+    { opacity: 1, transform: 'scaleX(1)', offset: k(780) }, { opacity: 1, transform: 'none' }]);
+  q('.sc-f1', [{ opacity: 1 }, { opacity: 1, offset: k(hit2) }, { opacity: 0, offset: k(hit2 + 1) }, { opacity: 0 }]);
+  q('.sc-f2', [{ opacity: 0 }, { opacity: 0, offset: k(hit2) }, { opacity: 1, offset: k(hit2 + 1) }, { opacity: 1 }]);
+  const puff = t => [{ opacity: 0, transform: 'scale(.6)', offset: k(t) }, { opacity: 1, transform: 'scale(.85)', offset: k(t + 40) }, { opacity: 0, transform: 'scale(1.3)', offset: k(t + 230) }];
+  q('.sc-puff', [{ opacity: 0 }, ...puff(hit1), ...puff(hit2), { opacity: 0 }]);
+  const squash = t => [{ transform: 'none', offset: k(t - 30) }, { transform: 'scale(1.04,.95)', offset: k(t + 30) }, { transform: 'none', offset: k(t + 130) }];
+  q('.sc-all', [{ transform: 'none' }, ...squash(hit1), ...squash(hit2), { transform: 'none', offset: k(860), easing: 'cubic-bezier(.3,0,.5,1)' },
+    { transform: 'translateY(-9px) rotate(-3deg)', offset: k(960), easing: 'cubic-bezier(.5,0,.7,1)' }, { transform: 'none' }]);
+  [[hit1, .3], [hit2, .42]].forEach(([t, g]) => setTimeout(() => { if (sv.isConnected) { pat(g); haptic(12); } }, T0 + t));
+}
 function shiMood(pileLeft) {
   const days = practiceDays(), now = new Date();
   if (days.has(dayKey(now))) return pileLeft ? 'happy' : 'cheer';
@@ -4982,6 +5039,14 @@ function chime() {
       v.gain.setValueAtTime(0, t + d); v.gain.linearRampToValueAtTime(g, t + d + .008); v.gain.exponentialRampToValueAtTime(.0001, t + d + .5);
       o.connect(v).connect(c.destination); o.start(t + d); o.stop(t + d + .55);
     }
+  } catch (_) {}
+}
+/* a book clapped shut: a short soft burst of noise, low and papery (no bell, so it reads as a pat, not a right answer) */
+function pat(g = .35) {
+  try { const c = acx(), t = c.currentTime + .005, n = c.sampleRate * .09 | 0, b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+    for (let k = 0; k < n; k++) d[k] = (Math.random() * 2 - 1) * (1 - k / n) ** 4;
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), v = c.createGain(); s.buffer = b; f.type = 'bandpass'; f.frequency.value = 950; f.Q.value = .8;
+    v.gain.value = g; s.connect(f).connect(v).connect(c.destination); s.start(t);
   } catch (_) {}
 }
 /* a light haptic tick for a tap. Android has navigator.vibrate; iPhone Safari has not, but flipping a hidden
@@ -8941,7 +9006,7 @@ function momentRead(s, added, was, isNew, pay) {
   const fullNow = isNew && full, goldNow = toGold && gold === total, en = `“${esc(s.en)}”`;
   const chip = (t, v) => `<span class="ob-sig"><small>${t}</small><b>${v}</b></span>`;
   LOG.add('moment', { what: fullNow ? 'shelf-full' : goldNow ? 'shelf-gold' : 'story', story: s.zh, added, streak: n, kept, shelf: got, gold });
-  layer(`<div class="ob-top"></div><div class="mo-hero"><div class="done-burst" aria-hidden="true">${confetti()}</div><div class="mo-book">${bookArt(s.zh, i, true, mine > 1)}</div></div>
+  const el = layer(`<div class="ob-top"></div><div class="mo-hero clap"><div class="done-burst" aria-hidden="true">${confetti()}</div><div class="mo-book mo-clap">${shiClap(s.zh, i, mine > 1)}</div></div>
     <p class="mo-kicker">${fullNow ? 'Shelf complete' : goldNow ? 'Golden shelf' : isNew ? 'New on your shelf' : toGold ? 'Gold book' : 'Read again'}</p>
     <h2 class="mo-title">${fullNow ? `书架满了！ All ${total} stories` : goldNow ? '金书架！ Every story, twice' : '读完了！ Story finished'}</h2>
     <p class="mo-text">${fullNow ? 'Every story is on your shelf. Read one again, with new words, and its book turns gold.'
@@ -8953,6 +9018,7 @@ function momentRead(s, added, was, isNew, pay) {
     <div class="ob-sigs">${chip('Word bank', added ? `+${plural(added, 'word')}` : 'No new words')}${chip('Reading card', (rc => `${rc.ready ? RC_N : 1 + rc.n} of ${RC_N}`)(rcState()))}</div>
     ${pay ? payRow(pay) : ''}
     ${moDock('Continue', 'read-done-ok')}`, 'mo');
+  clapPlay(el);
   if (pay) setTimeout(() => coinRain($('#ob'), pay), 700);
 }
 /* keep punctuation on the same line as its word: closing marks stick to the word before, opening quotes to the word after */
@@ -14649,7 +14715,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.78';
+const APP_VERSION = '3.45.79';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
