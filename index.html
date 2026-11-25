@@ -1991,41 +1991,33 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-write{position:absolute;right:16px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:var(--paper);box-shadow:0 10px 22px -10px rgba(30,20,10,.6)}
 .dc-write svg{width:24px;height:24px}
 .dc-write:active{transform:scale(.94)}
-/* the word page (3.45.74): a flashcard that turns over to the stroke order */
-.dcc{margin:0 0 12px;perspective:1600px;touch-action:pan-y;-webkit-user-select:none;user-select:none}
-.dcc-in{display:grid;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.25,1)}
+/* the word page (3.45.74): a flashcard that turns over to the stroke order. 3.45.77 (ilkem): it looks like the deck
+   cards (the study screen): nearly square, a soft lifted shadow, two cards of the pile below, the character light and plain
+   in ink, the pinyin grey, the meanings small and quiet, a label at the foot, and the tip under the card */
+.dcc{position:relative;margin:4px 0 34px;perspective:1300px;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.dcc-pile{position:absolute;inset:0;pointer-events:none}
+.dcc-pile i{position:absolute;inset:0;border-radius:22px;corner-shape:squircle;box-shadow:var(--shadow)}
+.dcc-pile i:first-child{transform:translateY(26px) scale(.9);background:#EFE7D9}
+.dcc-pile i:last-child{transform:translateY(13px) scale(.95);background:#F6F0E6}
+.dcc-in{position:relative;display:grid;aspect-ratio:307/320;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.25,1)}
 .dcc-in.drag{transition:none}
 @media (prefers-reduced-motion:reduce){.dcc-in{transition-duration:.01s}}
-.dcc-face{grid-area:1/1;min-width:0;min-height:280px;padding:22px 20px 16px;border-radius:24px;background:var(--card);box-shadow:var(--ring),var(--shadow);
-  -webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column}
-.dcc-back{transform:rotateY(180deg);align-items:center;padding-top:16px}
-.dcc-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px}
-.dcc-hz{font:600 calc(78px - var(--n) * 9px)/1.1 var(--hanzi);letter-spacing:.03em;color:var(--ink)}
-.dcc-id{min-width:0;display:flex;flex-direction:column;gap:6px}
-.dcc-py{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:700;line-height:1.2}
-.dcc-say{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--seal-soft);color:var(--seal)}
-.dcc-say svg.i{width:19px;height:19px}
-.dcc-say:active{opacity:.5}
-.dcc-tags{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
-.dc-lv{padding:3px 8px;border-radius:7px;background:var(--seal-soft);color:var(--seal);font-size:12px;font-weight:700}
-.sheet:has(.dcc)>.handle{margin-bottom:40px}   /* the close button gets a row of its own above the card */
-.dcc-other{font:500 19px/1 var(--hanzi);color:var(--muted)}
-.dcc-means{flex:1;margin:16px 0 4px;padding:14px 0 0 22px;border-top:1px solid var(--line);font-size:15.5px;line-height:1.45;color:var(--ink)}
-.dcc-means:has(li:only-child){padding-left:0;list-style:none}
-.dcc-means li+li{margin-top:5px}
-.dcc-means li::marker{color:var(--muted);font-size:13px;font-weight:700}
-.dcc-hint{display:flex;align-items:center;justify-content:flex-end;gap:2px;margin-top:10px;font-size:13px;font-weight:600;color:var(--muted)}
-.dcc-hint svg.i{width:16px;height:16px}
-.dcc-h{align-self:stretch;display:flex;align-items:baseline;gap:8px;margin:0 2px 12px;font-size:17px;font-weight:700}
-.dcc-h span{font-family:var(--hanzi);font-size:14px;font-weight:600;color:var(--seal)}
-.dcc .hs-tabs{flex-wrap:wrap;margin:-2px 0 12px}
+.dcc-face{position:relative;grid-area:1/1;min-width:0;border-radius:22px;corner-shape:squircle;background:var(--card);box-shadow:var(--shadow);
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:26px 20px 44px;text-align:center}
+.dcc-back{transform:rotateY(180deg);gap:0}
+.dcc .fc-ch{margin-top:4px}
+.dcc .fc-py{margin-top:4px}
+.dcc-en{font:500 calc(18px * var(--fcs,1))/1.35 var(--display);letter-spacing:0;color:var(--muted);padding:0 8px}
+.dcc-foot{position:absolute;bottom:14px;left:16px;right:16px;font-size:12.5px;color:var(--muted);font-family:var(--ui),var(--hanzi)}
+.dcc .hs-tabs{flex-wrap:wrap;margin:0 0 12px}
 .dcc .hs-tzg,.dcc .hs-tzg *{touch-action:pan-y}   /* a swipe on the box turns the card like anywhere else */
 .dcc .hs-tzg{cursor:pointer}
-.dcc .hs-ctl{margin-top:14px}
-.dcc-dots{display:flex;justify-content:center;margin:-2px 0 10px}
-.dcc-dots button{width:22px;height:30px;display:grid;place-items:center}
-.dcc-dots button::before{content:"";width:7px;height:7px;border-radius:4px;background:var(--ink-2);opacity:.3;transition:width .25s,opacity .25s}
-.dcc-dots button.on::before{width:20px;opacity:1;background:var(--seal)}
+.dcc .hs-ctl{margin-top:12px}
+.dcc .hs-ctl .hs-play{width:48px;height:48px}
+.dcc .hs-cap{margin-top:6px}
+.dcc-tip{display:block;margin:0 auto 14px;padding:4px 10px;font-size:12.5px;color:var(--muted)}
+.dc-lv{padding:3px 8px;border-radius:7px;background:var(--seal-soft);color:var(--seal);font-size:12px;font-weight:700}
+.sheet:has(.dcc)>.handle{margin-bottom:40px}   /* the close button gets a row of its own above the card */
 .dc-in{display:flex;align-items:center;justify-content:center;gap:6px;height:50px;margin:0;font-weight:600;color:#2B7752}
 .dc-in svg{width:20px;height:20px}
 
@@ -13772,28 +13764,29 @@ function dcRowHtml(r, i, z) {
    A tap on the front, the dots under it, or the arrow keys turn it too. */
 function dictEntry(r) {
   const k = dcLang() === 'en' ? sysK() : dcLang(), hz = dcT(r.h, k), other = hz !== r.h ? r.h : k === 'cn' && DCV.conv.tw ? dcT(r.h, 'tw') : '';
-  const lv = S.H?.byHz.get(r.h)?.lv, has = () => !!bankHas(r.h), T = dcTones(r, k, hz);
+  const lv = S.H?.byHz.get(r.h)?.lv, has = () => !!bankHas(r.h);
   const ms = r.e.split('; '), n = [...hz].length;
   const F = { h: [...r.h].filter(c => ZH_HAN.test(c)).join('') };   // the stroke film: only the Chinese characters (卡拉OK: 卡拉)
-  const fc = [...F.h], S2 = Math.round(Math.min(216, Math.min(innerWidth, 480) - 112, innerHeight * .34));
+  const fc = [...F.h], S2 = Math.round(Math.min(196, Math.min(innerWidth, 480) - 140, innerHeight * .3));
+  const fs = (px, cap) => `font-size:min(calc(${px}px * var(--fcs,1)),${cap}px)`;   // the deck cards' sizes, and their Aa setting
+  const tags = [lv ? HSK_NAME(lv) : '', other && other !== hz ? other : ''].filter(Boolean).join(' · ') || 'Dictionary';
   openSheet(`<div class="dc-sh dc-${k}" data-zh-keep>
-    <div class="dcc" id="dcCard"><div class="dcc-in">
+    <div class="dcc" id="dcCard" style="--fcs:${cardScale()}"><div class="dcc-pile" aria-hidden="true"><i></i><i></i></div><div class="dcc-in">
       <section class="dcc-face dcc-front" aria-label="The word">
-        <div class="dcc-top"><div class="dcc-hz" style="--n:${Math.min(n, 6)}">${T.H}</div>
-          <div class="dcc-id"><div class="dcc-py"><span>${T.P}</span><button class="dcc-say" id="dcSay" aria-label="Play the sound">${I.sound}</button></div>
-            ${lv || (other && other !== hz) ? `<div class="dcc-tags">${lv ? `<span class="dc-lv">${HSK_NAME(lv)}</span>` : ''}${other && other !== hz ? `<span class="dcc-other">${esc(other)}</span>` : ''}</div>` : ''}</div></div>
-        <ol class="dcc-means">${ms.map(m => `<li>${esc(m)}</li>`).join('')}</ol>
-        ${fc.length ? `<div class="dcc-hint">Swipe for the stroke order ${I.chev}</div>` : ''}
+        <div class="fc-ch" style="${fs(Math.round(hzSize(n) * .8), Math.floor(290 / n))}">${esc(hz)}</div>
+        <span class="fc-py">${esc(dcRead(r, k))}<button class="icon-btn" id="dcSay" aria-label="Play the sound">${I.sound}</button></span>
+        <span class="fc-en dcc-en">${ms.map(esc).join('; ')}</span>
+        <span class="dcc-foot">${esc(tags)}</span>
       </section>
       ${fc.length ? `<section class="dcc-face dcc-back" aria-label="Stroke order" inert>
-        <h4 class="dcc-h">Stroke order <span>笔顺</span></h4>
         ${fc.length > 1 ? `<div class="hs-tabs" id="hsTabs" role="tablist">${fc.map((c, i) => `<button role="tab" data-ci="${i}"${i ? '' : ' class="on" aria-selected="true"'}>${esc(zhT(c))}</button>`).join('')}</div>` : ''}
         <div class="hs-stage"><div class="tzg hs-tzg" id="hsBox" style="--s:${S2}px">${TZG}<svg class="hs-svg" viewBox="-70 -70 1164 1164" aria-hidden="true"></svg><div class="quiz"></div></div></div>
         <div class="hs-ctl"><button class="icon-btn hs-play" id="hsPlay" aria-label="Play the strokes">${I.play}</button></div>
         <div class="hs-cap" id="hsCap">Loading the strokes…</div>
+        <span class="dcc-foot">Stroke order · 笔顺</span>
       </section>` : ''}
     </div></div>
-    ${fc.length ? '<nav class="dcc-dots" aria-label="Sides"><button data-side="0" class="on" aria-label="The word" aria-current="true"></button><button data-side="1" aria-label="Stroke order"></button></nav>' : ''}
+    ${fc.length ? '<button class="dcc-tip" id="dcTip">Tap to flip · drag sideways to turn it</button>' : ''}
     <div id="dcAddWrap"></div></div>`, sh => {
     const wrap = sh.querySelector('#dcAddWrap');
     const paint = () => { wrap.innerHTML = has() ? `<p class="dc-in">${I.check}In your word bank</p>` : '<button class="btn btn-seal wide" id="dcAdd">Add to word bank</button>'; };
@@ -13812,14 +13805,14 @@ function dictEntry(r) {
 }
 function dcCardTurn(sh, hz, F) {   // the card turns over in the direction your finger goes
   const card = sh.querySelector('#dcCard'), inn = card.querySelector('.dcc-in'), front = card.querySelector('.dcc-front'), back = card.querySelector('.dcc-back');
-  const dots = [...sh.querySelectorAll('.dcc-dots button')];
+  const tip = sh.querySelector('#dcTip');
   let rot = 0, g = null, noClickUntil = 0;
   const side = () => ((Math.round(rot / 180) % 2) + 2) % 2;   // 0 front, 1 stroke order
   strokeFilm(sh, F, { log: 'dict-strokes' });
   const turn = (dir, how) => {
     rot += dir * 180; inn.style.transform = `rotateY(${rot}deg)`;
     const b = side(); front.inert = !!b; back.inert = !b;
-    dots.forEach((d, j) => { d.classList.toggle('on', j === b); d.toggleAttribute('aria-current', j === b); });
+    tip.textContent = b ? 'Tap the box to watch again · drag to turn back' : 'Tap to flip · drag sideways to turn it';
     if (b) { if (sh._film) sh._film.play(); else sh._filmWant = true; } else { sh._filmWant = false; sh._film?.stop(); }
     haptic(8); LOG.add('dict-turn', { hz, side: b ? 'strokes' : 'word', how });
   };
@@ -13846,9 +13839,9 @@ function dcCardTurn(sh, hz, F) {   // the card turns over in the direction your 
   card.addEventListener('pointerup', up); card.addEventListener('pointercancel', up);
   card.addEventListener('click', e => {
     if (performance.now() < noClickUntil) { e.stopPropagation(); e.preventDefault(); return; }
-    if (!side() && !e.target.closest('button')) turn(1, 'tap');   // a tap on the front turns it; on the back the box replays the film
+    if (!e.target.closest('button,.hs-tzg')) turn(side() ? -1 : 1, 'tap');   // a tap turns it, like the deck cards; on the back the box replays the film
   }, true);
-  sh.querySelector('.dcc-dots').onclick = e => { const b = e.target.closest('[data-side]'); if (b && +b.dataset.side !== side()) turn(+b.dataset.side ? 1 : -1, 'dot'); };
+  tip.onclick = () => turn(side() ? -1 : 1, 'tip');
   const key = e => {
     if (!card.isConnected) return removeEventListener('keydown', key);
     if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !e.target.closest?.('input,textarea')) { e.preventDefault(); turn(e.key === 'ArrowRight' ? 1 : -1, 'key'); }
@@ -14654,7 +14647,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.76';
+const APP_VERSION = '3.45.77';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
