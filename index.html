@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>ShiHanzi</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/favicon-64.png?v=34582">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=34582">
+<link rel="icon" href="icons/favicon-64.png?v=34583">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=34583">
 <meta name="apple-mobile-web-app-title" content="ShiHanzi">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14725,7 +14725,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.82';
+const APP_VERSION = '3.45.83';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });

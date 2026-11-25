@@ -1,1 +1,1 @@
-{"version": "3.45.82", "notes": "New app icon: a red scalloped seal with 狮 in white, on white. Also the logo beside ShiHanzi in the desktop menu"}
+{"version": "3.45.83", "notes": "App icon fixed for Android: the seal is smaller in the maskable icon, so the installed icon shows the whole scalloped seal on white instead of a cropped red disc"}
