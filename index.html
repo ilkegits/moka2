@@ -1930,16 +1930,20 @@ svg.sil{filter:brightness(0);opacity:.28}
    the page keeps its full height, so the pad stays the same size under the keyboard, and the tab bar steps out of the way */
 .screen.dc:has(.dc-q:focus):has(.dc-pad:not([hidden])){height:var(--full-h,100dvh)}   /* the pad, not the list: the list may shrink above the keyboard */
 html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab-guard{display:none}
-.dc-top{flex:none;padding-top:12px}
+.dc-top{flex:none;padding:12px 0}
 .dc-bar{position:relative;display:flex;gap:8px}
 .dc-box{flex:1;min-width:0;height:44px;display:flex;align-items:center;padding:0 40px 0 14px;border-radius:13px;background:var(--card);box-shadow:var(--ring),var(--shadow-sm);text-align:left;color:var(--ink)}   /* 3.45.69: slimmer */
-.dc-txt{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:400 17px/1.25 "PyMarks","Satoshi",var(--hanzi);letter-spacing:0;color:var(--ink);cursor:pointer}
+.dc-txt{flex:1;min-width:0;overflow:hidden;white-space:nowrap;font:400 17px/1.25 "PyMarks","Satoshi",var(--hanzi);letter-spacing:0;color:var(--ink);cursor:text}
 .dc-q{flex:1;min-width:0;height:100%;border:0;padding:0;background:none;font:400 17px/1.25 "PyMarks","Satoshi",var(--hanzi);letter-spacing:0;color:var(--ink);caret-color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}   /* like the app's other search fields */
 .dc-q::selection,.dc-txt::selection{background:var(--seal-soft);color:var(--ink)}
 .dc-q::placeholder{color:var(--muted)}
 .dc-q::-webkit-search-cancel-button{display:none}
 .dc-q[hidden],.dc-txt[hidden],.dc-clr[hidden],.dc-undo[hidden]{display:none}
-.dc-txt u{text-decoration:underline 1.5px var(--seal);text-underline-offset:5px;color:var(--ink-2)}
+.dc-txt mark{padding:0 1px;border-radius:3px;background:color-mix(in srgb,var(--seal) 24%,transparent);color:var(--ink)}   /* the character being written, marked like selected text */
+.dc-caret{display:inline-block;width:2px;height:1.2em;margin-left:1px;vertical-align:-.24em;border-radius:1px;background:var(--ink);animation:dcBlink 1.06s steps(1,end) infinite}
+@keyframes dcBlink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.dc-caret{animation:none}}
+.dc-ph{margin-left:3px;color:var(--muted)}
 .dc-clr{position:absolute;top:1px;right:56px;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;color:var(--muted)}
 .dc-clr svg{width:18px;height:18px}
 .dc-clr:active{opacity:.4}
@@ -1947,17 +1951,15 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dc-flag .flag{width:34px;height:23px;border-radius:6px;box-shadow:0 0 0 1px rgba(30,20,10,.08)}
 .dc-flag:active{transform:scale(.9);transition:none}   /* the click: a quick press, nothing else (3.45.69) */
 .dc-flag{transition:transform .12s}
-.dc-cands{display:flex;align-items:center;gap:2px;height:60px;margin:4px -20px 4px;padding:0 16px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.dc-foot{position:absolute;left:0;right:0;bottom:calc(var(--tabh) + 20px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding-right:14px;pointer-events:none}   /* 3.45.73: Pleco's bottom row */
+.dc-foot>*{pointer-events:auto}
+.dc-cands{flex:1;min-width:0;display:flex;align-items:center;height:56px;padding-left:8px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.dc-cands:empty{pointer-events:none}
 .dc-cands::-webkit-scrollbar{display:none}
-.dc-cand{flex:none;min-width:52px;height:52px;padding:0 6px;border-radius:12px;font:500 30px/1 var(--hanzi);color:var(--ink)}
+.dc-cand{flex:none;min-width:50px;height:52px;padding:0 5px;border-radius:12px;font:500 32px/1 var(--hanzi);color:var(--ink)}
 .dc-cand.on{background:var(--seal-soft);color:var(--seal)}
 .dc-cand:active{background:var(--fill)}
 .dc-cnote{margin:0 auto;font-size:13.5px;color:var(--muted);white-space:nowrap}
-.dc-word{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:52px;height:54px;padding:0 10px;border-radius:12px;color:var(--ink)}
-.dc-word b{font:600 21px/1.15 var(--hanzi);letter-spacing:.03em;white-space:nowrap}
-.dc-word small{max-width:120px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11.5px;color:var(--muted)}
-.dc-word:active,.dc-all:active{background:var(--fill)}
-.dc-all{flex:none;height:54px;padding:0 12px;border-radius:12px;font-size:14px;font-weight:600;color:var(--seal);white-space:nowrap}
 /* 3.45.71 (ilkem: "just copy it from pleco ... the full screening"): like Pleco the pad is the whole rest of the screen, edge to edge
    and down to the bottom edge, plain, under a thin line; the tab bar floats over it */
 .dc-pad{position:relative;flex:1;min-height:200px;margin:0 -20px;border-top:1px solid var(--line);overflow:hidden}
@@ -1965,13 +1967,15 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 #frame:has(.screen.dc) #tab-guard{display:none}
 #dcInk{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
 .dc-undo{position:absolute;top:8px;right:12px}
-.dc-hint{position:absolute;left:84px;right:84px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));margin:0;text-align:center;font-size:12.5px;line-height:1.5;color:var(--muted);pointer-events:none}
-.dc-bk{position:absolute;right:16px;bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom));width:54px;height:50px;display:grid;place-items:center;border-radius:16px;background:var(--fill);color:var(--ink)}
+.dc-hint{position:absolute;left:24px;right:24px;bottom:calc(var(--tabh) + 86px + env(safe-area-inset-bottom));margin:0;text-align:center;font-size:12.5px;line-height:1.5;color:var(--muted);pointer-events:none}
+.dc-bk{flex:none;width:54px;height:50px;display:grid;place-items:center;border-radius:14px;background:var(--fill);color:var(--ink)}
 .dc-bk:active{opacity:.6}
-.dc-bk:disabled{opacity:.4}
+.dc-bk:disabled,.dc-done:disabled{opacity:.4}
+.dc-done{flex:none;height:50px;padding:0 20px;border-radius:14px;background:var(--ink);color:var(--paper);font-size:16px;font-weight:700}
+.dc-done:active{opacity:.75}
 /* 3.45.72 the results list, after Pleco's */
 .dc-list{flex:1;min-height:0;margin:0 -20px;border-top:1px solid var(--line);overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--tabh) + 96px + env(safe-area-inset-bottom))}
-.dc-list[hidden],.dc-pad[hidden],.dc-cands[hidden],.dc-write[hidden]{display:none}
+.dc-list[hidden],.dc-pad[hidden],.dc-write[hidden]{display:none}
 .dc-sec{padding:6px 16px;background:var(--paper-deep);font:600 19px/1.35 var(--hanzi);letter-spacing:.03em;color:var(--ink)}
 .dc-ent-row{display:block;width:100%;padding:11px 16px 13px;text-align:left;color:var(--ink);border-bottom:1px solid var(--line)}
 .dc-ent-row:active{background:var(--fill)}
@@ -13440,18 +13444,19 @@ function DictView() {
   return `<div class="screen dc dc-${sysK()}" data-zh-keep>
     <div class="dc-top">
       <div class="dc-bar">
-        <div class="dc-box" id="dcBox"><span class="dc-txt" id="dcTxt" role="button" tabindex="0" aria-label="Use this character and write the next one" hidden></span>
+        <div class="dc-box" id="dcBox"><span class="dc-txt" id="dcTxt" role="button" tabindex="0" aria-label="Search" hidden></span>
           <input class="dc-q" id="dcIn" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Search"></div>
         <button class="dc-clr" id="dcClr" aria-label="Clear" hidden>${I.close}</button>
         <button class="dc-flag" id="dcFlag" aria-label="${DC[k].name}. Tap to switch to ${k === 'en' ? DC[sysK()].name : 'English'}">${flagSvg(k)}</button>
       </div>
-      <div class="dc-cands" id="dcCands" aria-label="Suggestions"></div>
     </div>
     <div class="dc-pad" id="dcPad">
       <canvas id="dcInk" aria-label="Writing pad"></canvas>
       <button class="dc-undo icon-btn" id="dcUndo" aria-label="Undo last stroke" hidden>${I.undo}</button>
       <p class="dc-hint" id="dcHint">Tap with two fingers to clear<br>Tap again when clear to delete</p>
-      <button class="dc-bk" id="dcBk" aria-label="Delete last character">${I.bksp}</button>
+      <div class="dc-foot"><div class="dc-cands" id="dcCands" aria-label="Guesses"></div>
+        <button class="dc-bk" id="dcBk" aria-label="Delete last character">${I.bksp}</button>
+        <button class="dc-done" id="dcDone">Done</button></div>
     </div>
     <div class="dc-list" id="dcList" hidden></div>
     <button class="dc-write" id="dcWrite" aria-label="Write a character" hidden>${I.dict}</button>
@@ -13463,18 +13468,26 @@ function DictView() {
    bar while a sketched character is guessed takes the first guess and clears the pad for the next one. */
 function mountDict() {
   const st = S.dct, pad = $('#dcPad'), cv = $('#dcInk'); if (!pad) return;
-  const ctx = cv.getContext('2d'); let seq = 0, W = 0, H = 0, words = [];
+  const ctx = cv.getContext('2d'); let seq = 0, W = 0, H = 0;
   const k = () => dcLang(), zh = sysK(), inp = $('#dcIn'), txt = $('#dcTxt');
   if (st.sys && st.sys !== zh && st.text && HAN.test(st.text)) st.text = dcT(dcS(st.text, st.sys), zh);   // the app's Chinese changed since
   st.sys = zh;
+  /* 3.45.73 (ilkem, from Pleco): on the pad the bar shows what is written so far, the character being written marked,
+     and a blinking cursor after it, so it reads as the place the writing goes */
   const paintBox = () => {
-    const pend = !!(st.strokes.length && st.cands[0]);
-    txt.hidden = !pend; inp.hidden = pend;
-    if (pend) txt.innerHTML = `${esc(st.text)}<u>${esc(st.cands[0])}</u>`;
-    else if (inp.value !== st.text) inp.value = st.text;
-    inp.placeholder = k() === 'en' ? 'Type an English word' : 'Write below, or type pinyin';
+    const pend = !!(st.strokes.length && st.cands[0]), show = st.mode !== 'list' && document.activeElement !== inp;
+    const ph = k() === 'en' ? 'Type an English word' : 'Write below, or type pinyin';
+    txt.hidden = !show; inp.hidden = show;
+    if (show) {
+      txt.innerHTML = `${esc(st.text)}${pend ? `<mark>${esc(st.cands[0])}</mark>` : ''}<i class="dc-caret"></i>${st.text || pend ? '' : `<span class="dc-ph">${ph}</span>`}`;
+      txt.setAttribute('aria-label', pend ? `Use ${st.cands[0]} and write the next character` : 'Type in the search bar');
+      txt.scrollLeft = txt.scrollWidth;
+    }
+    if (inp.value !== st.text) inp.value = st.text;
+    inp.placeholder = ph;
     $('#dcClr').hidden = !st.text && !st.strokes.length;
     $('#dcBk').disabled = !st.text && !st.strokes.length;
+    $('#dcDone').disabled = !st.text.trim() && !pend;
     $('#dcUndo').hidden = !st.strokes.length;
     $('#dcHint').hidden = !!st.strokes.length;
   };
@@ -13485,7 +13498,7 @@ function mountDict() {
   const list = $('#dcList'); let lrows = [];
   const setMode = m => {
     st.mode = m; const L = m === 'list';
-    pad.hidden = L; list.hidden = !L; $('#dcCands').hidden = L; $('#dcWrite').hidden = !L;
+    pad.hidden = L; list.hidden = !L; $('#dcWrite').hidden = !L;
     if (!L) requestAnimationFrame(size);
   };
   const paintList = () => {
@@ -13502,17 +13515,9 @@ function mountDict() {
   $('#dcWrite').onclick = () => { inp.blur(); setMode('pad'); paintRow(); haptic(8); };
   const paintRow = () => {
     if (st.mode === 'list') { paintList(); paintBox(); return; }
-    const el = $('#dcCands'), q = st.text.trim(), en = k() === 'en';
-    words = [];
-    if (st.strokes.length) el.innerHTML = st.cands.length ? st.cands.map((c, i) => `<button class="dc-cand${i ? '' : ' on'}" data-i="${i}">${esc(c)}</button>`).join('')
+    const el = $('#dcCands');   // 3.45.73: the guesses for the character on the pad, along the bottom like Pleco; the words for what is written come as the list (Done)
+    el.innerHTML = !st.strokes.length ? '' : st.cands.length ? st.cands.map((c, i) => `<button class="dc-cand${i ? '' : ' on'}" data-i="${i}">${esc(c)}</button>`).join('')
       : st.err ? note('Reading handwriting needs the internet') : '';
-    else if (!q) el.innerHTML = note(en ? `Tap the flag for ${DC[zh].name} again` : 'Tap the flag to search in English');
-    else if (!DCV.D) el.innerHTML = note('Opening the dictionary…');
-    else {
-      const all = dictFind(DCV.D, q, k()); words = all.slice(0, 12);
-      el.innerHTML = words.length ? words.map((r, i) => `<button class="dc-word" data-w="${i}"><b>${esc(dcT(r.h, zh))}</b><small>${esc(en ? shortMeaning(r.e) : dcRead(r, zh))}</small></button>`).join('')
-        + `<button class="dc-all" data-all>All${all.length > 12 ? ' ' + all.length : ''}</button>` : note(`No words for ${esc(q)}`);
-    }
     el.scrollLeft = 0;
     paintBox();
   };
@@ -13597,20 +13602,26 @@ function mountDict() {
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', e => { live.delete(e.pointerId); if (cur) { st.strokes.pop(); cur = null; draw(); } });
   $('#dcUndo').onclick = () => { st.strokes.pop(); draw(); recog(); paintBox(); };
   $('#dcBk').onclick = back;
-  txt.onclick = () => take(st.cands[0]);   // the bar while a sketch is guessed: keep that guess, sketch the next one
-  txt.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); take(st.cands[0]); } };
-  $('#dcClr').onclick = () => { st.text = ''; clearPad(); setMode('pad'); paintRow(); inp.focus(); };
-  $('#dcCands').onclick = e => {
-    const c = e.target.closest('.dc-cand'), w = e.target.closest('.dc-word');
-    if (c) take(st.cands[+c.dataset.i]);
-    else if (w) { inp.blur(); dictEntry(words[+w.dataset.w]); }
-    else if (e.target.closest('.dc-all')) { inp.blur(); showList(); }
+  const tapBar = () => { if (st.strokes.length && st.cands[0]) take(st.cands[0]); else typeNow(); };   // a guess: keep it, write the next one; else type
+  txt.onclick = tapBar;
+  txt.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tapBar(); } };
+  $('#dcClr').addEventListener('mousedown', e => e.preventDefault());   // typing stays typing: the keyboard stays up
+  $('#dcClr').onclick = () => { st.text = ''; clearPad(); setMode('pad'); paintRow(); };
+  $('#dcCands').onclick = e => { const c = e.target.closest('.dc-cand'); if (c) take(st.cands[+c.dataset.i]); };
+  /* Done: keep the guess and show the words for what is written */
+  $('#dcDone').onclick = () => {
+    if (st.strokes.length && st.cands[0]) take(st.cands[0]);
+    if (!st.text.trim()) return;
+    inp.blur(); showList(); haptic(8); LOG.add('dict-done', { q: st.text.trim() });
   };
+  const typeNow = () => { txt.hidden = true; inp.hidden = false; inp.focus(); };   // inside the tap, so the phone's keyboard comes up
+  inp.addEventListener('focus', paintBox); inp.addEventListener('blur', paintBox);
   /* typing: pinyin or characters in Chinese, words in English; characters typed in English mode turn the flag to Chinese */
   let rowT = 0;
   inp.addEventListener('input', () => {
     st.text = inp.value;
     if (k() === 'en' && HAN.test(st.text)) { st.text = st.text.replace(/[^\p{Script=Han}]/gu, ''); setLang(zh, true); return; }
+    if (k() !== 'en' && DCV.D && dcLooksEnglish(DCV.D, st.text)) setLang('en', true);   // 3.45.73: an English word, not pinyin: the flag turns at once
     $('#dcClr').hidden = !st.text; $('#dcBk').disabled = !st.text;
     if ((st.mode === 'list') !== !!st.text.trim()) setMode(st.text.trim() ? 'list' : 'pad');   // typing: the list as you type
     cancelAnimationFrame(rowT); rowT = requestAnimationFrame(paintRow);
@@ -13618,7 +13629,7 @@ function mountDict() {
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inp.blur(); if (st.text.trim()) showList(); } });
   $('#dcFlag').onclick = () => {   // your Chinese (the flag of the system you learn) or English, nothing else
     const to = k() === 'en' ? zh : 'en'; haptic(8); setLang(to);
-    if (to === 'en') inp.focus();   // inside the tap, so the phone's keyboard comes up
+    if (to === 'en') typeNow();
   };
   const ro = new ResizeObserver(() => { if (pad.isConnected) size(); else ro.disconnect(); }); ro.observe(pad);
   setMode(st.mode === 'list' && st.text.trim() ? 'list' : 'pad');
@@ -13641,6 +13652,35 @@ function pinyinFind(D, q) {
     else if (pre.length < 40 && pk.startsWith(key) && !seen.has(r.h)) { seen.add(r.h); pre.push(r); }
   }
   return exact.slice(0, 30).concat(pre).slice(0, 50);
+}
+/* 3.45.73: is what was typed in Chinese mode English rather than pinyin? It is when no run of pinyin syllables can spell
+   it ("hell", "wat"), or when it is an English meaning in the dictionary and no pinyin word starts with it ("tea", "water");
+   "house" only once it is finished with a space, since 后生 hòushēng starts with "house". Tone marks or numbers mean pinyin */
+let DC_PY = null, DC_GL = null;
+function dcPinyinOk(D, key) {
+  if (!DC_PY) {
+    const syl = new Set(), pre = new Set();
+    for (const r of D.rows) for (const [s] of pySyls(r.p)) { const x = pyKey(s); if (x.length <= 6 && /[aeiou]/.test(x)) syl.add(x); }
+    for (const s of ['m', 'n', 'ng', 'hm', 'hng']) syl.add(s);
+    for (const s of syl) for (let i = 1; i <= s.length; i++) pre.add(s.slice(0, i));
+    DC_PY = { syl, pre };
+  }
+  const { syl, pre } = DC_PY, n = key.length, ok = [true];
+  for (let i = 0; i < n; i++) if (ok[i]) for (let j = i + 1; j <= Math.min(n, i + 6); j++) {
+    const p = key.slice(i, j);
+    if (syl.has(p)) ok[j] = true; else if (j === n && pre.has(p)) return true;   // the last syllable may be half typed
+  }
+  return !!ok[n];
+}
+function dcLooksEnglish(D, q) {
+  const t = q.toLowerCase().trim();
+  if (!/^[a-z][a-z' -]*$/.test(t) || t.replace(/[^a-z]/g, '').length < 2) return false;
+  if (!DC_GL) { DC_GL = new Set(); for (const r of D.rows) for (const m of r.e.toLowerCase().split('; ')) { const x = plainMeaning(m).replace(/^(to|a|an|the) /, '').trim(); if (x && x.length < 30) DC_GL.add(x); } }
+  const key = pyKey(t);
+  if (!dcPinyinOk(D, key)) return true;
+  if (!DC_GL.has(t)) return false;
+  const py = pinyinFind(D, t);
+  return !py.length || (/\s$/.test(q) && pyKey(py[0].p) !== key);
 }
 function dictFind(D, q, k) {
   q = q.trim(); if (!q) return [];
@@ -14504,7 +14544,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.72';
+const APP_VERSION = '3.45.73';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
