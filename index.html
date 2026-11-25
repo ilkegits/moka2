@@ -658,6 +658,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
   box-shadow:inset 0 -4px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 14px 24px -10px rgba(30,20,10,.6),0 3px 8px -3px rgba(30,20,10,.3)}
 .fab.fab-ink:active{box-shadow:inset 0 -2px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 6px 12px -8px rgba(30,20,10,.6)}
 .fab.fab-ink svg.i{filter:none}
+.dock .fab.fab-ink{right:0;bottom:calc(100% - 4px)}   /* 3.45.60 (from ShiHanzi2 v4.70): the word bank's + rides in the dock, 14px above Practise, so the two can never meet */
 .fab-menu{position:absolute;right:max(18px,calc(50% - 222px));bottom:calc(12px + var(--tabh) + 16px + 76px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:14px}
 .fab-opt{display:flex;align-items:center;gap:14px;margin-right:4px;text-align:right;opacity:0;transform:translateY(16px) scale(.94);transform-origin:right center;transition:opacity .16s,transform .16s}
 #fab-root.open .fab-opt{opacity:1;transform:none;pointer-events:auto;transition:opacity .24s,transform .4s cubic-bezier(.25,1.4,.5,1)}
@@ -732,8 +733,26 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-add::after{content:"";position:absolute;inset:-6px}
 .ac-add:disabled{background:var(--fill);color:var(--muted)}
 .ac-add:not(:disabled):active{opacity:.75}
-.ac-sugs:empty{display:none}
-.means.ac-sugs{margin:8px 0 0}
+.means.ac-sugs{margin:8px -20px 0;padding:0 20px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;height:44px;scrollbar-width:none}
+.means.ac-sugs::-webkit-scrollbar{display:none}
+.ac-sugs .ac-sug{flex:none;align-self:center;white-space:nowrap}
+.means.ac-sugs:empty{display:flex}   /* .means:empty hides itself; this row keeps its place */
+/* 3.45.60 (from ShiHanzi2 v4.72 and v4.73; ilkem: "there aint gonna be no screen movement bugs"): under the Chinese box is
+   one slot, 52px whatever is in it. The pinyin picks (typing pinyin) and the picks for the English (typing English, one row
+   you swipe along) take turns in it, and when neither has anything it stays as empty room, so no letter, pick or delete
+   ever moves the boxes */
+.cands.ac-cands{height:52px;min-height:0;padding:8px 2px 0}
+/* and the Chinese box is as tall from the start as it is with a word in it (characters over pinyin), so a pick doesn't grow it */
+.ac-fz .ac-box{min-height:75px}
+.ac-fz .ac-box:has(> .ac-word[hidden]) .input{align-self:center}
+.ac-cands:empty{display:none}
+#sheet-root .ac-cands:not(:empty) ~ .ac-sugs{display:none}
+/* 3.45.60: a word with more than one reading (查 chá / zhā) shows its readings in the same slot, one row you swipe along,
+   instead of adding a row that pushed Back down. One thing at a time: pinyin picks, else readings, else the English picks */
+.means.ac-reads{margin:8px -20px 0;padding:0 20px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;height:44px;scrollbar-width:none}
+.means.ac-reads::-webkit-scrollbar{display:none}
+.ac-reads .mean{flex:none;align-self:center;white-space:nowrap}
+#sheet-root .ac-cands:not(:empty) ~ .ac-reads,#sheet-root .ac-reads:not(:empty) ~ .ac-sugs{display:none}
 /* v3.63 the front: type characters, or pinyin that turns into characters, or tap the pen and draw one */
 /* v3.66: each side is one box. The Chinese you have so far sits in it, left of where you type; Draw sits at its right end */
 .ac-box{display:flex;align-items:center;gap:8px;min-height:48px;border-radius:12px;background:var(--card);box-shadow:var(--ring);padding:4px 5px 4px 16px;transition:box-shadow .2s;cursor:text}
@@ -765,8 +784,6 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ac-swap svg.i{width:19px;height:19px;stroke-width:2.1}
 .ac-swap:active{background:var(--seal-soft)}
 .ac-sides .lbl{align-items:center;min-height:20px}
-.ac-cands{min-height:50px;padding-top:6px}
-.ac-cands:empty{min-height:0;padding:0}
 /* v4.27: the meanings and readings under a box sit below it; the general .means rule (later on, -6px) pulled them up over its edge */
 .ac-sides .means{margin-top:8px}
 .field.ac-fz{margin-bottom:0}
@@ -1072,10 +1089,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .pk-make .input{height:42px;flex:1}
 .pk-make .btn{height:42px;padding:0 16px}
 .qa-decks{margin-bottom:16px}
-/* v4.21 (ilkem: "like in anki"): the Add pop-up has a Deck row to send the card to another deck than the one you opened */
-.ac-deck{margin-bottom:14px}
-.ac-deck .row{min-height:46px}
-.ac-deck .row-val{max-width:62%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-weight:600}
+/* 3.45.60 (from ShiHanzi2 v4.73; ilkem: "get rid of the deck box"): the Add pop-up has no Deck row any more (v4.21 had one); cards go into the deck you opened it from */
 .qa-decks .row-val{max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .handle{width:40px;height:5px;border-radius:5px;background:var(--line-2);margin:0 auto 14px;position:relative;cursor:grab}
 /* v4.23: with the keyboard up, a pop-up reaches nearer the top so more of it fits above the keyboard */
@@ -11430,7 +11444,6 @@ function renderFab() {
   const opt = (act, hz, t, sub) => `<button class="fab-opt" data-act="${act}"><span class="fab-lab"><b>${t}</b><small>${sub}</small></span><span class="fab-tile" aria-hidden="true">${hz}</span></button>`;
   let html = '';
   if (deck) html = '';   // 3.45.43: a deck's Add sits in its bottom bar (DeckView), just above Flip and Write
-  else if (v === 'bank') html = `<button class="fab fab-ink" data-act="quick-add" aria-label="Add a word">${I.plus}</button>`;   // v4.20: just above Practise
   else if (v === 'home' || (v === 'group' && curGroup())) html = `<div class="fab-veil" data-act="fab-close"></div><div class="fab-menu">${v === 'home'
       ? opt('new-group', '组', 'Create group', 'A folder for decks') + opt('new-deck', '卡', 'Create deck', 'Cards for your words')
       : opt('group-add', '移', 'Add decks', 'Move decks you have here') + opt('new-deck', '卡', 'Create deck', 'A new deck in this group')}</div>
@@ -13009,7 +13022,6 @@ function cardSheet(cardId) {
   const E = { hanzi: c?.hanzi || '', py: c?.pinyin || '', reading: 0, enDirty: !!c, pyDirty: !!c, autoEn: false, seq: 0, D: null, added: [], into: new Set(), ex: acExPick() };
   const exZh = () => `e.g. ${AC_EX[E.ex][0]} or ${AC_EX[E.ex][1]}`, exEn = () => `e.g. ${AC_EX[E.ex][2]}`;
   openSheet(`<div class="ac-head">${c ? '' : `<button type="button" class="sheet-x" data-act="close-sheet" aria-label="Close">${I.close}</button>`}<h3>${c ? 'Edit card' : 'Add card'}</h3>${c ? '' : `<button class="ac-add" id="csave">Add</button>`}</div>
-    ${c ? '' : `<div class="group ac-deck"><button class="row" id="acDeck"><span class="row-main"><span class="row-t">Deck</span></span><span class="row-val" id="acDeckVal">${esc(d.name)}</span><span class="chev">${I.chev}</span></button></div>`}
     <div class="ac-sides" id="acSides">
     <div class="field ac-fz"><span class="lbl"><span><span class="ac-side">Front</span><span id="hzcount"></span></span></span>
       <div class="ac-box" id="fbox"><div class="ac-word" id="fword" hidden><span class="hz" id="fhz"></span><span class="py" id="fpyout"></span></div>
@@ -13041,12 +13053,13 @@ function cardSheet(cardId) {
           if (h && !ms.length) ms.push(meanOf(h));
           if (!E.enDirty && ms[0]) { fen.value = ms[0]; E.autoEn = true; }
           means.innerHTML = ms.length > 1 && !E.enFirst ? ms.slice(0, 8).map(m => `<button class="mean" data-m="${esc(m)}">${esc(m)}</button>`).join('') : '';
-          sugs.innerHTML = '';
+          sugs.innerHTML = '';   // the word is chosen: its meanings show instead (the row stays as room)
           return;
         }
         if (!E.enDirty && E.autoEn) { fen.value = ''; E.autoEn = false; }
         const q = fen.value.trim(), hits = E.D && q.length >= 2 ? searchEnglish(E.D, q).slice(0, 6) : [];   // no Chinese yet: the English looked up the other way
         means.innerHTML = '';   // v4.12: these Chinese picks sit under the Chinese box, not under the English
+        sugs.scrollLeft = 0;
         sugs.innerHTML = hits.map(r => `<button class="ac-sug" data-h="${esc(r.h)}" data-p="${esc(r.p)}"><span class="hz">${esc(r.h)}</span><span class="wp">${esc(PY(r.h, r.p))}</span></button>`).join('');
       };
       const paintHz = () => {
@@ -13071,8 +13084,8 @@ function cardSheet(cardId) {
       let t;
       const lookup = () => {
         const py = normPy(fpy.value); clearTimeout(t);
+        const seq = ++E.seq;   // 3.45.60 (from v4.73): also when the box was emptied, so a slow answer for the old letters can't paint after
         if (!py) { paintCands([]); return; }
-        const seq = ++E.seq;
         t = setTimeout(async () => {
           try { const list = await fetchCands(py); if (seq === E.seq) paintCands(list); }
           catch (e) { if (e.name !== 'AbortError' && seq === E.seq) { cands.innerHTML = '<span class="msg">Offline: can’t look up characters right now.</span>'; LOG.add('pinyin-offline', py); } }
@@ -13213,18 +13226,6 @@ function cardSheet(cardId) {
         frontIn().focus({ preventScroll: true });
       };
       if (!c) S.onSheetClose = () => { if (E.added.length) toast(`Added ${plural(E.added.length, 'card')} to ${E.into.size > 1 ? plural(E.into.size, 'deck') : [...E.into][0].name}`); };   // however the pop-up closes: ✕, a tap outside or a drag down
-      const deckB = $q('#acDeck');
-      if (deckB) {   // like Anki's Deck: choose which deck the next cards go to; the one you opened is picked to start with
-        deckB.addEventListener('pointerdown', e => e.preventDefault());
-        deckB.onclick = () => {
-          padOff(); const sel = new Set([d.id]);
-          deckPicker(sel, () => {
-            const nd = deckById([...sel][0]);
-            if (nd && nd !== d) { LOG.add('card-deck', { from: d.name, to: nd.name }); d = nd; $q('#acDeckVal').textContent = d.name; render(); }
-            frontIn().focus({ preventScroll: true });
-          }, new Set(), true);
-        };
-      }
       const del = $q('#cdel');
       if (del) del.onclick = () => {   // UX 5: goes at once, Undo on the toast
         const i = d.cards.indexOf(c); S.onSheetClose = null; closeSheet();
@@ -13232,7 +13233,7 @@ function cardSheet(cardId) {
         undoToast('Card deleted', () => { if (!d.cards.includes(c)) d.cards.splice(Math.min(i, d.cards.length), 0, c); save(); render(); });
       };
       /* v4.23: the side you are typing in, with the picks under it, stays in view above the keyboard (on a Samsung the
-         bottom box and its suggestions were hidden behind it). The heading stays on top; the deck row scrolls away first */
+         bottom box and its suggestions were hidden behind it). The heading stays on top */
       const head = $q('.ac-head');
       const inView = () => {
         if (!sh.isConnected) { ro.disconnect(); visualViewport?.removeEventListener('resize', soon); return; }
@@ -13245,8 +13246,20 @@ function cardSheet(cardId) {
         const lo = s.top + head.offsetHeight + 6, hi = s.bottom - 10;
         let dy = r.bottom > hi ? r.bottom - hi : 0;
         if (r.top - dy < lo) dy = (a === fen ? b : r).top - lo;   // too tall to show all of it: the box you type in wins
-        if (Math.abs(dy) > 1) sh.scrollTop += dy;
+        if (Math.abs(dy) > 1) want = sh.scrollTop += dy;
       };
+      /* 3.45.60 (from ShiHanzi2 v4.72; ilkem: "bc of the suggestion, it keeps bugging"): the pop-up scrolls only when you
+         scroll it, or when inView above brings the box you type in into sight. On a Samsung, Chrome scrolled it down to its
+         end whenever the picks reached under the keyboard and back when they went, so the boxes jumped with the letters;
+         a scroll nobody asked for is put straight back */
+      let want = sh.scrollTop, free = 0;
+      const hand = () => { free = performance.now() + 700; };
+      ['touchstart', 'touchmove', 'touchend', 'wheel', 'pointerdown'].forEach(ev => sh.addEventListener(ev, hand, { passive: true }));
+      sh.addEventListener('scroll', () => {
+        const now = performance.now();
+        if (now < free) { free = Math.max(free, now + 150); want = sh.scrollTop; return; }   // your finger, and the glide after it
+        if (Math.abs(sh.scrollTop - want) > 1) sh.scrollTop = want;
+      });
       let raf = 0; const soon = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(inView); };
       const ro = new ResizeObserver(soon); [sh, zhB, enB].forEach(el => ro.observe(el));
       visualViewport?.addEventListener('resize', soon);
@@ -13594,7 +13607,7 @@ function BankView() {
       <p class="muted" style="font-size:11.5px;margin:18px 2px 0">Meanings from CC-CEDICT (mdbg.net, CC BY-SA 4.0)</p>
       <div class="bk-fabgap"></div>`
     : `<div class="empty bk-empty"><div class="big">字</div><h3>Your word bank is empty</h3><p>Words from the lessons you finish land here by themselves. Already know some? Tick them in an HSK level below, or tap + to add one.</p></div>${BankLadder()}`}
-    <div class="dock">${n ? `<button class="btn btn-seal wide" data-act="practise-bank">${I.flip}Practise ${plural(n, 'word')}</button>`
+    <div class="dock"><button class="fab fab-ink" data-act="quick-add" aria-label="Add a word">${I.plus}</button>${n ? `<button class="btn btn-seal wide" data-act="practise-bank">${I.flip}Practise ${plural(n, 'word')}</button>`
       : `<button class="btn btn-seal wide" data-act="open-hsk">Tick words you know</button>`}</div>
   </div>`;
 }
@@ -14093,7 +14106,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.59';
+const APP_VERSION = '3.45.60';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
