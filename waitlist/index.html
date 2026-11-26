@@ -8,10 +8,15 @@
 <meta name="description" content="A calm way to learn Chinese characters. Join the ShiHanzi waiting list.">
 <meta property="og:title" content="ShiHanzi · Good things are written slowly">
 <meta property="og:description" content="静候佳音，好东西，都是慢慢写出来的。 Join the ShiHanzi waiting list.">
-<meta property="og:image" content="https://ilkegits.github.io/moka2/waitlist/og.png">
+<meta property="og:image" content="https://shihanzi.vercel.app/og.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="../icons/favicon-64.png">
+<link rel="icon" href="favicon-64.png">
+<link rel="canonical" href="https://shihanzi.vercel.app/">
+<script>
+  // The waiting list lives at shihanzi.vercel.app; the old GitHub address forwards there (keeping ?ref=).
+  if (location.hostname.endsWith('github.io')) location.replace('https://shihanzi.vercel.app/' + location.search);
+</script>
 <script src="strokes.js"></script>
 <style>
   :root { --ink:#1C1A19; --mute:#6E6A66; --soft:#9A948F; --line:#ECE8E4; --edge:#E3D6D1; --red:#B23A2C; --red-d:#9A3024; }
@@ -144,7 +149,7 @@ function render(t) {
     const p = Math.min(1, (t - stampAt) / STAMP_D); if (p <= 0) return;
     const sc = p < .55 ? 1.6 - .68 * ease(p / .55) : .92 + .08 * ease((p - .55) / .45);
     const cx = W - C * 1.5, cy = 3 * (C + GAP) + C / 2, S = 44;
-    el('image', { href: '../icons/seal.svg', x: -S / 2, y: -S / 2, width: S, height: S, opacity: Math.min(1, p / .4) * .95,
+    el('image', { href: "seal.svg", x: -S / 2, y: -S / 2, width: S, height: S, opacity: Math.min(1, p / .4) * .95,
       transform: `translate(${cx},${cy}) rotate(-8) scale(${sc})` }, svg);
   }
 }
