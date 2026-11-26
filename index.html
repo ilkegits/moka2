@@ -2168,7 +2168,7 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .rw.new{background:radial-gradient(circle,color-mix(in srgb,var(--seal) 80%,transparent) 0.8px,transparent 1.1px) left calc(100% - 2px)/4px 4px repeat-x}
 .rw.hl{background:rgba(255,209,92,.6);transition:none}
 .ry{display:none;font-family:var(--ui);font-size:calc(8px + var(--rd-fs,28px)*.22);font-weight:500;color:var(--seal);line-height:1.1;margin:-3px 0 5px;white-space:nowrap}
-.story.py .ry{display:block}
+.story.st-py .ry{display:block}   /* not .py: the app's .py style (red, 14px top margin) would move the card down */
 .rpop{position:absolute;z-index:6;min-width:128px;max-width:250px;background:var(--ink);color:var(--paper);border-radius:13px;padding:9px 14px 10px;
   box-shadow:0 14px 28px -12px rgba(30,20,10,.6);animation:rpopIn .16s ease-out both}
 .rpop::after{content:"";position:absolute;left:calc(var(--ax) - 7px);border:7px solid transparent}
@@ -8703,7 +8703,7 @@ function StoryCard(s, foot) {
   const word = (t, li, wi) => READ_PUNCT.test(t.h) ? `<span class="rp">${esc(t.h)}</span>`
     : `<button class="rw${fresh.has(t.h) ? ' new' : ''}" data-act="rw" data-k="${li}.${wi}"><span class="rh">${esc(t.h)}</span><span class="ry">${esc(PY(t.h, t.p))}</span></button>`;
   const sz = READ_SIZES[db.prefs.readSize ?? 1] ?? 28;
-  return `<article class="story${on ? ' py' : ''}" style="--rd-fs:${sz}px">
+  return `<article class="story${on ? ' st-py' : ''}" style="--rd-fs:${sz}px">
       <div class="story-tools"><button class="aa-btn" data-act="read-aa" aria-label="Text size: tap for the next size">A<small>a</small></button>
         <button class="rd-py" data-act="read-py" role="switch" aria-checked="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}<span class="switch${on ? ' on' : ''}"></span></button></div>
       <div class="story-head"><h3 class="story-zh">${esc(s.zh)}</h3><span class="story-en">${esc(s.en)}</span></div>
@@ -14710,7 +14710,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.91';
+const APP_VERSION = '3.45.92';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16107,7 +16107,7 @@ const A = {
   'rpop-add': t => addReadWord(t),
   'read-aa': () => { const i = ((db.prefs.readSize ?? 1) + 1) % READ_SIZES.length; db.prefs.readSize = i; save(); closeReadPop();   // each tap: the next size, after the biggest back to the smallest
     $('.story')?.style.setProperty('--rd-fs', READ_SIZES[i] + 'px'); },
-  'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.querySelector('.switch')?.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-checked', db.prefs.readPy); $('.story')?.classList.toggle('py', db.prefs.readPy); },
+  'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.querySelector('.switch')?.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-checked', db.prefs.readPy); $('.story')?.classList.toggle('st-py', db.prefs.readPy); },
   'read-new': () => { const from = coverChars(db.readCur); db.readCur = makeStory(db.readCur?.zh); save(); S.instant = true; render(); riffleBook(from); },
   'read-start': () => { if (!db.readCur) return; db.readCur.opened = Date.now(); db.last = { t: 'read' }; save(); LOG.add('read-start', db.readCur.zh); render(); },
   'read-finish': () => finishSheet(),
