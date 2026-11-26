@@ -67,7 +67,7 @@ p,li,.muted,.row-s,.group-foot{text-wrap:pretty}
    corner-shape; other browsers keep the plain rounded corner. Round buttons and pill shapes are left out on purpose:
    a squircle at full radius would square off their ends */
 .group,.sheet,.dlg,.btn,.pill,.input,.search,.mode,.mode-ic,.deck-face,.decks,.cards,.shelf-tile,.scene-tile,.crs,.wbp-face,.bk-f,.cl,
-.rd-hero,.pf-card,.pf-stat,.bdg,.st-cal,.st-fz,.goal-row,.face,.hd-card,.un-hud,.icon-sq,#toast{corner-shape:squircle}
+.rd-hero,.pf-card,.pf-ov,.bdg,.st-cal,.st-fz,.goal-row,.face,.hd-card,.un-hud,.icon-sq,#toast{corner-shape:squircle}
 img,svg{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
 body{
   background:var(--paper); color:var(--ink); font-family:var(--ui); font-size:15px; line-height:1.45;
@@ -2406,38 +2406,65 @@ button.st-d:active{transform:scale(.9);transition:none}
 .pf-lv-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#35A877,#5CC48F)}
 .pf-lv-end{position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;padding:2px 7px;border-radius:7px;background:var(--fill);font-size:11.5px;font-weight:700;color:var(--ink-2);white-space:nowrap}
 .pf-go{height:52px;font-size:16.5px}
-.pf-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
-.pf-stat{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto;column-gap:10px;align-items:center;padding:13px 12px 12px;border-radius:16px;background:var(--card);box-shadow:var(--ring);text-align:left;transition:transform .15s}
-.pf-stat:active{transform:scale(.97);transition:none}
-.pf-st-ic{grid-row:1;width:30px;height:30px;display:grid;place-items:center}
-.pf-st-ic .flame,.pf-st-ic .coin{width:28px;height:28px}
+/* 3.45.85 Profile overview, after Duolingo's: four tiles, icon beside a big number with its name under it. The streak tile turns gold once today counts */
+.pf-ovs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.pf-ov{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;min-height:76px;padding:12px 12px 12px 12px;
+  border-radius:16px;background:var(--card);box-shadow:var(--ring);text-align:left;transition:transform .15s}
+.pf-ov:active{transform:scale(.97);transition:none}
+.pf-ov-ic{grid-row:1 / 3;width:34px;height:34px;display:grid;place-items:center}
+.pf-ov-ic .flame,.pf-ov-ic .coin{width:32px;height:32px}
+.pf-ov-fl{display:contents}
 .pf-zh{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font:700 16px var(--hanzi);background:var(--jade-soft);color:var(--jade)}
-.pf-stat b{grid-row:1;font-family:var(--display);font-size:28px;font-weight:600;line-height:1;font-variant-numeric:lining-nums tabular-nums}
-.pf-stat b em{font-style:normal;font-size:17px;color:var(--muted)}
-.pf-stat>span:not(.pf-st-ic){grid-column:1 / -1;margin-top:8px;font-size:14px;font-weight:700}
-.pf-stat small{grid-column:1 / -1;font-size:12px;line-height:1.3;color:var(--muted)}
-.pf-stat.pf-xp{grid-column:1 / -1;grid-template-columns:auto auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:2px}   /* moka2: the XP tile, one row across: icon, number, then the label over the line */
-.pf-stat.pf-xp .pf-st-ic{grid-column:1;grid-row:1 / 3}
-.pf-stat.pf-xp b{grid-column:2;grid-row:1 / 3;color:#9A6412}
-.pf-stat.pf-xp>span:not(.pf-st-ic){grid-column:3;grid-row:1;margin-top:0;align-self:end}
-.pf-stat.pf-xp small{grid-column:3;grid-row:2;align-self:start}
-.pf-week{padding:14px 14px 10px;margin-bottom:6px}
-.pf-wk-top{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
-.pf-wk-top span{font-size:14px;color:var(--ink-2)}
-.pf-wk-top span b{font-family:var(--display);font-size:26px;font-weight:600;color:var(--ink);margin-right:2px}
-.pf-wk-top small{font-size:13px;color:var(--muted)}
-.pf-wk-top small b{color:var(--seal)}
-.pf-bars{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:134px;padding-top:16px}
-.pf-day{display:flex;flex-direction:column;align-items:center;height:100%}
-.pf-col{flex:1;width:100%;max-width:30px;display:flex;align-items:flex-end;border-radius:8px;background:var(--fill)}
-.pf-col i{display:block;width:100%;border-radius:8px;background:#E8A33C}
-.pf-day.ok .pf-col i{background:#35A877}
-.pf-day.later .pf-col{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
-.pf-day small{flex:none;height:20px;line-height:22px;font:600 12px/22px var(--hanzi);color:var(--muted)}
-.pf-day.today small{color:var(--seal);font-weight:700}
-.pf-day.today .pf-col{box-shadow:0 0 0 2px var(--seal)}
-.pf-col i{position:relative}
-.pf-col em{position:absolute;left:-4px;right:-4px;bottom:100%;margin-bottom:3px;text-align:center;font:700 12px var(--ui);font-style:normal;color:var(--ink-2)}
+.pf-ov .pf-zh{width:30px;height:30px;font-size:17px}
+.pf-ov.lang .pf-ov-ic{width:38px}
+.pf-ov.lang .flag{width:38px;height:27px;border-radius:7px}
+.pf-ov b{align-self:end;min-width:0;font:600 24px/1.05 var(--display);font-variant-numeric:lining-nums tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-ov>span:last-child{align-self:start;min-width:0;margin-top:2px;font-size:13px;font-weight:600;line-height:1.2;color:var(--muted)}
+@media (max-width:360px){   /* small phones: the icon goes above the number so nothing is cut off */
+  .pf-ov{grid-template-columns:1fr;grid-template-rows:auto auto auto;row-gap:6px;padding:12px}
+  .pf-ov-ic{grid-row:auto;justify-content:start;width:auto;height:30px}
+  .pf-ov-ic .flame,.pf-ov-ic .coin{width:28px;height:28px}
+  .pf-ov.lang .flag{width:36px;height:25px}}
+.pf-ov.gold{background:linear-gradient(135deg,#F7B32B,#EC8E1A);box-shadow:0 3px 0 #C9700E}
+.pf-ov.gold::before{content:"";position:absolute;inset:0;background:linear-gradient(118deg,transparent 46%,rgba(255,255,255,.11) 46% 58%,transparent 60%);pointer-events:none}
+.pf-ov.gold b,.pf-ov.gold>span:last-child{color:#fff;text-shadow:0 1px 1px rgba(140,60,0,.35)}
+.pf-spark{position:absolute;fill:#FFF3C9;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(160,80,0,.25))}
+.pf-spark:nth-child(1){width:18px;height:18px;right:12px;top:10px}
+.pf-spark:nth-child(2){width:11px;height:11px;right:30px;bottom:12px}
+.pf-ov.gold .pf-ov-ic .flame{filter:drop-shadow(0 1px 1px rgba(140,60,0,.3))}
+/* XP this week: a key with both totals, then the chart; the lines are a stretched SVG (strokes kept even), the dots sit in
+   seven tappable columns over it, and the scale's lines and numbers are placed by the same percentages */
+.pf-xc{padding:14px 16px 8px;margin-bottom:18px}
+.pf-xc-key{display:grid;grid-template-columns:14px 1fr auto;align-items:center;column-gap:10px;row-gap:4px}
+.pf-xc-key i{width:13px;height:13px;border-radius:50%}
+.pf-xc-key i.now{background:#D9A04E}
+.pf-xc-key i.last{box-shadow:inset 0 0 0 2.5px var(--line-2)}
+.pf-xc-key span{font-size:15.5px;font-weight:700;color:#9A6412}
+.pf-xc-key b{font:600 20px/1.1 var(--display);color:#9A6412;font-variant-numeric:lining-nums tabular-nums;text-align:right}
+.pf-xc-key b small{font:600 14px var(--ui)}
+.pf-xc-key span:nth-of-type(2),.pf-xc-key b:nth-of-type(2){color:var(--muted)}
+.pf-xc-s{margin:6px 0 0 24px;font-size:13px;color:var(--ink-2)}
+.pf-xc-s b{color:var(--seal)}
+.pf-xc-p{position:relative;height:170px;margin:22px 4px 0 var(--yl)}
+.pf-xc-tk{position:absolute;left:calc(-1 * var(--yl));right:-4px;display:flex;align-items:center;height:0}
+.pf-xc-tk span{flex:none;width:var(--yl);padding-right:9px;text-align:right;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.pf-xc-tk::after{content:"";flex:1;border-top:1.5px solid var(--line)}
+.pf-xc-p svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pf-xc-p polyline{fill:none;vector-effect:non-scaling-stroke;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.pf-xc-p polyline.now{stroke:#D9A04E}
+.pf-xc-p polyline.last{stroke:var(--line-2);stroke-width:3}
+.pf-xc-c{position:absolute;top:0;bottom:0;width:13%;translate:-50% 0;padding:0;background:none;border:0}
+.pf-xc-c::before{content:"";position:absolute;inset:-14px 0}   /* a taller tap area than the plot */
+.pf-xc-d{position:absolute;left:50%;width:14px;height:14px;border-radius:50%;translate:-50% -50%}
+.pf-xc-d.now{background:#D9A04E;box-shadow:0 0 0 2.5px var(--card)}
+.pf-xc-d.last{background:var(--card);box-shadow:inset 0 0 0 3px var(--line-2)}
+.pf-xc-c.today .pf-xc-d.now{box-shadow:0 0 0 2.5px var(--card),0 0 0 4.5px #D9A04E}
+.pf-xc-d em{position:absolute;left:50%;bottom:100%;translate:-50% -8px;padding:3px 7px;border-radius:8px;background:var(--ink);font:700 12px var(--ui);font-style:normal;color:#fff;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+.pf-xc-c:focus-visible .pf-xc-d em,.pf-xc-c:focus .pf-xc-d em,.pf-xc-c:hover .pf-xc-d em{opacity:1}
+.pf-xc-c:first-of-type .pf-xc-d em{translate:-20% -8px} .pf-xc-c:last-of-type .pf-xc-d em{translate:-80% -8px}
+.pf-xc-x{position:relative;height:30px;margin:0 4px 0 var(--yl)}
+.pf-xc-x span{position:absolute;top:12px;translate:-50% 0;font:600 13px var(--hanzi);color:var(--muted)}
+.pf-xc-x span.today{color:var(--seal);font-weight:700}
 .pf-left{font-size:13.5px;font-weight:700;color:var(--muted)}
 .pf-next{display:flex;align-items:center;gap:13px;padding:13px 14px;margin-bottom:10px}
 .pf-next .bdg-seal{flex:none;width:50px;height:50px;font-size:23px}
@@ -2853,30 +2880,6 @@ button.st-d:active{transform:scale(.9);transition:none}
 .tk-w{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px} .tk-w span{padding:4px 9px;border-radius:9px;background:var(--seal-soft);color:var(--seal);font:600 18px/1.2 var(--hanzi)}
 .tk-w em{align-self:center;font-style:normal;font-size:13px;color:var(--muted)}
 .tk-b{display:flex;align-items:center;gap:12px} .tk-b .btn{flex:1}
-/* XP this week on Profile */
-.pf-xpw-h{display:flex;align-items:center;gap:7px} .pf-xpw-ic{width:24px;height:24px;display:flex} .pf-xpw-ic .coin{width:100%;height:100%}
-.pf-xpw-h b{font:600 20px/1 var(--display);font-variant-numeric:lining-nums tabular-nums} .pf-xpw-h span{font-size:13.5px;color:var(--muted)}
-.pf-xpw-s{margin:4px 0 4px;font-size:13px;color:var(--ink-2)}
-/* 3.45.57: the XP week is a line graph. The lines are drawn in a stretched SVG (strokes kept even); the dots, numbers and
-   day names sit in seven equal columns over it, so every dot is a round button over its day */
-.pf-xpw-h .pf-xl-key{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-.pf-xl-key i{width:16px;border-top:2px dashed var(--line-2)}
-.pf-xl{position:relative;display:grid;grid-template-columns:repeat(7,1fr);height:142px;margin-top:6px}
-.pf-xl-plot{position:absolute;left:0;right:0;top:24px;bottom:30px;pointer-events:none}
-.pf-xl-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.pf-xl-svg *{vector-effect:non-scaling-stroke;fill:none;stroke-linejoin:round;stroke-linecap:round}
-.pf-xl-base{stroke:var(--line);stroke-width:1.5}
-.pf-xl-last{stroke:var(--line-2);stroke-width:2;stroke-dasharray:5 5}
-.pf-xl-now{stroke:#D9A04E;stroke-width:3}
-.pf-xl-svg .pf-xl-area{fill:rgba(242,201,138,.28);stroke:none}
-.pf-xd{position:relative;background:none;border:0;padding:0;font:inherit;color:inherit;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
-.pf-xd small{height:20px;font:600 12px/22px var(--hanzi);color:var(--muted)}
-.pf-xd.today small{color:var(--seal);font-weight:700}
-.pf-xd-dot{position:absolute;left:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 2.5px #D9A04E;
-  top:calc(24px + (100% - 54px) * var(--y) / 100)}   /* inside the plot area, which starts 24px down and is 54px shorter */
-.pf-xd.today .pf-xd-dot{background:#D9A04E;box-shadow:0 0 0 3px var(--card),0 0 0 4.5px #D9A04E}
-.pf-xd-dot em{position:absolute;left:50%;bottom:100%;translate:-50% -5px;font:700 12px var(--ui);font-style:normal;color:#9A6412;white-space:nowrap;opacity:0;transition:opacity .15s}
-.pf-xd.lab em,.pf-xd:focus em,.pf-xd:hover em{opacity:1}
 .les-body{display:flex;flex-direction:column;padding:6px 0 20px}
 .les-ask{margin:6px 0 16px;font-size:21px;font-weight:800;letter-spacing:-.01em}
 .les-ask span{margin-left:8px;font-size:14px;font-weight:700;color:var(--muted)}
@@ -8438,52 +8441,46 @@ function pfSince() {   // the first day ShiHanzi saw you practise or add a word
   for (const k of Object.keys(db.days)) { const [y, m, d] = k.split('-').map(Number), x = new Date(y, m, d).getTime(); if (x < t) t = x; }
   return t < Infinity ? new Date(t).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : '';
 }
-/* 3.45.57: XP this week as a line graph, Monday to Sunday (ilkem: "the xp should be a line graph"). The gold line runs
-   up to today, last week is a faint dashed line behind it; today and the best day carry their number, tap any day for
-   its own. The total and last week's sit above it */
+/* 3.45.85: Profile after Duolingo's (ilkem sent its profile: "XP chart. Streak overview. Words proven. Languages").
+   XP this week: the last seven days up to today against the seven before, two lines on a chart with its scale on the left,
+   the two totals in a key above it like Duolingo's "you and your friend". Tap a day for its numbers.
+   Overview: four tiles, the streak (gold once today counts), total XP, words proven, and the Chinese you learn with its flag */
+const pfTick = top => { const raw = top / 4, p = 10 ** Math.floor(Math.log10(raw)); return [1, 2, 2.5, 3, 5, 10].map(m => m * p).find(s => s >= raw); };
 function pfXpWeek() {
-  const now = new Date(), lead = (now.getDay() + 6) % 7;
-  const D = [...'一二三四五六日'].map((zh, i) => { const d = new Date(now); d.setDate(now.getDate() - lead + i); const p = new Date(d); p.setDate(d.getDate() - 7);
-    return { zh, en: d.toLocaleDateString('en-GB', { weekday: 'long' }), x: xpOn(dayKey(d)), last: xpOn(dayKey(p)), today: i === lead, later: i > lead }; });
-  const tw = D.reduce((a, d) => a + d.x, 0), lw = D.reduce((a, d) => a + d.last, 0), best = Math.max(...D.map(d => d.x));
-  const top = Math.max(...D.map(d => Math.max(d.x, d.last)), 30);
-  const line = lw ? (tw >= lw ? `${tw - lw} more than last week (${lw})` : `${lw - tw} to beat last week (${lw})`) : tw ? 'Your first week of XP' : 'Go through a deck to earn XP';
-  const X = i => (i + .5) / 7 * 700, Y = v => +(100 - v / top * 100).toFixed(1);
-  const pts = A => A.map((v, i) => `${X(i)},${Y(v)}`).join(' ');
-  const now7 = D.filter(d => !d.later).map(d => d.x), lastW = D.map(d => d.last);
-  const area = `M${X(0)},100 L${pts(now7).replace(/ /g, ' L')} L${X(now7.length - 1)},100 Z`;
-  const svg = `<svg class="pf-xl-svg" viewBox="0 0 700 100" preserveAspectRatio="none" aria-hidden="true">
-      <line x1="0" y1="100" x2="700" y2="100" class="pf-xl-base"/>
-      ${lw ? `<polyline points="${pts(lastW)}" class="pf-xl-last"/>` : ''}
-      <path d="${area}" class="pf-xl-area"/><polyline points="${pts(now7)}" class="pf-xl-now"/></svg>`;
-  const days = D.map((d, i) => { const lab = !d.later && (d.today || (d.x && d.x === best));
-    return `<button class="pf-xd${d.today ? ' today' : ''}${d.later ? ' later' : ''}${lab ? ' lab' : ''}" aria-label="${d.en}: ${d.later ? 'to come' : `${d.x} XP`}${d.last ? `, last week ${d.last}` : ''}">
-      ${d.later ? '' : `<span class="pf-xd-dot" style="--y:${Y(d.x)}"><em>${d.x}</em></span>`}<small>${d.zh}</small></button>`; }).join('');
-  return `<section class="pf-card pf-week pf-xpw" aria-label="XP this week: ${tw}">
-    <div class="pf-xpw-h"><span class="pf-xpw-ic">${xpSvg()}</span><b>${tw.toLocaleString('en')} XP</b><span>this week</span>
-      ${lw ? '<span class="pf-xl-key"><i></i>last week</span>' : ''}</div>
-    <p class="pf-xpw-s">${line}</p><div class="pf-xl"><div class="pf-xl-plot">${svg}</div>${days}</div></section>`;
+  const now = new Date();
+  const D = [...Array(7)].map((_, i) => { const d = new Date(now); d.setDate(now.getDate() - 6 + i); const p = new Date(d); p.setDate(d.getDate() - 7);
+    return { zh: '日一二三四五六'[d.getDay()], en: d.toLocaleDateString('en-GB', { weekday: 'long' }), x: xpOn(dayKey(d)), last: xpOn(dayKey(p)), today: i === 6 }; });
+  const tw = D.reduce((a, d) => a + d.x, 0), lw = D.reduce((a, d) => a + d.last, 0);
+  const hi = Math.max(...D.map(d => Math.max(d.x, d.last)), 20), step = pfTick(hi), n = Math.ceil(hi / step), top = n * step;   // 4 or 5 lines, 0 to 20 before any XP
+  const X = i => 4 + i * 92 / 6, Y = v => +(100 - v / top * 100).toFixed(2), pts = k => D.map((d, i) => `${X(i)},${Y(d[k])}`).join(' ');
+  const ticks = [...Array(n + 1)].map((_, i) => `<div class="pf-xc-tk" style="top:${Y(i * step)}%"><span>${(i * step).toLocaleString('en')}</span></div>`).join('');
+  const yl = Math.max(...[...Array(n + 1)].map((_, i) => (i * step).toLocaleString('en').length));
+  const line = lw ? (tw === lw ? 'The same as last week' : tw > lw ? `${(tw - lw).toLocaleString('en')} more than last week. Nice!` : `<b>${(lw - tw).toLocaleString('en')} more</b> to beat last week`) : tw ? 'Your first week of XP' : 'Go through a deck to earn XP';
+  const cols = D.map((d, i) => `<button class="pf-xc-c${d.today ? ' today' : ''}" style="left:${X(i)}%" aria-label="${d.today ? 'Today' : d.en}: ${d.x} XP, a week before ${d.last}">
+      <i class="pf-xc-d last" style="top:${Y(d.last)}%"></i><i class="pf-xc-d now" style="top:${Y(d.x)}%"><em>${d.x.toLocaleString('en')} XP</em></i></button>`).join('');
+  return `<section class="pf-card pf-xc" style="--yl:${yl * 7.6 + 10}px" aria-label="XP this week: ${tw}, last week: ${lw}">
+    <div class="pf-xc-key"><i class="now"></i><span>This week</span><b>${tw.toLocaleString('en')} <small>XP</small></b>
+      <i class="last"></i><span>Last week</span><b>${lw.toLocaleString('en')} <small>XP</small></b></div>
+    <p class="pf-xc-s">${line}</p>
+    <div class="pf-xc-p">${ticks}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts('last')}" class="last"/><polyline points="${pts('x')}" class="now"/></svg>${cols}</div>
+    <div class="pf-xc-x" aria-hidden="true">${D.map((d, i) => `<span class="${d.today ? 'today' : ''}" style="left:${X(i)}%">${d.zh}</span>`).join('')}</div></section>`;
 }
-function pfWeek() {   // this week, Monday to Sunday: the words you proved each day, and the week's total against last week's. Never time spent in the app (ilkem: nobody should be told how long they spent)
-  const now = new Date(), lead = (now.getDay() + 6) % 7, act = practiceDays(), per = {};
-  for (const w of db.bank) if (w.pf?.at) { const k = dayKey(w.pf.at); per[k] = (per[k] || 0) + 1; }
-  const D = [...'一二三四五六日'].map((zh, i) => { const d = new Date(now); d.setDate(now.getDate() - lead + i); const p = new Date(d); p.setDate(d.getDate() - 7);
-    return { zh, w: per[dayKey(d)] || 0, last: per[dayKey(p)] || 0, on: act.has(dayKey(d)), today: i === lead, later: i > lead }; });
-  const tw = D.reduce((a, x) => a + x.w, 0), lw = D.reduce((a, x) => a + x.last, 0), top = Math.max(...D.map(x => x.w), 5), days = D.filter(x => x.on).length;
-  const line = lw && tw < lw ? `<b>${lw - tw} more</b> to beat last week (${lw})` : lw && tw >= lw ? `${tw - lw} more than last week. Nice!`
-    : days ? `You practised on ${plural(days, 'day')} so far` : 'Practise today to start your week';
-  const bars = D.map(x => { const h = x.w ? Math.max(14, Math.round(Math.min(1, x.w / top) * 100)) : x.on ? 8 : 0;   // a practice day with no new proofs still shows a sliver
-    return `<span class="pf-day${x.today ? ' today' : ''}${x.later ? ' later' : ''}${x.on ? ' ok' : ''}"><span class="pf-col"><i style="height:${h}%">${x.w ? `<em>${x.w}</em>` : ''}</i></span><small>${x.zh}</small></span>`; }).join('');
-  return `<section class="pf-card pf-week" aria-label="This week: ${plural(tw, 'word')} proven">
-      <div class="pf-wk-top"><span><b>${tw}</b> ${tw === 1 ? 'word' : 'words'} proven this week</span><small>${line}</small></div>
-      <div class="pf-bars">${bars}</div>
-    </section>`;
+const PF_SPARK = '<svg class="pf-spark" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 0C10.8 6.2 13.8 9.2 20 10 13.8 10.8 10.8 13.8 10 20 9.2 13.8 6.2 10.8 0 10 6.2 9.2 9.2 6.2 10 0Z"/></svg>';
+function pfOverview() {
+  const { n, today } = practiceStreak(), best = Math.max(n, bestStreak()), pv = provenCount(), xp = xpTotal(), k = sysK(), { lv } = goalLevel();
+  const wk = dayStart(Date.now(), -6), week = db.bank.reduce((a, w) => a + (w.pf?.at >= wk ? 1 : 0), 0);
+  const tile = (act, cls, icon, big, label, aria) => `<button class="pf-ov${cls}" data-act="${act}" aria-label="${aria}">${cls === ' gold' ? PF_SPARK + PF_SPARK : ''}<span class="pf-ov-ic">${icon}</span><b>${big}</b><span>${label}</span></button>`;
+  return `<div class="pf-ovs">
+    ${tile('streak', today ? ' gold' : '', `<span class="pf-ov-fl${n ? ' on' : ''}">${FLAME}</span>`, n.toLocaleString('en'), 'Day streak',
+      `${n} day streak${n && !today ? ', finish a deck today to keep it' : ''}${best ? `, best ${best}` : ''}. Open your calendar`)}
+    ${tile('pf-xp', '', xpSvg(), xp.toLocaleString('en'), 'Total XP', `${xp} XP in total, ${xpOn(dayKey(Date.now()))} today. Open Read`)}
+    ${tile('open-bank', '', '<span class="pf-zh">字</span>', pv.toLocaleString('en'), 'Words proven', `${pv} words proven, ${week} this week. Open your word bank`)}
+    ${tile('pf-sys', ' lang', flagSvg(k), HSK_NAME(lv), SYS[k].name, `Learning ${SYS[k].long} at ${HSK_NAME(lv)}. Change`)}
+  </div>`;
 }
 function ProfileView() {
-  const { n, today } = practiceStreak(), best = Math.max(n, bestStreak()), pv = provenCount(), own = TRAIL.filter((_, i) => monOwns(i + 1)).length;
   const { lv, left } = goalLevel(), total = S.H?.levels[lv]?.length || HSK_COUNT[lv], known = Math.max(0, total - left), f = total ? known / total : 0;
   const since = pfSince();   // 3.45.59: no big red button on Profile (ilkem)
-  const tile = (act, icon, big, label, sub, aria, ic = '') => `<button class="pf-stat" data-act="${act}" aria-label="${aria}"><span class="pf-st-ic${ic}">${icon}</span><b>${big}</b><span>${label}</span><small>${sub}</small></button>`;
   return `<div class="screen fade-in pf-pg">   <!-- not "pf": that class is the Add card typing line (40px lines, no wrapping, scrolls sideways) -->
     <div class="section-head cal-head pg-head"><h2>Profile <span class="cal-zh">我的</span></h2>
       <span class="pg-tr"><button class="icon-btn" data-act="settings" aria-label="App settings">${I.menu}</button></span></div>
@@ -8494,25 +8491,13 @@ function ProfileView() {
       <div class="pf-lv"><div class="pf-lv-t"><b>${HSK_NAME(lv)}</b><span>${left ? `${plural(left, 'word')} to go` : 'All words known'}</span></div>
         <div class="pf-lv-bar"><i style="width:${gBar(f)}%"></i><span class="pf-lv-end">${lv < 7 ? HSK_NAME(lv + 1) : '🏆'}</span></div></div>
     </section>
-    <div class="pf-stats">
-      ${tile('streak', FLAME, n, 'Day streak', n && !today ? 'Finish a deck today to keep it' : best ? `Best ${plural(best, 'day')}` : 'Finish a deck to start one', `${n} day streak, open your calendar`, `${n ? ' on' : ''}${n && !today ? ' wait' : ''}`)}
-      ${tile('open-bank', '<span class="pf-zh">字</span>', pv, 'Words proven', db.bank.length ? `${plural(db.bank.length, 'word')} in your bank` : 'Learn words to prove them', `${pv} words proven, open your word bank`)}
-      ${PfXp()}
-    </div>
-    <div class="section-head"><h2>This week <span class="cal-zh">本周</span></h2></div>
-    ${pfWeek()}
+    <div class="section-head"><h2>XP this week <span class="cal-zh">本周</span></h2></div>
     ${pfXpWeek()}
+    <div class="section-head"><h2>Overview <span class="cal-zh">概况</span></h2></div>
+    ${pfOverview()}
   </div>`;
 }
 
-/* moka2: your XP on Profile, a full-width tile under the two above. XP comes from the reading card's 利是 (+RC_XP each);
-   the line under it says how far the next one is. Tap it for Read */
-function PfXp() {
-  const xp = xpTotal(), rc = rcState(), left = rc.ready ? 0 : RC_N - 1 - rc.n, lsh = '<span lang="zh">利是</span>';
-  const sub = rc.ready ? `Your ${lsh} is ready on Read` : `${plural(left, 'story').replace('storys', 'stories')} to the next ${lsh} · +${RC_XP} XP`;
-  return `<button class="pf-stat pf-xp" data-act="pf-xp" aria-label="${xp} XP. ${rc.ready ? 'Your red envelope is ready' : `${plural(left, 'story').replace('storys', 'stories')} to the next red envelope`}. Open Read">
-    <span class="pf-st-ic">${xpSvg()}</span><b>${xp.toLocaleString('en')}</b><span>XP</span><small>${xpOn(dayKey(Date.now()))} today · ${sub}</small></button>`;
-}
 /* 3.45.50: your XP as a dragon pearl between the flag and the flame at the top of Decks and Read; tap it for Profile */
 const XpBtn = () => { const xp = xpTotal();
   return `<button class="hm-xp" data-act="hm-xp" aria-label="${xp} XP. Open Profile">${xpSvg()}<b>${xp >= 10000 ? (xp / 1000).toFixed(xp >= 100000 ? 0 : 1).replace(/\.0$/, '') + 'k' : xp.toLocaleString('en')}</b></button>`; };
@@ -14725,7 +14710,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.84';
+const APP_VERSION = '3.45.85';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16134,6 +16119,7 @@ const A = {
   'rc-open': () => { const st = rcState(); if (st.ready) rcOpen(moments); else { const left = RC_N - 1 - st.n; toast(`${plural(left, 'more story').replace('storys', 'stories')} to open your 利是`); } },
   'rc-all': () => storiesSheet(),
   'pf-xp': () => nav('#/read'),
+  'pf-sys': () => sysPick(),   // 3.45.85: the language tile on Profile; the picker opens at the top, not under the tile
   'hm-xp': () => { if (S.view !== 'profile') nav('#/profile'); },
   'side-join': () => { LOG.add('side-account', { pick: 'create' }); acctSheet(false, true); },
   'side-in': () => { LOG.add('side-account', { pick: 'sign-in' }); acctSheet(true); },
