@@ -2247,13 +2247,13 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .st-page .bar{background:color-mix(in srgb,var(--card-2) 85%,transparent)}
 .st-hero{margin:0 -20px;padding:14px 20px 22px;background:var(--card-2);border-bottom:1px solid var(--line);
   display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px}
-.st-count{display:flex;flex-direction:column;padding-left:6px}
-.st-count b{font-family:var(--display);font-weight:700;font-size:112px;line-height:.82;letter-spacing:-.03em;color:var(--line-2);font-variant-numeric:lining-nums tabular-nums}
-.st-count span{font-weight:700;font-size:26px;letter-spacing:-.01em;color:var(--muted);margin-top:6px}
-.st-count small{font-family:var(--hanzi);font-size:14px;color:var(--muted);margin-top:2px;letter-spacing:.04em}
-.st-hero.on .st-count b{color:#E8742C}
-.st-hero.on .st-count span{color:var(--ink)}
-.st-hero.on .st-count small{color:var(--seal)}
+.sk-count{display:flex;flex-direction:column;padding-left:6px}
+.sk-count b{font-family:var(--display);font-weight:700;font-size:112px;line-height:.82;letter-spacing:-.03em;color:var(--line-2);font-variant-numeric:lining-nums tabular-nums}
+.sk-count span{font-weight:700;font-size:26px;letter-spacing:-.01em;color:var(--muted);margin-top:6px}
+.sk-count small{font-family:var(--hanzi);font-size:14px;color:var(--muted);margin-top:2px;letter-spacing:.04em}
+.st-hero.on .sk-count b{color:#E8742C}
+.st-hero.on .sk-count span{color:var(--ink)}
+.st-hero.on .sk-count small{color:var(--seal)}
 .st-flame{width:150px;height:150px;margin-right:-8px;overflow:visible}
 .st-hero.on .st-flame{filter:drop-shadow(0 12px 20px rgba(242,68,43,.32))}
 .st-hero.wait .st-flame{filter:none}
@@ -8131,7 +8131,7 @@ function StreakView() {
     <header class="bar"><button class="icon-btn" data-act="st-close" aria-label="Close">${I.close}</button><div class="bar-title">Streak</div>
       <button class="icon-btn" data-act="st-share" aria-label="Share your streak">${I.share}</button></header>
     <section class="st-hero${n ? ' on' : ''}${n && !today ? ' wait' : ''}">
-      <div class="st-count"><b>${n}</b><span>day streak!</span><small>连续${n}天</small></div>
+      <div class="sk-count"><b>${n}</b><span>day streak!</span><small>连续${n}天</small></div>
       ${FLAME.replace('class="flame"', 'class="flame st-flame" aria-hidden="true"')}
       <p class="st-note">${note}</p>
       <div class="st-fz${fz ? '' : ' none'}">${ICE_SVG.replace('class="ice"', 'class="ice st-ice"')}<div><p>${fzT}</p><span>${fzS}</span></div></div>
@@ -14710,7 +14710,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.85';
+const APP_VERSION = '3.45.86';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
