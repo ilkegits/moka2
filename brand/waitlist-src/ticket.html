@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
+<script src="data/strokes.js"></script>
+<style>
+  html,body{margin:0;background:#fff}
+  svg{display:block}
+  .lbl{font-family:'Segoe UI',sans-serif;font-size:10.5px;letter-spacing:.14em;fill:#9A948F}
+  .py{font-family:'Segoe UI',sans-serif;font-size:11px;fill:#9A948F}
+  .wk{font-family:'LXGW WenKai'}
+</style></head>
+<body>
+<svg id="s" width="520" height="220" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg"></svg>
+<script>
+const INK = '#1C1A19', RED = '#B23A2C', EDGE = '#E3D6D1', GRID = '#E9C9C3', GRIDD = '#F0DAD6';
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a = {}, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const len = pts => { let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]); return L; };
+const ease = x => x < 0 ? 0 : x > 1 ? 1 : 1 - Math.pow(1 - x, 2.2);
+
+// --- timeline for the four characters
+const WORD = [...'静候佳音'];
+let t0 = 0.45; const TL = [];
+WORD.forEach((c, ci) => {
+  const d = STROKES[c];
+  d.medians.forEach((m, si) => {
+    const L = len(m); const dur = 0.045 + L / 1024 * 0.16;
+    TL.push({ ci, si, start: t0, dur, L }); t0 += dur + 0.02;
+  });
+  t0 += 0.12;
+});
+const STAMP = t0 + 0.15, STAMP_D = 0.34;
+window.TOTAL = STAMP + STAMP_D + 0.2;
+
+// char drawn into box (x,y,size); progress map: stroke -> 0..1
+function drawChar(g, c, x, y, size, prog, id) {
+  const d = STROKES[c]; const k = size * 0.84 / 1024; const off = size * 0.08;
+  const cg = el('g', { transform: `translate(${x+off},${y+off}) scale(${k}) translate(0,900) scale(1,-1)` }, g);
+  d.strokes.forEach((s, i) => {
+    const p = prog(i); if (p <= 0) return;
+    if (p >= 1) { el('path', { d: s, fill: INK }, cg); return; }
+    const cp = el('clipPath', { id: `c${id}_${i}` }, cg); el('path', { d: s }, cp);
+    const m = d.medians[i]; const L = len(m);
+    el('polyline', { points: m.map(q => q.join(',')).join(' '), fill: 'none', stroke: INK, 'stroke-width': 190,
+      'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-dasharray': `${L} ${L+400}`, 'stroke-dashoffset': L * (1 - p),
+      'clip-path': `url(#c${id}_${i})` }, cg);
+  });
+}
+function grid(g, x, y, s) {
+  el('rect', { x, y, width: s, height: s, fill: '#fff', stroke: GRID, 'stroke-width': 1.2 }, g);
+  el('line', { x1: x + s/2, y1: y + 2, x2: x + s/2, y2: y + s - 2, stroke: GRIDD, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, g);
+  el('line', { x1: x + 2, y1: y + s/2, x2: x + s - 2, y2: y + s/2, stroke: GRIDD, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, g);
+}
+
+const svg = document.getElementById('s');
+window.render = function (t) {
+  svg.innerHTML = '';
+  // stamp impact nudge
+  const ts = (t - STAMP) / STAMP_D; let nudge = 0;
+  if (ts > .45 && ts < 1) nudge = Math.sin((ts - .45) / .55 * Math.PI * 2) * 1.2 * (1 - ts);
+  const root = el('g', { transform: `translate(0,${nudge})` }, svg);
+  const X0 = 10, Y0 = 14, W = 500, H = 192, PX = 390, R = 14;
+  el('rect', { x: X0 + .75, y: Y0 + 2.5, width: W - 1.5, height: H - 1.5, rx: R, fill: '#F3EEEC' }, root); // soft lift
+  el('rect', { x: X0 + .75, y: Y0 + .75, width: W - 1.5, height: H - 1.5, rx: R, fill: '#fff', stroke: EDGE, 'stroke-width': 1.5 }, root);
+  // notches + perforation
+  const cl = el('clipPath', { id: 'tk' }, root); el('rect', { x: X0, y: Y0, width: W, height: H, rx: R }, cl);
+  const ng = el('g', { 'clip-path': 'url(#tk)' }, root);
+  [Y0, Y0 + H].forEach(cy => el('circle', { cx: PX, cy, r: 11, fill: '#fff', stroke: EDGE, 'stroke-width': 1.5 }, ng));
+  el('line', { x1: PX, y1: Y0 + 16, x2: PX, y2: Y0 + H - 16, stroke: EDGE, 'stroke-width': 1.5, 'stroke-dasharray': '4 5' }, root);
+
+  // main: label, four squares, pinyin, meaning
+  el('text', { x: 36, y: 44, class: 'lbl' }, root).textContent = 'SHIHANZI  ·  WAITING LIST';
+  const S = 70, G = 12, SX = X0 + (PX - X0 - (4 * S + 3 * G)) / 2, SY = 58;
+  const PY = ['jìng', 'hòu', 'jiā', 'yīn'];
+  WORD.forEach((c, ci) => {
+    const x = SX + ci * (S + G); grid(root, x, SY, S);
+    drawChar(root, c, x, SY, S, i => { const e = TL.find(q => q.ci === ci && q.si === i); return ease((t - e.start) / e.dur); }, ci);
+    const tx = el('text', { x: x + S/2, y: SY + S + 20, class: 'py', 'text-anchor': 'middle' }, root); tx.textContent = PY[ci];
+  });
+  el('text', { x: 36, y: 186, class: 'py', style: 'font-size:11.5px;fill:#6E6A66' }, root).textContent = 'to wait quietly for good news';
+
+  // stub
+  const cx = PX + (X0 + W - PX) / 2;
+  el('text', { x: cx, y: 50, class: 'wk', 'text-anchor': 'middle', style: 'font-size:17px;letter-spacing:.12em', fill: RED }, root).textContent = '候补';
+  el('text', { x: cx, y: 186, class: 'lbl', 'text-anchor': 'middle', style: 'letter-spacing:.06em;text-transform:none' }, root).textContent = 'hòubǔ';
+  // stamp
+  el('circle', { cx, cy: 114, r: 31, fill: 'none', stroke: '#EFE6E3', 'stroke-width': 1.2, 'stroke-dasharray': '2 4' }, root);
+  if (ts > 0) {
+    const p = Math.min(1, ts);
+    const sc = p < .55 ? 1.55 - .63 * ease(p / .55) : .92 + .08 * ease((p - .55) / .45);
+    const op = Math.min(1, p / .4) * .94;
+    const sz = 70;
+    el('image', { href: 'seal.svg', x: -sz/2, y: -sz/2, width: sz, height: sz, opacity: op,
+      transform: `translate(${cx},114) rotate(-9) scale(${sc})` }, root);
+  }
+};
+// small static square for the feature row
+window.tile = function (c) {
+  svg.setAttribute('width', 48); svg.setAttribute('height', 48); svg.setAttribute('viewBox', '0 0 48 48');
+  svg.innerHTML = ''; grid(svg, 1, 1, 46);
+  drawChar(svg, c, 1, 1, 46, () => 1, 'f');
+  // tint strokes red
+  svg.querySelectorAll('path').forEach(p => p.getAttribute('fill') === INK && p.setAttribute('fill', RED));
+};
+render(0);
+</script>
+</body></html>
