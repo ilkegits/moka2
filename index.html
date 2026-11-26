@@ -2272,10 +2272,11 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .st-note{grid-column:1/-1;margin:10px 6px 16px;font-size:14px;color:var(--ink-2)}
 .st-fz{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:18px;background:var(--card);box-shadow:var(--ring)}
 .st-ice{width:56px;height:56px;flex:none;overflow:visible;filter:drop-shadow(0 6px 10px rgba(42,111,168,.28))}
-.st-fz.none .st-ice{filter:grayscale(1);opacity:.55}
 .st-fz p{margin:0;font-size:16px;line-height:1.3;color:var(--ink)}
 .st-fz span{display:block;margin-top:4px;font-size:13px;line-height:1.35;color:#3C78AE}
-.st-h{margin:26px 4px 12px;font-size:24px;font-weight:700;letter-spacing:-.02em}
+/* 3.45.87: the calendar has no heading and sits right under the streak (ilkem: "move the calendar higher") */
+.st-page .st-cal{margin-top:14px}
+.st-hero .st-note:last-child{margin-bottom:0}
 /* v3.06 the Streak calendar as a page of a Chinese tear-off almanac (ilkem): year, MONTH and 月 on top, today's page
    (big date, 星期, the lunar date and a 宜 / 忌 pair of words to learn), a tear line, then the month. Every date has
    its lunar day under it, as on a wall calendar, and Saturday and Sunday are printed in red. Streak days stay orange,
@@ -8124,9 +8125,9 @@ function StreakView() {
   const { n, today } = practiceStreak(), fz = db.freeze.have;
   const note = n ? (today ? `Done for today. Come back tomorrow for day ${n + 1}` : 'Go through a deck today to keep it going') : 'Go through a deck to start one';
   const next = 7 - n % 7;
-  const fzT = fz ? `You have <b>${fz} streak ${fz === 1 ? 'freeze' : 'freezes'}</b>` : 'You’re out of <b>streak freezes</b>';
+  const fzT = `You have <b>${fz} streak ${fz === 1 ? 'freeze' : 'freezes'}</b>`;   // 3.45.87: no card at all once you're out of freezes (ilkem)
   const fzS = fz >= 2 ? 'Each one saves your streak on a day you miss. You can hold 2.'
-    : `Practise ${next === 1 ? (today ? 'tomorrow' : 'today') : `${next} more days in a row`} to earn ${fz ? 'another' : 'one'}.`;
+    : `Practise ${next === 1 ? (today ? 'tomorrow' : 'today') : `${next} more days in a row`} to earn another.`;
   return `<div class="screen fade-in st-page">
     <header class="bar"><button class="icon-btn" data-act="st-close" aria-label="Close">${I.close}</button><div class="bar-title">Streak</div>
       <button class="icon-btn" data-act="st-share" aria-label="Share your streak">${I.share}</button></header>
@@ -8134,11 +8135,10 @@ function StreakView() {
       <div class="sk-count"><b>${n}</b><span>day streak!</span><small>连续${n}天</small></div>
       ${FLAME.replace('class="flame"', 'class="flame st-flame" aria-hidden="true"')}
       <p class="st-note">${note}</p>
-      <div class="st-fz${fz ? '' : ' none'}">${ICE_SVG.replace('class="ice"', 'class="ice st-ice"')}<div><p>${fzT}</p><span>${fzS}</span></div></div>
+      ${fz ? `<div class="st-fz">${ICE_SVG.replace('class="ice"', 'class="ice st-ice"')}<div><p>${fzT}</p><span>${fzS}</span></div></div>` : ''}
     </section>
     ${db.earn ? `<div class="mo-card"><div style="flex:1"><b>Win back your ${db.earn.n}-day streak</b><small>Practise 3 days in a row by ${new Date(db.earn.until - DAY).toLocaleDateString('en-GB', { weekday: 'long' })}. It’s free.</small>
       <div class="mo-pips">${[0, 1, 2].map(i => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div></div></div>` : ''}
-    <h2 class="st-h">Streak calendar <span class="cal-zh">日历</span></h2>
     ${StreakCal()}
   </div>`;
 }
@@ -14710,7 +14710,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.86';
+const APP_VERSION = '3.45.87';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
