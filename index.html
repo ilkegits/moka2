@@ -11561,7 +11561,7 @@ function DeckView(d) {
   return `<div class="screen fade-in dk-page" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title"></div>
       <button class="icon-btn" data-act="deck-menu" aria-label="Deck options">${I.more}</button></header>
-    <section class="deck-hero"><div class="eyebrow">${g ? esc(g.name) : 'Deck'}</div><h1 class="deck-title"><span class="dn">${esc(d.name)}</span></h1><div class="muted">${plural(n, 'card')}${state}</div></section>
+    <section class="deck-hero">${g ? `<div class="eyebrow">${esc(g.name)}</div>` : ''}<h1 class="deck-title"><span class="dn">${esc(d.name)}</span></h1><div class="muted">${plural(n, 'card')}${state}</div></section>
     ${n ? `<div class="section-head dk-head"><h2>Cards</h2>
       <div class="dk-side" role="group" aria-label="Show first"><span>Show first</span><div class="seg">${[[0, '<b lang="zh">中文</b>', 'Chinese'], [1, 'English', 'English']].map(([v, t, a]) =>
           `<button data-act="flip-front" data-v="${v}" class="${!!db.prefs.englishFirst === !!v ? 'on' : ''}" aria-label="${a} first" aria-pressed="${!!db.prefs.englishFirst === !!v}">${t}</button>`).join('')}</div></div></div><ul class="cards">${d.cards.map(c => `<li><button class="crow" data-act="edit-card" data-id="${c.id}">
@@ -14595,13 +14595,19 @@ function bankDeck() {
   const names = [...set].sort((a, b) => (a || 9) - (b || 9)).map(l => l ? (l === 7 ? '7–9' : l) : 'other');
   return { id: 'bank', name: set.size ? `Word bank · HSK ${names.join(', ')}` : 'Word bank', accent: ACCENTS[0], cards };
 }
+/* 3.45.100: the Practise sheet's two buttons are the deck page's: Write in white with its 写 square, Flip big and red */
+function PractiseBtns() {
+  const { n: streak, today } = practiceStreak(), sub = today ? '' : streak ? `Keeps your ${streak}-day streak` : 'Starts your streak';
+  return `<button class="btn btn-ghost dk-write" id="pWrite" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
+    <button class="btn btn-seal dk-flip" id="pFlip"><span class="dk-ft">${I.flip}Flip cards</span><small>${sub}</small></button>`;
+}
 function practiseSheet() {
   openSheet(`<h3>Practise your word bank</h3><p class="muted" style="margin:-6px 0 16px">Choose the levels you want to be asked about.</p>
     <div class="group" id="pLv" style="margin-bottom:24px"><div class="row"><span class="row-s">Loading levels…</span></div></div>
     <p class="group-foot" id="pSum">&nbsp;</p>
     <div class="pick-n"><span>Write, at a time</span><div class="seg" id="pN">${[5, 10, 15, 20, 0].map(k => `<button data-n="${k}" class="${(db.prefs.writeN ?? 10) === k ? 'on' : ''}">${k || 'All'}</button>`).join('')}</div></div>
     <p class="group-foot" style="margin-top:0">Ones you get wrong come back first next time.</p>
-    <div class="row-btns"><button class="btn btn-ghost" id="pFlip">${I.flip}Flip cards</button><button class="btn btn-seal" id="pWrite">${I.pen}Write</button></div>`,
+    <div class="dk-dock">${PractiseBtns()}</div>`,
   sh => {
     const box = sh.querySelector('#pLv'), sum = sh.querySelector('#pSum'), bF = sh.querySelector('#pFlip'), bW = sh.querySelector('#pWrite');
     sh.querySelector('#pN').onclick = e => { const b = e.target.closest('[data-n]'); if (!b) return; db.prefs.writeN = +b.dataset.n; save();
@@ -14613,6 +14619,8 @@ function practiseSheet() {
         <span class="row-val">${plural(counts[l], 'word')}</span><span class="tick">${I.check}</span></button>`).join('');
       const n = db.bank.filter(w => sel.has(w.hsk || 0)).length;
       sum.textContent = n ? `${plural(n, 'word')} to practise.` : 'Choose at least one level.';
+      bF.querySelector('.dk-ft').innerHTML = `${I.flip}Flip ${plural(n, 'card')}`;
+      if (practiceStreak().today) bF.querySelector('small').textContent = `About ${plural(Math.max(1, Math.round(n * 7 / 60)), 'minute')}`;   // the streak is safe today: say what a round costs, as on a deck
       bF.disabled = bW.disabled = !n;
     };
     const ready = () => {
@@ -14769,7 +14777,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.99';
+const APP_VERSION = '3.45.100';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
