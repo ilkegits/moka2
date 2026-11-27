@@ -1049,6 +1049,25 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .btn .spin{width:16px;height:16px;border-color:rgba(255,255,255,.35);border-top-color:#fff}
 .ans-fallback{display:grid;place-items:center;height:100%;font-family:var(--hanzi);font-size:calc(var(--s) * .72);color:var(--ink)}
 .tools{display:flex;justify-content:center;gap:10px;margin-top:22px;min-height:38px}
+/* 3.45.101 (ilkem: "a way to make the tianzige a bit bigger, esp with +2 character words"): Big writes one character at a
+   time in a box as big as the screen allows; the numbered tabs beside it (phones have width to spare, not height) switch box and show what you wrote in each */
+.w-mode{position:relative}
+.w-big{position:absolute;right:0;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 11px;border-radius:9px;background:var(--fill);font-size:13.5px;font-weight:500;color:var(--ink)}
+.w-big svg{width:15px;height:15px}
+.w-big.on{background:var(--ink);color:var(--paper)}
+.w-big:active{opacity:.6}
+.grid.one{flex-wrap:nowrap;align-items:center}
+.grid.one .tzg:not(.on){display:none}
+.wtabs{flex:none;display:flex;flex-direction:column;gap:8px}
+.wtab{position:relative;width:var(--tb,46px);height:var(--tb,46px);border-radius:8px;background:var(--tzg) center/100% 100% no-repeat,var(--card);box-shadow:var(--ring);color:var(--grid);transition:box-shadow .2s,opacity .2s}
+.wtab canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wtab i{position:absolute;top:3px;left:5px;font:600 9.5px/1 var(--ui);font-style:normal;color:var(--grid);opacity:.8}
+.wtab b{position:absolute;inset:0;display:grid;place-items:center;font:400 calc(var(--tb,46px) * .6)/1 var(--hanzi);color:var(--ink);padding-bottom:2px}
+.wtab.on{box-shadow:0 0 0 2.5px var(--ink)}
+.wtab.ok{box-shadow:0 0 0 2.5px var(--jade)}
+.wtab.no{box-shadow:0 0 0 2.5px var(--seal)}
+.wtab.ok.on,.wtab.no.on{box-shadow:0 0 0 2.5px var(--ink),0 0 0 5px var(--paper),0 0 0 7px var(--jade)}
+.wtab.no.on{box-shadow:0 0 0 2.5px var(--ink),0 0 0 5px var(--paper),0 0 0 7px var(--seal)}
 .note{text-align:center;color:var(--muted);font-size:13px;margin-top:14px;min-height:20px}
 @media (max-height:720px){ /* short phones: give the writing boxes the room */
   .prompt{padding:6px 0 12px} .prompt-en{margin:6px 0 4px}
@@ -12348,7 +12367,7 @@ function writePick(d) {   // word bank: N words, the ones you missed before toda
   const rank = c => { const h = c.hist || []; return (today.has(c.id) ? 3 : 0) + (!h.length ? 1 : h[h.length - 1] ? 2 : 0); };
   return shuffle(ids.map(id => cardById(d, id)).sort((a, b) => rank(a) - rank(b)).slice(0, n).map(c => c.id));
 }
-function resetCardState() { Object.assign(S.write, { revealed: false, pyShown: false, history: [], mistakes: 0, guidedDone: false, active: 0, writers: [], judge: null, checking: false, hints: 0, gNext: [], hg: [], miss: null, sounded: false, shownAt: Date.now() }); }
+function resetCardState() { Object.assign(S.write, { box: 0, nudged: false, revealed: false, pyShown: false, history: [], mistakes: 0, guidedDone: false, active: 0, writers: [], judge: null, checking: false, hints: 0, gNext: [], hg: [], miss: null, sounded: false, shownAt: Date.now() }); }
 function promptHtml(c) {
   const W = S.write, chars = hanChars(c.hanzi), ask = writeAsk(c), clue = writeClue(c), open = W.revealed || W.guidedDone;
   const left = W.order.length - W.i;
@@ -12371,7 +12390,30 @@ function WriteView(d) {
     <div class="dock" id="wdock">${writeDock()}</div></div>`;
 }
 const writeSeg = () => { const guided = db.prefs.writeMode === 'guided';
-  return `<div class="seg"><button data-act="wmode" data-m="free" class="${guided ? '' : 'on'}">Free</button><button data-act="wmode" data-m="guided" class="${guided ? 'on' : ''}">Guided</button></div>`; };
+  return `<div class="seg"><button data-act="wmode" data-m="free" class="${guided ? '' : 'on'}">Free</button><button data-act="wmode" data-m="guided" class="${guided ? 'on' : ''}">Guided</button></div>`
+    + `<button class="w-big${db.prefs.bigBox ? ' on' : ''}" data-act="wbig" aria-pressed="${!!db.prefs.bigBox}" aria-label="Bigger boxes, one character at a time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Big</button>`; };
+/* Big, on a word of 2+ characters: one box at a time (word bank writing screen only, not lessons) */
+const wOne = () => { const W = S.write; return !!(db.prefs.bigBox && S.view === 'write' && W && !W.les && !W.done && W.order && wChars(cardById(curDeck(), W.order[W.i])).length > 1); };
+function wShow(i) {   // Big: show box i, and paint the tabs (which box is up, your ink, the checker's verdict, the answer)
+  const W = S.write, grid = $('#grid'); if (!grid) return;
+  const boxes = $$('.tzg', grid); if (!boxes.length) return;
+  W.box = i = Math.max(0, Math.min(boxes.length - 1, i));
+  boxes.forEach((b, j) => b.classList.toggle('on', j === i));
+  const chars = W.order ? wChars(cardById(curDeck(), W.order[W.i])) : [], open = W.revealed || W.guidedDone;
+  $$('.wtab', grid).forEach((t, j) => { const b = boxes[j];
+    t.classList.toggle('on', j === i);
+    t.classList.toggle('ok', b.classList.contains('judged-ok') || b.classList.contains('done-ok'));
+    t.classList.toggle('no', b.classList.contains('judged-no'));
+    t.querySelector('b').textContent = open ? chars[j] || '' : '';
+    t.querySelector('canvas').style.opacity = open ? 0 : 1;
+    t.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+  if (S.view === 'write' && $('#wdock') && !W.revealed && !W.guidedDone) $('#wdock').innerHTML = writeDock();
+}
+function wThumb(box) {   // Big: the tab copies the ink of its box
+  const t = box._thumb; if (!t) return;
+  const ctx = t.getContext('2d'); ctx.clearRect(0, 0, t.width, t.height);
+  if (box._strokes?.length) ctx.drawImage(box.querySelector('canvas'), 0, 0, t.width, t.height);
+}
 function writeBody(c) {   // the prompt, the writing boxes, the note and the tools: the word bank's writing screen, also used inside lessons
   const chars = wChars(c), guided = db.prefs.writeMode === 'guided';
   return `<section class="prompt" id="wprompt">${promptHtml(c)}</section>
@@ -12397,8 +12439,12 @@ async function writeHint() {
   if (guided) {   // the first part not shown yet that still has strokes left to write
     i = W.active; const H = W.hg[i], next = W.gNext[i] || 0;
     k = H.groups.findIndex((g, q) => !H.shown.has(q) && g.ix.some(s => s >= next));
-  } else [i, k] = freeHintNext(W, boxes, refs);
+  } else {
+    const b = W.box || 0, Hb = wOne() && W.hg[b], kb = Hb ? Hb.groups.findIndex((g, q) => !Hb.shown.has(q) && !inkCovers(boxes[b], refs[b], g.ix)) : -1;
+    [i, k] = kb >= 0 ? [b, kb] : freeHintNext(W, boxes, refs);   // Big: the box you're looking at first
+  }
   if (i < 0 || k < 0) { toast('That’s the whole character'); return; }
+  if (wOne() && i !== W.box) wShow(i);
   const H = W.hg[i], g = H.groups[k]; H.shown.add(k); W.hints++;
   hintPart(boxes[i], refs[i], g.ix, k);
   const where = chars.length > 1 ? ` (box ${i + 1})` : '';
@@ -12460,6 +12506,7 @@ function writeDock() {
   if (W.revealed || W.guidedDone)
     return `<div class="row-btns"><button class="btn btn-ghost" data-act="grade" data-ok="0">Missed it</button><button class="btn btn-jade" data-act="grade" data-ok="1">${I.check}Got it</button></div>`;
   if (guided) return `<button class="btn btn-quiet wide" data-act="skip">Skip card</button>`;
+  if (wOne() && (W.box || 0) < $$('#grid .tzg').length - 1) return `<button class="btn btn-seal wide" data-act="wnext">Next box${I.right}</button>`;   // Big: box by box, then Check
   return `<button class="btn btn-seal wide" data-act="check">${I.check}Check</button>`;
 }
 /* Boxes never shrink below a comfortable writing size: 3–4 characters wrap into two rows (2 + 1, 2 + 2),
@@ -12524,12 +12571,21 @@ function mountWrite() {
   const W = S.write; if (W.done) return writeEndShow();
   const d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   // 3.45.59 (ilkem: "slightly bigger when it's 2 next to each other"): two boxes side by side may reach 8px into the page margins
-  const grid = $('#grid'), { s, gap, cols, rows } = boxSize(chars.length, grid.clientWidth + (chars.length > 1 ? 16 : 0), writeRoom(grid));
+  const grid = $('#grid'), big = !!db.prefs.bigBox && S.view === 'write' && !W.les, one = big && chars.length > 1;
+  grid.querySelector('.wtabs')?.remove(); grid.classList.toggle('one', one);
+  if (one) grid.insertAdjacentHTML('afterbegin', `<div class="wtabs">${chars.map((_, i) => `<button class="wtab" data-act="wbox" data-i="${i}" aria-label="Box ${i + 1}"><canvas></canvas><b></b><i>${i + 1}</i></button>`).join('')}</div>`);
+  const room = writeRoom(grid), side = one ? 46 + 14 : 0;   // Big: the tabs' column and its gap
+  const { s, gap, cols, rows } = big ? { s: Math.floor(Math.max(150, Math.min(340, grid.clientWidth + 16 - side, room))), gap: 14, cols: 1, rows: one ? 2 : 1 }   // Big: one box, as big as the room allows
+    : boxSize(chars.length, grid.clientWidth + (chars.length > 1 ? 16 : 0), room);
   grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
-  const gw = cols * s + (cols - 1) * gap; grid.style.maxWidth = gw + 'px';
-  if (cols > 1) { grid.style.width = gw + 'px'; grid.style.marginLeft = grid.style.marginRight = `calc(50% - ${gw / 2}px)`; }
+  if (one) grid.style.setProperty('--tb', Math.min(46, Math.floor((s - 8 * (chars.length - 1)) / chars.length)) + 'px');   // the tabs never stand taller than the box
+  const gw = cols * s + (cols - 1) * gap + side; grid.style.maxWidth = gw + 'px';
+  if (cols > 1 || gw > grid.clientWidth) { grid.style.width = gw + 'px'; grid.style.marginLeft = grid.style.marginRight = `calc(50% - ${gw / 2}px)`; }
   grid.classList.toggle('rows', rows > 1);
   const boxes = $$('.tzg', grid);
+  if (one) { const dpr = Math.min(3, devicePixelRatio || 1);
+    $$('.wtab canvas', grid).forEach((t, i) => { t.width = t.height = Math.round(t.offsetWidth * dpr); boxes[i]._thumb = t; });
+    wShow(W.box || 0); }
   if (db.prefs.writeMode === 'guided') initGuided(boxes, chars, s);
   else boxes.forEach(b => initFreeBox(b, s));
 }
@@ -12558,6 +12614,7 @@ function redraw(box) {
   const ctx = box._ctx, s = box._s; ctx.clearRect(0, 0, s, s);
   const color = css('--ink'), base = Math.max(2.4, Math.min(3.6, s / 32));
   for (const st of box._strokes) drawStroke(ctx, st, base, color);
+  wThumb(box);
 }
 const mid = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
 function drawStroke(ctx, pts, base, color) {
@@ -12974,6 +13031,7 @@ function revealFree() {
   $('#note').innerHTML = W.checking ? '&nbsp;' : 'Tap a box to watch the stroke order.';
   $('#tools').innerHTML = '';
   $('#wdock').innerHTML = writeDock();
+  if (wOne()) wShow(W.box);
   if (!W.checking) showVerdict();
 }
 function showVerdict() {   // the checker's answer: green or red ring per box, the reason, the sound, the grade buttons
@@ -12988,6 +13046,7 @@ function showVerdict() {   // the checker's answer: green or red ring per box, t
   }
   $('#note').innerHTML = (W.judge && !M ? judgeNote(chars) + '<br>' : '') + 'Tap a box to watch the stroke order.';
   $('#wdock').innerHTML = writeDock();
+  if (wOne()) wShow(M ? M.i : W.box);
   if (M) showShiSide(M);
   if (W.judge?.ok != null) { W.sounded = true; W.judge.ok ? chime() : buzz(); }
 }
@@ -13034,6 +13093,7 @@ function startQuiz(i) {
   const W = S.write, boxes = $$('#grid .tzg');
   W.active = i; (W.gNext ||= [])[i] = 0;
   boxes.forEach((b, j) => b.classList.toggle('dim', j !== i && !b.classList.contains('done-ok')));
+  if (wOne()) wShow(i);
   W.writers[i].quiz({
     onMistake: () => { W.mistakes++; LOG.add('write-miss', { box: i + 1 }); $('#note').textContent = `${plural(W.mistakes, 'mistake')} so far`; },
     onCorrectStroke: d => { W.gNext[i] = d.strokeNum + 1;   // the stroke a Hint shows next; a hinted part you finished fades
@@ -13052,6 +13112,7 @@ function finishGuided(gaveUp) {
   LOG.add('write-guided', { hz: c.hanzi, mistakes: W.mistakes, gave_up: gaveUp ? true : undefined, took: Math.round((Date.now() - W.shownAt) / 1000) + 's' });
   $$('#grid .tzg').forEach(b => b.classList.remove('dim'));
   $('#wprompt').innerHTML = promptHtml(c);
+  if (wOne()) wShow(W.box);
   $('#note').textContent = gaveUp ? 'Watch the strokes, then grade yourself.' : (W.mistakes ? `Done — ${plural(W.mistakes, 'mistake')}.` : 'Flawless, no mistakes');
   $('#tools').innerHTML = '';
   $('#wdock').innerHTML = writeDock();
@@ -14777,7 +14838,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.100';
+const APP_VERSION = '3.45.101';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16262,10 +16323,26 @@ const A = {
   'wmode': t => { if (db.prefs.writeMode === t.dataset.m) return; db.prefs.writeMode = t.dataset.m; save(); resetCardState(); render(); },
   'py-hint': () => { const W = S.write; W.pyShown = true; $('#wprompt').innerHTML = promptHtml(cardById(curDeck(), W.order[W.i])); },
   'whint': () => writeHint(),
-  'undo': () => { const W = S.write, box = W.history.pop(); if (box) { box._strokes.pop(); redraw(box); } },
-  'clear': () => { const W = S.write; $$('#grid .tzg').forEach(b => { b._strokes = []; redraw(b); }); W.history = []; },
+  'undo': () => { const W = S.write, cur = wOne() && $$('#grid .tzg')[W.box || 0];   // Big: undo in the box you're looking at
+    const at = cur ? W.history.lastIndexOf(cur) : W.history.length - 1, box = at >= 0 ? W.history.splice(at, 1)[0] : null;
+    if (box) { box._strokes.pop(); redraw(box); } },
+  'clear': () => { const W = S.write, cur = wOne() && $$('#grid .tzg')[W.box || 0];   // Big: clears only the box you're looking at
+    $$('#grid .tzg').forEach(b => { if (cur && b !== cur) return; b._strokes = []; redraw(b); }); W.history = cur ? W.history.filter(b => b !== cur) : []; },
+  'wbig': () => {   // Big on or off; free-hand ink you already wrote stays, scaled to the new boxes
+    const W = S.write; db.prefs.bigBox = !db.prefs.bigBox; save();
+    const keep = db.prefs.writeMode !== 'guided' && !W.revealed && !W.guidedDone && !W.checking ? $$('#grid .tzg').map(b => ({ st: b._strokes || [], s: b._s || 1 })) : null;
+    if (!keep) resetCardState(); else Object.assign(W, { hg: [], history: [] });   // the hints start over (their drawings go with the old boxes)
+    render();
+    if (keep) $$('#grid .tzg').forEach((b, i) => { const o = keep[i]; if (!o || !o.st.length) return; const k = b._s / o.s;
+      b._strokes = o.st.map(st => st.map(p => ({ x: p.x * k, y: p.y * k, t: p.t }))); b._strokes.forEach(() => W.history.push(b)); redraw(b); });
+    LOG.add('write-big', { on: !!db.prefs.bigBox });
+  },
+  'wbox': t => wShow(+t.dataset.i),
+  'wnext': () => wShow((S.write.box || 0) + 1),
   'check': async () => {
     const W = S.write; if (!W.history.length) { toast('Write something first'); return; }
+    if (wOne() && !W.nudged) { const e = $$('#grid .tzg').findIndex(b => !b._strokes?.length);   // Big: an empty box you may not have seen, once
+      if (e >= 0) { W.nudged = true; wShow(e); toast(`Box ${e + 1} is still empty`); return; } }
     if (W.checking || W.revealed) return; W.checking = true; const t0 = Date.now();
     const chars = wChars(cardById(curDeck(), W.order[W.i])), boxes = $$('#grid .tzg');
     const judging = Promise.all(boxes.map((b, i) => judgeChar(chars[i], b._strokes || [], b._s))).then(r => rescueWithWord(null, chars, boxes, r));
