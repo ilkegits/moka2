@@ -1671,12 +1671,6 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bank-chars .msg{flex:1;font-size:13px;line-height:1.4;color:var(--muted);text-align:left;padding-left:14px;border-left:1px solid var(--line)}
 .qa-glyph{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;background:var(--seal);color:var(--seal-ink);font-family:var(--hanzi);font-size:15px;transform:rotate(-4deg)}
 .dock.row-btns{display:flex}
-/* v3.73 word bank page: the number, the next collection piece as a goal bar, a stage filter, the words */
-.bk-hero{display:flex;align-items:flex-end;gap:12px;padding:16px 4px 18px}
-.bk-num{font-family:var(--display);font-weight:600;font-size:72px;line-height:.8;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
-.bk-lbl{display:flex;flex-direction:column;align-items:flex-start;font-size:15px;line-height:1.3;color:var(--ink-2)}
-.bk-lbl .link-btn{display:inline-flex;align-items:center;gap:1px;min-height:32px;padding:4px 0 0;font-size:13.5px}
-.bk-lbl .link-btn svg.i{width:15px;height:15px}
 /* the goal: a bar that runs into the next piece, which waits on a square of practice paper */
 /* stage filter: one row, the one you are on is raised */
 .bk-f{display:flex;gap:2px;padding:2px;margin:-8px 0 14px;border-radius:11px;background:var(--fill)}
@@ -1684,18 +1678,29 @@ svg.sil{filter:brightness(0);opacity:.28}
 .bk-f button b{font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
 .bk-f button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.06)}
 .bk-f button.on b{color:var(--ink-2)}
-/* v4.37: the word bank page's stages bar (its key filters the list) and HSK ladder (a row opens that level's list) */
-.bs{margin:-4px 0 26px;padding:14px 16px 12px;border-radius:16px;background:var(--card);box-shadow:var(--ring)}
-.bs-bar{display:flex;gap:2px;height:12px;border-radius:6px;overflow:hidden;background:var(--fill)}
-.bs-bar i{display:block;min-width:5px}
-.bs-mastered{background:#E2AE45}.bs-proven{background:var(--jade)}.bs-known{background:var(--line-2)}
-.bs-key{display:flex;gap:2px;margin:8px -8px 0}
-.bs-key button{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 4px;border-radius:10px;font-size:13px;font-weight:500;color:var(--ink-2);white-space:nowrap;transition:background .2s}
-.bs-key button b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
-.bs-key button.on{background:var(--fill);color:var(--ink);font-weight:600}
-.bs-key button:active{opacity:.6}
-.bs-goal{margin:4px 0 0;padding-top:10px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.4;color:var(--ink-2)}
-.bs-goal b{color:var(--jade);font-weight:700}
+/* 3.45.95 (ilkem picked design 2 of five): the word bank page's character wall, its stage cards (they filter the list) and the HSK ladder */
+.bw{position:relative;margin:2px -20px 0;overflow:hidden}
+.bw-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(27px,1fr));padding:2px 10px;font-family:var(--hanzi);font-size:20px;line-height:26px;text-align:center;color:var(--line-2)}
+.bw-g .proven{color:var(--ink);font-weight:600}
+.bw-g .mastered{color:#B8862B;font-weight:600}
+.bw-g .new{color:var(--seal);font-weight:600}
+.bw.full .bw-g{-webkit-mask-image:linear-gradient(#000 22%,rgba(0,0,0,.13) 56%,transparent 74%);mask-image:linear-gradient(#000 22%,rgba(0,0,0,.13) 56%,transparent 74%)}   /* a full wall fades out behind the number */
+.bw-over{position:absolute;left:20px;right:20px;bottom:4px;z-index:1}
+.bw-num{font-family:var(--display);font-weight:600;font-size:96px;line-height:.78;letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums}
+.bw-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:6px;font-size:15px;color:var(--ink-2)}
+.bw-row .link-btn{display:inline-flex;align-items:center;gap:1px;font-size:14px;font-weight:600}
+.bw-row .link-btn svg.i{width:15px;height:15px}
+.bw-key{display:flex;gap:8px;margin:14px 0 10px}
+.bw-key button{flex:1 1 0;display:flex;align-items:center;gap:10px;min-width:0;padding:10px 12px;border-radius:14px;background:var(--card);box-shadow:var(--ring);text-align:left;transition:box-shadow .2s}
+.bw-key button.on{box-shadow:0 0 0 2px var(--ink)}
+.bw-key button:active{opacity:.6}
+.bw-key button:disabled{opacity:1}
+.bw-sw{flex:none;width:26px;font-family:var(--hanzi);font-size:22px;line-height:1;text-align:center;color:var(--line-2)}
+.bw-sw.proven{color:var(--ink);font-weight:600}.bw-sw.mastered{color:#B8862B;font-weight:600}
+.bw-key b{display:block;font-family:var(--display);font-size:19px;font-weight:600;line-height:1.05;font-variant-numeric:tabular-nums}
+.bw-key small{display:block;font-size:12px;color:var(--muted);font-weight:600}
+.bw-goal{margin:0 2px 26px;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
+.bw-goal b{color:var(--jade);font-weight:700}
 .bl{margin:0 0 26px;border-radius:16px;background:var(--card);box-shadow:var(--ring);overflow:hidden}
 .bl-row{display:grid;grid-template-columns:64px 1fr auto 16px;align-items:center;gap:10px;width:100%;min-height:50px;padding:0 12px 0 16px;text-align:left;transition:background .25s}
 .bl-row+.bl-row{box-shadow:inset 0 1px 0 var(--line)}
@@ -14271,9 +14276,7 @@ function BankView() {
   return `<div class="screen fade-in">
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title">Word bank</div>
       <span class="icon-btn" aria-hidden="true"></span></header>
-    ${n ? `<section class="bk-hero"><div class="bk-num">${n.toLocaleString('en')}</div>
-        <div class="bk-lbl">${n === 1 ? 'word' : 'words'} in your bank<button class="link-btn" data-act="bank-chars">${plural(chars.length, 'character')}${I.chev}</button></div></section>
-      ${BankStages(cnt, shown.length >= 3)}
+    ${n ? `${BankWall(n, chars, cnt, shown.length >= 3)}
       ${BankLadder()}
       ${searchField('bankQ', 'Search hanzi, pinyin or English')}
       ${n > 1 ? `<div class="bk-sort"><button class="bk-sort-btn" data-act="bank-sort" aria-label="Filter words: ${bankModeLabel(lvls)}. Change">${I.sort}${bankModeLabel(lvls)}</button></div>` : ''}
@@ -14311,16 +14314,26 @@ function mountBank() {
   });
   apply();
 }
-/* v4.37 (ilkem): the word bank page shows two measures. The stages bar splits your words into Mastered, Proven and Known,
-   its key filters the list (tap the same one again for all), and a line counts down to the next proven-words milestone. */
-function BankStages(cnt, filter) {
+/* 3.45.95 (ilkem picked design 2 of five): the character wall. Every character in your words fills the top of the page:
+   inked when a word it is in is proven, gold when mastered, faint while only known, red for the newest word's. The number
+   of words sits over the wall where it fades. Under it, a card per stage filters the list (tap the same one again for all),
+   and a line counts down to the next proven-words milestone. */
+function BankWall(n, chars, cnt, filter) {
+  const st = new Map(), rank = { known: 0, proven: 1, mastered: 2 };
+  db.bank.forEach(w => { const k = wStage(w); for (const c of hanChars(w.hanzi)) if (!st.has(c) || rank[k] > rank[st.get(c)]) st.set(c, k); });
+  const fresh = new Set(hanChars(db.bank[0]?.hanzi));
+  // at most 200 on the wall: the newest word's, then the proven ones, then the newest of the rest; scattered, the same way each time
+  const mix = c => { let x = Math.imul(c.codePointAt(0), 2654435761) >>> 0; x ^= x >>> 15; return Math.imul(x, 2246822519) >>> 0; };
+  const wall = [...new Set([...fresh, ...chars.filter(c => st.get(c) !== 'known'), ...chars.slice().reverse()])].slice(0, 200).sort((a, b) => mix(a) - mix(b));
+  const tall = Math.ceil(wall.length / 13) * 26 + 146, full = tall > 330;   // a short wall sits above the number; a full one runs behind it
   const pv = cnt.proven + cnt.mastered, next = WORD_MILES.find(m => m > pv);
-  const st = [['mastered', 'Mastered'], ['proven', 'Proven'], ['known', 'Known']].filter(([k]) => cnt[k]);
-  const key = st.map(([k, t]) => filter ? `<button data-f="${k}" class="${S.bankF === k ? 'on' : ''}" aria-pressed="${S.bankF === k}"><i class="w-dot ${k}"></i>${t}<b>${cnt[k].toLocaleString('en')}</b></button>`
-    : `<button disabled><i class="w-dot ${k}"></i>${t}<b>${cnt[k].toLocaleString('en')}</b></button>`).join('');
-  return `<section class="bs" aria-label="Your words by stage"><div class="bs-bar" aria-hidden="true">${st.map(([k]) => `<i class="bs-${k}" style="flex:${cnt[k]}"></i>`).join('')}</div>
-    <div class="bs-key"${filter ? ' id="bankF" role="group" aria-label="Show words by stage"' : ''}>${key}</div>
-    <p class="bs-goal">${pv ? `Prove <b>${(next - pv).toLocaleString('en')} more</b> to reach ${next.toLocaleString('en')} proven words` : 'Get a word right on two different days and it is proven'}</p></section>`;
+  const sts = [['mastered', 'Mastered'], ['proven', 'Proven'], ['known', 'Known']].filter(([k]) => cnt[k]);
+  const key = sts.map(([k, t]) => `<button ${filter ? `data-f="${k}" class="${S.bankF === k ? 'on' : ''}" aria-pressed="${S.bankF === k}"` : 'disabled'}><span class="bw-sw ${k}" aria-hidden="true">字</span><span><b>${cnt[k].toLocaleString('en')}</b><small>${t}</small></span></button>`).join('');
+  return `<section class="bw${full ? ' full' : ''}" style="height:${full ? 330 : tall}px"><div class="bw-g" aria-hidden="true">${wall.map(c => `<span class="${fresh.has(c) ? 'new' : st.get(c)}">${c}</span>`).join('')}</div>
+      <div class="bw-over"><div class="bw-num">${n.toLocaleString('en')}</div>
+        <div class="bw-row"><span>${n === 1 ? 'word' : 'words'} in your bank</span><button class="link-btn" data-act="bank-chars">${plural(chars.length, 'character')}${I.chev}</button></div></div></section>
+    <div class="bw-key"${filter ? ' id="bankF" role="group" aria-label="Show words by stage"' : ''}>${key}</div>
+    <p class="bw-goal">${pv ? `Prove <b>${(next - pv).toLocaleString('en')} more</b> to reach ${next.toLocaleString('en')} proven words` : 'Get a word right on two different days and it is proven'}</p>`;
 }
 /* v4.37 (ilkem): the HSK ladder instead of the ready-made decks. One row per level up to the one after your highest:
    finished levels get a tick, the first unfinished one counts down what is left, a level with none of your words waits
@@ -14783,7 +14796,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.96';
+const APP_VERSION = '3.45.97';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
