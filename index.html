@@ -1010,6 +1010,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .ws-end{padding-top:6px}
 .ws-stage{position:relative;height:300px;margin:4px auto 10px;max-width:350px}
 .ws-lion{position:absolute;left:calc(50% - 150px);bottom:0;width:236px;height:236px;transform-origin:50% 100%;transform:translateY(30px) scale(.3);opacity:0}
+.ws-lion .shi-face{width:100%;height:100%;display:block}   /* the app's own Shi Shi, not the ink-brush one */
 .ws-bubble{position:absolute;z-index:2;left:calc(50% + 50px);top:8px;min-width:96px;max-width:150px;padding:10px 14px 11px;border-radius:16px;background:var(--card);
   box-shadow:0 0 0 1.5px rgba(120,95,60,.14),0 6px 18px rgba(60,40,20,.14);text-align:left;opacity:0}
 .ws-bubble::before{content:"";position:absolute;left:-5px;bottom:14px;width:14px;height:14px;border-radius:3px;background:var(--card);transform:rotate(45deg)}
@@ -2026,6 +2027,14 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .dcc-tip{display:block;margin:0 auto 14px;padding:4px 10px;font-size:12.5px;color:var(--muted)}
 .dc-lv{padding:3px 8px;border-radius:7px;background:var(--seal-soft);color:var(--seal);font-size:12px;font-weight:700}
 .sheet:has(.dcc)>.handle{margin-bottom:40px}   /* the close button gets a row of its own above the card */
+.dc-sent-go{margin-top:10px}
+.dc-sent-go svg.i{width:19px;height:19px;margin-right:6px}
+#dcSentWrap{margin-top:4px}
+.dc-sents-h{margin:18px 4px 10px;font-size:13.5px;font-weight:700;color:var(--ink-2)}
+#dcSentWrap .hdx-sents{gap:8px}
+.dc-made{font-style:italic;color:var(--muted)!important}
+.dc-sent-more{display:flex;align-items:center;gap:6px;margin:10px auto 4px}
+.dc-sent-more svg.i{width:17px;height:17px}
 .dc-in{display:flex;align-items:center;justify-content:center;gap:6px;height:50px;margin:0;font-weight:600;color:#2B7752}
 .dc-in svg{width:20px;height:20px}
 
@@ -2081,6 +2090,12 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 .rd-keep{display:flex;align-items:center;gap:5px;margin:-8px 0 16px;font-size:13.5px;font-weight:700;color:#C2591B}
 .rd-keep .flame{flex:none;width:18px;height:18px}
 .rd-other{display:block;margin:4px auto 0}
+.rd-len{margin:12px 0 0}
+.rd-len button{flex:1;height:34px;font-size:14px}
+.rd-len+.rd-meta{margin-top:10px}
+.story-brk{display:flex;align-items:center;gap:12px;margin:6px 8px 14px;color:var(--muted)}
+.story-brk i{flex:1;height:1px;background:var(--line-2)}
+.story-brk b{font-size:13px;font-weight:400;opacity:.7}
 .rd-shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;margin:0 0 26px}
 .bk{display:flex;flex-direction:column;align-items:center;padding:0;text-align:center;color:inherit}
 .bk:disabled{opacity:1}
@@ -2437,6 +2452,15 @@ button.st-d:active{transform:scale(.9);transition:none}
 .pf-ov.gold{background:linear-gradient(135deg,#F7B32B,#EC8E1A);box-shadow:0 3px 0 #C9700E}
 .pf-ov.gold::before{content:"";position:absolute;inset:0;background:linear-gradient(118deg,transparent 46%,rgba(255,255,255,.11) 46% 58%,transparent 60%);pointer-events:none}
 .pf-ov.gold b,.pf-ov.gold>span:last-child{color:#fff;text-shadow:0 1px 1px rgba(140,60,0,.35)}
+/* the yellow streak box: every few seconds a band of light swooshes across it, and its sparkles twinkle as it passes */
+.pf-ov.gold::after{content:"";position:absolute;top:-20%;bottom:-20%;left:0;width:55%;background:linear-gradient(100deg,transparent,rgba(255,250,225,.18) 30%,rgba(255,255,240,.62) 50%,rgba(255,250,225,.18) 70%,transparent);transform:translateX(-120%) skewX(-18deg);pointer-events:none;animation:pfSwoosh 5.5s cubic-bezier(.45,.05,.35,1) 1.2s infinite}
+.pf-ov.gold .pf-spark{animation:pfTwinkle 5.5s ease-in-out 1.2s infinite}
+.pf-ov.gold .pf-spark:nth-child(2){animation-delay:1.38s}
+.pf-ov.gold .pf-ov-ic .flame{animation:pfFlare 5.5s ease-in-out 1.2s infinite}
+@keyframes pfSwoosh{0%{transform:translateX(-120%) skewX(-18deg)}16%,100%{transform:translateX(260%) skewX(-18deg)}}
+@keyframes pfTwinkle{0%,6%,24%,100%{transform:none}13%{transform:scale(1.45) rotate(45deg)}}
+@keyframes pfFlare{0%,2%,20%,100%{transform:none}9%{transform:scale(1.14) rotate(-5deg)}}
+@media (prefers-reduced-motion:reduce){.pf-ov.gold::after,.pf-ov.gold .pf-spark,.pf-ov.gold .pf-ov-ic .flame{animation:none}.pf-ov.gold::after{display:none}}
 .pf-spark{position:absolute;fill:#FFF3C9;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(160,80,0,.25))}
 .pf-spark:nth-child(1){width:18px;height:18px;right:12px;top:10px}
 .pf-spark:nth-child(2){width:11px;height:11px;right:30px;bottom:12px}
@@ -3071,6 +3095,8 @@ button.st-d:active{transform:scale(.9);transition:none}
 .lt-row{display:flex;gap:18px;justify-content:center;margin:40px 0 0}
 .lt{position:relative;width:96px;height:128px;--rx:10deg}
 .lt0{--ry:-16deg} .lt1{--ry:0deg} .lt2{--ry:16deg}
+.lt-row{position:relative}
+.lt-bit{position:absolute;top:40%;z-index:2;width:10px;height:14px;margin:-7px 0 0 -5px;border-radius:2px;opacity:0;pointer-events:none}
 .lt-sh{position:absolute;left:6px;right:6px;bottom:-26px;height:22px;border-radius:50%;background:rgba(30,30,30,.16);filter:blur(7px)}
 .lt-deal{position:relative;width:100%;height:100%;perspective:520px;animation:ltDeal .5s cubic-bezier(.3,.7,.3,1) calc(.25s + var(--i) * .12s) backwards}
 .lt-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(var(--rx)) rotateY(var(--ry));animation:ltFlip .75s cubic-bezier(.3,.7,.3,1) calc(1.05s + var(--i) * .32s) backwards}   /* v4.30 backwards, not both: a held last frame kept the low-detail picture Chrome drew while the tile was edge-on, so tiles came out pixely; once the animation lets go Chrome redraws them sharp */
@@ -4508,7 +4534,7 @@ function render() {
       const hd = $('#hotd[data-wait]'); if (hd) { hd.outerHTML = HotdCard(); mountHotd(); } }, () => {}); }
   else if (S.view === 'deck') { app.innerHTML = DeckView(d); }
   else if (S.view === 'group') { app.innerHTML = GroupView(curGroup()); }
-  else if (S.view === 'study') { app.innerHTML = StudyView(d); if (!S.study.done) mountStudy(); else setTimeout(() => coinRain($('.done-hero'), S.study?.pay), 900); }
+  else if (S.view === 'study') { app.innerHTML = StudyView(d); if (!S.study.done) mountStudy(); else { setTimeout(() => coinRain($('.done-hero'), S.study?.pay), 900); tilesShow(); } }
   else if (S.view === 'write') { app.innerHTML = WriteView(d); mountWrite(); if (S.write?.done) setTimeout(() => coinRain($('.ws-end'), S.write?.pay), 700); }
   else if (S.view === 'learn') { app.innerHTML = LearnView(); }
   else if (S.view === 'map') { S.mapFresh = S.lastView !== 'map'; app.innerHTML = MapView(); mountMap(); }   // mapFresh: the Map was just opened, not drawn again
@@ -4634,7 +4660,7 @@ function shiClap(zh, i, gold) {
 /* the clap: two pats, the book shut after the second, then one happy hop. still: the last picture at once */
 function clapPlay(el) {
   const sv = el?.querySelector('.sc'); if (!sv) return;
-  if (stillMotion() || !sv.animate) { sv.classList.add('end'); return; }
+  if (stillMotion() || !sv.animate) { sv.classList.add('end'); setTimeout(() => sv.isConnected && tada(), 300); return; }
   const T0 = 650, D = 1100, k = ms => ms / D, hit1 = 170, hit2 = 540, o = { duration: D, delay: T0, fill: 'both' };
   const q = (sel, frames) => sv.querySelector(sel).animate(frames, o);
   const fold = 'cubic-bezier(.55,0,.9,.5)', back = 'cubic-bezier(.2,.7,.4,1)';
@@ -4653,6 +4679,7 @@ function clapPlay(el) {
   q('.sc-all', [{ transform: 'none' }, ...squash(hit1), ...squash(hit2), { transform: 'none', offset: k(860), easing: 'cubic-bezier(.3,0,.5,1)' },
     { transform: 'translateY(-9px) rotate(-3deg)', offset: k(960), easing: 'cubic-bezier(.5,0,.7,1)' }, { transform: 'none' }]);
   [[hit1, .3], [hit2, .42]].forEach(([t, g]) => setTimeout(() => { if (sv.isConnected) { pat(g); haptic(12); } }, T0 + t));
+  setTimeout(() => { if (sv.isConnected) { tada(); try { navigator.vibrate?.([14, 50, 14, 50, 30]); } catch (_) {} } }, T0 + hit2 + 260);   // the book shut, he beams: a little ta-da
 }
 function shiMood(pileLeft) {
   const days = practiceDays(), now = new Date();
@@ -5045,6 +5072,28 @@ function pat(g = .35) {
     v.gain.value = g; s.connect(f).connect(v).connect(c.destination); s.start(t);
   } catch (_) {}
 }
+/* a tile turning over: a soft rush of air that sweeps up in pitch and fades, like a card flicked through the air */
+function whoosh(g = .32, len = .34) {
+  try { const c = acx(), t = c.currentTime + .005, n = c.sampleRate * len | 0, b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+    for (let k = 0; k < n; k++) d[k] = Math.random() * 2 - 1;
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), v = c.createGain(); s.buffer = b; f.type = 'bandpass'; f.Q.value = 1.4;
+    f.frequency.setValueAtTime(380, t); f.frequency.exponentialRampToValueAtTime(2600, t + len * .7); f.frequency.exponentialRampToValueAtTime(1500, t + len);
+    v.gain.setValueAtTime(0, t); v.gain.linearRampToValueAtTime(g, t + len * .55); v.gain.exponentialRampToValueAtTime(.0001, t + len);
+    s.connect(f).connect(v).connect(c.destination); s.start(t); s.stop(t + len + .02);
+  } catch (_) {}
+}
+/* a short celebration: a bright "ta-da" (G5 then a C6 chord) with a sparkle running up on top; shorter than the fanfare */
+function tada() {
+  try { const c = acx(), t = c.currentTime + .02;
+    const note = (f, d, len, g, type = 'triangle') => { for (const [m, k] of [[1, 1], [2, .2], [3, .07]]) {
+      const o = c.createOscillator(), v = c.createGain(); o.type = m === 1 ? type : 'sine'; o.frequency.value = f * m;
+      v.gain.setValueAtTime(0, t + d); v.gain.linearRampToValueAtTime(g * k, t + d + .01); v.gain.exponentialRampToValueAtTime(.0001, t + d + len);
+      o.connect(v).connect(c.destination); o.start(t + d); o.stop(t + d + len + .05); } };
+    note(783.99, 0, .16, .18);
+    [1046.5, 1318.5, 1568, 2093].forEach(f => note(f, .13, 1, .1));
+    [2637, 3136, 3520, 4186, 5274].forEach((f, i) => note(f, .2 + i * .05, .3, .028, 'sine'));
+  } catch (_) {}
+}
 /* a light haptic tick for a tap. Android has navigator.vibrate; iPhone Safari has not, but flipping a hidden
    <input switch> from inside a tap gives the same small system tick there (iOS 18 and later) */
 const haptic = (() => {
@@ -5062,6 +5111,14 @@ const haptic = (() => {
     } catch (_) {}
   };
 })();
+/* the streak flame catching (3 right in a row) and growing: a big excited shake that builds, stronger for each step up
+   (Android). iPhone has only the one small tick, so it gets a quick run of ticks */
+function fireBuzz(tier = 2) {
+  try {
+    if (navigator.vibrate) { navigator.vibrate(tier >= 4 ? [40, 35, 40, 35, 60, 40, 110] : tier >= 3 ? [35, 40, 35, 40, 90] : [25, 45, 25, 45, 70]); return; }
+    haptic(); [70, 140].forEach(ms => setTimeout(() => haptic(), ms));
+  } catch (_) {}
+}
 /* the end of a lesson: a quick rising arpeggio (C5 E5 G5) into a bright held chord (C6 E6 G6), with a sparkle of high notes on top */
 function fanfare() {
   try { const c = acx(), t = c.currentTime + .02;
@@ -7392,6 +7449,8 @@ const lesBoxSize = () => Math.max(170, Math.min(250, (document.documentElement.c
 function lesTop() {
   const E = S.les, prog = E.test ? E.settled / E.total : (E.qi + (E.ans != null ? 1 : 0)) / E.q.length;
   const fire = E.combo >= 3 ? `<span class="les-fire on${E.flash ? E.combo === 3 ? ' new' : ' bump' : ''}" aria-label="${E.combo} in a row">${FLAME}<b>${E.combo}</b></span>` : '';
+  if (E.combo < 3) E.fireBuzzed = 0;
+  if (E.flash && E.combo >= 3 && E.fireBuzzed !== E.combo) { E.fireBuzzed = E.combo; E.combo === 3 || E.combo % 5 === 0 ? fireBuzz(E.combo >= 10 ? 4 : E.combo >= 5 ? 3 : 2) : haptic(18); }   // the flame appearing: an excited shake
   return `<div class="les-top"><button class="icon-btn" data-les="quit" aria-label="Quit the ${E.test ? 'test' : 'lesson'}">${I.close}</button><span class="les-bar"><i style="width:${gBar(prog)}%"></i></span>
     ${fire}<span class="les-pts${E.flash ? ' bump' : ''}" aria-label="${E.pts} points"><i>分</i><b>${E.pts}</b></span></div>`;
 }
@@ -8600,7 +8659,15 @@ const READ_PUNCT = /^[，。！？：、“”"'…（）]+$/;
 /* One story at a time. The story you are reading stays (db.readCur) until you finish it. Finishing offers the
    story's new words for your word bank, then files the story under its HSK level in db.readDone (newest first).
    Stories keep only their words; pinyin is worked out when they are shown. */
-function makeStory(skip) {
+const READ_LENS = [[1, 'Short'], [2, 'Medium'], [3, 'Long']];   // how many scenes a story strings together
+const readLen = () => Math.max(1, Math.min(3, db.prefs.readLen || 1));
+const READ_WHEN = new Set(['今天', '周末', '星期六', '早上', '明天', '今年', '晚上', '下午', '后来']);
+/* len: 1 a short story (one scene), 2 or 3 a longer one: that many scenes one after the other, with the same people and
+   pets in each (the friend who comes to the park is the one at the restaurant later), and 后来 (later) leading into
+   each new scene that does not start with a time of its own. first: the scene to start with (the cover's length picker
+   keeps the story you were looking at and makes it longer or shorter). br: where each later scene starts, by sentence */
+function makeStory(skip, o = {}) {
+  const len = o.len || readLen();
   const bank = db.bank, inBank = new Set(bank.map(w => w.hanzi)), done = {}, my = Math.min(7, db.prefs.level || 1);
   for (const s of db.readDone) done[s.zh] = (done[s.zh] || 0) + 1;
   const pick = (kind, taken) => {
@@ -8612,24 +8679,37 @@ function makeStory(skip) {
     const fb = pool.filter(h => !taken.has(h)).sort((a, b) => far(a) - far(b))[0];
     return fb ? { h: fb, mine: false } : null;
   };
-  const best = RL.T.filter(t => t[0] !== skip).map(tpl => {
-    const slots = new Set(), taken = new Set(), fill = {};
+  const fillTpl = (tpl, taken, keep = {}) => {   // keep: the people and pets already in the story, who stay the same
+    const slots = new Set(), fill = {};
     for (const line of tpl[2]) for (const m of line.matchAll(/\{(\w+)\}/g)) slots.add(m[1]);
     let mine = 0;
     for (const s of slots) {
+      if (keep[s]) { fill[s] = keep[s]; mine++; continue; }
       const r = pick(s.replace(/\d+$/, ''), taken); if (!r) return null;
       fill[s] = r.h; taken.add(r.h); if (r.mine) mine++;
     }
+    return { fill, mine, n: slots.size };
+  };
+  const ranked = RL.T.filter(t => t[0] !== skip || t[0] === o.first).map(tpl => {
+    const f = fillTpl(tpl, new Set()); if (!f) return null;
     // stories you have not finished yet come first (they are new books for your shelf), then the ones you can read best:
     // your own words in the gaps, and how many of the story's fixed words you know
     const fixed = [...new Set(tpl[2].join(' ').split(' ').filter(t => t[0] !== '{' && !READ_PUNCT.test(t) && t !== '狮狮'))];
     const cover = fixed.filter(h => knowsTok(inBank, h)).length / Math.max(1, fixed.length);
-    return { tpl, fill, score: mine / Math.max(1, slots.size) + cover * .6 + Math.random() * 0.35 - 2 * (done[tpl[0]] || 0) };
-  }).filter(Boolean).sort((a, b) => b.score - a.score)[0];
-  if (!best) return null;
-  const { tpl, fill } = best;
-  return { id: uid(), zh: tpl[0], en: tpl[1], started: Date.now(),
-    lines: tpl[2].map(line => line.split(' ').map(t => t.replace(/^\{(\w+)\}$/, (_, s) => fill[s]))) };
+    return { tpl, score: (tpl[0] === o.first ? 99 : 0) + f.mine / Math.max(1, f.n) + cover * .6 + Math.random() * 0.35 - 2 * (done[tpl[0]] || 0) };
+  }).filter(Boolean).sort((a, b) => b.score - a.score);
+  if (!ranked.length) return null;
+  const taken = new Set(), keep = {}, lines = [], br = [], parts = [];
+  for (const { tpl } of ranked) {
+    if (parts.length >= len) break;
+    const f = fillTpl(tpl, taken, keep); if (!f) continue;
+    for (const [k, h] of Object.entries(f.fill)) if (/^(person|animal)/.test(k)) keep[k] = h;
+    const ls = tpl[2].map(line => line.split(' ').map(t => t.replace(/^\{(\w+)\}$/, (_, s) => f.fill[s])));
+    if (parts.length) { br.push(lines.length); if (!tpl[2][0].startsWith('{time}') && !READ_WHEN.has(ls[0][0])) ls[0] = ['后来', '，', ...ls[0]]; }
+    lines.push(...ls); parts.push(tpl);
+  }
+  const first = parts[0];
+  return { id: uid(), zh: first[0], en: first[1], started: Date.now(), lines, ...(br.length ? { br, parts: parts.map(t => t[0]) } : {}) };
 }
 /* per word: pinyin read in its sentence (so 一, 不 and other many-sound characters come out right) and its meaning */
 function readTokens(toks) {
@@ -8690,7 +8770,7 @@ function StoryCard(s, foot) {
       <div class="story-tools"><button class="aa-btn" data-act="read-aa" aria-label="Text size: tap for the next size">A<small>a</small></button>
         <button class="rd-py" data-act="read-py" role="switch" aria-checked="${on}"><span class="py-glyph">${ZH.jp ? '粵' : '拼'}</span>${PYN()}<span class="switch${on ? ' on' : ''}"></span></button></div>
       <div class="story-head"><h3 class="story-zh">${esc(s.zh)}</h3><span class="story-en">${esc(s.en)}</span></div>
-      ${storyTokens(s).map((l, li) => `<p class="story-line">${readGroups(l).map(g => `<span class="rg">${g.map(wi => word(l[wi], li, wi)).join('')}</span>`).join('')}</p>`).join('')}
+      ${storyTokens(s).map((l, li) => `${s.br?.includes(li) ? '<p class="story-brk" aria-hidden="true"><i></i><b>❖</b><i></i></p>' : ''}<p class="story-line">${readGroups(l).map(g => `<span class="rg">${g.map(wi => word(l[wi], li, wi)).join('')}</span>`).join('')}</p>`).join('')}
       ${foot || ''}
     </article>`;
 }
@@ -8864,7 +8944,8 @@ function StoryCover(s, st, readToday) {
   return `<article class="rd-hero">${readScene(s, K.mine.filter(h => bankHas(h)))}
       <div class="rd-body"><div class="rd-eye">${readToday ? 'Another story' : 'Today’s story'}</div>
         <div class="rd-title"><h3>${esc(s.zh)}</h3><span>${esc(s.en)}</span></div>
-        <p class="rd-meta">${plural(s.lines.length, 'sentence')}${fresh && db.bank.length ? ` · ${plural(fresh, 'new word')}` : ''}${reads === 1 ? ' · read it again and its book turns gold' : ''}</p>
+        <div class="seg rd-len" role="radiogroup" aria-label="Story length">${READ_LENS.map(([n, t]) => `<button role="radio" data-act="read-len" data-n="${n}" aria-checked="${readLen() === n}" class="${readLen() === n ? 'on' : ''}">${t}</button>`).join('')}</div>
+        <p class="rd-meta">${s.br ? `${s.br.length + 1} parts · ` : ''}${plural(s.lines.length, 'sentence')}${fresh && db.bank.length ? ` · ${plural(fresh, 'new word')}` : ''}${reads === 1 ? ' · read it again and its book turns gold' : ''}</p>
         ${hint ? `<p class="rd-keep">${FLAME}${hint}</p>` : ''}
         <button class="btn btn-seal wide" data-act="read-start">${I.read}Start reading</button>
         <button class="link-btn rd-other" data-act="read-new">Different story</button></div>
@@ -8967,7 +9048,7 @@ function finishStory(words, offered) {
   const now = Date.now(), add = words.filter(w => !bankHas(w.h)).map((w, i) => ({ id: uid(), hanzi: w.h, pinyin: w.p, en: w.en, added: now - i, hsk: w.lv }));
   const lv = storyLevel(s);
   db.bank = [...add, ...db.bank];
-  db.readDone.unshift({ id: s.id, zh: s.zh, en: s.en, lines: s.lines, hsk: lv, started: s.started, done: now, learned: add.map(w => w.hanzi) });
+  db.readDone.unshift({ id: s.id, zh: s.zh, en: s.en, lines: s.lines, ...(s.br ? { br: s.br, parts: s.parts } : {}), hsk: lv, started: s.started, done: now, learned: add.map(w => w.hanzi) });
   S.readFrom = coverChars(s);   // the book riffles from this story to the next once the finish page is closed
   db.readCur = makeStory(s.zh); save();
   LOG.add('read-finish', { story: s.zh, level: lv ? HSK_NAME(lv) : 'none', new_words: offered, added: add.length });
@@ -9234,7 +9315,7 @@ function HotdCard(just) {   // the card on Decks: a ticket, today's word on the 
   return `<section class="hd-card hd-tk${rev ? ' rev' : ''}${just ? ' just' : ''}${back ? ' back' : ' front'}" id="hotd" aria-label="Word of the day"${H ? '' : ' data-wait="1"'}${back ? ' inert aria-hidden="true"' : ''}>
     <div class="tk-in">${stub}<div class="tk-main"><div class="hd-lbl">Word of the day <span class="hd-zh">今日词</span></div>${txt}<div class="tk-gap"></div>
       ${H ? `<button class="tk-go" data-act="hotd-open">Learn now${I.chev}</button>` : ''}</div></div>
-    <span class="tk-tear" aria-hidden="true"></span><span class="hd-shi">${shiFace(rev ? 'cheer' : 'peek')}</span></section>`;
+    <span class="tk-tear" aria-hidden="true"></span></section>`;   // no Shi Shi on the ticket (ilkem: "get rid of shishi on the daily hanzi ticket")
 }
 /* Hanzi of the day and the story card lie in a little deck (db.hotd.top: 'story' when the story card is on top).
    Swipe the top card away to either side: it flies off and slides in at the bottom, the card under it comes up.
@@ -11791,6 +11872,8 @@ function sbHtml(R, f) {   // R: S.study or S.write (combo, barT, flash, xp); f: 
   const ms = R.flash && c >= 5 && c % 5 === 0, fx = (t > was ? ' up' : t < was ? ' out' : '') + (ms ? ' ms' : '');
   const sparks = ms ? `<span class="lb-sparks" style="left:${w}%">${Array.from({ length: 12 }, (_, k) => `<span style="--a:${k * 30 + (k % 2 ? 12 : 0)}deg;--d:${k % 2 ? 26 : 40}px;animation-delay:${k % 3 * 25}ms"></span>`).join('')}</span>` : '';
   if (ms) haptic(25);
+  if (R.flash && t >= 2 && t > was) fireBuzz(t);   // the flame catches (3 in a row), or blazes up a step: shake with it
+  else if (R.flash && t >= 2 && !ms) haptic(18);   // each answer the flame burns on: a firmer tick than a tap
   const ph = t >= 3 ? `;animation-delay:-${Math.round(performance.now() % 1600)}ms` : '';
   const tag = t ? `<span class="lb-tag${ms ? ' big' : R.flash ? ' bump' : ''}${t >= 2 ? ' on' : ''}" style="left:clamp(60px,${w / 2}%,calc(100% - 60px))">${t >= 2 ? FLAME : ''}${c} in a row${ms ? '!' : ''}</span>` : '';
   const up = R.xpUp; R.flash = false; R.xpUp = false;
@@ -12235,6 +12318,33 @@ function lesTile(i, ch, col, val, lab) {   // a tile 38px deep: 1px slices, ston
   let sl = ''; for (let k = 1; k < 38; k++) sl += `<i${k < 16 ? ' class="g"' : ''} style="transform:translateZ(${k - 19}px)"></i>`;
   return `<div class="lt lt${i}" style="--i:${i}"><span class="lt-sh"></span><div class="lt-deal"><div class="lt-in">${sl}
     <div class="lt-f lt-front"><b lang="zh" style="color:${col}">${ch}</b><strong>${val}</strong><small>${lab}</small></div><div class="lt-f lt-back"></div></div></div></div>`;
+}
+/* the end of a deck round: each mahjong tile whooshes as it turns over (the CSS flips them at 1.05s + .32s apart), then a
+   short celebration once the last one lands: a ta-da, a happy shake and a burst of paper confetti from behind the tiles.
+   Once per round: drawn again later (after a sheet, say), the tiles stand still and stay quiet */
+function tilesShow() {
+  const st = S.study, row = $('.lt-row'); if (!st || !row) return;
+  if (st.tilesShown || stillMotion()) { st.tilesShown = true; row.parentNode.querySelectorAll('.lt-deal,.lt-in,.lt-caps span').forEach(e => e.style.animation = 'none'); return; }
+  st.tilesShown = true;
+  const live = () => row.isConnected && S.study === st;
+  [0, 1, 2].forEach(i => setTimeout(() => { if (live()) { whoosh(i === 2 ? .38 : .3); haptic(8); } }, 1050 + i * 320 + 40));
+  setTimeout(() => {
+    if (!live()) return;
+    tada(); try { if (navigator.vibrate) navigator.vibrate([18, 60, 18, 60, 40]); else haptic(); } catch (_) {}
+    row.animate([{ transform: 'none' }, { transform: 'scale(1.06)', offset: .35 }, { transform: 'scale(.98)', offset: .7 }, { transform: 'none' }], { duration: 520, easing: 'ease-out' });
+    const colors = ['var(--seal)', '#E8B44A', 'var(--jade)', '#F6D682', '#E5483F', '#FF8A96'], box = row.getBoundingClientRect();
+    for (let i = 0; i < 36; i++) {
+      const bit = document.createElement('i'); bit.className = 'lt-bit'; bit.style.background = colors[i % colors.length];
+      if (i % 3 === 0) bit.style.borderRadius = '50%'; else if (i % 3 === 1) bit.style.height = '6px';
+      bit.style.left = (box.width * (.15 + .7 * Math.random())).toFixed(0) + 'px'; row.append(bit);
+      const a = -Math.PI / 2 + (Math.random() - .5) * 2.6, v = 140 + Math.random() * 130, dx = Math.cos(a) * v, dy = Math.sin(a) * v, r = (Math.random() < .5 ? -1 : 1) * (360 + Math.random() * 420);
+      bit.animate([
+        { transform: 'translate(0,0) rotate(0) scale(.4)', opacity: 0 },
+        { transform: `translate(${dx * .6}px,${dy * .6}px) rotate(${r * .4}deg) scale(1)`, opacity: 1, offset: .25 },
+        { transform: `translate(${dx}px,${dy + 220}px) rotate(${r}deg) scale(.9)`, opacity: 0 }],
+        { duration: 1500 + Math.random() * 600, delay: Math.random() * 120, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'forwards' }).onfinish = () => bit.remove();
+    }
+  }, 1050 + 2 * 320 + 750 * .7);
 }
 function StudySummary(d) {
   const st = S.study, ids = Object.keys(st.graded), n = ids.length, ok = ids.filter(id => st.graded[id] > 0).length;
@@ -13128,7 +13238,7 @@ function WriteSummary(d) {
     <header class="bar"><button class="icon-btn" data-act="back-deck" aria-label="Close">${I.close}</button><div class="bar-title">Session</div><span style="width:42px"></span></header>
     <section class="summary ws-end">
       <div class="ws-stage"><div class="ws-bubble" role="status"><div class="cheer-zh">${hz}！</div><div class="cheer-py">${py}</div><div class="cheer-en">${en}</div></div>
-        <img class="ws-lion" src="mascots/shi-shi.svg" alt="Shi Shi the lion cheering"></div>
+        <span class="ws-lion" role="img" aria-label="Shi Shi the lion cheering">${shiFace('cheer')}</span></div>
       <div class="ws-score"><b>${ok}</b>of ${n} right first time</div>
       ${fixed ? `<div class="sub">${fixed} right when ${fixed === 1 ? 'it' : 'they'} came back</div>` : ''}
       ${missed.length ? `<div class="missed">${missed.map(c => `<span>${esc(c.hanzi)}</span>`).join('')}</div>` : ''}${P ? payRow(P) : xpLine(W.xp)}${trickyCard()}</section>
@@ -13928,8 +14038,10 @@ function dictEntry(r) {
       </section>` : ''}
     </div></div>
     ${fc.length ? '<button class="dcc-tip" id="dcTip">Tap to flip · drag sideways to turn it</button>' : ''}
-    <div id="dcAddWrap"></div></div>`, sh => {
+    <div id="dcAddWrap"></div>
+    <div id="dcSentWrap"><button class="btn btn-ghost wide dc-sent-go" id="dcSentGo">${I.read}Everyday sentences</button></div></div>`, sh => {
     const wrap = sh.querySelector('#dcAddWrap');
+    dcSentMount(sh, r.h);
     const paint = () => { wrap.innerHTML = has() ? `<p class="dc-in">${I.check}In your word bank</p>` : '<button class="btn btn-seal wide" id="dcAdd">Add to word bank</button>'; };
     paint();
     wrap.onclick = e => {
@@ -13942,6 +14054,54 @@ function dictEntry(r) {
     };
     LOG.add('dict-word', { hz: r.h });
     if (fc.length) dcCardTurn(sh, r.h, F);
+  });
+}
+/* 3.45.102 (ilkem): on a word's card, Everyday sentences: real short sentences that use the word (Tatoeba, the same ones
+   as on Word of the day), the shortest first, with the pinyin over them and the English under them; tap one to hear it.
+   More sentences shows the next ones. A word the stories know (a food, a place, a person...) also gets a few sentences
+   made the way the stories are, from their scenes with the word in its gap, when there are few real ones */
+let dcAllSents = null;
+function dcSentsFor(m, h) {
+  dcAllSents ||= (() => { const seen = new Set(), L = []; for (const l of m.values()) for (const x of l) if (!seen.has(x.zh)) { seen.add(x.zh); L.push(x); } return L; })();
+  const own = m.get(h) || [], seen = new Set(own.map(x => x.zh));
+  const more = dcAllSents.filter(x => !seen.has(x.zh) && x.zh.includes(h));
+  return [...own, ...more].sort((a, b) => [...a.zh].length - [...b.zh].length);
+}
+function storySentsWith(h) {   // sentences from the story scenes with h in its gap (and your own words in the others)
+  const kinds = Object.keys(RL.cat).filter(k => RL.cat[k].includes(h)); if (!kinds.length) return [];
+  const inBank = new Set(db.bank.map(w => w.hanzi)), out = new Set();
+  for (const tpl of shuffle(RL.T.slice())) for (const line of tpl[2]) {
+    const slots = [...line.matchAll(/\{(\w+)\}/g)].map(x => x[1]), mine = slots.find(x => kinds.includes(x.replace(/\d+$/, '')));
+    if (!mine) continue;
+    const taken = new Set([h]), fill = { [mine]: h };
+    for (const sl of slots) if (!fill[sl]) { const pool = shuffle((RL.cat[sl.replace(/\d+$/, '')] || []).slice()).filter(x => !taken.has(x));
+      const w = pool.find(x => inBank.has(x)) || pool[0]; if (!w) break; fill[sl] = w; taken.add(w); }
+    if (slots.some(sl => !fill[sl])) continue;
+    out.add(line.split(' ').map(t => t.replace(/^\{(\w+)\}$/, (_, x) => fill[x])).join(''));
+    if (out.size >= 4) return [...out];
+  }
+  return [...out];
+}
+function dcSentMount(sh, h) {
+  const box = sh.querySelector('#dcSentWrap'); let L = null, at = 0;
+  const one = x => `<button class="hdx-sent" data-act="say" data-h="${esc(x.zh)}"><span class="hdx-zh">${hdxRuby(x.zh, h)}</span>${x.en ? `<span class="hdx-tr">${esc(x.en)}</span>` : '<span class="hdx-tr dc-made">Story-style sentence</span>'}${I.sound}</button>`;
+  const show = () => {
+    const page = L.slice(at, at + 4); at += 4; if (at >= L.length && L.length > 4) at = 0;   // round again after the last ones
+    box.innerHTML = `<div class="dc-sents-h">Everyday sentences <span class="cal-zh">例句</span></div>`
+      + (page.length ? `<div class="hdx-sents">${page.map(one).join('')}</div>` : `<p class="hdx-none">No everyday sentences with ${esc(h)} yet.</p>`)
+      + (L.length > 4 ? `<button class="link-btn dc-sent-more" id="dcSentMore">${I.refresh}More sentences</button>` : '');
+    box.querySelector('#dcSentMore')?.addEventListener('click', () => { show(); haptic(); });
+  };
+  box.addEventListener('click', e => {
+    if (!e.target.closest('#dcSentGo') || L) return;
+    const go = box.querySelector('#dcSentGo'); go.disabled = true; go.lastChild.textContent = 'Finding sentences…';
+    LOG.add('dict-sentences', { hz: h });
+    loadSentences().then(m => {
+      if (!box.isConnected) return;
+      const real = dcSentsFor(m, h), made = real.length < 3 ? storySentsWith(h).map(zh => ({ zh, en: '' })) : [];
+      L = [...real, ...made]; show();
+      box.scrollIntoView({ block: 'nearest', behavior: stillMotion() ? 'auto' : 'smooth' });
+    }, () => { go.disabled = false; go.lastChild.textContent = 'Everyday sentences'; toast('The sentences need the internet the first time'); });
   });
 }
 function dcCardTurn(sh, hz, F) {   // the card turns over in the direction your finger goes
@@ -14804,7 +14964,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.101';
+const APP_VERSION = '3.45.102';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16215,6 +16375,9 @@ const A = {
   'read-aa': () => { const i = ((db.prefs.readSize ?? 1) + 1) % READ_SIZES.length; db.prefs.readSize = i; save(); closeReadPop();   // each tap: the next size, after the biggest back to the smallest
     $('.story')?.style.setProperty('--rd-fs', READ_SIZES[i] + 'px'); },
   'read-py': t => { db.prefs.readPy = !db.prefs.readPy; save(); closeReadPop(); t.querySelector('.switch')?.classList.toggle('on', db.prefs.readPy); t.setAttribute('aria-checked', db.prefs.readPy); $('.story')?.classList.toggle('st-py', db.prefs.readPy); },
+  'read-len': t => { const n = +t.dataset.n; if (n === readLen() && (db.readCur?.br?.length || 0) + 1 === n) return;   // Short, Medium or Long: the same story, with fewer or more scenes
+    db.prefs.readLen = n; const was = db.readCur; if (was?.opened) { save(); return; }
+    db.readCur = makeStory(undefined, { len: n, first: was?.zh }) || was; save(); haptic(); LOG.add('read-len', { len: n }); S.instant = true; render(); },
   'read-new': () => { const from = coverChars(db.readCur); db.readCur = makeStory(db.readCur?.zh); save(); S.instant = true; render(); riffleBook(from); },
   'read-start': () => { if (!db.readCur) return; db.readCur.opened = Date.now(); db.last = { t: 'read' }; save(); LOG.add('read-start', db.readCur.zh); render(); },
   'read-finish': () => finishSheet(),
