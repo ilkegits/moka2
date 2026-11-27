@@ -1,1 +1,1 @@
-{"version": "3.45.104", "notes": "Flip cards on a laptop: a click right after answering turns the new card, not the one sliding away; Space turns the card after you click the Next arrow; a double click on Knew it no longer skips a card"}
+{"version": "3.45.105", "notes": "Writing check: extra strokes now count as wrong. A character with a stroke drawn twice (雨 with three dots a side, 头 with three dots) gets Not quite and says how many strokes too many; a stroke drawn in two pieces still counts"}

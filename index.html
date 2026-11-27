@@ -12925,12 +12925,23 @@ function strokeCheck(userStrokes, ref, s) {
   // lines nearby covered the empty spot. Needed whenever the handwriting reader isn't sure on its own (see verdict).
   const own = coverWithout(-1, JUDGE.tol), owned = own.every(c => c >= JUDGE.strokeCov);
   const strong = ok && !extra && own.every(c => c >= JUDGE.strong.stroke) && Math.min(...refCov) >= JUDGE.strong.stroke && Math.min(...parts.map(pt => pt.cov)) >= JUDGE.strong.part && total >= JUDGE.strong.total;
+  // Strokes too many: more strokes than the character has, and one of them can go while every stroke of the character is
+  // still covered by its own stroke at the normal distance (雨 with three dots a side, 头 with three dots). A stroke drawn in
+  // two pieces is not extra: each piece is needed, and a piece that starts where another ends (a hook lifted off) is let be.
+  const ends = U.map(l => [l[0], l[l.length - 1]]);
+  const touches = i => U.some((_, k) => k !== i && ends[i].some(p => ends[k].some(q => Math.hypot(p.x - q.x, p.y - q.y) < .08)));
+  // the stroke it lies on must already be drawn in full by another of your strokes (its one-to-one partner), so a piece of
+  // a stroke, or a stroke whose ink only sits near a neighbour, never counts as a second copy
+  const mateOf = R.map(() => -1); { const used = new Set(); for (const [, i, j] of pairs) if (!used.has(i) && mateOf[j] < 0) { used.add(i); mateOf[j] = i; } }
+  const copyOf = i => { const c = R.map(() => 0); owner[i].forEach(j => c[j]++); const j = c.indexOf(Math.max(...c)), k = mateOf[j]; return k >= 0 && k !== i && frac(R[j], U[k]) >= JUDGE.strokeCov; };
+  const spare = U.length > R.length ? U.filter((_, i) => !touches(i) && copyOf(i) && coverWithout(i, JUDGE.tol).every(c => c >= JUDGE.strokeCov)).length : 0;
+  const tooMany = spare && Math.min(spare, U.length - R.length);
   // Strokes left out, not joined: several strokes fewer than the character has, and less ink too. Joining strokes in one
   // movement keeps all the ink (and adds the joins), so a fast 晚 or 啡 in 7 strokes still has ink to spare; a 意 without its
   // 日 (9 strokes of 13) is short of ink, though everything you drew sits on the character.
   const fewer = R.length - U.length, thin = fewer >= 2 && Ua.length < Math.min(.95, .6 + .1 * fewer) * Ra.length;
   const avg = (A, B) => A.reduce((a, p) => a + nearest(p, B), 0) / A.length;
-  return { ok, owned, thin, misplaced: own.filter(c => c < JUDGE.strokeCov).length, strong, looseOk, twinOk, partOk, extra, missing, stray, total, badPart: badPart && { pos: badPart.pos, radical: !!badPart.radical }, fit: (avg(Ua, Ra) + avg(Ra, Ua)) / 2 };
+  return { ok, owned, thin, tooMany, misplaced: own.filter(c => c < JUDGE.strokeCov).length, strong, looseOk, twinOk, partOk, extra, missing, stray, total, badPart: badPart && { pos: badPart.pos, radical: !!badPart.radical }, fit: (avg(Ua, Ra) + avg(Ra, Ua)) / 2 };
 }
 async function recognize(strokes, s, lang = hwLang()) {
   const t0 = strokes[0]?.[0]?.t || 0;
@@ -12987,6 +12998,7 @@ function verdict(shape, rank) {
   if (!shape && rank === null) return null;                    // offline and no stroke data: the learner decides
   if (!shape) return rank === 0;
   if (shape.thin) return false;                                // strokes left out (see strokeCheck)
+  if (shape.tooMany) return false;                             // strokes added: extra dots or lines (see strokeCheck)
   if (rank === null) return shape.ok && shape.owned;                          // offline: stroke placement only
   if (rank === 0 && shape.looseOk) return true;               // the reader is sure and every stroke is roughly in place
   if (rank === 0 && shape.twinOk) return true;                // ...or the strokes off their spot are plainly yours, only shifted
@@ -13008,6 +13020,7 @@ function judgeNote(chars) {
   const sh = j.shape;
   const why = j.empty ? `${where} is empty`
     : sh && sh.badPart ? `${where}: the ${sh.badPart.pos === 'outside' ? 'outer frame' : sh.badPart.pos === 'inside' ? 'inner part' : sh.badPart.pos + ' part'}${sh.badPart.radical ? ' (radical)' : ''} is missing or wrong`
+    : sh?.tooMany ? `${where}: ${sh.tooMany === 1 ? 'there’s one stroke too many' : sh.tooMany + ' strokes too many'}`
     : sh && sh.missing ? `${where}: ${sh.missing === 1 ? 'a stroke is' : sh.missing + ' strokes are'} missing or in the wrong place`
     : sh && sh.stray ? `${where}: ${sh.stray === 1 ? 'there’s an extra stroke' : sh.stray + ' extra strokes'}`
     : sh && !sh.ok ? `${where}: some ink is off the character`
@@ -15018,7 +15031,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.104';
+const APP_VERSION = '3.45.105';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16521,7 +16534,7 @@ const A = {
     W.checking = false;
     W.judge = { chars: res, ok: res.some(r => r.ok === null) ? null : res.every(r => r.ok) };
     LOG.add('write-check', { hz: chars.join(''), ok: W.judge.ok, wrote_for: Math.round((t0 - W.shownAt) / 1000) + 's', check_took: (Date.now() - t0) + 'ms',
-      boxes: res.map((r, i) => ({ ok: r.ok, strokes: (boxes[i]._strokes || []).length, rank: r.rank, top: r.cands?.[0], fit: r.shape?.fit != null ? +r.shape.fit.toFixed(2) : undefined, missing: r.shape?.missing || undefined, stray: r.shape?.stray || undefined, part: r.shape?.badPart?.pos,
+      boxes: res.map((r, i) => ({ ok: r.ok, strokes: (boxes[i]._strokes || []).length, rank: r.rank, top: r.cands?.[0], fit: r.shape?.fit != null ? +r.shape.fit.toFixed(2) : undefined, missing: r.shape?.missing || undefined, stray: r.shape?.stray || undefined, many: r.shape?.tooMany || undefined, part: r.shape?.badPart?.pos,
         ink: !r.empty ? { s: boxes[i]._s, strokes: (boxes[i]._strokes || []).map(st => st.filter((_, k) => k % 2 === 0 || k === st.length - 1).map(p => [Math.round(p.x), Math.round(p.y)])) } : undefined })),   // every drawing, so a wrong "wrong" and a wrong "right" (Count as wrong) can both be replayed and fixed
       said: judgeNote(chars).replace(/<[^>]+>/g, '') });
     showVerdict();
