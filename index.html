@@ -191,9 +191,9 @@ html{overscroll-behavior-y:none}
 .btn:active{opacity:.7;transition:none}
 /* filled buttons share the Map's Build now look: a darker lip along the bottom, a thin light edge on top and a soft
    shadow in the button's own colour; pressing sinks the button onto its lip. --halo is an optional ring drawn outside */
-.btn-primary,.btn-seal,.btn-jade,.btn-ghost,.hd-go{--edge:rgba(60,10,5,.3);--drop:rgba(120,30,20,.7);--halo:0 0 #0000;padding-bottom:4px;
+.btn-primary,.btn-seal,.btn-jade,.btn-ghost,.btn-ink,.hd-go{--edge:rgba(60,10,5,.3);--drop:rgba(120,30,20,.7);--halo:0 0 #0000;padding-bottom:4px;
   box-shadow:var(--halo),inset 0 -4px 0 var(--edge),inset 0 2px 0 rgba(255,255,255,.22),0 12px 22px -12px var(--drop);transition:transform .08s,box-shadow .08s,background .2s}
-.btn-primary:active,.btn-seal:active,.btn-jade:active,.btn-ghost:active,.hd-go:active{opacity:1;transform:translateY(3px);transition:transform .08s,box-shadow .08s;
+.btn-primary:active,.btn-seal:active,.btn-jade:active,.btn-ghost:active,.btn-ink:active,.hd-go:active{opacity:1;transform:translateY(3px);transition:transform .08s,box-shadow .08s;
   box-shadow:var(--halo),inset 0 -2px 0 var(--edge),inset 0 2px 0 rgba(255,255,255,.22),0 6px 12px -10px var(--drop)}
 .btn:disabled{box-shadow:var(--halo,0 0 #0000);transform:none}
 .btn-primary{background:var(--ink);color:var(--paper);--edge:rgba(0,0,0,.4);--drop:rgba(30,20,10,.6)}
@@ -201,6 +201,7 @@ html{overscroll-behavior-y:none}
 .btn-seal{text-shadow:0 1.5px 0 rgba(90,10,5,.45)}   /* their white words sit on a small dark shadow of their own (not the map's Play: ilkem wants its words plain) */
 .btn-jade{background:var(--jade);color:#fff;--edge:rgba(0,40,30,.3);--drop:rgba(20,90,70,.6)}
 .btn-ghost{background:color-mix(in srgb,var(--paper) 88%,#785F3C);color:var(--ink);--edge:rgba(90,60,25,.2);--drop:rgba(60,35,10,.35)}   /* solid, so nothing shows through in the bottom bar */
+.btn-ink{background:linear-gradient(#3A302B,#1E1916 60%);color:#FBF6EE;--edge:rgba(0,0,0,.5);--drop:rgba(30,20,10,.6)}   /* 3.45.103 (ilkem): the Write buttons are black */
 .btn-quiet{color:var(--ink-2)}
 .btn-danger{color:var(--seal)}
 .wide{width:100%}
@@ -655,7 +656,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .dk-side .seg button{height:30px;padding:0 11px;font-size:13.5px;color:var(--muted)}
 .dk-side .seg button.on{background:var(--ink);color:var(--paper)}
 .dk-side .seg b{font:500 15px/1 var(--hanzi)}
-/* 3.45.43 the deck page's bottom bar: Write (white, with a 写 square) and Flip (red, the main button) */
+/* 3.45.43 the deck page's bottom bar: Write (black since 3.45.103, with a 写 square) and Flip (red, the main button) */
 .dk-dock{display:flex;gap:10px}
 #frame.tabs .dock.dk-dock{background:linear-gradient(rgba(244,238,227,0),var(--paper) 22px)}   /* rows scrolling under the bar fade out instead of showing between the buttons */
 .dk-dock .btn{height:62px;border-radius:18px}
@@ -2032,7 +2033,7 @@ html.kb-up #frame:has(.screen.dc) #tabbar,html.kb-up #frame:has(.screen.dc) #tab
 #dcSentWrap{margin-top:4px}
 .dc-sents-h{margin:18px 4px 10px;font-size:13.5px;font-weight:700;color:var(--ink-2)}
 #dcSentWrap .hdx-sents{gap:8px}
-.dc-made{font-style:italic;color:var(--muted)!important}
+.dc-made{margin-left:4px;padding:1px 6px;border-radius:6px;background:var(--fill);font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--muted);vertical-align:1px}
 .dc-sent-more{display:flex;align-items:center;gap:6px;margin:10px auto 4px}
 .dc-sent-more svg.i{width:17px;height:17px}
 .dc-in{display:flex;align-items:center;justify-content:center;gap:6px;height:50px;margin:0;font-weight:600;color:#2B7752}
@@ -4704,7 +4705,7 @@ function decksSheet() {
         <div class="dk-top"><div class="deck-stack"><span></span><span></span><div class="deck-face">${esc(first)}</div></div>
           <div class="dk-meta"><div class="deck-name">${esc(d.name)}</div><div class="deck-count">${n ? plural(n, 'card') : 'No cards yet'}</div></div></div>
         <div class="row-btns">${n ? `<button class="btn btn-ghost" data-act="learn-study" data-id="${d.id}">${I.flip}Flip cards</button>
-          <button class="btn btn-seal" data-act="learn-write" data-id="${d.id}">${I.pen}Write</button>`
+          <button class="btn btn-ink" data-act="learn-write" data-id="${d.id}">${I.pen}Write</button>`
           : `<button class="btn btn-seal wide" data-act="open-deck" data-id="${d.id}">${I.plus}Add cards</button>`}</div></div>`;
     }).join('')}</div>`);
 }
@@ -8018,7 +8019,7 @@ function strokeSheet(t) {
       <button class="icon-btn rs-say" data-act="say" data-h="${h}" aria-label="Say it">${I.sound}</button></div>
     <div class="hs-stage"><div class="tzg" style="--s:220px">${TZG}<div class="quiz" id="ssQ"></div></div></div>
     <div class="hs-cap" id="ssCap">Loading the strokes…</div>
-    <div class="row-btns ss-btns"><button class="btn btn-ghost" id="ssPlay">${I.play}Watch</button><button class="btn btn-seal" id="ssWrite">${I.pen}Write it</button></div>`, sh => {
+    <div class="row-btns ss-btns"><button class="btn btn-ghost" id="ssPlay">${I.play}Watch</button><button class="btn btn-ink" id="ssWrite">${I.pen}Write it</button></div>`, sh => {
     const cap = sh.querySelector('#ssCap');
     if (!window.HanziWriter) { cap.textContent = 'The strokes need the internet. Try again when you are online.'; return; }
     const W = HanziWriter.create(sh.querySelector('#ssQ'), zhT(h), writerOpts(220, { showOutline: true, strokeColor: css('--ink'), outlineColor: css('--line'),
@@ -11656,7 +11657,7 @@ function DeckView(d) {
       : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Put in your first word to start.</p></div>`}
     <div class="dock dk-dock">${n
       ? `<button class="dk-add" data-act="add-card">${I.plus}Add</button>
-        <button class="btn btn-ghost dk-write" data-act="write" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
+        <button class="btn btn-ink dk-write" data-act="write" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
         <button class="btn btn-seal dk-flip" data-act="study"><span class="dk-ft">${I.flip}Flip ${plural(n, 'card')}</span><small>${sub}</small></button>`
       : `<button class="btn btn-seal wide" data-act="add-card">${I.plus}Add your first card</button>`}</div>
   </div>`;
@@ -12327,7 +12328,7 @@ function tilesShow() {
   if (st.tilesShown || stillMotion()) { st.tilesShown = true; row.parentNode.querySelectorAll('.lt-deal,.lt-in,.lt-caps span').forEach(e => e.style.animation = 'none'); return; }
   st.tilesShown = true;
   const live = () => row.isConnected && S.study === st;
-  [0, 1, 2].forEach(i => setTimeout(() => { if (live()) { whoosh(i === 2 ? .38 : .3); haptic(8); } }, 1050 + i * 320 + 40));
+  [0, 1, 2].forEach(i => setTimeout(() => { if (live()) { whoosh(i === 2 ? .38 : .3); } }, 1050 + i * 320 + 40));
   setTimeout(() => {
     if (!live()) return;
     tada(); try { if (navigator.vibrate) navigator.vibrate([18, 60, 18, 60, 40]); else haptic(); } catch (_) {}
@@ -12414,7 +12415,7 @@ function mountStudy() {
     }
     noteDeck(curDeck(), st.order[st.i]);
     LOG.add(down.moved ? 'card-turn' : 'card-flip', { shows: Math.abs(Math.round(st.angle / 180)) % 2 ? 'English' : 'Chinese', bounced: down.moved && st.angle === base ? true : undefined });
-    if (st.angle !== base && e.type === 'pointerup') haptic(16);   // 3.45.98: the card turned over
+    // 3.45.103 (ilkem): no buzz when a card turns over
     down = null; setAngle(true); dismissHint();
     if (!st.flipped && st.angle !== base) showGrades(true);
   };
@@ -14041,7 +14042,7 @@ function dictEntry(r) {
     <div id="dcAddWrap"></div>
     <div id="dcSentWrap"><button class="btn btn-ghost wide dc-sent-go" id="dcSentGo">${I.read}Everyday sentences</button></div></div>`, sh => {
     const wrap = sh.querySelector('#dcAddWrap');
-    dcSentMount(sh, r.h);
+    dcSentMount(sh, r);
     const paint = () => { wrap.innerHTML = has() ? `<p class="dc-in">${I.check}In your word bank</p>` : '<button class="btn btn-seal wide" id="dcAdd">Add to word bank</button>'; };
     paint();
     wrap.onclick = e => {
@@ -14067,24 +14068,63 @@ function dcSentsFor(m, h) {
   const more = dcAllSents.filter(x => !seen.has(x.zh) && x.zh.includes(h));
   return [...own, ...more].sort((a, b) => [...a.zh].length - [...b.zh].length);
 }
-function storySentsWith(h) {   // sentences from the story scenes with h in its gap (and your own words in the others)
-  const kinds = Object.keys(RL.cat).filter(k => RL.cat[k].includes(h)); if (!kinds.length) return [];
-  const inBank = new Set(db.bank.map(w => w.hanzi)), out = new Set();
-  for (const tpl of shuffle(RL.T.slice())) for (const line of tpl[2]) {
-    const slots = [...line.matchAll(/\{(\w+)\}/g)].map(x => x[1]), mine = slots.find(x => kinds.includes(x.replace(/\d+$/, '')));
-    if (!mine) continue;
-    const taken = new Set([h]), fill = { [mine]: h };
-    for (const sl of slots) if (!fill[sl]) { const pool = shuffle((RL.cat[sl.replace(/\d+$/, '')] || []).slice()).filter(x => !taken.has(x));
-      const w = pool.find(x => inBank.has(x)) || pool[0]; if (!w) break; fill[sl] = w; taken.add(w); }
-    if (slots.some(sl => !fill[sl])) continue;
-    out.add(line.split(' ').map(t => t.replace(/^\{(\w+)\}$/, (_, x) => fill[x])).join(''));
-    if (out.size >= 4) return [...out];
+/* 3.45.103 (ilkem: "the random sentence generator doesnt work for many words"): everyday sentences made for a word, with their English: the word's kind (doing word, describing word, thing) is read from
+   its first plain meaning in the dictionary; words of other kinds (measure words, particles, names, numbers...) get none */
+const MADE_ADJ = new Set(('good bad big small large little long short tall high low old new young happy sad glad angry tired busy free hot cold warm cool ' +
+  'fast quick slow early late easy difficult hard simple clean dirty beautiful pretty ugly cute nice kind polite rude rich poor cheap expensive ' +
+  'full empty heavy light bright dark quiet noisy loud safe dangerous important interesting boring funny strange famous popular healthy ill sick ' +
+  'hungry thirsty delicious tasty sweet sour bitter spicy salty fresh smart clever stupid lazy brave honest serious careful strict friendly ' +
+  'comfortable convenient correct wrong true real special normal ordinary common similar different same clear far near close deep thick thin ' +
+  'fat wide narrow round soft strong weak excited nervous worried afraid proud lonely lucky successful useful wonderful terrible excellent perfect ' +
+  'red blue green yellow white black purple orange brown grey gray pink modern traditional ancient complete enough many few lively active ' +
+  'calm gentle warmhearted cheerful anxious satisfied disappointed embarrassed surprised moved sorry upset annoyed bored confident humble modest ' +
+  'generous selfish mature naive cruel fierce wise foolish rare precious valuable dear smooth rough sharp wet dry fragrant awful great fine').split(' '));
+const MADE_STOP = new Set(('if only but however merely so and or because although though very also still already just not no yes all each every some any this that these those here there ' +
+  'what who where when how why whole entire total i you he she we they me him her us them it my your his our their one two three ten hundred thousand ' +
+  'about of in on at by for from with without to into than then again more most less least much too quite rather almost even ever never always often ' +
+  'sometimes usually perhaps maybe probably certainly surely really anyway therefore otherwise instead besides moreover regardless unless until while ' +
+  'before after during since ago now soon later once twice etc a bit a little bit down up left right over there here need not half side front back top bottom inside outside middle').split(' '));
+const MADE_WHEN = { yesterday: 'yesterday', today: 'today', tomorrow: 'tomorrow', tonight: 'tonight', weekend: 'at the weekend', morning: 'in the morning',
+  afternoon: 'in the afternoon', evening: 'in the evening', spring: 'in spring', summer: 'in summer', autumn: 'in autumn', fall: 'in autumn', winter: 'in winter',
+  noon: 'at noon', 'this year': 'this year', 'next year': 'next year', 'last year': 'last year', 'next week': 'next week', 'last week': 'last week', 'this week': 'this week' };
+const MADE_FEEL = new Set(('happy glad sad angry tired busy free hungry thirsty excited nervous worried afraid proud lonely bored lucky ill sick ' +
+  'calm anxious satisfied disappointed embarrassed surprised moved sorry upset annoyed confident cheerful comfortable').split(' '));   // said of how you are
+const madeKind = (h, e) => {
+  for (let m of e.split('; ')) {
+    if (/^\((bound form|literary|old|archaic|dialect|Tw|Cantonese)/i.test(m)) continue;
+    m = m.replace(/^(\([^)]*\)\s*)+/, '').replace(/\s*\([^)]*\)/g, '').trim();
+    if (!m || /^(CL:|classifier|surname|variant|old variant|abbr|see |used in|erhua|Japanese|Korean|interjection|particle|grammatical|measure word|onom|pr\.)/i.test(m) || /^[A-Z]/.test(m) || /[㐀-鿿]/.test(m)) continue;
+    if (/^to /.test(m)) { const g = m.slice(3).split(/[,;/]/)[0].trim(); if (/ (for|with|to|of|on|at|in|about|from|into|by|well|much|badly|hard)$/.test(g) || /^(be|have|get|make|do|take) /.test(g)) continue; if (g.split(' ').length <= 4 && !/\b(sth|sb|oneself|one's)\b/.test(g)) return { k: 'v', g }; if (/\b(sth|sb)\b/.test(g)) return { k: 'vt', g }; continue; }
+    const one = m.split(/[,;/]/)[0].trim();
+    if (MADE_WHEN[one]) return { k: 't', g: MADE_WHEN[one] };
+    if (MADE_ADJ.has(one) || /^[a-z]+(ful|ous|ive|able|ible|less)$/.test(one)) return { k: MADE_FEEL.has(one) ? 'af' : 'a', g: one };
+    if (MADE_STOP.has(one) || one.split(' ').every(w => MADE_STOP.has(w)) || /ly$|-/.test(one)) return null;
+    if (/^(a|an|the) /.test(one)) return { k: 'n', g: one.replace(/^(a|an|the) /, '') };
+    if (/^[a-z][a-z' -]*$/.test(one) && one.split(' ').length <= 3 && ![...h].every(c => '一二三四五六七八九十百千万零两'.includes(c))) return { k: 'n', g: one };
   }
-  return [...out];
+  return null;
+};
+const MADE_UNCOUNT = new Set('news mathematics physics economics politics series species chess athletics gymnastics'.split(' '));
+const madeIng = g => g.replace(/^[a-z]+/, w => /ie$/.test(w) ? w.slice(0, -2) + 'ying' : /[^eoy]e$/.test(w) && w.length > 2 ? w.slice(0, -1) + 'ing'
+    : /^(regret|forget|begin|admit|prefer|permit|occur|refer|commit|control|upset|omit|submit|equip)$/.test(w) ? w + w.slice(-1) + 'ing'
+  : w.length <= 4 && (w.match(/[aeiou]+/g) || []).length === 1 && /[^aeiou][aeiou][^aeiouwxy]$/.test(w) ? w + w.slice(-1) + 'ing' : w + 'ing');   // run: running, make: making, lie: lying, open: opening
+const capFirst = x => x[0].toUpperCase() + x.slice(1);
+function madeSents(h, e) {
+  const K = madeKind(h, e); if (!K) return [];
+  const g = K.g, pl = K.k === 'n' && /[^su]s$/.test(g.split(' ').pop()) && !MADE_UNCOUNT.has(g), ing = madeIng(g), sbsth = s => s.replace(/\bsb\b/g, 'someone').replace(/\bsth\b/g, 'it');
+  const F = {
+    v: [[`我喜欢${h}。`, `I like ${ing}.`], [`${h}不太难。`, `${capFirst(ing)} isn't very hard.`], [`我在学习怎么${h}。`, `I'm learning how to ${g}.`]],
+    vt: [[`你想${h}吗？`, `Do you want to ${sbsth(g)}?`], [`我们一起${h}吧。`, `Let's ${sbsth(g)} together.`]],
+    a: [[`这个很${h}。`, `This is very ${g}.`], [`不太${h}。`, `Not very ${g}.`], [`真${h}啊！`, `So ${g}!`]],
+    af: [[`今天我很${h}。`, `I'm very ${g} today.`], [`你${h}吗？`, `Are you ${g}?`], [`我不太${h}。`, `I'm not very ${g}.`]],
+    n: [[`这个${h}很好。`, pl ? `These ${g} are great.` : `This ${g} is great.`], [`我们说说${h}吧。`, `Let's talk about the ${g}.`], [`你喜欢这个${h}吗？`, pl ? `Do you like these ${g}?` : `Do you like this ${g}?`]],
+    t: [[`${h}你有空吗？`, `Are you free ${g}?`], [`${h}我很忙。`, `I'm busy ${g}.`], [`我们${h}见吧。`, `Let's meet ${g}.`]],
+  }[K.k];
+  return F.map(([zh, en]) => ({ zh, en, made: true }));
 }
-function dcSentMount(sh, h) {
-  const box = sh.querySelector('#dcSentWrap'); let L = null, at = 0;
-  const one = x => `<button class="hdx-sent" data-act="say" data-h="${esc(x.zh)}"><span class="hdx-zh">${hdxRuby(x.zh, h)}</span>${x.en ? `<span class="hdx-tr">${esc(x.en)}</span>` : '<span class="hdx-tr dc-made">Story-style sentence</span>'}${I.sound}</button>`;
+function dcSentMount(sh, r) {
+  const h = r.h, box = sh.querySelector('#dcSentWrap'); let L = null, at = 0;
+  const one = x => `<button class="hdx-sent" data-act="say" data-h="${esc(x.zh)}"><span class="hdx-zh">${hdxRuby(x.zh, h)}</span><span class="hdx-tr">${esc(x.en)}${x.made ? ' <small class="dc-made">made</small>' : ''}</span>${I.sound}</button>`;
   const show = () => {
     const page = L.slice(at, at + 4); at += 4; if (at >= L.length && L.length > 4) at = 0;   // round again after the last ones
     box.innerHTML = `<div class="dc-sents-h">Everyday sentences <span class="cal-zh">例句</span></div>`
@@ -14098,10 +14138,11 @@ function dcSentMount(sh, h) {
     LOG.add('dict-sentences', { hz: h });
     loadSentences().then(m => {
       if (!box.isConnected) return;
-      const real = dcSentsFor(m, h), made = real.length < 3 ? storySentsWith(h).map(zh => ({ zh, en: '' })) : [];
+      const real = dcSentsFor(m, h), made = real.length < 4 && ([...h].length > 1 || !real.length) ? madeSents(h, r.e) : [];   // too few real ones: made ones fill up (one character has many senses: only when it has none)
       L = [...real, ...made]; show();
       box.scrollIntoView({ block: 'nearest', behavior: stillMotion() ? 'auto' : 'smooth' });
-    }, () => { go.disabled = false; go.lastChild.textContent = 'Everyday sentences'; toast('The sentences need the internet the first time'); });
+    }, () => { if (!box.isConnected) return; L = madeSents(h, r.e);   // offline before the sentence file came: the made ones still work
+      if (L.length) show(); else { L = null; go.disabled = false; go.lastChild.textContent = 'Everyday sentences'; toast('The sentences need the internet the first time'); } });
   });
 }
 function dcCardTurn(sh, hz, F) {   // the card turns over in the direction your finger goes
@@ -14115,7 +14156,7 @@ function dcCardTurn(sh, hz, F) {   // the card turns over in the direction your 
     const b = side(); front.inert = !!b; back.inert = !b;
     tip.textContent = b ? 'Tap the box to watch again · drag to turn back' : 'Tap to flip · drag sideways to turn it';
     if (b) { if (sh._film) sh._film.play(); else sh._filmWant = true; } else { sh._filmWant = false; sh._film?.stop(); }
-    haptic(8); LOG.add('dict-turn', { hz, side: b ? 'strokes' : 'word', how });
+    LOG.add('dict-turn', { hz, side: b ? 'strokes' : 'word', how });
   };
   card.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -14785,7 +14826,7 @@ function bankDeck() {
 /* 3.45.100: the Practise sheet's two buttons are the deck page's: Write in white with its 写 square, Flip big and red */
 function PractiseBtns() {
   const { n: streak, today } = practiceStreak(), sub = today ? '' : streak ? `Keeps your ${streak}-day streak` : 'Starts your streak';
-  return `<button class="btn btn-ghost dk-write" id="pWrite" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
+  return `<button class="btn btn-ink dk-write" id="pWrite" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
     <button class="btn btn-seal dk-flip" id="pFlip"><span class="dk-ft">${I.flip}Flip cards</span><small>${sub}</small></button>`;
 }
 function practiseSheet() {
@@ -14964,7 +15005,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.102';
+const APP_VERSION = '3.45.103';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
