@@ -3718,16 +3718,6 @@ button.scene-tile:active svg{opacity:.92}
 .q-host{position:relative}
 .q-ghost{position:absolute;inset:0;z-index:1;pointer-events:none}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-/* UX 9: page changes made with startViewTransition (a deck opening): quick, and taps go straight through to the new page */
-::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation-duration:.25s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
-::view-transition{pointer-events:none}
-/* v4.32: the deck's name travels and grows (or shrinks back) over .42 s; the page under it fades out fast and the new one rises in */
-::view-transition-group(deck-name){animation-duration:.42s;animation-timing-function:cubic-bezier(.3,.85,.25,1)}
-::view-transition-old(deck-name),::view-transition-new(deck-name){height:100%;animation-duration:.42s}
-::view-transition-old(root){animation:vtOut .15s ease-out both}
-::view-transition-new(root){animation:vtIn .3s .07s cubic-bezier(.2,.8,.2,1) both}
-@keyframes vtOut{to{opacity:0}}
-@keyframes vtIn{from{opacity:0;transform:translateY(10px)}}
 /* ---------- desktop (moka2 v3.45.20) ----------
    900px and wider: a menu down the left instead of the bottom tab bar, the page in a wider middle column (the window
    scrolls, as on a phone), pop-ups as windows in the middle. 1280px and wider: a right-hand column with the
@@ -4208,26 +4198,6 @@ function route() {
 }
 function nav(h) { const d = (history.state?.d || 0) + 1; history.pushState({ d }, '', h); route(); window.scrollTo(0, 0); $('#app').scrollTop = 0; }
 function goBack(fallback) { if ((history.state?.d || 0) > 0) history.back(); else { history.replaceState({ d: 0 }, '', fallback); route(); } }
-/* UX 9: opening a deck, its name glides from the tile up into the page title, and back down on Back (View Transitions).
-   Only for the app's own buttons: the phone's back swipe keeps its own animation. Off with reduced motion.
-   v4.32: only the words move (.dn hugs them, in the row and in the title), so they grow from 17 px to the 40 px
-   title in one clear move while the rest of the page fades under them, instead of two pages cross-fading */
-function deckGlide(id, update) {
-  const pick = () => document.querySelector(`.deck[data-id="${CSS.escape(id)}"] .dn`) || document.querySelector('#app .deck-title .dn');
-  const old = document.startViewTransition && !stillMotion() && pick();
-  if (!old) return update();
-  old.style.viewTransitionName = 'deck-name';
-  document.startViewTransition(async () => {
-    old.style.viewTransitionName = ''; S.instant = true;   // the page's own fade-in would play twice
-    await update();
-    const nw = pick(); if (nw) nw.style.viewTransitionName = 'deck-name';
-  }).finished.finally(() => { const nw = pick(); if (nw) nw.style.viewTransitionName = ''; });
-}
-/* goBack that resolves once the page behind has been drawn (history.back() lands a moment later, on popstate) */
-const goBackDrawn = fallback => {
-  const p = (history.state?.d || 0) > 0 ? new Promise(r => { addEventListener('popstate', () => setTimeout(r), { once: true }); setTimeout(r, 400); }) : null;
-  goBack(fallback); return p;
-};
 addEventListener('popstate', route);
 
 /* ---------- activity log ----------
@@ -11562,7 +11532,7 @@ function LastTile() {
 }
 /* v4.16: a deck in a list is one plain line, its name on the left and its card count on the far right
    (ilkem: no flash-card picture, no progress bar). v4.32: a quiet ··· at the end, as on a group's line, opens its
-   options panel (Rename, Add to group, Delete deck). The name sits in its own .dn so deckGlide can lift just the words */
+   options panel (Rename, Add to group, Delete deck) */
 function DeckTile(d) {
   return `<div class="dw"><button class="deck dl" data-act="open-deck" data-id="${d.id}" style="--accent:${d.accent}">
     <span class="deck-name"><span class="dn">${esc(d.name)}</span></span><span class="dl-n">${plural(d.cards.length, 'card')}</span></button>
@@ -12327,6 +12297,7 @@ function mountStudy() {
     }
     noteDeck(curDeck(), st.order[st.i]);
     LOG.add(down.moved ? 'card-turn' : 'card-flip', { shows: Math.abs(Math.round(st.angle / 180)) % 2 ? 'English' : 'Chinese', bounced: down.moved && st.angle === base ? true : undefined });
+    if (st.angle !== base && e.type === 'pointerup') haptic(16);   // 3.45.98: the card turned over
     down = null; setAngle(true); dismissHint();
     if (!st.flipped && st.angle !== base) showGrades(true);
   };
@@ -14796,7 +14767,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.97';
+const APP_VERSION = '3.45.98';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16115,8 +16086,8 @@ const A = {
     S.today = { id: 'today', name: 'Today', accent: ACCENTS[0], cards: P.cards.slice(0, 5) }; S.study = null; LOG.add('warm-up', { n: S.today.cards.length }); nav('#/deck/today/study'); }),
   'pw-buy': () => toast('Preview only. Nothing was bought'),
   'goal': () => goalSheet(),
-  'home': () => S.view === 'deck' && S.deckId ? deckGlide(S.deckId, () => goBackDrawn('#/')) : goBack('#/'),
-  'open-deck': t => deckGlide(t.dataset.id, () => nav('#/deck/' + t.dataset.id)),
+  'home': () => { S.instant = true; goBack('#/'); },
+  'open-deck': t => { S.instant = true; nav('#/deck/' + t.dataset.id); },   // 3.45.98: at once, no glide and no fade-in
   'new-deck': () => { fabShut(); nameDialog('deck'); },
   'new-group': () => { fabShut(); nameDialog('group'); },
   'group-add': () => { fabShut(); groupPicker(curGroup()); },
@@ -16268,7 +16239,7 @@ const A = {
   },
   'flip-front': t => {   // 3.45.59: the deck page's Show first: 中文 / English
     const en = t.dataset.v === '1'; if (!!db.prefs.englishFirst === en) return;
-    db.prefs.englishFirst = en; save(); haptic?.();
+    db.prefs.englishFirst = en; save();
     t.parentNode.querySelectorAll('button').forEach(b => { const on = b === t; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
     LOG.add('flip-front', en ? 'english' : 'chinese');
   },
@@ -16314,9 +16285,15 @@ const A = {
   'write-again': () => { startWrite(shuffle(S.write.order.slice(0, S.write.main))); render(); },
   'write-next': () => { startWrite(writePick(curDeck())); render(); },   // word bank: the next N (the ones just written right go to the back)
 };
+/* 3.45.98: the flashcard buttons buzz (ms). In a flip round every button does; these also do outside one. */
+const TAP_BUZZ = { sgrade: 24, 'open-deck': 14, home: 14, study: 18, write: 18, 'learn-study': 18, 'learn-write': 18, 'today-start': 18, 'review-start': 18,
+  'flip-front': 16, 'back-deck': 14, 'study-done': 18, 'study-again': 18, check: 18, grade: 24, undo: 14, clear: 14, skip: 14, giveup: 14,
+  whint: 14, 'py-hint': 14, outline: 14, wmode: 14, 'retry-missed': 18, 'write-again': 18, 'write-next': 18 };
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || t.disabled) return;
-  A[t.dataset.act]?.(t, e);
+  const act = t.dataset.act, ms = TAP_BUZZ[act] || (S.view === 'study' && A[act] ? 16 : 0);
+  if (ms) haptic(ms);   // before the action, so a longer buzz of its own (the end of a round) takes over
+  A[act]?.(t, e);
 });
 
 /* ---------- swipe between pages ----------
@@ -16382,7 +16359,7 @@ document.addEventListener('click', e => {
     const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
     if (!g.on) {
       if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { g = null; return; }   // up/down: normal scrolling
-      if (Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+      if (Math.abs(dx) < 22 || Math.abs(dx) < Math.abs(dy) * 1.2) return;   // 3.45.98: under 22px it is still a tap (10 swallowed sloppy taps)
       begin();
     }
     g.v = speed(g.hist, e.clientX, e.timeStamp);
