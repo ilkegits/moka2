@@ -12040,6 +12040,77 @@ function lx3(look) {
     + `<span class="in"><svg viewBox="50 70 140 ${(140 * fh).toFixed(1)}"><path d="${a.inner}" fill="${ins}" stroke="rgba(0,0,0,.35)" stroke-width="3" stroke-linejoin="round"/></svg></span></span></span></span>`;
 }
 const lxFlat = look => { const a = lxArt(look); return `<svg viewBox="46 66 148 208" aria-hidden="true"><defs>${a.defs}</defs>${a.body}${a.flap}</svg>`; };   // a small flat one, for a list
+/* 3.45.95 (ilkem: "an epic or mystery box opening like sound"): the 利是 opening's sound, made here like the app's other
+   sounds (no files, so it works offline). Spin in: a rising rush and a thud. Waiting: a low minor hum and far bells.
+   First tap: a drum roll that speeds up under a climbing tone. Second tap: a boom, a crash, a big major chord and a
+   shower of sparkles. Each part has its own volume knob, so the next one can cut it off. ctx: only for test renders */
+function lxSound(ctx) {
+  const off = { arrive() {}, charge() {}, burst() {}, stop() {} };
+  try {
+    const c = ctx || acx(), out = c.createGain(), comp = c.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.ratio.value = 6; comp.attack.value = .004; comp.release.value = .25;
+    out.gain.value = .62; out.connect(comp).connect(c.destination);
+    const rate = c.sampleRate, buf = (secs, ch, fn) => { const b = c.createBuffer(ch, secs * rate | 0, rate);
+      for (let j = 0; j < ch; j++) { const d = b.getChannelData(j); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * fn(i / d.length); } return b; };
+    const hiss = buf(2, 1, () => 1), hall = c.createConvolver(), wet = c.createGain();   // hall: a big room's echo
+    hall.buffer = buf(2.2, 2, x => (1 - x) ** 3); wet.gain.value = .22; hall.connect(wet).connect(out);
+    const bus = () => { const g = c.createGain(); g.connect(out); g.connect(hall); return g; };
+    const env = (to, at, g, att, len) => { const v = c.createGain(); v.gain.setValueAtTime(0, at); v.gain.linearRampToValueAtTime(g, at + att);
+      v.gain.exponentialRampToValueAtTime(.0001, at + len); v.connect(to); return v; };
+    const tone = (to, f, at, g, att, len, type = 'sine', f2, glide = len) => { const o = c.createOscillator(); o.type = type;
+      o.frequency.setValueAtTime(f, at); if (f2) o.frequency.exponentialRampToValueAtTime(f2, at + glide);
+      o.connect(env(to, at, g, att, len)); o.start(at); o.stop(at + len + .05); };
+    const noise = (to, at, g, att, len, type, f, f2, glide = len, q = .8) => { const s = c.createBufferSource(), fl = c.createBiquadFilter();
+      s.buffer = hiss; s.loop = true; fl.type = type; fl.Q.value = q; fl.frequency.setValueAtTime(f, at); if (f2) fl.frequency.exponentialRampToValueAtTime(f2, at + glide);
+      s.connect(fl).connect(env(to, at, g, att, len)); s.start(at, Math.random()); s.stop(at + len + .05); };
+    const cut = (b, at, secs) => { if (!b) return; b.gain.setValueAtTime(b.gain.value, at); b.gain.linearRampToValueAtTime(0, at + secs); };
+    const now = at => at ?? c.currentTime + .02;
+    let hum = null, roll = null;
+    return {
+      arrive(at) {
+        const t = now(at), a = bus(); hum = bus();
+        noise(a, t, .5, .85, 1.2, 'bandpass', 220, 2800, 1.05, 1.4);   // the rush as it spins in
+        tone(a, 170, t + 1.06, .5, .008, .45, 'sine', 55, .3); noise(a, t + 1.06, .18, .004, .14, 'lowpass', 700);   // it lands
+        for (const [f, g] of [[73.4, .12], [146.8, .06], [147.9, .06], [220, .035], [293.7, .02], [349.2, .016]]) {   // D minor, two notes beating
+          const o = c.createOscillator(), v = c.createGain(); o.type = f < 100 ? 'sine' : 'triangle'; o.frequency.value = f;
+          v.gain.setValueAtTime(0, t + .6); v.gain.linearRampToValueAtTime(g, t + 2); o.connect(v).connect(hum); o.start(t + .6); o.stop(t + 30);
+        }
+        for (let r = 0; r < 8; r++) [[1174.7, 0], [1396.9, .34], [1661.2, .68], [1318.5, 1.25]].forEach(([f, d]) => {   // far bells asking a question
+          tone(hum, f, t + 1.25 + r * 3.2 + d, .05, .006, 1.1); tone(hum, f * 2.76, t + 1.25 + r * 3.2 + d, .01, .004, .4);
+        });
+      },
+      charge(at) {
+        const t = now(at); roll = bus();
+        for (let d = 0, gap = .19; d < 14; d += gap, gap = Math.max(.058, gap * .945)) {   // the drum roll
+          const g = Math.min(1, .45 + d / 4);
+          tone(roll, 190, t + d, .2 * g, .004, .09, 'triangle', 95, .07); noise(roll, t + d, .13 * g, .003, .06, 'bandpass', 1500, 0, 0, .9);
+        }
+        const lp = c.createBiquadFilter(), v = c.createGain(), lfo = c.createOscillator(), depth = c.createGain();
+        lp.type = 'lowpass'; lp.Q.value = 4; lp.frequency.setValueAtTime(350, t); lp.frequency.exponentialRampToValueAtTime(3200, t + 2.6);
+        v.gain.setValueAtTime(0, t); v.gain.linearRampToValueAtTime(.03, t + .2); v.gain.linearRampToValueAtTime(.085, t + 2.6); lp.connect(v).connect(roll);
+        lfo.frequency.setValueAtTime(5, t); lfo.frequency.linearRampToValueAtTime(11, t + 2.6); depth.gain.value = 14; lfo.connect(depth); lfo.start(t); lfo.stop(t + 14);
+        for (const m of [1, 1.007, 1.498]) {   // the climbing tone
+          const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(110 * m, t); o.frequency.exponentialRampToValueAtTime(440 * m, t + 2.6);
+          depth.connect(o.detune); o.connect(lp); o.start(t); o.stop(t + 14);
+        }
+        noise(roll, t, .12, 2.6, 14, 'highpass', 500, 5000, 2.6);
+        cut(hum, t + .3, 1.6);
+      },
+      burst(at) {
+        const t = now(at), b = bus();
+        cut(hum, t, .05); cut(roll, t, .05); hum = roll = null;
+        tone(b, 170, t, .9, .006, 1.2, 'sine', 36, .55); tone(b, 330, t, .35, .004, .35, 'triangle', 80, .25);   // the boom (the second one is heard on a phone speaker)
+        noise(b, t, .5, .004, .3, 'lowpass', 2400, 200); noise(b, t, .26, .006, 1.9, 'highpass', 4200);   // the lid flying off, the cymbal
+        const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(700, t); lp.frequency.exponentialRampToValueAtTime(5200, t + .25);
+        lp.frequency.exponentialRampToValueAtTime(1400, t + 2.2); lp.connect(b);
+        for (const f of [146.8, 293.7, 370, 440, 587.3, 740]) for (const m of [.996, 1.004]) tone(lp, f * m, t + .03, .045, .04, 2.3, 'sawtooth');   // D major
+        [1174.7, 1480, 1760, 2349.3, 2960, 3520, 4698.6].forEach((f, i) => tone(b, f, t + .14 + i * .075, .07, .005, .7));
+        for (let i = 0; i < 18; i++) tone(b, [2349.3, 2637, 2960, 3520, 3951][i % 5] * (i % 2 ? 1 : 1.5), t + .7 + i * .085 + Math.random() * .04, .022, .003, .3);
+      },
+      stop() { cut(out, c.currentTime, .5); hum = roll = null; setTimeout(() => out.disconnect(), 800); }
+    };
+  } catch (_) { return off; }
+}
 function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives XP (the reading card), drawn as jade XP tokens
   const fr = $('#frame') || document.body, still = stillMotion(), fh = fr.clientHeight || innerHeight, fw = fr.clientWidth || innerWidth, f0 = fr.getBoundingClientRect();
   const W = Math.round(Math.min(140, fh * .19, fw * .34)), H = W * 10 / 7, cy = Math.round(fh * .44), top = Math.round(cy - H / 2), cz = Math.round(W * .21), th = cz * .2;
@@ -12079,9 +12150,10 @@ function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives X
       else buzzT = setInterval(() => haptic(10), 110);
     } catch (_) {}
   };
+  const snd = lxSound();
   let st = 'arrive', closed = false, raf = 0, got = 0, tL = 0, tB = 0, tO = 0;
   const close = () => {
-    if (closed) return; closed = true; cancelAnimationFrame(raf); buzzStop(); o.classList.add('out');
+    if (closed) return; closed = true; cancelAnimationFrame(raf); buzzStop(); snd.stop(); o.classList.add('out');
     if (from) from.style.visibility = ''; done?.(); setTimeout(() => o.remove(), still ? 0 : 320);
   };
   o.querySelector('[data-lxo="go"]').onclick = e => { e.stopPropagation(); haptic(10); close(); };
@@ -12094,12 +12166,12 @@ function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives X
   };
   const say = t => { tap.textContent = t; tap.classList.toggle('on', !!t); };
   const press = () => {
-    if (st === 'wait') { st = 'buzz'; tB = performance.now() - t0; say('Tap again to open'); haptic(20); buzzGo(false); }
+    if (st === 'wait') { st = 'buzz'; tB = performance.now() - t0; say('Tap again to open'); haptic(20); buzzGo(false); snd.charge(); }
     else if (st === 'buzz') { st = 'open'; tO = performance.now() - t0; say(''); open(); }
     else if (st === 'open') finish();
   };
   const open = () => {   // the burst
-    buzzStop(); try { if (navigator.vibrate) navigator.vibrate([90, 50, 160]); else haptic(30); } catch (_) {}
+    buzzStop(); snd.burst(); try { if (navigator.vibrate) navigator.vibrate([90, 50, 160]); else haptic(30); } catch (_) {}
     env.classList.add('open'); o.classList.add('lit');
     o.querySelector('.lxo-flash').animate([{ opacity: 0 }, { opacity: .9, offset: .15 }, { opacity: 0 }], { duration: 650, easing: 'ease-out' });
     fly.animate([{ transform: 'none' }, { transform: 'translate(-6px,4px)' }, { transform: 'translate(6px,-4px)' }, { transform: 'translate(-3px,-2px)' }, { transform: 'none' }], { duration: 320 });
@@ -12109,8 +12181,8 @@ function lxShow(look, n, from, done, xp) {   // moka2: xp = the envelope gives X
   o.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && st !== 'done' && st !== 'arrive') { e.preventDefault(); press(); } else if (e.key === 'Escape' && st === 'done') close(); });
   requestAnimationFrame(() => o.classList.add('on'));
   if (from) from.style.visibility = 'hidden';
-  if (still) { finish(); return; }
-  o.focus({ preventScroll: true }); haptic(12);
+  if (still) { snd.burst(); finish(); return; }
+  o.focus({ preventScroll: true }); haptic(12); snd.arrive();
   // the spin in, from where it stood on the path
   const fl = 1100;
   if (from) {
@@ -14710,7 +14782,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.94';
+const APP_VERSION = '3.45.95';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
