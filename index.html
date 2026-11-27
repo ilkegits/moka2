@@ -645,12 +645,13 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
   box-shadow:inset 0 -4px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 14px 24px -10px rgba(30,20,10,.6),0 3px 8px -3px rgba(30,20,10,.3);transition:transform .08s,box-shadow .08s}
 .dk-add:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.12),0 6px 12px -8px rgba(30,20,10,.6)}
 .dk-add svg.i{width:20px;height:20px;stroke-width:2.4}
-/* 3.45.59: which side of the cards you see first, picked here before you flip (it used to be a pill inside the round) */
-.dk-side{position:absolute;left:0;bottom:calc(100% - 3px);display:flex;align-items:center;gap:8px;height:40px;padding:0 4px 0 12px;border-radius:13px;background:var(--card);
-  box-shadow:0 10px 22px -12px rgba(30,20,10,.45),0 0 0 1px rgba(120,95,60,.1)}
+/* 3.45.96: which side of the cards you see first, at the far right of the Cards line (it sat in the bottom bar); the picked one is black */
+.section-head.dk-head{align-items:center;gap:10px}
+.dk-side{display:flex;align-items:center;gap:8px}
 .dk-side > span{font-size:13px;font-weight:600;color:var(--muted)}
 .dk-side .seg{padding:2px}
-.dk-side .seg button{height:30px;padding:0 11px;font-size:13.5px}
+.dk-side .seg button{height:30px;padding:0 11px;font-size:13.5px;color:var(--muted)}
+.dk-side .seg button.on{background:var(--ink);color:var(--paper)}
 .dk-side .seg b{font:500 15px/1 var(--hanzi)}
 /* 3.45.43 the deck page's bottom bar: Write (white, with a 写 square) and Flip (red, the main button) */
 .dk-dock{display:flex;gap:10px}
@@ -11584,14 +11585,14 @@ function DeckView(d) {
     <header class="bar"><button class="icon-btn" data-act="home" aria-label="Back">${I.back}</button><div class="bar-title"></div>
       <button class="icon-btn" data-act="deck-menu" aria-label="Deck options">${I.more}</button></header>
     <section class="deck-hero"><div class="eyebrow">${g ? esc(g.name) : 'Deck'}</div><h1 class="deck-title"><span class="dn">${esc(d.name)}</span></h1><div class="muted">${plural(n, 'card')}${state}</div></section>
-    ${n ? `<div class="section-head"><h2>Cards</h2></div><ul class="cards">${d.cards.map(c => `<li><button class="crow" data-act="edit-card" data-id="${c.id}">
+    ${n ? `<div class="section-head dk-head"><h2>Cards</h2>
+      <div class="dk-side" role="group" aria-label="Show first"><span>Show first</span><div class="seg">${[[0, '<b lang="zh">中文</b>', 'Chinese'], [1, 'English', 'English']].map(([v, t, a]) =>
+          `<button data-act="flip-front" data-v="${v}" class="${!!db.prefs.englishFirst === !!v ? 'on' : ''}" aria-label="${a} first" aria-pressed="${!!db.prefs.englishFirst === !!v}">${t}</button>`).join('')}</div></div></div><ul class="cards">${d.cards.map(c => `<li><button class="crow" data-act="edit-card" data-id="${c.id}">
         <span class="crow-hz">${esc(c.hanzi)}</span>
         <span class="crow-txt"><span class="crow-py">${esc(PY(c.hanzi, c.pinyin))}</span><span class="crow-en">${esc(c.en)}</span></span>${dots(c)}</button></li>`).join('')}</ul><div class="bk-fabgap"></div>`
       : `<div class="empty"><div class="big">卡</div><p>This deck is empty.<br>Put in your first word to start.</p></div>`}
     <div class="dock dk-dock">${n
-      ? `<div class="dk-side" role="group" aria-label="Show first"><span>Show first</span><div class="seg">${[[0, '<b lang="zh">中文</b>', 'Chinese'], [1, 'English', 'English']].map(([v, t, a]) =>
-          `<button data-act="flip-front" data-v="${v}" class="${!!db.prefs.englishFirst === !!v ? 'on' : ''}" aria-label="${a} first" aria-pressed="${!!db.prefs.englishFirst === !!v}">${t}</button>`).join('')}</div></div>
-        <button class="dk-add" data-act="add-card">${I.plus}Add</button>
+      ? `<button class="dk-add" data-act="add-card">${I.plus}Add</button>
         <button class="btn btn-ghost dk-write" data-act="write" aria-label="Write: English to hanzi"><span class="dk-tz" aria-hidden="true">写</span>Write</button>
         <button class="btn btn-seal dk-flip" data-act="study"><span class="dk-ft">${I.flip}Flip ${plural(n, 'card')}</span><small>${sub}</small></button>`
       : `<button class="btn btn-seal wide" data-act="add-card">${I.plus}Add your first card</button>`}</div>
@@ -14782,7 +14783,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.95';
+const APP_VERSION = '3.45.96';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
