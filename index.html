@@ -4519,10 +4519,10 @@ addEventListener('keydown', e => {
   if ($('#sheet-root').classList.contains('open') || e.target.closest?.('input,textarea,[contenteditable]')) return;
   const st = S.study, g = $('#grades');
   if ((e.key === ' ' || e.key === 'Enter') && !e.target.closest?.('button,a')) {
-    e.preventDefault(); const base = Math.round(st.angle / 180) * 180; st.angle = base + 180;
+    e.preventDefault(); stepLand(); const base = Math.round(st.angle / 180) * 180; st.angle = base + 180;
     noteDeck(curDeck(), st.order[st.i]); LOG.add('card-flip', { shows: Math.abs(Math.round(st.angle / 180)) % 2 ? 'English' : 'Chinese', key: true });
     setAngle(true); dismissHint(); if (!st.flipped) showGrades(true);
-  } else if (/^[123]$/.test(e.key) && g && !g.hidden) { e.preventDefault(); gradeFlip(+e.key - 1); }
+  } else if (/^[123]$/.test(e.key) && g && !g.hidden && !stepFly) { e.preventDefault(); gradeFlip(+e.key - 1); }
   else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !st.flipped) { e.preventDefault(); stepCard(e.key === 'ArrowRight' ? 1 : -1); }
 });
 
@@ -11998,6 +11998,7 @@ function showGrades(on) {
 }
 function gradeFlip(g) {
   const st = S.study, d = curDeck(), c = cardById(d, st.order[st.i]); if (!c) return;
+  st.gT = performance.now();
   if (!c.srs && !st.fresh.includes(c.id)) st.fresh.push(c.id);
   srsGrade(c, g); st.graded[c.id] = g; noteDeck(d, c.id);
   sbHit(st, g > 0); xpAdd(XP_G[g], st); sbPaint(st, (st.i + 1) / st.order.length);   // 3.45.27
@@ -12392,6 +12393,7 @@ function mountStudy() {
   let down = null;
   stage.addEventListener('pointerdown', e => {
     if (!e.target.closest('#wrap') || e.target.closest('button')) return;
+    stepLand();   // 3.45.104: the card was still sliding: turn the new one, not the old one
     down = { x: e.clientX, y: e.clientY, a: st.angle, t: performance.now(), lx: e.clientX, lt: performance.now(), v: 0, moved: false, id: e.pointerId };
   });
   stage.addEventListener('pointermove', e => {
@@ -12425,24 +12427,35 @@ function mountStudy() {
   stage.addEventListener('touchmove', e => { if (down?.moved && e.cancelable) e.preventDefault(); }, { passive: false });
 }
 function dismissHint() { if (!S.study.hinted) { S.study.hinted = true; const h = $('#hint'); if (h) h.style.opacity = 0; } }
+/* 3.45.104 (ilkem: "the laptop web app bugs each time ur switching cards and clicking next"): the card flying out is
+   still the old one for a moment, so a click on it then turned the old card, and the new card came in with the
+   answer buttons already up; a second Next in that moment played the slide twice. Now any click or key during
+   the slide first lands the new card, then does its job on it */
+let stepFly = null;
+function stepLand() { const f = stepFly; stepFly = null; f?.(); }
 function stepCard(dir) {
+  stepLand();
   const st = S.study, d = curDeck(), n = st.order.length, wrap = $('#wrap');
+  if (!wrap) return;
   const ni = (st.i + dir + n) % n;
   if (dir > 0) noteDeck(d, st.order[st.i]);   // the card you are leaving
   if (dir > 0 && ni === 0 && Object.keys(st.graded).length) return finishFlip();   // end of a round you answered: the cheer page
   LOG.add(dir > 0 ? 'card-next' : 'card-prev', { card: `${ni + 1}/${n}`, hz: cardById(d, st.order[ni])?.hanzi });
   if (dir > 0 && ni === 0 && n > 1) toast('Round complete, back to the first card');
   showGrades(false);
+  wrap.getAnimations().forEach(a => a.cancel());   // the last card still sliding in: it is in place now
   const out = wrap.animate([{ transform: 'none', opacity: 1 }, { transform: `translateX(${-dir * 55}%) rotate(${-dir * 7}deg)`, opacity: 0 }], { duration: 190, easing: 'ease-in', fill: 'forwards' });
-  out.onfinish = () => {
-    if (!$("#card3d")) return;   // the round was closed while the card was flying out
-    st.i = ni;
+  const land = () => {
+    if (stepFly === land) stepFly = null;
+    if (!$("#card3d") || S.study !== st) return out.cancel();   // the round was closed while the card was flying out
+    st.i = ni; showGrades(false);
     $('#card3d').innerHTML = Faces(cardById(d, st.order[st.i]), d);
     st.angle = startAngle(); setAngle(false);
     { const b = $('#sbar i'); if (b) b.style.width = gBar((st.i + 1) / n) + '%'; } $('#pcount').textContent = `${st.i + 1} / ${n}`;
     out.cancel();
     wrap.animate([{ transform: `translateX(${dir * 55}%) rotate(${dir * 7}deg)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.85,.25,1)' });
   };
+  stepFly = land; out.onfinish = () => { if (stepFly === land) stepLand(); };
 }
 
 /* ---------- write (tianzige) ---------- */
@@ -15005,7 +15018,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.103';
+const APP_VERSION = '3.45.104';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16467,8 +16480,10 @@ const A = {
     t.outerHTML = fsBtn(); $('.fs-btn')?.focus({ preventScroll: true });
     LOG.add('card-size', { size: FS_STEPS.find(([x]) => x === v)[1] });
   },
-  'next': () => stepCard(1),
-  'prev': () => stepCard(-1),
+  // 3.45.104: the arrows come up where the answers were, so a double click on Knew it skipped a card; and an arrow
+  // clicked with the mouse let go of the focus, or Space then pressed it again instead of turning the card
+  'next': (t, e) => { if (e?.detail) t.blur(); if (performance.now() - (S.study?.gT || 0) > 400) stepCard(1); },
+  'prev': (t, e) => { if (e?.detail) t.blur(); if (performance.now() - (S.study?.gT || 0) > 400) stepCard(-1); },
   'shuffle': t => {
     const st = S.study, d = curDeck(); st.shuffled = !st.shuffled;
     st.order = st.shuffled ? shuffle(d.cards.map(c => c.id)) : d.cards.map(c => c.id); st.i = 0;
