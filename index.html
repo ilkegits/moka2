@@ -3949,6 +3949,11 @@ if (!db.pfMig) {
   db.mapKeep = keep; db.pfMig = 1;
 }
 db.mapKeep = db.mapKeep && typeof db.mapKeep === 'object' ? db.mapKeep : {};
+/* 3.45.101 (ilkem): 美国 was added from the English "Us", and Write showed "Us", which reads as 我们. Once: it says USA. */
+if (!db.fixUsa) {
+  for (const c of [...db.decks.flatMap(d => d.cards || []), ...db.bank]) if (c.hanzi === '美国' && /^us$/i.test((c.en || '').trim())) c.en = 'USA';
+  db.fixUsa = 1;
+}
 save();
 
 /* ---------- which Chinese: Simplified (Mainland China), Traditional (Taiwan) or Cantonese (Hong Kong) (v4.68) ----------
@@ -12595,6 +12600,7 @@ const JUDGE = {
   looseTol: .2,    // when the reader's first guess is exactly the right character, a stroke may sit this far off instead
   looseTotal: .6,  // (a stroke drawn a bit off still counts; a stroke left out still fails)
   looseInk: .85,   // and you must have drawn at least this much ink compared with the real character
+  looseInkAll: .7, // ...or this much when you drew all its strokes, or all but one (a small 口 in 店 is short of ink, not wrong)
   twin: { shape: .12, off: .34, len: 2, most: 3, ink: .55 },  // a stroke written in the wrong spot still counts when one of your strokes is plainly it (see strokeCheck)
   part: { tol: .11, ink: .6, joined: .3 },  // each part lined up on its own (see strokeCheck)
 }
@@ -12719,6 +12725,8 @@ function strokeCheck(userStrokes, ref, s) {
   const owner = U.map(l => l.map(q => { let bj = 0, bd = Infinity; R.forEach((r, j) => { const d = r.length ? nearest(q, r) : Infinity; if (d < bd) { bd = d; bj = j; } }); return bj; }));
   // ...and each of your strokes is also paired, as a whole and one to one, with the stroke it matches best, so a stroke
   // nudged toward a neighbour still counts for its own (packed parts like 足 in 路). A left-out stroke has no partner.
+  // how many of the character's strokes you drew: one each, or more for a stroke that runs through several (joined, written fast)
+  const drawn = U.reduce((a, l, i) => { const c = R.map(() => 0); owner[i].forEach(j => c[j]++); return a + Math.max(1, c.filter((k, j) => R[j].length && k >= JUDGE.part.joined * R[j].length).length); }, 0);
   const n = 16, Us = U.map(l => alongLine(l, n)), Rs = R.map(l => l.length ? alongLine(l, n) : null);
   const gap = (a, b) => a.reduce((t, q, i) => t + Math.hypot(q.x - b[i].x, q.y - b[i].y), 0) / n;
   const pairs = []; Us.forEach((u, i) => Rs.forEach((r, j) => { if (r) pairs.push([Math.min(gap(u, r), gap([...u].reverse(), r)), i, j]); }));
@@ -12735,7 +12743,7 @@ function strokeCheck(userStrokes, ref, s) {
   const extra = U.length > R.length && U.some((l, i) => l.length * JUDGE.step >= .15 && coverWithout(i).every(c => c >= JUDGE.strokeCov));
   const totalL = onL.reduce((a, f, i) => a + f * U[i].length, 0) / Ua.length;
   const partL = parts.map(pt => pt.ix.reduce((a, i) => a + refL[i] * R[i].length, 0) / (pt.ix.reduce((a, i) => a + R[i].length, 0) || 1));
-  const looseOk = !extra && refL.every(c => c >= JUDGE.strokeCov) && onL.every(c => c >= JUDGE.inkOn) && partL.every(c => c >= JUDGE.partCov) && totalL >= JUDGE.looseTotal && Ua.length >= JUDGE.looseInk * Ra.length;
+  const looseOk = !extra && refL.every(c => c >= JUDGE.strokeCov) && onL.every(c => c >= JUDGE.inkOn) && partL.every(c => c >= JUDGE.partCov) && totalL >= JUDGE.looseTotal && Ua.length >= (U.length >= R.length - 1 ? JUDGE.looseInkAll : JUDGE.looseInk) * Ra.length;
   // Written fast is not written wrong. A stroke that misses its spot still counts when one of your strokes is plainly that
   // stroke, only shifted (a 辶 dot drawn low, a squeezed 讠, a tall 田): the same shape and size, on the same part of the
   // character, not too far off, and not needed for any other stroke. A stroke you left out has no such twin (氵 with two
@@ -12756,6 +12764,9 @@ function strokeCheck(userStrokes, ref, s) {
         const sh = Math.min(gap(lift(u, mu), r0), gap(lift([...u].reverse(), mu), r0)); if (sh > T.shape) return;
         const rest = U.filter((_, x) => x !== i).flat();                            // needed elsewhere: without it another stroke goes bare
         if (R.some((l, k) => k !== j && !twinOf.has(k) && near[k] >= JUDGE.strokeCov && frac(l, rest, JUDGE.looseTol) < JUDGE.strokeCov)) return;
+        // fewer strokes than the character and none joined: a stroke is really missing, so a stroke of yours can't be counted
+        // for it if another stroke needs it at the normal distance (a 预 without 页's 丿 passed: its 一 was counted twice)
+        if (drawn < R.length && R.some((l, k) => k !== j && !twinOf.has(k) && frac(l, Ua) >= JUDGE.strokeCov && frac(l, rest) < JUDGE.strokeCov)) return;
         if (!best || d < best.d) best = { i, d };
       });
       if (!best) break; twinOf.set(j, best.i);
@@ -12769,19 +12780,20 @@ function strokeCheck(userStrokes, ref, s) {
   // 口, 子 tucked under 宀), and lining up the whole drawing at once leaves one part looking empty. So each part is also
   // lined up on its own and checked again, stroke by stroke. A stroke left out still fails. Only used when the reader is sure.
   let partOk = false;
-  if (!looseOk && !twinOk && !extra && parts.length > 1 && U.length >= R.length - 1 && U.length <= R.length + 1) {
+  if (!looseOk && !twinOk && !extra && parts.length > 1 && drawn >= R.length - 1 && U.length <= R.length + 1) {
     const P = JUDGE.part, mid = A => ({ x: A.reduce((t, q) => t + q.x, 0) / A.length, y: A.reduce((t, q) => t + q.y, 0) / A.length });
     const mineOf = U.map(l => { const m = mid(l); let bk = 0, bd = Infinity; parts.forEach((pt, k) => { const d = Math.hypot(m.x - pt.cx, m.y - pt.cy); if (d < bd) { bd = d; bk = k; } }); return bk; });
     partOk = Ua.length >= P.ink * Ra.length && parts.every((pt, k) => {
       const Rp = pt.ix.map(j => R[j]).filter(l => l.length), Up = U.filter((_, i) => mineOf[i] === k);
-      if (!Rp.length || !Up.length || Up.length < Rp.length - 1 || Up.length > Rp.length + 1) return false;
+      if (!Rp.length || !Up.length || Up.length > Rp.length + 1) return false;
       const V = alignTo(Up, Rp), Rpa = Rp.flat(), mine = Rp.map(() => []);
       // each bit of your ink counts only for the stroke it is closest to, so a neighbour can't stand in for a stroke left out
       const own = V.map(l => l.map(q => { let bj = 0, bd = Infinity; Rp.forEach((r, j) => { const d = nearest(q, r); if (d < bd) { bd = d; bj = j; } }); mine[bj].push(q); return bj; }));
-      // one stroke fewer than the part has is fine only in a part of 3+ strokes, and only when one of yours plainly runs through
-      // two of them (joined, not left out); a 2-stroke part like 亻 or 冫 with one stroke is half missing
-      if (Up.length < Rp.length && (Rp.length < 3 || !own.some(o => Rp.filter((r, j) => o.filter(x => x === j).length >= P.joined * r.length).length >= 2))) return false;
-      return Rp.every((l, j) => frac(l, mine[j], P.tol) >= JUDGE.strokeCov) && V.every(l => frac(l, Rpa, P.tol) >= JUDGE.inkOn);
+      // fewer strokes than the part has is fine only in a part of 3+ strokes, and only when yours plainly run through the rest
+      // (joined, not left out: 非 in 啡 in 4 strokes); a 2-stroke part like 亻 or 冫 with one stroke is half missing
+      if (Up.length < Rp.length && (Rp.length < 3 || own.reduce((a, o) => a + Math.max(1, Rp.filter((r, j) => o.filter(x => x === j).length >= P.joined * r.length).length), 0) < Rp.length)) return false;
+      const tol = Up.length < Rp.length ? P.tol + .01 : P.tol;   // joined strokes come out a little rounder
+      return Rp.every((l, j) => frac(l, mine[j], tol) >= JUDGE.strokeCov) && V.every(l => frac(l, Rpa, tol) >= JUDGE.inkOn);
     });
   }
   // Each stroke of the character must be covered by YOUR stroke for it, at the normal distance: ink that belongs to a
@@ -12789,8 +12801,12 @@ function strokeCheck(userStrokes, ref, s) {
   // lines nearby covered the empty spot. Needed whenever the handwriting reader isn't sure on its own (see verdict).
   const own = coverWithout(-1, JUDGE.tol), owned = own.every(c => c >= JUDGE.strokeCov);
   const strong = ok && !extra && own.every(c => c >= JUDGE.strong.stroke) && Math.min(...refCov) >= JUDGE.strong.stroke && Math.min(...parts.map(pt => pt.cov)) >= JUDGE.strong.part && total >= JUDGE.strong.total;
+  // Strokes left out, not joined: several strokes fewer than the character has, and less ink too. Joining strokes in one
+  // movement keeps all the ink (and adds the joins), so a fast 晚 or 啡 in 7 strokes still has ink to spare; a 意 without its
+  // 日 (9 strokes of 13) is short of ink, though everything you drew sits on the character.
+  const fewer = R.length - U.length, thin = fewer >= 2 && Ua.length < Math.min(.95, .6 + .1 * fewer) * Ra.length;
   const avg = (A, B) => A.reduce((a, p) => a + nearest(p, B), 0) / A.length;
-  return { ok, owned, misplaced: own.filter(c => c < JUDGE.strokeCov).length, strong, looseOk, twinOk, partOk, extra, missing, stray, total, badPart: badPart && { pos: badPart.pos, radical: !!badPart.radical }, fit: (avg(Ua, Ra) + avg(Ra, Ua)) / 2 };
+  return { ok, owned, thin, misplaced: own.filter(c => c < JUDGE.strokeCov).length, strong, looseOk, twinOk, partOk, extra, missing, stray, total, badPart: badPart && { pos: badPart.pos, radical: !!badPart.radical }, fit: (avg(Ua, Ra) + avg(Ra, Ua)) / 2 };
 }
 async function recognize(strokes, s, lang = hwLang()) {
   const t0 = strokes[0]?.[0]?.t || 0;
@@ -12846,6 +12862,7 @@ async function judgeChar(ch, strokes, s) {
 function verdict(shape, rank) {
   if (!shape && rank === null) return null;                    // offline and no stroke data: the learner decides
   if (!shape) return rank === 0;
+  if (shape.thin) return false;                                // strokes left out (see strokeCheck)
   if (rank === null) return shape.ok && shape.owned;                          // offline: stroke placement only
   if (rank === 0 && shape.looseOk) return true;               // the reader is sure and every stroke is roughly in place
   if (rank === 0 && shape.twinOk) return true;                // ...or the strokes off their spot are plainly yours, only shifted
@@ -13427,7 +13444,9 @@ function cardSheet(cardId) {
       means.onclick = sugs.onclick = e => {
         const b = e.target.closest('button'); if (!b) return;
         if (b.dataset.m) { fen.value = b.dataset.m; E.enDirty = true; E.autoEn = false; paintBtn(); return; }
-        if (b.dataset.h) { LOG.add('card-en-pick', { typed: fen.value.trim(), picked: b.dataset.h }); fpy.value = ''; E.enFirst = true; setHz(b.dataset.h);
+        if (b.dataset.h) { LOG.add('card-en-pick', { typed: fen.value.trim(), picked: b.dataset.h }); fpy.value = ''; E.enFirst = true;
+          const sp = E.D && dictSpelling(E.D, b.dataset.h, fen.value.trim()); if (sp) fen.value = sp;
+          setHz(b.dataset.h);
           E.reading = Math.max(0, rows().findIndex(r => r.p === b.dataset.p)); paintHz(); paintCands([]);
           /* v4.26: the card is ready. No English meanings to pick under the English you typed, and the keyboard goes down
              (it had your word up as a suggestion); Add is at the top, and after it the keyboard comes back for the next card */
@@ -13531,6 +13550,14 @@ function loadDict() {
 }
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const meanings = row => row.e.split('; ');
+/* An abbreviation you typed, as the dictionary spells it for the word you picked: "Us" for 美国 becomes "USA" (not the word
+   "us", which is 我们), "tv" for 电视 becomes "TV": the entry's longest abbreviation that starts the same. Other words stay as typed. */
+function dictSpelling(D, hz, typed) {
+  const ms = (D.byHz.get(hz) || []).flatMap(meanings).map(m => plainMeaning(m)), caps = m => /^[A-Z][A-Z.]*$/.test(m);
+  if (!typed || ms.includes(typed)) return null;
+  const m = ms.find(m => caps(m) && m.toLowerCase() === typed.toLowerCase()); if (!m) return null;
+  return ms.filter(x => caps(x) && x.startsWith(m)).sort((a, b) => b.length - a.length)[0];
+}
 const plainMeaning = m => m.replace(/^(\([^)]*\)\s*)+/, '').trim() || m;   // "(bound form) to walk" -> "to walk"
 /* English -> Chinese: exact meanings first ("eat" finds 吃 "to eat"), then words that mention it; common words first within each group */
 function searchEnglish(D, q) {
@@ -14777,7 +14804,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.100';
+const APP_VERSION = '3.45.101';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
