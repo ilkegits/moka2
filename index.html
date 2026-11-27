@@ -971,7 +971,8 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 /* 3.45.59: Free / Guided sits under the bar, so the progress bar has the whole top row */
 .w-mode{display:flex;justify-content:center;margin:2px 0 -6px}
 /* 3.45.106 (ilkem: "get rid of the free & guided one, or make it very small"): a small quiet switch at the top right */
-.screen > .w-mode{justify-content:flex-end;margin:0 0 -10px;position:relative;z-index:2}
+.screen > .w-mode{justify-content:flex-end;margin:0;position:relative;z-index:2}
+.screen > #wprompt{padding:6px 0 14px}   /* 3.45.107: the squares above take the room the padding had */
 .screen > .w-mode .seg{padding:1px;border-radius:7px;background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
 .screen > .w-mode .seg button{height:22px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:500;color:var(--muted)}
 .screen > .w-mode .seg button.on{background:var(--fill);color:var(--ink-2);box-shadow:none;font-weight:600}
@@ -1033,7 +1034,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .grid{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap,12px);width:100%;margin:0 auto}
 .grid > .trk{display:contents}
 /* 3.45.106 (ilkem: "1 per page ... swipes to the 2nd tianzige. Make it big"): one big box at a time; the row of boxes slides */
-.grid.pg{display:block;overflow:clip;padding:12px;margin-top:-12px;margin-bottom:-12px}
+.grid.pg{display:block;overflow:clip;padding:6px;margin-top:-6px;margin-bottom:-6px}
 .grid.pg > .trk{display:flex;gap:var(--gap);transition:transform .42s cubic-bezier(.3,.8,.3,1)}
 .grid.pg .tzg{flex:none;transition:opacity .3s}
 .grid.pg .tzg.off{opacity:0;pointer-events:none}
@@ -1042,12 +1043,16 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .grid.all .tzg{zoom:var(--z,1)}
 .grid.all .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
   font:600 calc(10.5px / var(--z,1))/1 var(--ui);color:var(--grid);opacity:.75}
-.wpg{display:flex;justify-content:center;gap:8px;margin-top:12px;min-height:26px}
-.wpg button{width:26px;height:26px;border-radius:5px;font:600 12px/1 var(--ui);color:var(--muted);background:var(--card);
-  box-shadow:inset 0 0 0 1px var(--line-2);position:relative;transition:background .2s,color .2s,box-shadow .2s}
-.wpg button::after{content:"";position:absolute;inset:-9px -4px}
-.wpg button.ink{color:var(--ink-2);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--seal) 45%,transparent)}
-.wpg button.on{background:var(--seal);color:#fff;box-shadow:none}
+/* 3.45.107 (ilkem's Instagram clip: "there always appears the hanzi above"): the word's characters as small paper squares
+   above the English; each fills with your own ink as you write it, the one you are on has a red edge, tap one to go to it */
+.w-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin:4px 0 0}
+.w-slot{position:relative;width:42px;height:42px;border-radius:6px;background-color:var(--card);box-shadow:inset 0 0 0 1px var(--line-2);
+  background-image:linear-gradient(var(--line),var(--line)),linear-gradient(var(--line),var(--line));background-size:1px 100%,100% 1px;
+  background-position:center;background-repeat:no-repeat;transition:box-shadow .25s,transform .25s}
+.w-slot canvas{position:absolute;inset:0;width:100%;height:100%}
+.w-slot b{position:absolute;inset:0;display:grid;place-items:center;font:500 29px/1 var(--hanzi);color:var(--ink)}
+.w-slot.on{box-shadow:inset 0 0 0 1.5px var(--seal);transform:translateY(-1px)}
+.w-slot::after{content:"";position:absolute;inset:-6px -4px}
 .grid.rows .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
   font:600 10.5px/1 var(--ui);letter-spacing:.02em;color:var(--grid);opacity:.75}
 .tzg{position:relative;width:var(--s,150px);height:var(--s,150px);background:var(--card);border-radius:6px;box-shadow:var(--shadow-sm);touch-action:none;color:var(--grid);transition:opacity .25s, transform .25s}
@@ -12506,7 +12511,7 @@ function promptHtml(c) {
   const clueT = clue && zhChars(clue.hz), clueHz = clue && [...clue.hz].map((x, i) => x === c.hanzi ? (open ? `<i class="w-gap fill">${esc(clueT[i])}</i>` : '<i class="w-gap"></i>') : esc(clueT[i])).join('');
   // 3.45.59: no "Write in hanzi · 1 character" line (ilkem: redundant); only a word coming back says so
   return `${W.i >= W.main ? `<div class="eyebrow">Once more · ${left === 1 ? 'last one' : left + ' left'}</div>` : ''}
-      <div class="prompt-en" style="font-size:${Math.min(44, enSize(ask.en))}px">${esc(ask.en)}</div>
+      <div class="prompt-en" style="font-size:${Math.min(28, Math.round(enSize(ask.en) * .72))}px">${esc(ask.en)}</div>
       ${clue ? `<div class="w-clue" id="wclue">as in <span class="hz">${clueHz}</span>${W.pyShown || open ? `<span class="py">${esc(PY(clue.hz, clue.py))}</span>` : ''}<span>· ${esc(clue.en)}</span></div>` : ''}
       <div class="reveal-line" id="rline">${open ? revealLine(c) : `<button class="link" data-act="py-hint">${W.pyShown ? esc(PY(c.hanzi, ask.py)) : 'Show ' + PYN().toLowerCase()}</button>`}</div>`;
 }
@@ -12525,9 +12530,9 @@ const writeSeg = () => { const guided = db.prefs.writeMode === 'guided';
   return `<div class="seg"><button data-act="wmode" data-m="free" class="${guided ? '' : 'on'}">Free</button><button data-act="wmode" data-m="guided" class="${guided ? 'on' : ''}">Guided</button></div>`; };
 function writeBody(c) {   // the prompt, the writing boxes, the note and the tools: the word bank's writing screen, also used inside lessons
   const chars = wChars(c), guided = db.prefs.writeMode === 'guided';
-  return `<section class="prompt" id="wprompt">${promptHtml(c)}</section>
+  return `<div class="w-slots" id="wpg">${chars.map((ch, i) => `<button class="w-slot" data-act="wpg" data-i="${i}" aria-label="Character ${i + 1}"><canvas></canvas><b></b></button>`).join('')}</div>
+    <section class="prompt" id="wprompt">${promptHtml(c)}</section>
     <div class="grid" id="grid"><div class="trk">${chars.map((ch, i) => `<div class="tzg" data-i="${i}" data-n="${i + 1}">${TZG}<canvas></canvas><div class="ans"></div><div class="quiz"></div></div>`).join('')}</div></div>
-    ${chars.length > 1 ? '<div class="wpg" id="wpg"></div>' : ''}
     <div class="note" id="note">${guided ? 'Draw each stroke in order — wrong strokes bounce back.' : 'Write with your finger, then check.'}</div>
     <div class="tools" id="tools">${guided
       ? `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill ${db.prefs.outline ? 'on' : ''}" data-act="outline">${I.eye}Outline</button><button class="pill" data-act="giveup">Show me</button>`
@@ -12678,14 +12683,16 @@ function mountWrite() {
   const d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   // 3.45.59 (ilkem: "slightly bigger when it's 2 next to each other"): two boxes side by side may reach 8px into the page margins
   // 3.45.106: one box at a time, as big as the screen allows (a word's boxes slide in one after another, see pgGo)
-  const grid = $('#grid'), gap = 14, s = Math.floor(Math.max(150, Math.min(400, grid.clientWidth, writeRoom(grid))));
+  const grid = $('#grid'), gap = 14, s = Math.floor(Math.max(150, Math.min(440, grid.clientWidth + 16, writeRoom(grid))));   // 3.45.107: wider, into the page margins
   grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
   grid.style.maxWidth = s + 'px';
   const boxes = $$('.tzg', grid);
-  if (boxes.length > 1) {   // the box plus 12px all round, so its ring and tick are not cut off by the sliding window
-    grid.classList.add('pg'); gridAt(grid, s + 24); boxes.forEach(b => b._s = s); pgGo(S.write.pg || 0, false); }
+  if (boxes.length > 1) {   // the box plus 6px all round, so its ring is not cut off by the sliding window
+    grid.classList.add('pg'); gridAt(grid, s + 12); boxes.forEach(b => b._s = s); pgGo(S.write.pg || 0, false); }
+  else gridAt(grid, s);
   if (db.prefs.writeMode === 'guided') initGuided(boxes, chars, s);
   else { boxes.forEach(b => initFreeBox(b, s)); if (window.HanziWriter) chars.forEach(ch => loadRef(ch).catch(() => {})); }   // stroke data ready for pgAuto
+  pgDots();
 }
 /* 3.45.106 (ilkem: "show 1 per page, the system gets it automatically when u finished a tianzige and swipes to the 2nd").
    A word of 2+ characters shows one big box at a time; the numbered squares under it show where you are and jump to a box. */
@@ -12701,9 +12708,21 @@ function pgGo(i, anim = true) {
   boxes.forEach((b, j) => b.classList.toggle('off', j !== i));
   pgDots();
 }
-function pgDots() {
-  const W = S.write, el = $('#wpg'), boxes = $$('#grid .tzg'); if (!el) return;
-  el.innerHTML = !pager() ? '' : boxes.map((b, j) => `<button data-act="wpg" data-i="${j}" class="${j === W.pg ? 'on' : ''}${b._strokes?.length || b.classList.contains('done-ok') ? ' ink' : ''}" aria-label="Box ${j + 1}">${j + 1}</button>`).join('');
+function pgDots() {   // the small squares above: your ink in each, a red edge on the one you are writing (Guided: the character once done)
+  const W = S.write, slots = $$('#wpg .w-slot'), boxes = $$('#grid .tzg'); if (!slots.length || !W) return;
+  const chars = wChars(cardById(curDeck(), W.order[W.i])), open = W.revealed || W.guidedDone || W.checking;
+  slots.forEach((el, j) => { const b = boxes[j]; if (!b) return;
+    el.classList.toggle('on', !open && (!pager() || j === W.pg) && slots.length > 1);
+    el.querySelector('b').textContent = b.classList.contains('done-ok') ? chars[j] : '';
+    slotInk(el.querySelector('canvas'), b); });
+}
+function slotInk(cv, box) {
+  const z = cv.clientWidth || 42, dpr = Math.min(3, devicePixelRatio || 1), ctx = cv.getContext('2d');
+  if (cv.width !== Math.round(z * dpr)) cv.width = cv.height = Math.round(z * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, z, z);
+  if (!box._strokes?.length || !box._s) return;
+  const k = z / box._s; ctx.scale(k, k);
+  for (const st of box._strokes) drawStroke(ctx, st, 1.9 / k, css('--ink'));
 }
 /* Free: a box counts as finished once you have drawn as many strokes as the character has, or (strokes run together) every
    stroke of it has your ink along it. Then, after a short pause so a last stroke is never cut off, the next box slides in. */
@@ -12729,7 +12748,7 @@ function pgAll() {   // after Check or Guided: the boxes side by side again, sma
   grid.classList.replace('pg', 'all'); grid.firstElementChild.style.cssText = `width:${gw}px`; gridAt(grid, gw);
   grid.style.setProperty('--z', t / s); grid.style.setProperty('--gap', gap + 'px');
   boxes.forEach(b => b.classList.remove('off', 'dim'));
-  $('#wpg')?.remove();
+  pgDots();
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) grid.animate([{ opacity: .3, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'ease-out' });
 }
 function initFreeBox(box, s) {
@@ -13178,7 +13197,7 @@ function morphToChar(box, ref) {
 function revealFree() {
   const W = S.write, d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  W.revealed = true; pgAll();
+  W.revealed = true; pgAll(); pgDots();
   $$('#grid .tzg').forEach((box, i) => {
     const el = box.querySelector('.ans'); el.innerHTML = '';
     if (window.HanziWriter) {
@@ -13271,7 +13290,7 @@ function startQuiz(i) {
 }
 function finishGuided(gaveUp) {
   const W = S.write, d = curDeck(), c = cardById(d, W.order[W.i]);
-  W.guidedDone = true; pgAll();
+  W.guidedDone = true; pgAll(); pgDots();
   if (!gaveUp) { W.sounded = true; chime(); }
   LOG.add('write-guided', { hz: c.hanzi, mistakes: W.mistakes, gave_up: gaveUp ? true : undefined, took: Math.round((Date.now() - W.shownAt) / 1000) + 's' });
   $$('#grid .tzg').forEach(b => b.classList.remove('dim'));
@@ -15101,7 +15120,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.106';
+const APP_VERSION = '3.45.107';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
