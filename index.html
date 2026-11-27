@@ -970,6 +970,11 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .prompt-en{font-family:var(--ui);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:10px 0 8px}   /* 3.45.59: the English word in Satoshi */
 /* 3.45.59: Free / Guided sits under the bar, so the progress bar has the whole top row */
 .w-mode{display:flex;justify-content:center;margin:2px 0 -6px}
+/* 3.45.106 (ilkem: "get rid of the free & guided one, or make it very small"): a small quiet switch at the top right */
+.screen > .w-mode{justify-content:flex-end;margin:0 0 -10px;position:relative;z-index:2}
+.screen > .w-mode .seg{padding:1px;border-radius:7px;background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.screen > .w-mode .seg button{height:22px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:500;color:var(--muted)}
+.screen > .w-mode .seg button.on{background:var(--fill);color:var(--ink-2);box-shadow:none;font-weight:600}
 .prompt .reveal-line{min-height:28px;display:flex;justify-content:center;align-items:center;gap:10px}
 .prompt .reveal-line .py{margin:0;font-size:16px}
 /* which sense is meant: a common word with the character left out (东＿ · thing) */
@@ -1026,6 +1031,23 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .pick-n > span{font-size:14.5px;font-weight:600}
 .pick-n .seg button{min-width:40px;padding:0 10px}
 .grid{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap,12px);width:100%;margin:0 auto}
+.grid > .trk{display:contents}
+/* 3.45.106 (ilkem: "1 per page ... swipes to the 2nd tianzige. Make it big"): one big box at a time; the row of boxes slides */
+.grid.pg{display:block;overflow:clip;padding:12px;margin-top:-12px;margin-bottom:-12px}
+.grid.pg > .trk{display:flex;gap:var(--gap);transition:transform .42s cubic-bezier(.3,.8,.3,1)}
+.grid.pg .tzg{flex:none;transition:opacity .3s}
+.grid.pg .tzg.off{opacity:0;pointer-events:none}
+.grid.pg .tzg::before{content:none}
+.grid.all > .trk{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap);margin:0 auto}
+.grid.all .tzg{zoom:var(--z,1)}
+.grid.all .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
+  font:600 calc(10.5px / var(--z,1))/1 var(--ui);color:var(--grid);opacity:.75}
+.wpg{display:flex;justify-content:center;gap:8px;margin-top:12px;min-height:26px}
+.wpg button{width:26px;height:26px;border-radius:5px;font:600 12px/1 var(--ui);color:var(--muted);background:var(--card);
+  box-shadow:inset 0 0 0 1px var(--line-2);position:relative;transition:background .2s,color .2s,box-shadow .2s}
+.wpg button::after{content:"";position:absolute;inset:-9px -4px}
+.wpg button.ink{color:var(--ink-2);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--seal) 45%,transparent)}
+.wpg button.on{background:var(--seal);color:#fff;box-shadow:none}
 .grid.rows .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
   font:600 10.5px/1 var(--ui);letter-spacing:.02em;color:var(--grid);opacity:.75}
 .tzg{position:relative;width:var(--s,150px);height:var(--s,150px);background:var(--card);border-radius:6px;box-shadow:var(--shadow-sm);touch-action:none;color:var(--grid);transition:opacity .25s, transform .25s}
@@ -12477,7 +12499,7 @@ function writePick(d) {   // word bank: N words, the ones you missed before toda
   const rank = c => { const h = c.hist || []; return (today.has(c.id) ? 3 : 0) + (!h.length ? 1 : h[h.length - 1] ? 2 : 0); };
   return shuffle(ids.map(id => cardById(d, id)).sort((a, b) => rank(a) - rank(b)).slice(0, n).map(c => c.id));
 }
-function resetCardState() { Object.assign(S.write, { revealed: false, pyShown: false, history: [], mistakes: 0, guidedDone: false, active: 0, writers: [], judge: null, checking: false, hints: 0, gNext: [], hg: [], miss: null, sounded: false, shownAt: Date.now() }); }
+function resetCardState() { Object.assign(S.write, { revealed: false, pyShown: false, history: [], mistakes: 0, guidedDone: false, active: 0, writers: [], judge: null, checking: false, hints: 0, gNext: [], hg: [], miss: null, sounded: false, pg: 0, shownAt: Date.now() }); clearTimeout(S.write.pgT); }
 function promptHtml(c) {
   const W = S.write, chars = hanChars(c.hanzi), ask = writeAsk(c), clue = writeClue(c), open = W.revealed || W.guidedDone;
   const left = W.order.length - W.i;
@@ -12504,7 +12526,8 @@ const writeSeg = () => { const guided = db.prefs.writeMode === 'guided';
 function writeBody(c) {   // the prompt, the writing boxes, the note and the tools: the word bank's writing screen, also used inside lessons
   const chars = wChars(c), guided = db.prefs.writeMode === 'guided';
   return `<section class="prompt" id="wprompt">${promptHtml(c)}</section>
-    <div class="grid" id="grid">${chars.map((ch, i) => `<div class="tzg" data-i="${i}" data-n="${i + 1}">${TZG}<canvas></canvas><div class="ans"></div><div class="quiz"></div></div>`).join('')}</div>
+    <div class="grid" id="grid"><div class="trk">${chars.map((ch, i) => `<div class="tzg" data-i="${i}" data-n="${i + 1}">${TZG}<canvas></canvas><div class="ans"></div><div class="quiz"></div></div>`).join('')}</div></div>
+    ${chars.length > 1 ? '<div class="wpg" id="wpg"></div>' : ''}
     <div class="note" id="note">${guided ? 'Draw each stroke in order — wrong strokes bounce back.' : 'Write with your finger, then check.'}</div>
     <div class="tools" id="tools">${guided
       ? `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill ${db.prefs.outline ? 'on' : ''}" data-act="outline">${I.eye}Outline</button><button class="pill" data-act="giveup">Show me</button>`
@@ -12530,7 +12553,7 @@ async function writeHint() {
   if (i < 0 || k < 0) { toast('That’s the whole character'); return; }
   const H = W.hg[i], g = H.groups[k]; H.shown.add(k); W.hints++;
   hintPart(boxes[i], refs[i], g.ix, k);
-  const where = chars.length > 1 ? ` (box ${i + 1})` : '';
+  const where = chars.length > 1 && !pager() ? ` (box ${i + 1})` : '';
   $('#note').innerHTML = g.stroke ? `Hint: stroke ${g.ix[0] + 1} of ${refs[i].strokes.length}${where}`
     : g.n ? `Hint: ${partLabel(g.n)}${g.bit ? ', a few strokes' : ''}${where}` : `Hint: the next part${where}`;
   const left = guided ? W.hg.some(x => x && x.shown.size < x.groups.length) : freeHintNext(W, boxes, refs)[0] >= 0;
@@ -12541,6 +12564,7 @@ async function writeHint() {
    remaining parts are skipped (3.45.40: in 足球, Hint kept showing 足 stroke by stroke while you were writing 球). Parts your
    ink already covers are skipped too, and a box you jumped over still gets its hints. */
 function freeHintNext(W, boxes, refs) {
+  if (pager()) { const i = W.pg, H = W.hg[i], k = H ? H.groups.findIndex((g, q) => !H.shown.has(q) && !inkCovers(boxes[i], refs[i], g.ix)) : -1; return k >= 0 ? [i, k] : [-1, -1]; }   // 3.45.106: the box on screen
   const inked = boxes.map(b => !!b._strokes?.length), last = inked.lastIndexOf(true);
   for (let i = 0; i < boxes.length; i++) {
     const H = W.hg[i]; if (!H || (inked[i] && i < last)) continue;
@@ -12653,14 +12677,60 @@ function mountWrite() {
   const W = S.write; if (W.done) return writeEndShow();
   const d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   // 3.45.59 (ilkem: "slightly bigger when it's 2 next to each other"): two boxes side by side may reach 8px into the page margins
-  const grid = $('#grid'), { s, gap, cols, rows } = boxSize(chars.length, grid.clientWidth + (chars.length > 1 ? 16 : 0), writeRoom(grid));
+  // 3.45.106: one box at a time, as big as the screen allows (a word's boxes slide in one after another, see pgGo)
+  const grid = $('#grid'), gap = 14, s = Math.floor(Math.max(150, Math.min(400, grid.clientWidth, writeRoom(grid))));
   grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
-  const gw = cols * s + (cols - 1) * gap; grid.style.maxWidth = gw + 'px';
-  if (cols > 1) { grid.style.width = gw + 'px'; grid.style.marginLeft = grid.style.marginRight = `calc(50% - ${gw / 2}px)`; }
-  grid.classList.toggle('rows', rows > 1);
+  grid.style.maxWidth = s + 'px';
   const boxes = $$('.tzg', grid);
+  if (boxes.length > 1) {   // the box plus 12px all round, so its ring and tick are not cut off by the sliding window
+    grid.classList.add('pg'); gridAt(grid, s + 24); boxes.forEach(b => b._s = s); pgGo(S.write.pg || 0, false); }
   if (db.prefs.writeMode === 'guided') initGuided(boxes, chars, s);
-  else boxes.forEach(b => initFreeBox(b, s));
+  else { boxes.forEach(b => initFreeBox(b, s)); if (window.HanziWriter) chars.forEach(ch => loadRef(ch).catch(() => {})); }   // stroke data ready for pgAuto
+}
+/* 3.45.106 (ilkem: "show 1 per page, the system gets it automatically when u finished a tianzige and swipes to the 2nd").
+   A word of 2+ characters shows one big box at a time; the numbered squares under it show where you are and jump to a box. */
+const pager = () => !!$('#grid')?.classList.contains('pg');
+function pgGo(i, anim = true) {
+  const W = S.write, grid = $('#grid'); if (!grid?.classList.contains('pg')) return;
+  const boxes = $$('.tzg', grid); i = Math.max(0, Math.min(boxes.length - 1, i));
+  if (W.pg !== i) { clearTimeout(W.pgT); const b = $('#whint'); if (b && db.prefs.writeMode !== 'guided') b.innerHTML = `${I.bulb}Hint`; }
+  W.pg = i;
+  const trk = grid.firstElementChild, s = boxes[0]._s || boxes[0].offsetWidth, gap = parseFloat(grid.style.getPropertyValue('--gap')) || 14;
+  trk.style.transition = anim && !matchMedia('(prefers-reduced-motion: reduce)').matches ? '' : 'none';
+  trk.style.transform = `translateX(${-i * (s + gap)}px)`;
+  boxes.forEach((b, j) => b.classList.toggle('off', j !== i));
+  pgDots();
+}
+function pgDots() {
+  const W = S.write, el = $('#wpg'), boxes = $$('#grid .tzg'); if (!el) return;
+  el.innerHTML = !pager() ? '' : boxes.map((b, j) => `<button data-act="wpg" data-i="${j}" class="${j === W.pg ? 'on' : ''}${b._strokes?.length || b.classList.contains('done-ok') ? ' ink' : ''}" aria-label="Box ${j + 1}">${j + 1}</button>`).join('');
+}
+/* Free: a box counts as finished once you have drawn as many strokes as the character has, or (strokes run together) every
+   stroke of it has your ink along it. Then, after a short pause so a last stroke is never cut off, the next box slides in. */
+function pgAuto(box) {
+  const W = S.write, i = +box.dataset.i; clearTimeout(W.pgT);
+  if (!pager() || W.revealed || W.checking || i !== W.pg || i >= $$('#grid .tzg').length - 1 || !window.HanziWriter) return;
+  const k = box._strokes.length, ch = wChars(cardById(curDeck(), W.order[W.i]))[i];
+  loadRef(ch).then(ref => {
+    if (S.write !== W || W.pg !== i || box._strokes.length !== k || box._down) return;
+    const n = ref.strokes.length, all = ref.medians.map((_, j) => j);
+    const each = k >= Math.max(1, n - 3) && all.every(j => inkCovers(box, ref, [j])), full = k >= n;
+    if (!each && !full) return;
+    W.pgT = setTimeout(() => { if (S.write === W && W.pg === i && !W.revealed && !W.checking && box._strokes.length === k && !box._down) pgGo(i + 1); },
+      each ? 650 : inkCovers(box, ref, all) ? 750 : 1300);
+  }, () => {});
+}
+const gridAt = (grid, w) => { grid.style.maxWidth = grid.style.width = w + 'px'; grid.style.marginLeft = grid.style.marginRight = `calc(50% - ${w / 2}px)`; };   // centred, may reach into the page margins
+function pgAll() {   // after Check or Guided: the boxes side by side again, smaller, so every box's ring and answer show at once
+  const grid = $('#grid'); if (!grid?.classList.contains('pg')) return;
+  const par = grid.parentElement, cs = getComputedStyle(par), cw = par.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const boxes = $$('.tzg', grid), s = boxes[0]._s, { s: t, gap, cols } = boxSize(boxes.length, cw + 16, Infinity), gw = cols * t + (cols - 1) * gap;
+  clearTimeout(S.write.pgT);
+  grid.classList.replace('pg', 'all'); grid.firstElementChild.style.cssText = `width:${gw}px`; gridAt(grid, gw);
+  grid.style.setProperty('--z', t / s); grid.style.setProperty('--gap', gap + 'px');
+  boxes.forEach(b => b.classList.remove('off', 'dim'));
+  $('#wpg')?.remove();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) grid.animate([{ opacity: .3, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'ease-out' });
 }
 function initFreeBox(box, s) {
   const W = S.write, cv = box.querySelector('canvas'), dpr = Math.min(3, devicePixelRatio || 1);
@@ -12671,7 +12741,7 @@ function initFreeBox(box, s) {
   const pt = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp }; };
   cv.addEventListener('pointerdown', e => {
     if (W.revealed) { box._endMorph?.(); box._ans?.animateCharacter?.(); return; }
-    e.preventDefault(); cv.setPointerCapture(e.pointerId);
+    e.preventDefault(); cv.setPointerCapture(e.pointerId); clearTimeout(W.pgT); box._down = true;
     cur = [pt(e)]; box._strokes.push(cur); W.history.push(box); redraw(box);
   });
   cv.addEventListener('pointermove', e => {
@@ -12680,7 +12750,7 @@ function initFreeBox(box, s) {
     for (const ev of (evs.length ? evs : [e])) cur.push(pt(ev));
     redraw(box);
   });
-  const up = () => { if (cur) hintCheck(box); cur = null; };
+  const up = () => { box._down = false; if (cur) { hintCheck(box); pgDots(); pgAuto(box); } cur = null; };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
 }
 function redraw(box) {
@@ -13108,7 +13178,7 @@ function morphToChar(box, ref) {
 function revealFree() {
   const W = S.write, d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  W.revealed = true;
+  W.revealed = true; pgAll();
   $$('#grid .tzg').forEach((box, i) => {
     const el = box.querySelector('.ans'); el.innerHTML = '';
     if (window.HanziWriter) {
@@ -13186,14 +13256,14 @@ function initGuided(boxes, chars, s) {
 }
 function startQuiz(i) {
   const W = S.write, boxes = $$('#grid .tzg');
-  W.active = i; (W.gNext ||= [])[i] = 0;
+  W.active = i; (W.gNext ||= [])[i] = 0; pgGo(i);
   boxes.forEach((b, j) => b.classList.toggle('dim', j !== i && !b.classList.contains('done-ok')));
   W.writers[i].quiz({
     onMistake: () => { W.mistakes++; LOG.add('write-miss', { box: i + 1 }); $('#note').textContent = `${plural(W.mistakes, 'mistake')} so far`; },
     onCorrectStroke: d => { W.gNext[i] = d.strokeNum + 1;   // the stroke a Hint shows next; a hinted part you finished fades
       const H = W.hg[i]; if (H) for (const q of H.shown) if (!H.done.has(q) && H.groups[q].ix.every(s => s <= d.strokeNum)) { H.done.add(q); hintGone(boxes[i], q); } },
     onComplete: () => {
-      boxes[i].classList.add('done-ok'); boxes[i].classList.remove('dim');
+      boxes[i].classList.add('done-ok'); boxes[i].classList.remove('dim'); pgDots();
       if (i + 1 < W.writers.length) setTimeout(() => S.write === W && startQuiz(i + 1), 380);
       else finishGuided();
     },
@@ -13201,7 +13271,7 @@ function startQuiz(i) {
 }
 function finishGuided(gaveUp) {
   const W = S.write, d = curDeck(), c = cardById(d, W.order[W.i]);
-  W.guidedDone = true;
+  W.guidedDone = true; pgAll();
   if (!gaveUp) { W.sounded = true; chime(); }
   LOG.add('write-guided', { hz: c.hanzi, mistakes: W.mistakes, gave_up: gaveUp ? true : undefined, took: Math.round((Date.now() - W.shownAt) / 1000) + 's' });
   $$('#grid .tzg').forEach(b => b.classList.remove('dim'));
@@ -13227,7 +13297,7 @@ function gradeWrite(ok) {
   if (W.done || S.view !== 'write' || !dock) return render();
   const side = $('.shi-side'); if (side) { side.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateX(-24px)' }], { duration: 180, fill: 'forwards' }).onfinish = () => side.remove(); }   // Shi Shi's note goes with the old word
   iconBadge();
-  qSlide(scr, '#wprompt, #grid, #note, #tools', () => {   // the next word slides in; the bar, the mode switch and the button row stay
+  qSlide(scr, '#wprompt, #grid, #wpg, #note, #tools', () => {   // the next word slides in; the bar, the mode switch and the button row stay
     dock.insertAdjacentHTML('beforebegin', writeBody(cardById(d, W.order[W.i])));
     sbPaint(W, W.i / W.order.length);
     dock.innerHTML = writeDock(); dock.firstElementChild?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: 'ease-out' });
@@ -15031,7 +15101,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.105';
+const APP_VERSION = '3.45.106';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16521,8 +16591,10 @@ const A = {
   'wmode': t => { if (db.prefs.writeMode === t.dataset.m) return; db.prefs.writeMode = t.dataset.m; save(); resetCardState(); render(); },
   'py-hint': () => { const W = S.write; W.pyShown = true; $('#wprompt').innerHTML = promptHtml(cardById(curDeck(), W.order[W.i])); },
   'whint': () => writeHint(),
-  'undo': () => { const W = S.write, box = W.history.pop(); if (box) { box._strokes.pop(); redraw(box); } },
-  'clear': () => { const W = S.write; $$('#grid .tzg').forEach(b => { b._strokes = []; redraw(b); }); W.history = []; },
+  'undo': () => { const W = S.write, box = W.history.pop(); if (box) { box._strokes.pop(); redraw(box); clearTimeout(W.pgT); if (pager() && +box.dataset.i !== W.pg) pgGo(+box.dataset.i); pgDots(); } },
+  'clear': () => { const W = S.write, all = $$('#grid .tzg'), bs = pager() ? [all[W.pg]] : all;   // one box at a time: Clear empties the box you see
+    bs.forEach(b => { b._strokes = []; redraw(b); }); W.history = W.history.filter(b => !bs.includes(b)); clearTimeout(W.pgT); pgDots(); },
+  'wpg': t => pgGo(+t.dataset.i),
   'check': async () => {
     const W = S.write; if (!W.history.length) { toast('Write something first'); return; }
     if (W.checking || W.revealed) return; W.checking = true; const t0 = Date.now();
@@ -16557,7 +16629,7 @@ const A = {
 /* 3.45.98: the flashcard buttons buzz (ms). In a flip round every button does; these also do outside one. */
 const TAP_BUZZ = { sgrade: 24, 'open-deck': 14, home: 14, study: 18, write: 18, 'learn-study': 18, 'learn-write': 18, 'today-start': 18, 'review-start': 18,
   'flip-front': 16, 'back-deck': 14, 'study-done': 18, 'study-again': 18, check: 18, grade: 24, undo: 14, clear: 14, skip: 14, giveup: 14,
-  whint: 14, 'py-hint': 14, outline: 14, wmode: 14, 'retry-missed': 18, 'write-again': 18, 'write-next': 18 };
+  whint: 14, 'py-hint': 14, outline: 14, wmode: 14, wpg: 12, 'retry-missed': 18, 'write-again': 18, 'write-next': 18 };
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || t.disabled) return;
   const act = t.dataset.act, ms = TAP_BUZZ[act] || (S.view === 'study' && A[act] ? 16 : 0);
