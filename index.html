@@ -1043,16 +1043,18 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .grid.all .tzg{zoom:var(--z,1)}
 .grid.all .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
   font:600 calc(10.5px / var(--z,1))/1 var(--ui);color:var(--grid);opacity:.75}
-/* 3.45.107 (ilkem's Instagram clip: "there always appears the hanzi above"): the word's characters as small paper squares
-   above the English; each fills with your own ink as you write it, the one you are on has a red edge, tap one to go to it */
-.w-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin:4px 0 0}
-.w-slot{position:relative;width:42px;height:42px;border-radius:6px;background-color:var(--card);box-shadow:inset 0 0 0 1px var(--line-2);
-  background-image:linear-gradient(var(--line),var(--line)),linear-gradient(var(--line),var(--line));background-size:1px 100%,100% 1px;
-  background-position:center;background-repeat:no-repeat;transition:box-shadow .25s,transform .25s}
-.w-slot canvas{position:absolute;inset:0;width:100%;height:100%}
-.w-slot b{position:absolute;inset:0;display:grid;place-items:center;font:500 29px/1 var(--hanzi);color:var(--ink)}
-.w-slot.on{box-shadow:inset 0 0 0 1.5px var(--seal);transform:translateY(-1px)}
-.w-slot::after{content:"";position:absolute;inset:-6px -4px}
+/* 3.45.108 (ilkem: "normal font chinese characters that appear above the english. Small. Not in tianzige"): one place per
+   character, a short line until you have written it, then the character itself; red line under the one you are on, tap = go there */
+.w-chars{display:flex;justify-content:center;flex-wrap:wrap;gap:2px;margin:6px 0 0;min-height:34px}
+.w-ch{position:relative;width:30px;height:34px;display:grid;place-items:center;font:400 22px/1 system-ui,"PingFang SC","PingFang TC","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:var(--ink)}   /* the phone's plain Chinese font */
+.w-ch::before{content:"";position:absolute;left:6px;right:6px;bottom:3px;height:2px;border-radius:1px;background:var(--line-2);transition:background .2s,opacity .2s}
+.w-ch.on::before{background:var(--seal)}
+.w-ch.fill::before{opacity:0}
+.w-ch b{font-weight:400}
+.w-ch.fill b{animation:wchIn .32s cubic-bezier(.2,.9,.3,1.3) both}
+.w-ch::after{content:"";position:absolute;inset:-6px -2px}
+@keyframes wchIn{from{opacity:0;transform:translateY(5px) scale(.8)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.w-ch.fill b{animation:none}}
 .grid.rows .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
   font:600 10.5px/1 var(--ui);letter-spacing:.02em;color:var(--grid);opacity:.75}
 .tzg{position:relative;width:var(--s,150px);height:var(--s,150px);background:var(--card);border-radius:6px;box-shadow:var(--shadow-sm);touch-action:none;color:var(--grid);transition:opacity .25s, transform .25s}
@@ -12530,7 +12532,7 @@ const writeSeg = () => { const guided = db.prefs.writeMode === 'guided';
   return `<div class="seg"><button data-act="wmode" data-m="free" class="${guided ? '' : 'on'}">Free</button><button data-act="wmode" data-m="guided" class="${guided ? 'on' : ''}">Guided</button></div>`; };
 function writeBody(c) {   // the prompt, the writing boxes, the note and the tools: the word bank's writing screen, also used inside lessons
   const chars = wChars(c), guided = db.prefs.writeMode === 'guided';
-  return `<div class="w-slots" id="wpg">${chars.map((ch, i) => `<button class="w-slot" data-act="wpg" data-i="${i}" aria-label="Character ${i + 1}"><canvas></canvas><b></b></button>`).join('')}</div>
+  return `<div class="w-chars" id="wpg">${chars.map((ch, i) => `<button class="w-ch" data-act="wpg" data-i="${i}" aria-label="Character ${i + 1}"><b></b></button>`).join('')}</div>
     <section class="prompt" id="wprompt">${promptHtml(c)}</section>
     <div class="grid" id="grid"><div class="trk">${chars.map((ch, i) => `<div class="tzg" data-i="${i}" data-n="${i + 1}">${TZG}<canvas></canvas><div class="ans"></div><div class="quiz"></div></div>`).join('')}</div></div>
     <div class="note" id="note">${guided ? 'Draw each stroke in order — wrong strokes bounce back.' : 'Write with your finger, then check.'}</div>
@@ -12538,7 +12540,7 @@ function writeBody(c) {   // the prompt, the writing boxes, the note and the too
       ? `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill ${db.prefs.outline ? 'on' : ''}" data-act="outline">${I.eye}Outline</button><button class="pill" data-act="giveup">Show me</button>`
       : `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill" data-act="undo">${I.undo}Undo</button><button class="pill" data-act="clear">${I.trash}Clear</button>`}</div>`;
 }
-const revealLine = c => `<span class="hz" style="font-size:22px">${esc(c.hanzi)}</span><span class="py">${esc(PY(c.hanzi, writeAsk(c).py))}</span>`;
+const revealLine = c => `<span class="py">${esc(PY(c.hanzi, writeAsk(c).py))}</span>`;   // 3.45.108: the characters show in the line above
 /* Hint: each tap draws the next part of the character faintly in red (晴: 日, then 龶, then 月), its strokes one after
    another in their writing direction. Once you have written over a part, its hint fades away, so the box stays clean.
    Free: box by box, part by part. Guided: the part you are due to write next, in the box you are on.
@@ -12629,11 +12631,14 @@ function boxSize(n, availW, availH = Infinity) {
   return { s: Math.floor(Math.max(120, Math.min(178, byW, byH))), gap, cols, rows };
 }
 function writeRoom(grid) {
-  // height left for the boxes: from the top of the grid down to the note, tools and buttons beneath it
-  const g = grid.getBoundingClientRect(), tools = $('#tools')?.getBoundingClientRect(), dock = $('#wdock')?.offsetHeight || 90;
-  const below = tools ? tools.bottom - g.bottom + 20 : 120;   // note (+ room for a second line after checking) and tools
+  // height left for the boxes: from the top of the grid down to the note, tools and buttons beneath it.
+  // 3.45.108: positions from offsetTop, which leaves out transforms; the screen's fade-in and the next word's slide used to
+  // move the grid while it was measured, so the box came out a different size each time (bigger after Free/Guided)
+  const top = el => { let y = 0; for (let e = el; e; e = e.offsetParent) y += e.offsetTop; return y; };
+  const tools = $('#tools'), dock = $('#wdock')?.offsetHeight || 90, gt = top(grid);
+  const below = tools ? top(tools) + tools.offsetHeight - (gt + grid.offsetHeight) + 20 : 120;   // note (+ room for a second line after checking) and tools
   const vh = Math.min(innerHeight, window.visualViewport?.height || Infinity, document.documentElement.clientHeight || Infinity);
-  return vh - (g.top + scrollY) - below - dock - 4;
+  return vh - gt - below - dock - 4;
 }
 /* the end of a round: Shi Shi springs up big (stretch on the way up, squash on landing), the bubble pops, paper confetti
    bursts from behind his mane, then two happy hops and a gentle bob while you read the score */
@@ -12700,7 +12705,8 @@ const pager = () => !!$('#grid')?.classList.contains('pg');
 function pgGo(i, anim = true) {
   const W = S.write, grid = $('#grid'); if (!grid?.classList.contains('pg')) return;
   const boxes = $$('.tzg', grid); i = Math.max(0, Math.min(boxes.length - 1, i));
-  if (W.pg !== i) { clearTimeout(W.pgT); const b = $('#whint'); if (b && db.prefs.writeMode !== 'guided') b.innerHTML = `${I.bulb}Hint`; }
+  if (W.pg !== i) { clearTimeout(W.pgT); const b = $('#whint'); if (b && db.prefs.writeMode !== 'guided') b.innerHTML = `${I.bulb}Hint`;
+    const was = boxes[W.pg]; if (was?._strokes?.length) was._fin = true; }
   W.pg = i;
   const trk = grid.firstElementChild, s = boxes[0]._s || boxes[0].offsetWidth, gap = parseFloat(grid.style.getPropertyValue('--gap')) || 14;
   trk.style.transition = anim && !matchMedia('(prefers-reduced-motion: reduce)').matches ? '' : 'none';
@@ -12708,34 +12714,28 @@ function pgGo(i, anim = true) {
   boxes.forEach((b, j) => b.classList.toggle('off', j !== i));
   pgDots();
 }
-function pgDots() {   // the small squares above: your ink in each, a red edge on the one you are writing (Guided: the character once done)
-  const W = S.write, slots = $$('#wpg .w-slot'), boxes = $$('#grid .tzg'); if (!slots.length || !W) return;
+function pgDots() {   // the characters above: each appears once its box is written (box._fin, set by pgAuto or by moving on)
+  const W = S.write, slots = $$('#wpg .w-ch'), boxes = $$('#grid .tzg'); if (!slots.length || !W) return;
   const chars = wChars(cardById(curDeck(), W.order[W.i])), open = W.revealed || W.guidedDone || W.checking;
   slots.forEach((el, j) => { const b = boxes[j]; if (!b) return;
-    el.classList.toggle('on', !open && (!pager() || j === W.pg) && slots.length > 1);
-    el.querySelector('b').textContent = b.classList.contains('done-ok') ? chars[j] : '';
-    slotInk(el.querySelector('canvas'), b); });
-}
-function slotInk(cv, box) {
-  const z = cv.clientWidth || 42, dpr = Math.min(3, devicePixelRatio || 1), ctx = cv.getContext('2d');
-  if (cv.width !== Math.round(z * dpr)) cv.width = cv.height = Math.round(z * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, z, z);
-  if (!box._strokes?.length || !box._s) return;
-  const k = z / box._s; ctx.scale(k, k);
-  for (const st of box._strokes) drawStroke(ctx, st, 1.9 / k, css('--ink'));
+    const fill = open || !!b._fin || b.classList.contains('done-ok'), t = el.querySelector('b');
+    el.classList.toggle('on', !open && !fill && (!pager() || j === W.pg));
+    el.classList.toggle('fill', fill);
+    if (t.textContent !== (fill ? chars[j] : '')) t.textContent = fill ? chars[j] : ''; });
 }
 /* Free: a box counts as finished once you have drawn as many strokes as the character has, or (strokes run together) every
    stroke of it has your ink along it. Then, after a short pause so a last stroke is never cut off, the next box slides in. */
 function pgAuto(box) {
   const W = S.write, i = +box.dataset.i; clearTimeout(W.pgT);
-  if (!pager() || W.revealed || W.checking || i !== W.pg || i >= $$('#grid .tzg').length - 1 || !window.HanziWriter) return;
+  if (W.revealed || W.checking || (pager() && i !== W.pg) || !window.HanziWriter) return;
+  const last = i >= $$('#grid .tzg').length - 1;
   const k = box._strokes.length, ch = wChars(cardById(curDeck(), W.order[W.i]))[i];
   loadRef(ch).then(ref => {
-    if (S.write !== W || W.pg !== i || box._strokes.length !== k || box._down) return;
+    if (S.write !== W || (pager() && W.pg !== i) || box._strokes.length !== k || box._down) return;
     const n = ref.strokes.length, all = ref.medians.map((_, j) => j);
     const each = k >= Math.max(1, n - 3) && all.every(j => inkCovers(box, ref, [j])), full = k >= n;
     if (!each && !full) return;
-    W.pgT = setTimeout(() => { if (S.write === W && W.pg === i && !W.revealed && !W.checking && box._strokes.length === k && !box._down) pgGo(i + 1); },
+    W.pgT = setTimeout(() => { if (S.write === W && (W.pg === i || !pager()) && !W.revealed && !W.checking && box._strokes.length === k && !box._down) { box._fin = true; last ? pgDots() : pgGo(i + 1); } },
       each ? 650 : inkCovers(box, ref, all) ? 750 : 1300);
   }, () => {});
 }
@@ -12756,20 +12756,21 @@ function initFreeBox(box, s) {
   cv.width = s * dpr; cv.height = s * dpr; cv.style.width = cv.style.height = s + 'px';
   const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   box._strokes = []; box._ctx = ctx; box._s = s;
-  let cur = null;
+  let cur = null, pid = null;   // 3.45.108: the finger that draws; a second finger on the box is ignored (two fingers zigzagged one line)
   const pt = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp }; };
   cv.addEventListener('pointerdown', e => {
     if (W.revealed) { box._endMorph?.(); box._ans?.animateCharacter?.(); return; }
-    e.preventDefault(); cv.setPointerCapture(e.pointerId); clearTimeout(W.pgT); box._down = true;
+    e.preventDefault(); if (cur) return;
+    pid = e.pointerId; cv.setPointerCapture(e.pointerId); clearTimeout(W.pgT); box._down = true; box._fin = false;
     cur = [pt(e)]; box._strokes.push(cur); W.history.push(box); redraw(box);
   });
   cv.addEventListener('pointermove', e => {
-    if (!cur) return;
+    if (!cur || e.pointerId !== pid) return;
     const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
     for (const ev of (evs.length ? evs : [e])) cur.push(pt(ev));
     redraw(box);
   });
-  const up = () => { box._down = false; if (cur) { hintCheck(box); pgDots(); pgAuto(box); } cur = null; };
+  const up = e => { if (e.pointerId !== pid) return; pid = null; box._down = false; if (cur) { hintCheck(box); pgDots(); pgAuto(box); } cur = null; };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
 }
 function redraw(box) {
@@ -15120,7 +15121,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.107';
+const APP_VERSION = '3.45.108';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16610,9 +16611,9 @@ const A = {
   'wmode': t => { if (db.prefs.writeMode === t.dataset.m) return; db.prefs.writeMode = t.dataset.m; save(); resetCardState(); render(); },
   'py-hint': () => { const W = S.write; W.pyShown = true; $('#wprompt').innerHTML = promptHtml(cardById(curDeck(), W.order[W.i])); },
   'whint': () => writeHint(),
-  'undo': () => { const W = S.write, box = W.history.pop(); if (box) { box._strokes.pop(); redraw(box); clearTimeout(W.pgT); if (pager() && +box.dataset.i !== W.pg) pgGo(+box.dataset.i); pgDots(); } },
+  'undo': () => { const W = S.write, box = W.history.pop(); if (box) { box._strokes.pop(); redraw(box); box._fin = false; clearTimeout(W.pgT); if (pager() && +box.dataset.i !== W.pg) pgGo(+box.dataset.i); pgDots(); } },
   'clear': () => { const W = S.write, all = $$('#grid .tzg'), bs = pager() ? [all[W.pg]] : all;   // one box at a time: Clear empties the box you see
-    bs.forEach(b => { b._strokes = []; redraw(b); }); W.history = W.history.filter(b => !bs.includes(b)); clearTimeout(W.pgT); pgDots(); },
+    bs.forEach(b => { b._strokes = []; b._fin = false; redraw(b); }); W.history = W.history.filter(b => !bs.includes(b)); clearTimeout(W.pgT); pgDots(); },
   'wpg': t => pgGo(+t.dataset.i),
   'check': async () => {
     const W = S.write; if (!W.history.length) { toast('Write something first'); return; }
