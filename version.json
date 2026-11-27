@@ -1,1 +1,1 @@
-{"version": "3.45.109", "notes": "Writing: the box is always the same big size, also when you open Write from a deck (it was smaller until you switched Free/Guided); the characters above the English just appear, close together, with no placeholder lines"}
+{"version": "3.45.110", "notes": "Writing in Free checks the word by itself once you finish the last character (a small Check button stays for the odd case); switching Free and Guided no longer reloads the whole screen"}

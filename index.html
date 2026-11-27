@@ -12533,10 +12533,10 @@ function writeBody(c) {   // the prompt, the writing boxes, the note and the too
   return `<div class="w-chars" id="wpg">${chars.map((ch, i) => `<button class="w-ch" data-act="wpg" data-i="${i}" aria-label="Character ${i + 1}"><b></b></button>`).join('')}</div>
     <section class="prompt" id="wprompt">${promptHtml(c)}</section>
     <div class="grid" id="grid"><div class="trk">${chars.map((ch, i) => `<div class="tzg" data-i="${i}" data-n="${i + 1}">${TZG}<canvas></canvas><div class="ans"></div><div class="quiz"></div></div>`).join('')}</div></div>
-    <div class="note" id="note">${guided ? 'Draw each stroke in order — wrong strokes bounce back.' : 'Write with your finger, then check.'}</div>
+    <div class="note" id="note">${guided ? 'Draw each stroke in order — wrong strokes bounce back.' : 'Write each character. It checks itself when you finish.'}</div>
     <div class="tools" id="tools">${guided
       ? `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill ${db.prefs.outline ? 'on' : ''}" data-act="outline">${I.eye}Outline</button><button class="pill" data-act="giveup">Show me</button>`
-      : `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill" data-act="undo">${I.undo}Undo</button><button class="pill" data-act="clear">${I.trash}Clear</button>`}</div>`;
+      : `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill" data-act="undo">${I.undo}Undo</button><button class="pill" data-act="clear">${I.trash}Clear</button><button class="pill" data-act="check">${I.check}Check</button>`}</div>`;
 }
 const revealLine = c => `<span class="py">${esc(PY(c.hanzi, writeAsk(c).py))}</span>`;   // 3.45.108: the characters show in the line above
 /* Hint: each tap draws the next part of the character faintly in red (晴: 日, then 龶, then 月), its strokes one after
@@ -12610,6 +12610,7 @@ function hintCheck(box) {   // Free: after each stroke, has your ink covered a h
 }
 function writeDock() {
   const W = S.write, guided = db.prefs.writeMode === 'guided';
+  if (!guided && !W.revealed && !W.checking && !W.guidedDone) return '';
   if (W.revealed && W.checking) return `<button class="btn btn-seal wide" disabled><span class="spin"></span>Checking…</button>`;
   if (W.revealed && W.judge && W.judge.ok !== null)
     return W.judge.ok
@@ -12618,7 +12619,7 @@ function writeDock() {
   if (W.revealed || W.guidedDone)
     return `<div class="row-btns"><button class="btn btn-ghost" data-act="grade" data-ok="0">Missed it</button><button class="btn btn-jade" data-act="grade" data-ok="1">${I.check}Got it</button></div>`;
   if (guided) return `<button class="btn btn-quiet wide" data-act="skip">Skip card</button>`;
-  return `<button class="btn btn-seal wide" data-act="check">${I.check}Check</button>`;
+  return '';   // 3.45.110 (ilkem: "the check button isnt of use (free) bc its gonna swipe anyways"): Free checks by itself, see pgAuto
 }
 /* Boxes never shrink below a comfortable writing size: 3–4 characters wrap into two rows (2 + 1, 2 + 2),
    each as big as a two-character word, and the size also fits the screen height so nothing scrolls. */
@@ -12633,7 +12634,7 @@ function writeRoom(grid) {
   // 3.45.108: positions from offsetTop, which leaves out transforms; the screen's fade-in and the next word's slide used to
   // move the grid while it was measured, so the box came out a different size each time (bigger after Free/Guided)
   const top = el => { let y = 0; for (let e = el; e; e = e.offsetParent) y += e.offsetTop; return y; };
-  const tools = $('#tools'), dock = $('#wdock')?.offsetHeight || 90, gt = top(grid);
+  const tools = $('#tools'), dock = Math.max($('#wdock')?.offsetHeight || 0, 86), gt = top(grid);   // 86: a row with one button, as after Check
   const below = tools ? top(tools) + tools.offsetHeight - (gt + grid.offsetHeight) + 20 : 120;   // note (+ room for a second line after checking) and tools
   const vh = Math.min(innerHeight, window.visualViewport?.height || Infinity, document.documentElement.clientHeight || Infinity);
   return vh - gt - below - dock - 4;
@@ -12736,7 +12737,9 @@ function pgAuto(box) {
     const n = ref.strokes.length, all = ref.medians.map((_, j) => j);
     const each = k >= Math.max(1, n - 3) && all.every(j => inkCovers(box, ref, [j])), full = k >= n;
     if (!each && !full) return;
-    W.pgT = setTimeout(() => { if (S.write === W && (W.pg === i || !pager()) && !W.revealed && !W.checking && box._strokes.length === k && !box._down) { box._fin = true; last ? pgDots() : pgGo(i + 1); } },
+    W.pgT = setTimeout(() => { if (S.write === W && (W.pg === i || !pager()) && !W.revealed && !W.checking && box._strokes.length === k && !box._down) { box._fin = true;
+      if (!last) return pgGo(i + 1);
+      pgDots(); if ($$('#grid .tzg').every(b => b._strokes?.length)) A.check(); } },   // the last box written: check the word (every box has ink)
       each ? 650 : inkCovers(box, ref, all) ? 750 : 1300);
   }, () => {});
 }
@@ -15122,7 +15125,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.109';
+const APP_VERSION = '3.45.110';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16609,7 +16612,14 @@ const A = {
     const st = S.study, d = curDeck();   // the card's sides depend on the mode, so draw it again, question side up
     $('#card3d').innerHTML = Faces(cardById(d, st.order[st.i]), d); st.angle = startAngle(); setAngle(false); showGrades(false);
   },
-  'wmode': t => { if (db.prefs.writeMode === t.dataset.m) return; db.prefs.writeMode = t.dataset.m; save(); resetCardState(); render(); },
+  'wmode': t => { if (db.prefs.writeMode === t.dataset.m) return; db.prefs.writeMode = t.dataset.m; save(); resetCardState();
+    const W = S.write, dock = $('#wdock');
+    if (S.view !== 'write' || !dock || !W || W.done) return render();
+    // 3.45.110 (ilkem: "there is reload lag when u switch between free and guided"): only the writing part is drawn again
+    $$('.w-mode .seg button').forEach(b => b.classList.toggle('on', b.dataset.m === t.dataset.m));
+    $('.shi-side')?.remove(); $$('#wpg, #wprompt, #grid, #note, #tools').forEach(n => n.remove());
+    dock.insertAdjacentHTML('beforebegin', writeBody(cardById(curDeck(), W.order[W.i]))); dock.innerHTML = writeDock();
+    mountWrite(); },
   'py-hint': () => { const W = S.write; W.pyShown = true; $('#wprompt').innerHTML = promptHtml(cardById(curDeck(), W.order[W.i])); },
   'whint': () => writeHint(),
   'undo': () => { const W = S.write, box = W.history.pop(); if (box) { box._strokes.pop(); redraw(box); box._fin = false; clearTimeout(W.pgT); if (pager() && +box.dataset.i !== W.pg) pgGo(+box.dataset.i); pgDots(); } },
