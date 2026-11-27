@@ -14710,7 +14710,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.93';
+const APP_VERSION = '3.45.94';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -15633,17 +15633,26 @@ function obTeach() {   // the words the how-it-works pages show: one you know, o
 function obType(el, bub, text, speed = 85) {   // the speech bubble types itself out, word by word
   if (!bub) return;
   bub.innerHTML = text.split(' ').map(w => w === '|' ? '<br>' : `<span class="w">${esc(w)}</span>`).join(' ');
-  bub.querySelectorAll('.w').forEach((w, k) => obLater(el, 250 + k * speed, () => w.classList.add('on')));
+  bub.querySelectorAll('.w').forEach((w, k) => obLater(el, 250 + k * speed, () => { w.classList.add('on'); if (!stillMotion()) haptic(7); }));   // 3.45.94: a soft tick per word
 }
 const obLater = (el, ms, f) => setTimeout(() => { if (el.isConnected) f(); }, stillMotion() ? 0 : ms);
+/* 3.45.94: a buzz timed to the animation (Android; iPhone only buzzes inside a tap). pat: ms, or a vibrate pattern [on, off, on…].
+   With reduced motion nothing moves, so only the buzzes marked land (the moment it all comes to rest) play */
+const obBuzz = (el, ms, pat, land) => { if (land || !stillMotion()) obLater(el, ms, () => haptic(pat)); };
+const OB_THUD = [22, 45, 38];   // the big landing: a knock, then a firmer one
 function obDraw(el, ch, loop) {   // a character drawing itself, stroke by stroke
   const box = el.querySelector('.ob2-hw'); if (!box) return;
   const fall = () => { box.innerHTML = `<span class="ob2-fb">${esc(ch)}</span>`; };
   if (!window.HanziWriter) { fall(); return; }
+  let n = 0;   // strokes, once the character's data has loaded
   const w = HanziWriter.create(box, ch, writerOpts(box.clientWidth || 200, { showCharacter: stillMotion(), showOutline: true, outlineColor: '#EDE4D4', strokeColor: css('--ink'),
-    strokeAnimationSpeed: 1.5, delayBetweenStrokes: 70, onLoadCharDataError: fall }));
+    strokeAnimationSpeed: 1.5, delayBetweenStrokes: 70, onLoadCharDataError: fall, onLoadCharDataSuccess: d => { n = d?.strokes?.length || 0; } }));
   if (stillMotion()) return;
-  const run = () => { if (!box.isConnected) return; w.animateCharacter({ onComplete: () => { if (loop) obLater(el, 1400, () => { w.hideCharacter(); obLater(el, 300, run); }); } }); };
+  const again = () => { if (loop) obLater(el, 1400, () => { w.hideCharacter(); obLater(el, 300, run); }); };
+  // 3.45.94: drawn one stroke at a time so each stroke gives a small buzz as it starts, and a firmer one when the character is done
+  const stroke = k => { if (!box.isConnected) return; if (k >= n) { haptic([14, 40, 22]); again(); return; }
+    haptic(10); w.animateStroke(k, { onComplete: () => obLater(el, 70, () => stroke(k + 1)) }); };
+  const run = () => { if (!box.isConnected) return; if (n) stroke(0); else w.animateCharacter({ onComplete: again }); };
   obLater(el, loop ? 500 : 300, run);
 }
 function obArc(el, path, done) {   // the dashed arc draws from one review to the next
@@ -15653,21 +15662,23 @@ function obArc(el, path, done) {   // the dashed arc draws from one review to th
 }
 function obAnim(el, step) {
   const O = S.ob;
-  if (step === 'hi') obDraw(el, '学');
-  if (step === 'hello') obType(el, el.querySelector('#ob2Bub'), 'Thousands of characters, not much time? | I’ll help you keep every one.');
-  if (step === 'plan') obLater(el, 1650, () => haptic(14));   // 3.45.25: the card lands face up
+  if (step === 'hi') { obDraw(el, '学'); obBuzz(el, 2150, OB_THUD); }   // 3.45.94: Shi Shi pops up
+  if (step === 'hello') { obBuzz(el, 260, 18); obType(el, el.querySelector('#ob2Bub'), 'Thousands of characters, not much time? | I’ll help you keep every one.'); }
+  if (step === 'pay') obBuzz(el, 280, 18);
+  if (step === 'plan') { obBuzz(el, 520, 10); obBuzz(el, 640, 12); obBuzz(el, 1650, OB_THUD, true); }   // 3.45.25: the card lands face up; 3.45.94: the two cards under it land first, and the landing is stronger
   if (step === 'plan-old') {   // 3.45.24: the stamped deck is gone (the new page has no animation)
     obType(el, el.querySelector('#ob2Bub'), 'Got it! | Building your plan now', 90);
     const deck = el.querySelector('#ob2Deck');
     el.querySelectorAll('.ob2-stamp').forEach((s, k) => obLater(el, 1100 + k * 620, () => { s.classList.add('on'); deck.classList.remove('jolt'); void deck.offsetWidth; obLater(el, 150, () => deck.classList.add('jolt')); }));
   }
-  if (step === 'how1') obLater(el, 1700, () => { el.querySelector('#ob2Wall').classList.add('pick'); el.querySelector('#ob2Late').classList.add('on'); });
+  if (step === 'how1') { obLater(el, 1700, () => { el.querySelector('#ob2Wall').classList.add('pick'); el.querySelector('#ob2Late').classList.add('on'); });
+    obBuzz(el, 1700, [16, 70, 16, 70, 30], true); }   // 3.45.94: one knock for each of the three words that light up
   if (step === 'how2' || step === 'how3') {
     const st = [...el.querySelectorAll('.ob2-tl .st')], p = el.querySelector('#ob2Arc'), x = k => 295 * parseFloat(st[k].style.left) / 100;
     let k = 0;
     const hop = () => { if (k >= st.length - 1) return;
       p.setAttribute('d', `M${x(k) + 6} 38 Q${(x(k) + x(k + 1)) / 2} ${st.length > 2 ? 4 : -12} ${x(k + 1) - 6} 38`);
-      obArc(el, p, () => { st.forEach(s => s.classList.remove('on')); st[k + 1].classList.add('on'); k++; obLater(el, 300, hop); }); };
+      obArc(el, p, () => { st.forEach(s => s.classList.remove('on')); st[k + 1].classList.add('on'); k++; haptic(k >= st.length - 1 ? OB_THUD : 18); obLater(el, 300, hop); }); };   // 3.45.94: a buzz at each stop, a firmer one at the last
     obLater(el, 100, hop);
   }
   if (step === 'how4') obDraw(el, [...obTeach().hard.h][0], true);
@@ -15686,11 +15697,11 @@ function obAnim(el, step) {
   }
   if (step === 'chart') {
     const B = [...el.querySelectorAll('.ob2-bar')], v = el.querySelector('.ob2-bar .val'), end = 600 + B.length * 170;
-    B.forEach((b, k) => obLater(el, 600 + k * 170, () => b.classList.add('on')));
+    B.forEach((b, k) => obLater(el, 600 + k * 170, () => { b.classList.add('on'); if (!stillMotion()) haptic(6 + Math.round(k * 8 / Math.max(1, B.length - 1))); }));   // 3.45.94: each bar ticks, a little harder as they grow
     if (v) obLater(el, 600, () => { v.classList.add('on'); const n = +v.dataset.n, t0 = performance.now(), dur = stillMotion() ? 0 : end - 600;
       const step = t => { if (!v.isConnected) return; const f = dur ? Math.min(1, (t - t0) / dur) : 1; v.textContent = Math.round(n * (1 - (1 - f) ** 2)) + ' words'; if (f < 1) requestAnimationFrame(step); };
       requestAnimationFrame(step); });
-    obLater(el, end, () => haptic(14));   // 3.45.23: a buzz as the count lands (Android; iPhone only buzzes inside a tap)
+    obBuzz(el, end, OB_THUD, true);   // 3.45.23: a buzz as the count lands (Android; iPhone only buzzes inside a tap); 3.45.94: stronger
   }
 }
 /* count the level up one number at a time: quick ticks first, the last ones slower, every number landing whole */
@@ -15700,8 +15711,8 @@ function obReel(el) {
   for (let k = 1; k <= n; k++) {
     const left = n - k, gap = left === 0 ? 330 : left === 1 ? 240 : 150;
     t += gap;
-    setTimeout(() => { if (!r.isConnected) return; r.style.setProperty('--d', (left ? .14 : .32) + 's'); r.style.setProperty('--p', k);
-      if (!left) setTimeout(() => r.closest('.ob-hsk')?.classList.add('landed'), 200); }, t);
+    setTimeout(() => { if (!r.isConnected) return; r.style.setProperty('--d', (left ? .14 : .32) + 's'); r.style.setProperty('--p', k); haptic(left ? 9 : 14);
+      if (!left) setTimeout(() => { r.closest('.ob-hsk')?.classList.add('landed'); haptic(OB_THUD); }, 200); }, t);
   }
 }
 async function obCheckStart() {   // the HSK lists may still be loading
@@ -15750,10 +15761,11 @@ function obFinish(how, keep) {   // keep: leave the last page on screen (Google 
 async function obClick(e) {
   const b = e.target.closest('[data-ob],[data-v],[data-c],[data-qo],[data-so],[data-plan],[data-trial],[data-h]'); if (!b || !S.ob || b.disabled) return;
   const O = S.ob, step = OB_STEPS[O.i];
-  haptic(b.dataset.ob && b.dataset.ob !== 'back' ? 16 : 9);   // moka2 3.45.23: every tap here buzzes (iPhone: the system tick, from inside the tap)
+  haptic(b.dataset.ob && b.dataset.ob !== 'back' ? 24 : b.dataset.ob ? 10 : 14);   // moka2 3.45.23: every tap here buzzes (iPhone: the system tick, from inside the tap); 3.45.94: stronger
   if (b.dataset.qo) {   // a word card: show right or wrong for a moment, then the next card (a level up after a right answer, down after a wrong one)
     const Q = O.q, c = Q.cards.at(-1); if (c.pick != null) return;
     c.pick = +b.dataset.qo; LOG.add('onboarding-card', { lv: c.lv, h: c.w.h, right: obRight(c) }); obShow();
+    if (c.pick >= 0) setTimeout(() => haptic(obRight(c) ? [12, 50, 24] : 55), 90);   // 3.45.94: right: a happy double tap; wrong: one long buzz
     setTimeout(() => {
       if (S.ob !== O || OB_STEPS[O.i] !== 'words' || Q.cards.at(-1) !== c) return;
       if (!obNextCard()) { obGo('read'); return; }
@@ -15764,6 +15776,7 @@ async function obClick(e) {
   if (b.dataset.so) {   // the story question
     const T = O.st; if (T.pick != null) return;
     T.pick = +b.dataset.so; LOG.add('onboarding-story', { lv: T.lv, right: T.pick === T.ok }); obShow();
+    if (T.pick >= 0) setTimeout(() => haptic(T.pick === T.ok ? [12, 50, 24] : 55), 90);
     setTimeout(() => { if (S.ob === O && OB_STEPS[O.i] === 'read' && O.st === T) obGo('plan'); }, T.pick === T.ok ? 900 : 1600);
     return;
   }
