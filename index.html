@@ -1043,16 +1043,14 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .grid.all .tzg{zoom:var(--z,1)}
 .grid.all .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
   font:600 calc(10.5px / var(--z,1))/1 var(--ui);color:var(--grid);opacity:.75}
-/* 3.45.108 (ilkem: "normal font chinese characters that appear above the english. Small. Not in tianzige"): one place per
-   character, a short line until you have written it, then the character itself; red line under the one you are on, tap = go there */
-.w-chars{display:flex;justify-content:center;flex-wrap:wrap;gap:2px;margin:6px 0 0;min-height:34px}
-.w-ch{position:relative;width:30px;height:34px;display:grid;place-items:center;font:400 22px/1 system-ui,"PingFang SC","PingFang TC","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:var(--ink)}   /* the phone's plain Chinese font */
-.w-ch::before{content:"";position:absolute;left:6px;right:6px;bottom:3px;height:2px;border-radius:1px;background:var(--line-2);transition:background .2s,opacity .2s}
-.w-ch.on::before{background:var(--seal)}
-.w-ch.fill::before{opacity:0}
+/* 3.45.108 (ilkem: "normal font chinese characters that appear above the english. Small. Not in tianzige"): each character
+   appears here once you have written it; tap one to go back to its box */
+.w-chars{display:flex;justify-content:center;flex-wrap:wrap;margin:6px 0 0;min-height:34px}
+.w-ch{position:relative;height:34px;padding:0;display:grid;place-items:center;font:400 22px/1 system-ui,"PingFang SC","PingFang TC","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:var(--ink)}   /* the phone's plain Chinese font */
+.w-ch:not(.fill){display:none}   /* 3.45.109 (ilkem: "It shouldnt show ＿ ＿＿＿. The hanzi should just appear, more next to eachother") */
 .w-ch b{font-weight:400}
 .w-ch.fill b{animation:wchIn .32s cubic-bezier(.2,.9,.3,1.3) both}
-.w-ch::after{content:"";position:absolute;inset:-6px -2px}
+.w-ch::after{content:"";position:absolute;inset:-6px -1px}
 @keyframes wchIn{from{opacity:0;transform:translateY(5px) scale(.8)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.w-ch.fill b{animation:none}}
 .grid.rows .tzg::before{content:attr(data-n);position:absolute;top:6px;left:8px;z-index:2;pointer-events:none;
@@ -12688,6 +12686,9 @@ function mountWrite() {
   const d = curDeck(), c = cardById(d, W.order[W.i]), chars = wChars(c);
   // 3.45.59 (ilkem: "slightly bigger when it's 2 next to each other"): two boxes side by side may reach 8px into the page margins
   // 3.45.106: one box at a time, as big as the screen allows (a word's boxes slide in one after another, see pgGo)
+  // 3.45.109: render() hides the tab bar only after this runs, and with it on, the button row has 76px of padding for the
+  // bar under it, so a round opened from a deck got a smaller box than after a Free/Guided switch. No tabs on this screen.
+  $('#frame')?.classList.remove('tabs');
   const grid = $('#grid'), gap = 14, s = Math.floor(Math.max(150, Math.min(440, grid.clientWidth + 16, writeRoom(grid))));   // 3.45.107: wider, into the page margins
   grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
   grid.style.maxWidth = s + 'px';
@@ -15121,7 +15122,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.108';
+const APP_VERSION = '3.45.109';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
