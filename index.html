@@ -976,6 +976,22 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .screen > .w-mode .seg{padding:1px;border-radius:7px;background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
 .screen > .w-mode .seg button{height:22px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:500;color:var(--muted)}
 .screen > .w-mode .seg button.on{background:var(--fill);color:var(--ink-2);box-shadow:none;font-weight:600}
+/* 3.45.111 (ilkem: "click, it goes 1 tianzige per page ... click again, as many as needed onto 1 page"): the layout switch beside Free / Guided */
+.screen > .w-mode{gap:6px;align-items:center}
+.w-lay{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:7px;box-shadow:inset 0 0 0 1px var(--line);font-size:11px;font-weight:600;color:var(--ink-2)}
+.w-lay svg.i{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
+.w-lay:active{opacity:.6}
+.w-lay.gone{visibility:hidden}
+/* 3.45.111 (ilkem: "when its 1 per page. Pls have the dots so it looks scrollable"): one dot per box, the one on screen long */
+.w-dots{display:flex;justify-content:center;align-items:center;gap:7px;height:22px;margin:10px 0 -6px}
+.w-dots[hidden]{display:none}
+.w-dot{position:relative;width:8px;height:8px;padding:0;border-radius:4px;background:var(--line-2);transition:width .3s cubic-bezier(.3,.8,.3,1),background .25s}
+.w-dot::after{content:"";position:absolute;inset:-8px -4px}
+.w-dot.fin{background:color-mix(in srgb,#2EB872 60%,var(--line-2))}
+.w-dot.on{width:22px;background:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){.w-dot{transition:none}}
+/* 3.45.111 (ilkem: "a check button for when ur done with a word (on its last character)") */
+.w-check.wait{visibility:hidden;pointer-events:none}
 .prompt .reveal-line{min-height:28px;display:flex;justify-content:center;align-items:center;gap:10px}
 .prompt .reveal-line .py{margin:0;font-size:16px}
 /* which sense is meant: a common word with the character left out (东＿ · thing) */
@@ -1034,7 +1050,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .grid{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap,12px);width:100%;margin:0 auto}
 .grid > .trk{display:contents}
 /* 3.45.106 (ilkem: "1 per page ... swipes to the 2nd tianzige. Make it big"): one big box at a time; the row of boxes slides */
-.grid.pg{display:block;overflow:clip;padding:6px;margin-top:-6px;margin-bottom:-6px}
+.grid.pg{display:block;overflow:clip;padding:10px;margin-top:-10px;margin-bottom:-10px}   /* 3.45.111: 10px, room for the green glow */
 .grid.pg > .trk{display:flex;gap:var(--gap);transition:transform .42s cubic-bezier(.3,.8,.3,1)}
 .grid.pg .tzg{flex:none;transition:opacity .3s}
 .grid.pg .tzg.off{opacity:0;pointer-events:none}
@@ -1066,8 +1082,7 @@ html.hdx-on,html.hdx-on body{overflow:hidden}
 .tzg.morphing .ans{opacity:0}
 .tzg.morphing canvas{opacity:1}
 .tzg.dim{opacity:.45;transform:scale(.96)}
-.tzg.done-ok{box-shadow:0 0 0 2px var(--jade), var(--shadow-sm)}
-.tzg.judged-ok{box-shadow:0 0 0 2.5px var(--jade), var(--shadow-sm)}
+.tzg.done-ok,.tzg.judged-ok{box-shadow:0 0 0 calc(4px / var(--z,1)) #2EB872,0 0 calc(10px / var(--z,1)) rgba(46,184,114,.45), var(--shadow-sm)}   /* 3.45.111 (ilkem: "make the green around a lil brighter and thicker") */
 .tzg.judged-no{box-shadow:0 0 0 2.5px var(--seal), var(--shadow-sm)}
 .tzg .mark{position:absolute;top:-9px;right:-7px;z-index:3;min-width:30px;height:24px;padding:0 8px;border-radius:12px;display:grid;place-items:center;
   font:600 12.5px/1 var(--ui);color:#fff;background:var(--jade);box-shadow:0 3px 8px -3px rgba(0,0,0,.35);animation:pop .35s cubic-bezier(.2,.9,.3,1.4) both}
@@ -12522,21 +12537,26 @@ function WriteView(d) {
   return `<div class="screen fade-in" style="--accent:${d.accent}">
     <header class="bar"><button class="icon-btn" data-act="back-deck" aria-label="Close">${I.close}</button>
       ${sbHtml(W, W.i / n)}</header>
-    <div class="w-mode">${writeSeg()}</div>
+    <div class="w-mode">${layBtn()}${writeSeg()}</div>
     ${writeBody(c)}
     <div class="dock" id="wdock">${writeDock()}</div></div>`;
 }
 const writeSeg = () => { const guided = db.prefs.writeMode === 'guided';
   return `<div class="seg"><button data-act="wmode" data-m="free" class="${guided ? '' : 'on'}">Free</button><button data-act="wmode" data-m="guided" class="${guided ? 'on' : ''}">Guided</button></div>`; };
+const layAll = () => !!db.prefs.writeAll;   // 3.45.111: every box of the word on the screen at once, instead of one box per page
+const layBtn = () => `<button class="w-lay" id="wlay" data-act="wlay" aria-label="${layAll() ? 'All boxes on one page. Tap for one per page' : 'One box per page. Tap for all on one page'}">${layAll()
+  ? `${ic('<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}All on 1 page`
+  : `${ic('<rect x="5" y="5" width="14" height="14" rx="2"/>')}1 per page`}</button>`;
 function writeBody(c) {   // the prompt, the writing boxes, the note and the tools: the word bank's writing screen, also used inside lessons
   const chars = wChars(c), guided = db.prefs.writeMode === 'guided';
   return `<div class="w-chars" id="wpg">${chars.map((ch, i) => `<button class="w-ch" data-act="wpg" data-i="${i}" aria-label="Character ${i + 1}"><b></b></button>`).join('')}</div>
     <section class="prompt" id="wprompt">${promptHtml(c)}</section>
     <div class="grid" id="grid"><div class="trk">${chars.map((ch, i) => `<div class="tzg" data-i="${i}" data-n="${i + 1}">${TZG}<canvas></canvas><div class="ans"></div><div class="quiz"></div></div>`).join('')}</div></div>
+    ${chars.length > 1 && !layAll() && !S.write?.revealed && !S.write?.guidedDone ? `<div class="w-dots" id="wdots">${chars.map((ch, i) => `<button class="w-dot" data-act="wpg" data-i="${i}" aria-label="Box ${i + 1}"></button>`).join('')}</div>` : ''}
     <div class="note" id="note">${guided ? 'Draw each stroke in order — wrong strokes bounce back.' : 'Write each character. It checks itself when you finish.'}</div>
     <div class="tools" id="tools">${guided
       ? `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill ${db.prefs.outline ? 'on' : ''}" data-act="outline">${I.eye}Outline</button><button class="pill" data-act="giveup">Show me</button>`
-      : `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill" data-act="undo">${I.undo}Undo</button><button class="pill" data-act="clear">${I.trash}Clear</button><button class="pill" data-act="check">${I.check}Check</button>`}</div>`;
+      : `<button class="pill" data-act="whint" id="whint">${I.bulb}Hint</button><button class="pill" data-act="undo">${I.undo}Undo</button><button class="pill" data-act="clear">${I.trash}Clear</button>`}</div>`;   // 3.45.111: Check moved to the dock, under the last box
 }
 const revealLine = c => `<span class="py">${esc(PY(c.hanzi, writeAsk(c).py))}</span>`;   // 3.45.108: the characters show in the line above
 /* Hint: each tap draws the next part of the character faintly in red (晴: 日, then 龶, then 月), its strokes one after
@@ -12610,7 +12630,10 @@ function hintCheck(box) {   // Free: after each stroke, has your ink covered a h
 }
 function writeDock() {
   const W = S.write, guided = db.prefs.writeMode === 'guided';
-  if (!guided && !W.revealed && !W.checking && !W.guidedDone) return '';
+  const n = wChars(cardById(curDeck(), W.order[W.i])).length, onLast = n < 2 || layAll() || W.pg >= n - 1;
+  // 3.45.110: Free checks by itself once the last box is written (see pgAuto). 3.45.111 (ilkem: "there should be a check button
+  // for when ur done with a word (on its last character)"): a Check button shows while the last box is on screen
+  if (!guided && !W.revealed && !W.checking && !W.guidedDone) return `<button class="btn btn-jade wide w-check${onLast ? '' : ' wait'}" data-act="check"${onLast ? '' : ' tabindex="-1" aria-hidden="true"'}>${I.check}Check</button>`;
   if (W.revealed && W.checking) return `<button class="btn btn-seal wide" disabled><span class="spin"></span>Checking…</button>`;
   if (W.revealed && W.judge && W.judge.ok !== null)
     return W.judge.ok
@@ -12618,8 +12641,7 @@ function writeDock() {
       : `<div class="row-btns"><button class="btn btn-ghost" data-act="grade" data-ok="1">I was right</button><button class="btn btn-primary" data-act="grade" data-ok="0">Next</button></div>`;
   if (W.revealed || W.guidedDone)
     return `<div class="row-btns"><button class="btn btn-ghost" data-act="grade" data-ok="0">Missed it</button><button class="btn btn-jade" data-act="grade" data-ok="1">${I.check}Got it</button></div>`;
-  if (guided) return `<button class="btn btn-quiet wide" data-act="skip">Skip card</button>`;
-  return '';   // 3.45.110 (ilkem: "the check button isnt of use (free) bc its gonna swipe anyways"): Free checks by itself, see pgAuto
+  return `<button class="btn btn-quiet wide" data-act="skip">Skip card</button>`;   // Guided
 }
 /* Boxes never shrink below a comfortable writing size: 3–4 characters wrap into two rows (2 + 1, 2 + 2),
    each as big as a two-character word, and the size also fits the screen height so nothing scrolls. */
@@ -12690,16 +12712,29 @@ function mountWrite() {
   // 3.45.109: render() hides the tab bar only after this runs, and with it on, the button row has 76px of padding for the
   // bar under it, so a round opened from a deck got a smaller box than after a Free/Guided switch. No tabs on this screen.
   $('#frame')?.classList.remove('tabs');
-  const grid = $('#grid'), gap = 14, s = Math.floor(Math.max(150, Math.min(440, grid.clientWidth + 16, writeRoom(grid))));   // 3.45.107: wider, into the page margins
+  const grid = $('#grid'), gap = 14, cw = grid.clientWidth + 16, room = writeRoom(grid); let s = Math.floor(Math.max(150, Math.min(440, cw, room)));   // 3.45.107: wider, into the page margins
   grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
   grid.style.maxWidth = s + 'px';
   const boxes = $$('.tzg', grid);
-  if (boxes.length > 1) {   // the box plus 6px all round, so its ring is not cut off by the sliding window
-    grid.classList.add('pg'); gridAt(grid, s + 12); boxes.forEach(b => b._s = s); pgGo(S.write.pg || 0, false); }
+  $('#wlay')?.classList.toggle('gone', boxes.length < 2);   // one character: nothing to lay out
+  if (boxes.length > 1 && layAll()) {   // 3.45.111: every box at once, as big as the screen lets them all be
+    const L = fitAll(boxes.length, cw, room, gap); s = L.s;
+    grid.style.setProperty('--s', s + 'px'); grid.classList.add('all'); grid.firstElementChild.style.width = L.w + 'px'; gridAt(grid, L.w); }
+  else if (boxes.length > 1) {   // the box plus 10px all round, so its ring is not cut off by the sliding window
+    grid.classList.add('pg'); gridAt(grid, s + 20); boxes.forEach(b => b._s = s); pgGo(S.write.pg || 0, false); }
   else gridAt(grid, s);
   if (db.prefs.writeMode === 'guided') initGuided(boxes, chars, s);
   else { boxes.forEach(b => initFreeBox(b, s)); if (window.HanziWriter) chars.forEach(ch => loadRef(ch).catch(() => {})); }   // stroke data ready for pgAuto
   pgDots();
+}
+/* All on one page: the number of columns that gives the biggest boxes; a wider row wins when its boxes are nearly as big,
+   so a word reads left to right */
+function fitAll(n, W, H, gap) {
+  const at = cols => { const rows = Math.ceil(n / cols); return Math.floor(Math.min(440, (W - gap * (cols - 1)) / cols, (H - gap * (rows - 1)) / rows)); };
+  let best = 1; for (let c = 2; c <= n; c++) if (at(c) > at(best)) best = c;
+  for (let c = n; c > best; c--) if (at(c) >= at(best) * .85) { best = c; break; }
+  const s = Math.max(64, at(best)), cols = Math.min(best, n);
+  return { s, cols, w: cols * s + (cols - 1) * gap };
 }
 /* 3.45.106 (ilkem: "show 1 per page, the system gets it automatically when u finished a tianzige and swipes to the 2nd").
    A word of 2+ characters shows one big box at a time; the numbered squares under it show where you are and jump to a box. */
@@ -12714,6 +12749,7 @@ function pgGo(i, anim = true) {
   trk.style.transition = anim && !matchMedia('(prefers-reduced-motion: reduce)').matches ? '' : 'none';
   trk.style.transform = `translateX(${-i * (s + gap)}px)`;
   boxes.forEach((b, j) => b.classList.toggle('off', j !== i));
+  const chk = $('#wdock .w-check'); if (chk) { const w = i < boxes.length - 1; chk.classList.toggle('wait', w); w ? chk.setAttribute('tabindex', '-1') : chk.removeAttribute('tabindex'); chk.toggleAttribute('aria-hidden', w); }
   pgDots();
 }
 function pgDots() {   // the characters above: each appears once its box is written (box._fin, set by pgAuto or by moving on)
@@ -12724,6 +12760,10 @@ function pgDots() {   // the characters above: each appears once its box is writ
     el.classList.toggle('on', !open && !fill && (!pager() || j === W.pg));
     el.classList.toggle('fill', fill);
     if (t.textContent !== (fill ? chars[j] : '')) t.textContent = fill ? chars[j] : ''; });
+  const dots = $('#wdots'); if (!dots) return;
+  dots.hidden = !pager();
+  $$('.w-dot', dots).forEach((el, j) => { const b = boxes[j];
+    el.classList.toggle('on', j === W.pg); el.classList.toggle('fin', !!b && (!!b._fin || b.classList.contains('done-ok'))); });
 }
 /* Free: a box counts as finished once you have drawn as many strokes as the character has, or (strokes run together) every
    stroke of it has your ink along it. Then, after a short pause so a last stroke is never cut off, the next box slides in. */
@@ -13321,7 +13361,7 @@ function gradeWrite(ok) {
   if (W.done || S.view !== 'write' || !dock) return render();
   const side = $('.shi-side'); if (side) { side.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateX(-24px)' }], { duration: 180, fill: 'forwards' }).onfinish = () => side.remove(); }   // Shi Shi's note goes with the old word
   iconBadge();
-  qSlide(scr, '#wprompt, #grid, #wpg, #note, #tools', () => {   // the next word slides in; the bar, the mode switch and the button row stay
+  qSlide(scr, '#wprompt, #grid, #wpg, #wdots, #note, #tools', () => {   // the next word slides in; the bar, the mode switch and the button row stay
     dock.insertAdjacentHTML('beforebegin', writeBody(cardById(d, W.order[W.i])));
     sbPaint(W, W.i / W.order.length);
     dock.innerHTML = writeDock(); dock.firstElementChild?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: 'ease-out' });
@@ -15125,7 +15165,7 @@ function mountHsk() {
 
 /* ---------- install + updates ---------- */
 // For every release: raise APP_VERSION here AND "version" in version.json (same number).
-const APP_VERSION = '3.45.110';
+const APP_VERSION = '3.45.111';
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('ShiHanzi is on your home screen'); });
@@ -16617,9 +16657,24 @@ const A = {
     if (S.view !== 'write' || !dock || !W || W.done) return render();
     // 3.45.110 (ilkem: "there is reload lag when u switch between free and guided"): only the writing part is drawn again
     $$('.w-mode .seg button').forEach(b => b.classList.toggle('on', b.dataset.m === t.dataset.m));
-    $('.shi-side')?.remove(); $$('#wpg, #wprompt, #grid, #note, #tools').forEach(n => n.remove());
+    $('.shi-side')?.remove(); $$('#wpg, #wprompt, #grid, #wdots, #note, #tools').forEach(n => n.remove());
     dock.insertAdjacentHTML('beforebegin', writeBody(cardById(curDeck(), W.order[W.i]))); dock.innerHTML = writeDock();
     mountWrite(); },
+  'wlay': () => { db.prefs.writeAll = !layAll(); save(); LOG.add('write-layout', layAll() ? 'all' : 'one');
+    const W = S.write, dock = $('#wdock'), lay = $('#wlay');
+    if (lay) lay.outerHTML = layBtn();
+    if (S.view !== 'write' || !dock || !W || W.done) return;
+    if (W.revealed || W.checking || W.guidedDone) { toast(layAll() ? 'The next word shows all its boxes' : 'The next word shows one box per page'); return; }
+    // the writing part is drawn again in the new layout; Free keeps your ink (scaled to the new box size), Guided starts the word over
+    const free = db.prefs.writeMode !== 'guided', ink = free ? $$('#grid .tzg').map(b => ({ st: b._strokes || [], s: b._s || 1, fin: !!b._fin })) : null;
+    free ? Object.assign(W, { history: [], hg: [] }) : resetCardState();
+    $('.shi-side')?.remove(); $$('#wpg, #wprompt, #grid, #wdots, #note, #tools').forEach(n => n.remove());
+    dock.insertAdjacentHTML('beforebegin', writeBody(cardById(curDeck(), W.order[W.i])));
+    if (ink) { const last = ink.reduce((a, x, i) => x.st.length ? i : a, -1), k = ink.findIndex((x, i) => !x.fin && i >= last); W.pg = k < 0 ? ink.length - 1 : k; }   // one per page: the first box still to write
+    dock.innerHTML = writeDock(); mountWrite();
+    if (ink) { $$('#grid .tzg').forEach((b, i) => { const x = ink[i]; if (!x) return; const k = b._s / x.s;
+      b._strokes = x.st.map(st => st.map(p => ({ ...p, x: p.x * k, y: p.y * k }))); b._fin = x.fin; redraw(b); b._strokes.forEach(() => W.history.push(b)); });
+      if (pager()) pgGo(W.pg, false); else pgDots(); } },
   'py-hint': () => { const W = S.write; W.pyShown = true; $('#wprompt').innerHTML = promptHtml(cardById(curDeck(), W.order[W.i])); },
   'whint': () => writeHint(),
   'undo': () => { const W = S.write, box = W.history.pop(); if (box) { box._strokes.pop(); redraw(box); box._fin = false; clearTimeout(W.pgT); if (pager() && +box.dataset.i !== W.pg) pgGo(+box.dataset.i); pgDots(); } },
@@ -16660,7 +16715,7 @@ const A = {
 /* 3.45.98: the flashcard buttons buzz (ms). In a flip round every button does; these also do outside one. */
 const TAP_BUZZ = { sgrade: 24, 'open-deck': 14, home: 14, study: 18, write: 18, 'learn-study': 18, 'learn-write': 18, 'today-start': 18, 'review-start': 18,
   'flip-front': 16, 'back-deck': 14, 'study-done': 18, 'study-again': 18, check: 18, grade: 24, undo: 14, clear: 14, skip: 14, giveup: 14,
-  whint: 14, 'py-hint': 14, outline: 14, wmode: 14, wpg: 12, 'retry-missed': 18, 'write-again': 18, 'write-next': 18 };
+  whint: 14, 'py-hint': 14, outline: 14, wmode: 14, wlay: 14, wpg: 12, 'retry-missed': 18, 'write-again': 18, 'write-next': 18 };
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t || t.disabled) return;
   const act = t.dataset.act, ms = TAP_BUZZ[act] || (S.view === 'study' && A[act] ? 16 : 0);

@@ -1,1 +1,1 @@
-{"version": "3.45.110", "notes": "Writing in Free checks the word by itself once you finish the last character (a small Check button stays for the odd case); switching Free and Guided no longer reloads the whole screen"}
+{"version": "3.45.111", "notes": "Writing: a button switches between one box per page and all boxes on one page; dots under the box show the pages; the green ring for a right answer is brighter and thicker; a Check button shows on the last character"}
